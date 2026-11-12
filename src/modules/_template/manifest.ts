@@ -25,9 +25,9 @@ export const templateModule = defineModule({
     ],
   },
   nav: {
-    coach: [{ to: '/coach/template', labelKey: 'template.nav.coach', icon: 'template', order: 90 }],
+    coach: [{ to: '/coach/template', labelKey: 'template.nav.coach', icon: 'layout', order: 90 }],
     client: [
-      { to: '/client/template', labelKey: 'template.nav.client', icon: 'template', order: 90 },
+      { to: '/client/template', labelKey: 'template.nav.client', icon: 'layout', order: 90 },
     ],
   },
   i18n: {

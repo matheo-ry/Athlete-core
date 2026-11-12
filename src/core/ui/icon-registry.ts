@@ -20,8 +20,8 @@ export const ICONS = {
   clipboard: ClipboardList,
   dumbbell: Dumbbell,
   home: House,
+  layout: LayoutTemplate,
   settings: Settings,
-  template: LayoutTemplate,
   user: User,
   users: Users,
 } as const satisfies Record<string, LucideIcon>;

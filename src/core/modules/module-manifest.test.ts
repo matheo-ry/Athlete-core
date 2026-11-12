@@ -19,9 +19,9 @@ function buildManifest(overrides: Partial<ModuleManifest> = {}): ModuleManifest 
       client: [{ path: 'example', lazy: loadPage }],
     },
     nav: {
-      coach: [{ to: '/coach/example', labelKey: 'example.nav.coach', icon: 'template', order: 20 }],
+      coach: [{ to: '/coach/example', labelKey: 'example.nav.coach', icon: 'layout', order: 20 }],
       client: [
-        { to: '/client/example', labelKey: 'example.nav.client', icon: 'template', order: 20 },
+        { to: '/client/example', labelKey: 'example.nav.client', icon: 'layout', order: 20 },
       ],
     },
     i18n: { en: loadTexts, es: loadTexts },
@@ -52,7 +52,7 @@ describe('defineModule', () => {
       nav: {
         coach: [],
         client: [
-          { to: '/coach/example', labelKey: 'example.nav.client', icon: 'template', order: 1 },
+          { to: '/coach/example', labelKey: 'example.nav.client', icon: 'layout', order: 1 },
         ],
       },
     });

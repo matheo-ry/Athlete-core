@@ -1,0 +1,13 @@
+# Quién debe aprobar los cambios de cada zona.
+# Sustituye CAMBIAR-POR-TU-USUARIO por el usuario de GitHub del propietario.
+
+# Por defecto, todo lo revisa el propietario.
+*                        @matheo-ry.
+
+# Zonas protegidas (AGENTS.md, regla 9).
+/src/core/               @matheo-ry.
+/supabase/               @matheo-ry.
+/.github/                @matheo-ry.
+/AGENTS.md               @matheo-ry.
+/docs/ARQUITECTURA.md    @matheo-ry.
+/package.json            @matheo-ry.

@@ -1,0 +1,51 @@
+# Dependencias y compilación
+node_modules/
+dist/
+dist-ssr/
+build/
+.vite/
+*.tsbuildinfo
+
+# Secretos y variables de entorno (NUNCA se suben)
+.env
+.env.*
+!.env.example
+
+# Claves y certificados de firma de las tiendas (NUNCA se suben)
+*.jks
+*.keystore
+*.p8
+*.p12
+*.pem
+*.mobileprovision
+*.cer
+
+# Tests
+coverage/
+playwright-report/
+test-results/
+blob-report/
+
+# Supabase local
+supabase/.temp/
+supabase/.branches/
+
+# Capacitor: carpetas generadas dentro de los proyectos nativos
+android/.gradle/
+android/build/
+android/app/build/
+android/local.properties
+ios/App/Pods/
+ios/App/build/
+ios/DerivedData/
+
+# Hosting
+.vercel/
+.wrangler/
+
+# Sistema y editores
+.DS_Store
+Thumbs.db
+*.log
+.idea/
+*.swp

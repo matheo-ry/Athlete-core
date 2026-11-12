@@ -1,0 +1,15 @@
+# Mismos finales de línea en Windows, Mac y Linux (evita cambios fantasma en Git)
+* text=auto eol=lf
+
+# Archivos binarios: no se tocan
+*.png  binary
+*.jpg  binary
+*.jpeg binary
+*.gif  binary
+*.webp binary
+*.ico  binary
+*.pdf  binary
+*.woff  binary
+*.woff2 binary
+*.ttf  binary
+*.mp4  binary

@@ -1,0 +1,16 @@
+# Generados
+dist/
+coverage/
+playwright-report/
+test-results/
+package-lock.json
+
+# Documentación: se escribe a mano y varios archivos son zona protegida
+# (AGENTS.md, docs/). Prettier no debe reescribirlos.
+*.md
+docs/
+
+# Los gestiona su propia herramienta
+supabase/
+android/
+ios/

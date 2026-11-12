@@ -1,0 +1,45 @@
+@import 'tailwindcss';
+
+/*
+ * Variables de tema por defecto (marca de la plataforma, modo oscuro).
+ * `core/branding` las sustituye en tiempo de ejecución por la marca del coach.
+ * Estos valores son los de `brandToCssVars(DEFAULT_BRAND)`: existen aquí para
+ * que la app ya tenga color antes de que arranque JavaScript.
+ */
+:root {
+  --brand-primary: #2563eb;
+  --brand-on-primary: #ffffff;
+  --brand-primary-readable: #4f81ef;
+  --brand-accent: #ff7a1a;
+  --brand-on-accent: #000000;
+  --brand-background: #0f1115;
+  --brand-surface: #181b21;
+  --brand-foreground: #f3f4f6;
+  --brand-muted: #a3a8b3;
+  --brand-border: #2c313a;
+  --brand-danger: #f87171;
+  color-scheme: dark;
+}
+
+/*
+ * Colores de Tailwind enlazados a las variables de tema. Los componentes usan
+ * SOLO estas clases (bg-primary, text-foreground…), nunca un color fijo.
+ */
+@theme inline {
+  --color-primary: var(--brand-primary);
+  --color-on-primary: var(--brand-on-primary);
+  --color-primary-readable: var(--brand-primary-readable);
+  --color-accent: var(--brand-accent);
+  --color-on-accent: var(--brand-on-accent);
+  --color-background: var(--brand-background);
+  --color-surface: var(--brand-surface);
+  --color-foreground: var(--brand-foreground);
+  --color-muted: var(--brand-muted);
+  --color-border: var(--brand-border);
+  --color-danger: var(--brand-danger);
+}
+
+body {
+  background-color: var(--brand-background);
+  color: var(--brand-foreground);
+}

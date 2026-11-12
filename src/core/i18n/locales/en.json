@@ -1,0 +1,63 @@
+{
+  "core": {
+    "language": {
+      "label": "Language",
+      "en": "English",
+      "es": "Español"
+    },
+    "ui": {
+      "loading": "Loading…",
+      "errorTitle": "Something went wrong",
+      "errorDescription": "We couldn't load this. Please try again.",
+      "retry": "Try again"
+    }
+  },
+  "app": {
+    "nav": {
+      "label": "Main menu",
+      "coachHome": "Home",
+      "clientHome": "Today"
+    },
+    "coachHome": {
+      "title": "Coach dashboard",
+      "description": "From here you will follow your clients and their training.",
+      "businessLabel": "Your business",
+      "emptyTitle": "Nothing to show yet",
+      "emptyDescription": "Clients, programs and exercises arrive in the next phases."
+    },
+    "clientHome": {
+      "title": "Today",
+      "description": "Here you will see today's workout from your coach.",
+      "coachLabel": "Your coach",
+      "emptyTitle": "No workout for today",
+      "emptyDescription": "When your coach assigns you a program, it will show up here."
+    },
+    "welcome": {
+      "title": "Welcome",
+      "description": "How do you want to use the app?",
+      "coachOption": "I'm a coach",
+      "clientOption": "I have a code"
+    },
+    "join": {
+      "title": "Join your coach",
+      "description": "Enter the code your coach gave you.",
+      "codeLabel": "Coach code",
+      "codeHint": "Letters and numbers, without spaces.",
+      "submit": "Join",
+      "notAvailable": "Joining with a code is not available yet.",
+      "back": "Back"
+    },
+    "notFound": {
+      "title": "Page not found",
+      "description": "The page you are looking for doesn't exist or was moved.",
+      "action": "Go to home"
+    },
+    "dev": {
+      "label": "Development tools",
+      "profile": "View as",
+      "coach": "Coach",
+      "client": "Client",
+      "brand": "Brand"
+    }
+  }
+}

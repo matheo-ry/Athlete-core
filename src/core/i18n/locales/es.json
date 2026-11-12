@@ -1,0 +1,63 @@
+{
+  "core": {
+    "language": {
+      "label": "Idioma",
+      "en": "English",
+      "es": "Español"
+    },
+    "ui": {
+      "loading": "Cargando…",
+      "errorTitle": "Algo ha salido mal",
+      "errorDescription": "No hemos podido cargar esto. Inténtalo de nuevo.",
+      "retry": "Reintentar"
+    }
+  },
+  "app": {
+    "nav": {
+      "label": "Menú principal",
+      "coachHome": "Inicio",
+      "clientHome": "Hoy"
+    },
+    "coachHome": {
+      "title": "Panel del coach",
+      "description": "Desde aquí seguirás a tus clientes y sus entrenos.",
+      "businessLabel": "Tu negocio",
+      "emptyTitle": "Todavía no hay nada que mostrar",
+      "emptyDescription": "Los clientes, las rutinas y los ejercicios llegan en las próximas fases."
+    },
+    "clientHome": {
+      "title": "Hoy",
+      "description": "Aquí verás el entreno de hoy de tu coach.",
+      "coachLabel": "Tu coach",
+      "emptyTitle": "No hay entreno para hoy",
+      "emptyDescription": "Cuando tu coach te asigne una rutina, aparecerá aquí."
+    },
+    "welcome": {
+      "title": "Te damos la bienvenida",
+      "description": "¿Cómo quieres usar la app?",
+      "coachOption": "Soy coach",
+      "clientOption": "Tengo un código"
+    },
+    "join": {
+      "title": "Únete a tu coach",
+      "description": "Escribe el código que te ha dado tu coach.",
+      "codeLabel": "Código del coach",
+      "codeHint": "Letras y números, sin espacios.",
+      "submit": "Unirme",
+      "notAvailable": "Unirse con un código todavía no está disponible.",
+      "back": "Volver"
+    },
+    "notFound": {
+      "title": "Página no encontrada",
+      "description": "La página que buscas no existe o se ha movido.",
+      "action": "Ir al inicio"
+    },
+    "dev": {
+      "label": "Herramientas de desarrollo",
+      "profile": "Ver como",
+      "coach": "Coach",
+      "client": "Cliente",
+      "brand": "Marca"
+    }
+  }
+}

@@ -1,0 +1,37 @@
+name: CI
+
+# Comprueba cada Pull Request y cada cambio que llega a main.
+# Desde la Fase 1 se añadirán la base de datos local y los tests de RLS;
+# desde la Fase 3, los tests de flujos completos (ARQUITECTURA §13).
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    name: npm run check
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          # La versión de Node se fija en un solo sitio: .nvmrc.
+          node-version-file: .nvmrc
+          cache: npm
+
+      - name: Instalar dependencias
+        run: npm ci
+
+      - name: Formato, lint, tipos, tests y build
+        run: npm run check

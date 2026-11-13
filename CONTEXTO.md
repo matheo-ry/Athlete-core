@@ -21,21 +21,22 @@
 
 ## Dónde estamos
 
-- **Fase actual:** 0 — Esqueleto: **terminada**, pendiente de fusionar su Pull Request (rama `chore/fase-0-esqueleto`).
-- **Última tarea terminada:** Fase 0 completa (2026-11-13).
-- **En curso:** —
-- **Siguiente tarea:** Fase 1, PR 1.1 — Base de datos (prompt en `docs/PROMPTS.md` §5). Antes: fusionar el PR de la Fase 0, proteger `main` e instalar Docker Desktop.
+- **Fase actual:** 1 — Cuentas, negocio del coach y unirse con código.
+- **Última tarea terminada:** PR 1.1 — Base de datos (2026-11-13), rama `db/esquema-base`, abierto encima del PR de la Fase 0 (DECISIONES D-033).
+- **En curso:** revisión y fusión de los PR de la Fase 0, del nombre/CODEOWNERS y del 1.1. Los fusiona el propietario.
+- **Siguiente tarea:** Fase 1, PR 1.2 — Registro y login (prompt en `docs/PROMPTS.md` §5). Antes hay que decidir P-09 (cómo se entra).
 
 ## Qué existe ya
 
 - **La app arranca** (`npm install`, `npm run dev`) con datos de ejemplo: zona de coach (`/coach`), zona de cliente (`/client`), bienvenida (`/welcome`), unirse con código (`/join`, solo la pantalla) y 404. Inglés y español.
 - **`core/` mínimo:** variables de entorno validadas, i18n, componentes base, marca → variables de tema (con corrección de contraste), unidades kg/lb, fechas, logger, `defineModule`, flags y tenancy **con datos de ejemplo**, y el cliente de Supabase (sin usar todavía).
 - **Módulo `_template`** para copiar (`npm run new:module <nombre>`). Solo se registra en desarrollo.
+- **Base de datos local** (Supabase en Docker): tablas base, funciones de negocio, permisos y RLS en `supabase/migrations/`; 53 tests pgTAP (`npm run db:test`); 2 coaches y 5 clientes inventados (`supabase/seed.sql`, contraseña `password123`); tipos generados en `core/supabase/database.types.ts`.
 - **Reglas que se comprueban solas:** ESLint con las fronteras de ARQUITECTURA §6, hooks de Git (formato, mensaje de commit, no subir `main`), CI con `npm run check`, y tests que vigilan las fronteras, los textos en dos idiomas y la forma fija de los módulos.
 
 ## Qué falta (lo próximo)
 
-- **No hay base de datos, ni login, ni datos reales.** Todo eso es la Fase 1.
+- **No hay login ni pantallas con datos reales.** La app todavía usa los datos de ejemplo de la Fase 0; se conecta a la base de datos en el PR 1.2.
 - Al llegar los datos reales desaparecen `core/tenancy/sample-tenancy.ts` y `core/flags/sample-flags.ts`, y las variables de Supabase pasan a ser obligatorias.
 - Sin guardas de ruta por rol todavía: separar `/coach` y `/client` es comodidad, no seguridad.
 
@@ -43,6 +44,7 @@
 
 Los 5 más recientes, el más nuevo arriba. El historial completo está en `docs/ESTADO.md`.
 
+- 2026-11-13 — PR 1.1: base de datos local, primera migración, tests de RLS en el CI, seed y tipos.
 - 2026-11-13 — Fase 0: esqueleto completo de la app (proyecto base, `core/` mínimo, carcasas, `_template`, calidad, tests, CI).
 - 2026-11-12 — Nombre decidido: ATHLETE CORE (DECISIONES D-021).
 - 2026-11-12 — Kit inicial: reglas, arquitectura, guía de Git, esquema base de la base de datos y este archivo.

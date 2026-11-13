@@ -115,13 +115,79 @@ Cómo añadir una: copia el formato, usa el siguiente número y no borres las an
 - **Decisión:** hasta la Fase 5, el plan de un coach lo cambia el propietario a mano en la base de datos. El coach no puede cambiarlo desde la app.
 - **Por qué:** permite dar planes de fundador a los primeros coaches sin construir todavía los pagos.
 
+### D-021 · Nombre de la app: ATHLETE CORE
+- **Fecha:** 2026-11-12
+- **Decisión:** la app se llama **ATHLETE CORE**. En lo técnico (repositorio, carpeta, paquete, web) se escribe `athlete-core`; en redes sociales, `athlete_core`; en el correo, `athlete.core`.
+- **Por qué:** decisión del propietario. Resuelve la parte del nombre de P-01; el dominio sigue pendiente.
+- **Pendiente:** sustituir `[NOMBRE_APP]` en los archivos protegidos (`AGENTS.md`, `docs/ARQUITECTURA.md`, `EMPEZAR-AQUI.md`, `docs/PROMPTS.md`). Lo hace el propietario.
+
+### D-022 · TypeScript 6 en lugar de la 7
+- **Fecha:** 2026-11-13
+- **Decisión:** se usa TypeScript 6.0, aunque la versión estable más reciente es la 7.0.
+- **Por qué:** `typescript-eslint` (8.72) solo admite TypeScript anterior a la 6.1. Sin él no hay lint con tipos ni la regla que prohíbe `any`, y eso pesa más que tener la última versión del compilador.
+- **Revisar si:** `typescript-eslint` publica soporte para TypeScript 7.
+
+### D-023 · Comandos de npm de la Fase 0
+- **Fecha:** 2026-11-13
+- **Decisión:** existen todos los comandos de ARQUITECTURA §13 menos los `db:*`: `dev`, `build`, `lint`, `lint:fix`, `format`, `format:check`, `typecheck`, `test`, `test:watch`, `test:e2e`, `check` y `new:module`. Se añade `prepare`, que Husky necesita para instalar los hooks al ejecutar `npm install`. `check` ejecuta, en este orden: `format:check`, `lint`, `typecheck`, `test` y `build`. `test:e2e` no forma parte de `check` ni del CI hasta la Fase 3.
+- **Por qué:** la tarea pedía "exactamente" ocho comandos y a la vez "los de ARQUITECTURA.md", que lista más. El propietario dejó la elección al agente. Se sigue §13 porque es el documento que manda y porque `docs/GUIA-GIT.md` ya nombra varios de ellos. Los `db:*` necesitan Docker y una base de datos: llegan en el PR 1.1.
+
+### D-024 · Cómo se comprueban las fronteras de ARQUITECTURA §6
+- **Fecha:** 2026-11-13
+- **Decisión:**
+  - Las fronteras entre carpetas las comprueba `eslint-plugin-boundaries` (v7, regla `boundaries/dependencies`).
+  - Los paquetes que solo puede usar una zona (Supabase, Capacitor, React dentro de `model/`) se limitan con `no-restricted-imports`.
+  - El alias `@/` lo resuelve un archivo propio, `scripts/eslint-alias-resolver.cjs`.
+  - `scripts/eslint-boundaries.test.mjs` prueba a las propias reglas con imports prohibidos y permitidos.
+- **Por qué:** el resolver publicado para TypeScript (`eslint-import-resolver-typescript`) no se podía instalar junto a ESLint 10, y un archivo propio de 40 líneas evita una dependencia. El test existe porque una regla "no negociable" que nadie prueba se puede aflojar sin que nadie lo note.
+- **Precisión sobre §6:** "solo `api/` importa el cliente de Supabase" se aplica a todo `src/`. El cliente se importa desde `core/supabase` (donde se define) y desde cualquier carpeta `api/`, también las de `core/` (por ejemplo, `core/auth/api/` en la Fase 1). Además, las carcasas `app/coach` y `app/client` tampoco se importan entre sí.
+- **Revisar si:** aparece un resolver oficial compatible con la versión de ESLint en uso.
+
+### D-025 · Cliente de Supabase desde la Fase 0
+- **Fecha:** 2026-11-13
+- **Decisión:** `core/supabase` ya tiene el cliente, pero no se crea hasta que alguien lo pide y sus dos variables (`VITE_SUPABASE_URL` y `VITE_SUPABASE_PUBLISHABLE_KEY`, la clave pública) son opcionales. Nadie lo usa todavía.
+- **Por qué:** lo pidió el propietario para esta fase; el plan del kit lo dejaba para el PR 1.2. Las variables son opcionales para que `npm run dev` y el CI funcionen sin base de datos.
+- **En la Fase 1:** hacer obligatorias las dos variables y tipar el cliente con los tipos generados (`SupabaseClient<Database>`).
+
+### D-026 · Organización de los textos (i18n)
+- **Fecha:** 2026-11-13
+- **Decisión:** un solo espacio de i18next con claves `modulo.zona.elemento`. Los textos comunes y los de `app/` viven en `core/i18n/locales/` (prefijos `core.` y `app.`). Los de cada módulo viven en su carpeta `i18n/` y quedan bajo la clave del módulo (`programs.…`). Se cargan todos al arrancar. El idioma inicial sale del dispositivo y la elección del usuario se recuerda en el dispositivo.
+- **Por qué:** una sola forma de escribir y de buscar una clave. `app/` no tiene carpeta `i18n` en ARQUITECTURA §5. Cargar todo al arrancar es lo más simple y hoy pesa muy poco.
+- **Revisar si:** los textos llegan a pesar; entonces, cargar los de cada módulo al entrar en él.
+
+### D-027 · `_template` y `npm run new:module`
+- **Fecha:** 2026-11-13
+- **Decisión:** el módulo de ejemplo tiene la clave `template`. Solo se registra en desarrollo, con un import condicional, y no entra en la compilación de producción. `new:module` solo admite nombres de una palabra en minúsculas (`programs`, `workouts`).
+- **Por qué:** con una sola palabra, el mismo nombre sirve de carpeta, de clave del módulo, de feature flag y de prefijo de los textos, sin reglas de conversión.
+
+### D-028 · Tema de la marca
+- **Fecha:** 2026-11-13
+- **Decisión:** el coach elige dos colores (principal y acento) y el modo (claro u oscuro). Los fondos, los textos y los bordes los pone la plataforma según el modo. El texto que va encima de un color de marca es siempre blanco o negro puros, el que más contraste dé. Cuando el color principal se usa como texto (enlaces, elemento activo del menú) se emplea una variante corregida, `--brand-primary-readable`.
+- **Por qué:** así ninguna combinación que elija un coach deja la app ilegible. Con blanco y negro puros, el mejor de los dos siempre supera el contraste mínimo de accesibilidad (4,5); con un "casi negro" no se cumplía para colores de luminosidad media.
+
+### D-029 · Tests que vigilan las reglas
+- **Fecha:** 2026-11-13
+- **Decisión:** además de los tests de lógica, hay tests que comprueban reglas del proyecto y que no hay que tocar al añadir código: (1) las fronteras de arquitectura (D-024); (2) que inglés y español tengan las mismas claves y los mismos huecos, en los textos comunes y en los de cada módulo; (3) que cada módulo cumpla la forma fija de ARQUITECTURA §5. Vitest se organiza en dos grupos: `app` (navegador simulado) y `tooling` (Node, para los tests de las herramientas del repositorio).
+- **Por qué:** ARQUITECTURA §2 pide "reglas que se comprueban solas". Un texto sin traducir o una carpeta fuera de sitio se detectan en el ordenador de quien lo escribe, no en la revisión.
+
+### D-030 · Datos de ejemplo de la Fase 0
+- **Fecha:** 2026-11-13
+- **Decisión:** mientras no haya base de datos, `core/tenancy` y `core/flags` usan datos inventados (`sample-tenancy.ts` y `sample-flags.ts`): dos coaches de ejemplo y el caso "sin coach". El rol inicial se deduce de la dirección (`/client/...` entra como cliente). El selector para cambiar de perfil y de marca solo existe en desarrollo.
+- **Por qué:** permite ver y probar las carcasas, la marca y el flujo de entrada de ARQUITECTURA §7 antes de tener cuentas reales.
+- **Caduca:** en la Fase 1. Quien usa `useTenancy()` y `useFeature()` no tendrá que cambiar.
+
+### D-031 · Prettier no da formato a la documentación
+- **Fecha:** 2026-11-13
+- **Decisión:** `.prettierignore` excluye los archivos Markdown y la carpeta `docs/`.
+- **Por qué:** `npm run format` reescribiría `AGENTS.md` y otros archivos protegidos, que solo cambian con aprobación del propietario.
+
 ---
 
 ## Pendientes de decidir
 
 | Nº | Qué | Cuándo hay que decidirlo |
 |---|---|---|
-| P-01 | Nombre de la app y dominio | Antes de la Fase 1 (sustituir `[NOMBRE_APP]`) |
+| P-01 | Dominio de la web. El nombre ya está decidido: ATHLETE CORE (D-021) | Antes de enseñar la app a coaches |
 | P-02 | Nicho definitivo tras hablar con coaches | Antes de la Fase 2 |
 | P-03 | Hosting de la web: Vercel o Cloudflare Pages. Comprobar en ambos el coste con dos personas subiendo código y las condiciones de uso comercial | Antes de enseñar la app a coaches |
 | P-04 | Biblioteca global de ejercicios: cómo conviven los ejercicios de la plataforma con los propios de cada coach | Fase 2 |
@@ -136,4 +202,66 @@ Cómo añadir una: copia el formato, usa el siguiente número y no borres las an
 
 ## Versiones instaladas
 
-(Se rellena al terminar la Fase 0: Node, React, Vite, TypeScript, Tailwind, React Router, TanStack Query, Supabase, Capacitor…)
+Anotadas al terminar la Fase 0 (2026-11-13). Son las estables más recientes de ese día, salvo TypeScript (D-022). Las versiones exactas de todo lo instalado están en `package-lock.json`.
+
+**Entorno**
+
+| Herramienta | Versión | Notas |
+|---|---|---|
+| Node.js | 24 | Fijada en `.nvmrc` y en `engines` de `package.json`. El CI usa la misma |
+| npm | 11 | Viene con Node |
+
+**La app**
+
+| Paquete | Versión | Para qué sirve |
+|---|---|---|
+| `react`, `react-dom` | 19.3 | La interfaz |
+| `react-router` | 8.5 | Rutas |
+| `@tanstack/react-query` | 5.107 | Pedir y guardar en caché los datos del servidor |
+| `zod` | 4.6 | Validar todo dato que entra |
+| `i18next` | 27.1 | Textos en varios idiomas |
+| `react-i18next` | 18.0 | Usar i18next desde React |
+| `i18next-browser-languagedetector` | 8.3 | Elegir el idioma inicial según el dispositivo |
+| `lucide-react` | 1.72 | Iconos |
+| `@supabase/supabase-js` | 2.119 | Cliente de Supabase (D-025) |
+| `@capacitor/core` | 8.6 | Base para empaquetar la app en móvil |
+
+**Compilación y estilos**
+
+| Paquete | Versión | Para qué sirve |
+|---|---|---|
+| `typescript` | 6.0 | Lenguaje (D-022) |
+| `vite` | 8.3 | Servidor de desarrollo y compilación |
+| `@vitejs/plugin-react` | 6.3 | React dentro de Vite |
+| `tailwindcss`, `@tailwindcss/vite` | 4.3 | Estilos |
+| `@capacitor/cli` | 8.6 | Herramienta de Capacitor (plataformas, en la Fase 4) |
+| `supabase` | 3.1 | Herramienta de Supabase (base de datos local, en la Fase 1) |
+| `@types/react`, `@types/react-dom`, `@types/node` | 19.3 / 19.3 / 24 | Tipos de TypeScript |
+
+**Tests**
+
+| Paquete | Versión | Para qué sirve |
+|---|---|---|
+| `vitest` | 5.1 | Tests unitarios |
+| `jsdom` | 29.1 | Navegador simulado para los tests |
+| `@testing-library/react`, `/dom`, `/jest-dom`, `/user-event` | 16.3 / 10.4 / 7.0 / 14.6 | Probar componentes como los usa una persona |
+| `@playwright/test` | 1.65 | Tests de flujos completos en un navegador de verdad |
+
+**Calidad**
+
+| Paquete | Versión | Para qué sirve |
+|---|---|---|
+| `eslint`, `@eslint/js`, `globals` | 10.14 / 10.0 / 17.14 | Lint |
+| `typescript-eslint` | 8.72 | Reglas de lint para TypeScript |
+| `eslint-plugin-react-hooks` | 7.1 | Reglas de los hooks de React |
+| `eslint-plugin-boundaries` | 7.4 | Fronteras de arquitectura (D-024) |
+| `eslint-config-prettier` | 10.1 | Evita que ESLint y Prettier se pisen |
+| `prettier` | 3.10 | Formato del código |
+| `husky` | 9.1 | Ejecuta comprobaciones al hacer commit y al subir |
+| `lint-staged` | 17.6 | Pasa lint y formato solo a los archivos del commit |
+| `@commitlint/cli`, `@commitlint/config-conventional` | 21.2 | Comprueba el formato del mensaje de commit |
+
+**Otros valores fijados en la Fase 0**
+
+- CI: `actions/checkout@v7` y `actions/setup-node@v7`.
+- Identificador de la app móvil en `capacitor.config.ts`: `app.athletecore.mobile`. Es **provisional**: hay que fijar el definitivo antes de publicar en las tiendas (Fase 4), porque después no se puede cambiar.

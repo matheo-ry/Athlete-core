@@ -6,7 +6,7 @@
 
 ## 1. Qué es esto
 
-`[NOMBRE_APP]` es una app para **coaches de gimnasio (foco en fuerza)** y sus clientes.
+**ATHLETE CORE** es una app para **coaches de gimnasio (foco en fuerza)** y sus clientes.
 
 - Una sola app: web, iOS y Android con el mismo código.
 - El **coach** crea rutinas y sigue a sus clientes. El **cliente** entra con el código de su coach, ve la marca de su coach y registra sus entrenos.

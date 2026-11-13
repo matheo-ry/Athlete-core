@@ -1,0 +1,20 @@
+{
+  "nav": {
+    "coach": "Template",
+    "client": "Template"
+  },
+  "coach": {
+    "title": "Template (coach)",
+    "description": "Example screen with made-up data. Copy this module to start a new feature."
+  },
+  "client": {
+    "title": "Template (client)",
+    "description": "Example screen with made-up data."
+  },
+  "items": {
+    "setsReps": "{{sets}} sets × {{reps}} reps",
+    "totalVolume": "Total volume: {{volume}}",
+    "emptyTitle": "Nothing here yet",
+    "emptyDescription": "When there is data, it will show up here."
+  }
+}

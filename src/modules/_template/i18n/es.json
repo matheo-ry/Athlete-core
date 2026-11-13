@@ -1,0 +1,20 @@
+{
+  "nav": {
+    "coach": "Template",
+    "client": "Template"
+  },
+  "coach": {
+    "title": "Template (coach)",
+    "description": "Pantalla de ejemplo con datos inventados. Copia este módulo para empezar una función nueva."
+  },
+  "client": {
+    "title": "Template (cliente)",
+    "description": "Pantalla de ejemplo con datos inventados."
+  },
+  "items": {
+    "setsReps": "{{sets}} series × {{reps}} repeticiones",
+    "totalVolume": "Volumen total: {{volume}}",
+    "emptyTitle": "Todavía no hay nada",
+    "emptyDescription": "Cuando haya datos, aparecerán aquí."
+  }
+}

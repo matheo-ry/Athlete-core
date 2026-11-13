@@ -1,0 +1,5 @@
+-- Datos inventados para desarrollo en local (ARQUITECTURA §4).
+-- Se cargan al recrear la base de datos local con las migraciones.
+--
+-- Vacío en la Fase 0: todavía no hay tablas. En la Fase 1 (PR 1.1) aquí irán
+-- 2 coaches y 5 clientes de ejemplo. Nunca datos reales.

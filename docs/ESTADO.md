@@ -1,33 +1,40 @@
 # ESTADO DEL PROYECTO
 
-**Última actualización:** 2026-11-12
-**Fase actual:** 0 — Esqueleto
+**Última actualización:** 2026-11-13
+**Fase actual:** 0 — Esqueleto (terminada el 2026-11-13; su Pull Request está pendiente de fusionar)
 
 Este archivo lo actualiza quien termina una tarea, en el mismo Pull Request, junto con `CONTEXTO.md` (que resume este en una página).
 
 ## En curso
 
-- (nada todavía)
+- Revisión y fusión del Pull Request de la Fase 0 (rama `chore/fase-0-esqueleto`). Lo fusiona el propietario.
 
 ## Siguiente
 
-- Fase 0 completa. El prompt está en `EMPEZAR-AQUI.md`.
+1. Fusionar el PR de la Fase 0 y, después, proteger `main` (`docs/GUIA-GIT.md` §12).
+2. Instalar Docker Desktop (lo necesita la base de datos local).
+3. Fase 1, PR 1.1 — Base de datos. El prompt está en `docs/PROMPTS.md` §5. En un chat nuevo.
 
 ## Fases
 
-### Fase 0 — Esqueleto (sin funciones de producto)
+### Fase 0 — Esqueleto (sin funciones de producto) — ✅ terminada el 2026-11-13
 
-- [ ] Proyecto base (Vite + React + TypeScript estricto)
-- [ ] Estructura de carpetas de ARQUITECTURA §4 y §5
-- [ ] ESLint con fronteras, Prettier, Husky, lint-staged, commitlint
-- [ ] Comandos de npm de ARQUITECTURA §13
-- [ ] `core/` mínimo: config, i18n, ui, branding, lib, modules, flags y tenancy (con datos de ejemplo)
-- [ ] Carcasas de coach y de cliente, con selector de perfil solo en desarrollo
-- [ ] Módulo `_template` y `npm run new:module`
-- [ ] Tests configurados (Vitest y Playwright) con ejemplos reales
-- [ ] `supabase init` (sin tablas) y Capacitor configurado (sin plataformas)
-- [ ] CI en GitHub Actions
-- [ ] Versiones anotadas en DECISIONES.md
+- [x] Proyecto base (Vite + React + TypeScript estricto)
+- [x] Estructura de carpetas de ARQUITECTURA §4 y §5
+- [x] ESLint con fronteras, Prettier, Husky, lint-staged, commitlint
+- [x] Comandos de npm de ARQUITECTURA §13
+- [x] `core/` mínimo: config, i18n, ui, branding, lib, modules, flags y tenancy (con datos de ejemplo)
+- [x] Carcasas de coach y de cliente, con selector de perfil solo en desarrollo
+- [x] Módulo `_template` y `npm run new:module`
+- [x] Tests configurados (Vitest y Playwright) con ejemplos reales
+- [x] `supabase init` (sin tablas) y Capacitor configurado (sin plataformas)
+- [x] CI en GitHub Actions
+- [x] Versiones anotadas en DECISIONES.md
+
+Además de lo previsto, a petición del propietario:
+
+- [x] Cliente de Supabase en `core/supabase`, sin usar todavía (DECISIONES D-025)
+- [x] Tests que vigilan las reglas: fronteras de arquitectura, textos en dos idiomas y forma fija de los módulos (DECISIONES D-024 y D-029)
 
 ### Fase 1 — Cuentas, negocio del coach y unirse con código
 
@@ -73,7 +80,10 @@ Este archivo lo actualiza quien termina una tarea, en el mismo Pull Request, jun
 
 ## Bloqueos y dudas abiertas
 
-- Falta decidir el nombre de la app (DECISIONES, P-01).
+- El nombre ya está decidido: ATHLETE CORE (DECISIONES D-021). Falta sustituir `[NOMBRE_APP]` en los archivos protegidos (`AGENTS.md`, `docs/ARQUITECTURA.md`, `EMPEZAR-AQUI.md`, `docs/PROMPTS.md`): lo hace el propietario.
+- Falta el dominio de la web (DECISIONES, P-01).
+- Antes del PR 1.2 hay que decidir cómo se entra y si se confirma el email (DECISIONES, P-09).
+- `.github/CODEOWNERS.txt` no tiene efecto con ese nombre: GitHub solo lee el archivo si se llama `CODEOWNERS`, sin extensión. Hay que renombrarlo y comprobar el usuario antes de proteger `main`.
 
 ## Ideas y deuda
 
@@ -82,10 +92,19 @@ Cosas que alguien ha visto y que no tocaban en su tarea. No se hacen sin convert
 - Limitar los intentos fallidos al escribir un código de invitación (por usuario).
 - Que el coach pueda apagar desde sus ajustes las funciones que no use (ARQUITECTURA §9).
 - Alta de un segundo coach (`staff`) en el mismo negocio.
+- Pasar a TypeScript 7 cuando el lint de TypeScript lo admita (DECISIONES D-022).
+- Detectar con lint los textos escritos directamente en un componente (AGENTS.md, regla 7). Hoy se revisa a mano. Haría falta una librería nueva.
+- Añadir reglas de accesibilidad al lint (etiquetas, botones de verdad). Haría falta una librería nueva.
+- Test de fronteras: añadir el caso permitido de la tabla de dependencias entre módulos cuando existan dos módulos reales (`programs` → `exercises`).
+- Zod ocupa buena parte del peso de la app. Si el tamaño llega a importar, valorar su variante ligera.
+- Recordar la última elección del selector de desarrollo al recargar la página (hoy vuelve al primer coach de ejemplo).
 
 ## Registro de cambios
 
 Lo más nuevo, arriba.
+
+- 2026-11-13 — Fase 0 terminada: proyecto base, estructura de carpetas, calidad (ESLint con fronteras, Prettier, hooks de Git), `core/` mínimo con datos de ejemplo, carcasas de coach y de cliente, módulo `_template`, tests (Vitest y Playwright), `supabase init`, Capacitor y CI. Versiones y decisiones en `docs/DECISIONES.md` (D-021 a D-031).
+- 2026-11-12 — Nombre de la app decidido: ATHLETE CORE (DECISIONES D-021).
 
 - 2026-11-12 — Añadido `CONTEXTO.md` (resumen para cada chat nuevo) y la forma de trabajar con chats (`EMPEZAR-AQUI.md` Parte 3, `docs/PROMPTS.md` §0).
 - 2026-11-12 — Kit inicial: reglas, arquitectura, guía de Git y esquema base de referencia.

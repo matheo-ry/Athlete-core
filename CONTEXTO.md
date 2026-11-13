@@ -5,7 +5,7 @@
 
 ## La app
 
-- **[NOMBRE_APP]**: app para **coaches de gimnasio (foco en fuerza)** y sus clientes.
+- **ATHLETE CORE**: app para **coaches de gimnasio (foco en fuerza)** y sus clientes.
 - **Una sola app** para web, iOS y Android, con dos perfiles:
   - **Coach**: crea rutinas, asigna, sigue el progreso de sus clientes y personaliza su marca.
   - **Cliente**: entra con el código de su coach, ve la marca de su coach y registra sus entrenos.
@@ -21,21 +21,39 @@
 
 ## Dónde estamos
 
-- **Fase actual:** 0 — Esqueleto (sin empezar)
-- **Última tarea terminada:** —
+- **Fase actual:** 0 — Esqueleto: **terminada**, pendiente de fusionar su Pull Request (rama `chore/fase-0-esqueleto`).
+- **Última tarea terminada:** Fase 0 completa (2026-11-13).
 - **En curso:** —
-- **Siguiente tarea:** Fase 0, con el prompt de `EMPEZAR-AQUI.md`.
+- **Siguiente tarea:** Fase 1, PR 1.1 — Base de datos (prompt en `docs/PROMPTS.md` §5). Antes: fusionar el PR de la Fase 0, proteger `main` e instalar Docker Desktop.
+
+## Qué existe ya
+
+- **La app arranca** (`npm install`, `npm run dev`) con datos de ejemplo: zona de coach (`/coach`), zona de cliente (`/client`), bienvenida (`/welcome`), unirse con código (`/join`, solo la pantalla) y 404. Inglés y español.
+- **`core/` mínimo:** variables de entorno validadas, i18n, componentes base, marca → variables de tema (con corrección de contraste), unidades kg/lb, fechas, logger, `defineModule`, flags y tenancy **con datos de ejemplo**, y el cliente de Supabase (sin usar todavía).
+- **Módulo `_template`** para copiar (`npm run new:module <nombre>`). Solo se registra en desarrollo.
+- **Reglas que se comprueban solas:** ESLint con las fronteras de ARQUITECTURA §6, hooks de Git (formato, mensaje de commit, no subir `main`), CI con `npm run check`, y tests que vigilan las fronteras, los textos en dos idiomas y la forma fija de los módulos.
+
+## Qué falta (lo próximo)
+
+- **No hay base de datos, ni login, ni datos reales.** Todo eso es la Fase 1.
+- Al llegar los datos reales desaparecen `core/tenancy/sample-tenancy.ts` y `core/flags/sample-flags.ts`, y las variables de Supabase pasan a ser obligatorias.
+- Sin guardas de ruta por rol todavía: separar `/coach` y `/client` es comodidad, no seguridad.
 
 ## Últimos cambios
 
 Los 5 más recientes, el más nuevo arriba. El historial completo está en `docs/ESTADO.md`.
 
+- 2026-11-13 — Fase 0: esqueleto completo de la app (proyecto base, `core/` mínimo, carcasas, `_template`, calidad, tests, CI).
+- 2026-11-12 — Nombre decidido: ATHLETE CORE (DECISIONES D-021).
 - 2026-11-12 — Kit inicial: reglas, arquitectura, guía de Git, esquema base de la base de datos y este archivo.
 
 ## A tener en cuenta ahora
 
-- Falta decidir el nombre de la app (`[NOMBRE_APP]`).
-- Todavía no hay código: el repositorio solo tiene documentación.
+- El proyecto vive en `C:\dev\athlete-core`, **fuera de OneDrive** (sincronizar `node_modules` da errores).
+- Se usa **TypeScript 6**, no 7: el lint de TypeScript aún no admite la 7 (DECISIONES D-022).
+- `[NOMBRE_APP]` sigue escrito en archivos protegidos (`AGENTS.md`, `docs/ARQUITECTURA.md`, `EMPEZAR-AQUI.md`, `docs/PROMPTS.md`): lo sustituye el propietario.
+- Antes del PR 1.2 hay que decidir cómo se entra y si se confirma el email (DECISIONES P-09).
+- El identificador de la app móvil (`app.athletecore.mobile`) es provisional: hay que fijarlo antes de publicar en las tiendas.
 
 ## Para saber más
 

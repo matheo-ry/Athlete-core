@@ -1,4 +1,3 @@
-import { useMemo } from 'react';
 import { RouterProvider, createBrowserRouter } from 'react-router';
 import type { RouteObject } from 'react-router';
 
@@ -17,7 +16,10 @@ import { PublicLayout } from './public/PublicLayout';
 import { WelcomePage } from './public/WelcomePage';
 import { RootLayout } from './RootLayout';
 import { RootRedirect } from './RootRedirect';
+import { RouteErrorPage } from './RouteErrorPage';
 import { useActiveModules } from './useActiveModules';
+
+type AppRouterInstance = ReturnType<typeof createBrowserRouter>;
 
 function moduleRoutes(modules: readonly ModuleManifest[], profile: Profile): RouteObject[] {
   return collectRoutes(modules, profile).map(({ path, lazy }) => ({ path, lazy }));
@@ -32,6 +34,8 @@ export function buildRoutes(modules: readonly ModuleManifest[]): RouteObject[] {
   return [
     {
       element: <RootLayout />,
+      // Si una pantalla falla al cargar o al pintarse, se ve esto y no un error en crudo.
+      errorElement: <RouteErrorPage />,
       hydrateFallbackElement: <Spinner />,
       children: [
         { index: true, element: <RootRedirect /> },
@@ -64,9 +68,21 @@ export function buildRoutes(modules: readonly ModuleManifest[]): RouteObject[] {
   ];
 }
 
+// Un router por cada lista de módulos activos. Crear un router lo deja escuchando
+// al navegador, así que no debe crearse dos veces para la misma lista (React
+// repite los cálculos en desarrollo). Con esta caché se crea una sola vez.
+const routers = new WeakMap<readonly ModuleManifest[], AppRouterInstance>();
+
+function getRouter(modules: readonly ModuleManifest[]): AppRouterInstance {
+  let router = routers.get(modules);
+  if (router === undefined) {
+    router = createBrowserRouter(buildRoutes(modules));
+    routers.set(modules, router);
+  }
+  return router;
+}
+
 export function AppRouter() {
   const modules = useActiveModules();
-  const router = useMemo(() => createBrowserRouter(buildRoutes(modules)), [modules]);
-
-  return <RouterProvider router={router} />;
+  return <RouterProvider router={getRouter(modules)} />;
 }

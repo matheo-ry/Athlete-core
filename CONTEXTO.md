@@ -22,9 +22,9 @@
 ## Dónde estamos
 
 - **Fase actual:** 1 — Cuentas, negocio del coach y unirse con código.
-- **Última tarea terminada:** PR 1.1 — Base de datos (2026-11-13), rama `db/esquema-base`, abierto encima del PR de la Fase 0 (DECISIONES D-033).
-- **En curso:** revisión y fusión de los PR de la Fase 0, del nombre/CODEOWNERS y del 1.1. Los fusiona el propietario.
-- **Siguiente tarea:** Fase 1, PR 1.2 — Registro y login (prompt en `docs/PROMPTS.md` §5). Antes hay que decidir P-09 (cómo se entra).
+- **Última tarea terminada:** PR 1.1 — Base de datos (2026-11-13), rama `db/esquema-base`.
+- **En curso:** —
+- **Siguiente tarea:** Fase 1, PR 1.2 — Registro y login (prompt en `docs/PROMPTS.md` §5). Se entra con contraseña o con enlace por email (DECISIONES D-035).
 
 ## Qué existe ya
 
@@ -53,8 +53,8 @@ Los 5 más recientes, el más nuevo arriba. El historial completo está en `docs
 
 - El proyecto vive en `C:\dev\athlete-core`, **fuera de OneDrive** (sincronizar `node_modules` da errores).
 - Se usa **TypeScript 6**, no 7: el lint de TypeScript aún no admite la 7 (DECISIONES D-022).
-- El PR 2 pone el nombre en `AGENTS.md` y `docs/ARQUITECTURA.md` y activa `CODEOWNERS`. `main` no está protegida en GitHub: hace falta GitHub Pro (GUIA-GIT §12).
-- Antes del PR 1.2 hay que decidir cómo se entra y si se confirma el email (DECISIONES P-09).
+- `main` no está protegida en GitHub: hace falta GitHub Pro (GUIA-GIT §12).
+- Antes del PR 1.2 hay que confirmar dos puntos de D-035 (verificar el email y lista pública de coaches).
 - El identificador de la app móvil (`app.athletecore.mobile`) es provisional: hay que fijarlo antes de publicar en las tiendas.
 
 ## Para saber más

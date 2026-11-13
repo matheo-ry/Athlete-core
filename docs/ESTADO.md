@@ -1,20 +1,17 @@
 # ESTADO DEL PROYECTO
 
 **Última actualización:** 2026-11-13
-**Fase actual:** 1 — Cuentas, negocio del coach y unirse con código (la Fase 0 terminó el 2026-11-13; su Pull Request está pendiente de fusionar)
+**Fase actual:** 1 — Cuentas, negocio del coach y unirse con código (la Fase 0 terminó y se fusionó el 2026-11-13)
 
 Este archivo lo actualiza quien termina una tarea, en el mismo Pull Request, junto con `CONTEXTO.md` (que resume este en una página).
 
 ## En curso
 
-- Revisión y fusión del Pull Request de la Fase 0 (rama `chore/fase-0-esqueleto`) y del PR 2 (nombre y CODEOWNERS). Los fusiona el propietario.
-- PR 1.1 — Base de datos (rama `db/esquema-base`): hecho y abierto encima del PR de la Fase 0 (DECISIONES D-033). Pendiente de revisión.
+- PR 1.1 — Base de datos (rama `db/esquema-base`, PR 3).
 
 ## Siguiente
 
-1. Fusionar, en este orden, el PR de la Fase 0, el PR 2 y el PR 1.1.
-2. Decidir cómo se entra y si se confirma el email (DECISIONES, P-09). Bloquea el PR 1.2.
-3. Fase 1, PR 1.2 — Registro y login. El prompt está en `docs/PROMPTS.md` §5.
+1. Fase 1, PR 1.2 — Registro y login. El prompt está en `docs/PROMPTS.md` §5.
 
 ## Fases
 
@@ -41,7 +38,7 @@ Además de lo previsto, a petición del propietario:
 
 - [x] Supabase local y primera migración a partir de `docs/referencia/esquema-base.sql` (PR 1.1, pendiente de fusionar)
 - [x] Tests de aislamiento (RLS) y comprobación en el CI (PR 1.1: 53 tests pgTAP; las tablas y funciones nuevas nacen sin permisos, D-032)
-- [ ] Decidir cómo se entra y si se confirma el email (DECISIONES, P-09)
+- [x] Decidir cómo se entra: contraseña y enlace por email (DECISIONES D-035). Falta confirmar si se exige verificar el email
 - [ ] Registro, login y recuperar contraseña
 - [ ] Pantalla de bienvenida: "Soy coach" / "Tengo un código"
 - [ ] Crear negocio, ver y regenerar el código de invitación
@@ -81,10 +78,9 @@ Además de lo previsto, a petición del propietario:
 
 ## Bloqueos y dudas abiertas
 
-- El nombre ya está decidido: ATHLETE CORE (DECISIONES D-021). La sustitución de `[NOMBRE_APP]` en `AGENTS.md` y `docs/ARQUITECTURA.md` está en el PR 2, pendiente de fusionar.
 - Falta el dominio de la web (DECISIONES, P-01).
-- Antes del PR 1.2 hay que decidir cómo se entra y si se confirma el email (DECISIONES, P-09).
-- El PR 2 renombra `.github/CODEOWNERS.txt` a `CODEOWNERS` y corrige el usuario. Proteger `main` (GUIA-GIT §12) no es posible todavía: en un repositorio privado GitHub lo exige de pago (GitHub Pro, gratis con el Student Developer Pack). Mientras tanto protege el hook local que bloquea subir a `main`. Ya está activo: solo "Squash merge" y borrar la rama al fusionar.
+- Antes del PR 1.2 hay que confirmar dos puntos de D-035: si se exige verificar el email y si "elegir entrenador" incluye una lista pública de coaches.
+- Proteger `main` (GUIA-GIT §12) no es posible todavía: en un repositorio privado GitHub lo exige de pago (GitHub Pro, gratis con el Student Developer Pack). Mientras tanto protege el hook local que bloquea subir a `main`. Ya está activo: solo "Squash merge" y borrar la rama al fusionar.
 
 ## Ideas y deuda
 

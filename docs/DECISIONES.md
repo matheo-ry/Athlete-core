@@ -181,6 +181,29 @@ Cómo añadir una: copia el formato, usa el siguiente número y no borres las an
 - **Decisión:** `.prettierignore` excluye los archivos Markdown y la carpeta `docs/`.
 - **Por qué:** `npm run format` reescribiría `AGENTS.md` y otros archivos protegidos, que solo cambian con aprobación del propietario.
 
+### D-032 · Las tablas y funciones nuevas nacen sin permisos
+- **Fecha:** 2026-11-13
+- **Decisión:** la primera migración activa el bloque OPCIONAL de `esquema-base.sql`: `alter default privileges` quita a `anon` y `authenticated` los permisos sobre tablas, secuencias y funciones nuevas de `public`, y quita a `public` el permiso de ejecutar funciones nuevas en cualquier esquema. Lo demuestra `supabase/tests/02_default_privileges.test.sql`.
+- **Por qué:** Supabase, por defecto, abre cada tabla nueva a `anon` y `authenticated`. Con este cambio, olvidarse de un `grant` deja la tabla cerrada (falla en desarrollo y se ve) en lugar de abierta (no falla y no se ve). El RLS sigue siendo la protección principal; esto es una segunda capa.
+- **Consecuencias:** cada migración que cree una tabla o función tiene que conceder sus permisos (la plantilla ya lo hace). Una extensión que se active en una migración futura nace también sin permiso de ejecución: si la app necesita sus funciones, la migración las concede. Por eso los tests pgTAP conceden permisos a pgTAP dentro de su transacción.
+
+### D-033 · El PR 1.1 se abre encima del PR de la Fase 0
+- **Fecha:** 2026-11-13
+- **Decisión:** la rama `db/esquema-base` sale de `chore/fase-0-esqueleto` y su PR apunta a esa rama mientras el PR 1 no esté fusionado. Al fusionarlo, GitHub cambia el destino a `main` y se integra `main` en la rama con un merge (sin `push --force`).
+- **Por qué:** la base de datos necesita el esqueleto (scripts, `core/supabase`, CI) y el propietario pidió avanzar sin esperar. Es una excepción puntual a "crear la rama desde `main`" (AGENTS.md §8).
+
+### D-034 · Los tipos generados de la base de datos no pasan por ESLint
+- **Fecha:** 2026-11-13
+- **Decisión:** `eslint.config.js` ignora solo `src/core/supabase/database.types.ts`. Prettier le da formato y TypeScript lo comprueba como al resto.
+- **Por qué:** lo escribe Supabase y no se edita a mano (AGENTS.md §4), así que no se pueden arreglar los avisos que da el lint sobre él (dos tipos con `never` redundante). No es saltarse la regla 11: no se desactiva ninguna regla para código escrito por nosotros.
+- **Control:** el CI ejecuta `npm run db:types -- --check`, que falla si alguien edita el archivo a mano o si no se regeneró tras cambiar una migración.
+
+### D-035 · Cómo se entra: contraseña y enlace por email
+- **Fecha:** 2026-11-13
+- **Decisión:** se puede entrar de dos formas: con email y contraseña, o con un enlace que llega por email. Sin cuentas de Google ni de Apple por ahora. Además, el cliente tiene que poder elegir quién es su entrenador: se resuelve con el código o enlace del coach al unirse y con el selector de tenant ya previsto en la Fase 1 para quien pertenezca a más de un coach.
+- **Por qué:** decisión del propietario. Resuelve P-09 salvo un punto.
+- **Pendiente de confirmar con el propietario:** si se exige confirmar el email al registrarse con contraseña (recomendado: sí), y si "elegir entrenador" incluye además una lista pública de coaches donde buscar (hoy no está prevista: solo se entra con código).
+
 ---
 
 ## Pendientes de decidir
@@ -195,7 +218,7 @@ Cómo añadir una: copia el formato, usa el siguiente número y no borres las an
 | P-06 | Modo sin conexión para registrar entrenos | Tras los primeros pilotos |
 | P-07 | Notificaciones push | Fase 4 |
 | P-08 | Servicio para compilar iOS en la nube | Fase 4 |
-| P-09 | Cómo se entra: email y contraseña, enlace por email o cuenta de Google/Apple; y si se exige confirmar el email al registrarse. Antes de ofrecer el acceso con Google, comprobar qué exige Apple a las apps que usan accesos de terceros | Antes del segundo PR de la Fase 1 |
+| P-09 | Resuelto en parte por D-035. Queda: si se exige confirmar el email al registrarse con contraseña, y si habrá una lista pública de coaches | Antes del segundo PR de la Fase 1 |
 | P-10 | Servicio de avisos de errores y de caídas | Fase 4 |
 
 ---

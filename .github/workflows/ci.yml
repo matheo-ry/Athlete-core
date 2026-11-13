@@ -1,8 +1,10 @@
 name: CI
 
-# Comprueba cada Pull Request y cada cambio que llega a main.
-# Desde la Fase 1 se añadirán la base de datos local y los tests de RLS;
-# desde la Fase 3, los tests de flujos completos (ARQUITECTURA §13).
+# Comprueba cada Pull Request y cada cambio que llega a main (ARQUITECTURA §13).
+#   * check:    formato, lint, tipos, tests y build (desde la Fase 0).
+#   * database: base de datos local, migraciones, tests de RLS, comprobación
+#               de tablas sin RLS y tipos al día (desde la Fase 1).
+# Desde la Fase 3 se añadirán los tests de flujos completos.
 
 on:
   pull_request:
@@ -35,3 +37,31 @@ jobs:
 
       - name: Formato, lint, tipos, tests y build
         run: npm run check
+
+  database:
+    name: Base de datos
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - name: Instalar dependencias
+        run: npm ci
+
+      # Solo Postgres: es lo que necesitan las migraciones y los tests.
+      # Al arrancar aplica supabase/migrations/ y supabase/seed.sql; si alguna
+      # falla, este paso falla.
+      - name: Arrancar la base de datos y aplicar migraciones
+        run: npx supabase db start
+
+      # Incluye 04_rls_enabled: falla si alguna tabla pública no tiene RLS.
+      - name: Tests de RLS y aislamiento
+        run: npm run db:test
+
+      - name: Tipos de la base de datos al día
+        run: npm run db:types -- --check

@@ -1,19 +1,17 @@
 # ESTADO DEL PROYECTO
 
 **Última actualización:** 2026-11-13
-**Fase actual:** 0 — Esqueleto (terminada el 2026-11-13; su Pull Request está pendiente de fusionar)
+**Fase actual:** 1 — Cuentas, negocio del coach y unirse con código (la Fase 0 terminó y se fusionó el 2026-11-13)
 
 Este archivo lo actualiza quien termina una tarea, en el mismo Pull Request, junto con `CONTEXTO.md` (que resume este en una página).
 
 ## En curso
 
-- Revisión y fusión del Pull Request de la Fase 0 (rama `chore/fase-0-esqueleto`). Lo fusiona el propietario.
+- PR 1.1 — Base de datos (rama `db/esquema-base`, PR 3).
 
 ## Siguiente
 
-1. Fusionar el PR de la Fase 0 y, después, proteger `main` (`docs/GUIA-GIT.md` §12).
-2. Instalar Docker Desktop (lo necesita la base de datos local).
-3. Fase 1, PR 1.1 — Base de datos. El prompt está en `docs/PROMPTS.md` §5. En un chat nuevo.
+1. Fase 1, PR 1.2 — Registro y login. El prompt está en `docs/PROMPTS.md` §5.
 
 ## Fases
 
@@ -38,9 +36,9 @@ Además de lo previsto, a petición del propietario:
 
 ### Fase 1 — Cuentas, negocio del coach y unirse con código
 
-- [ ] Supabase local y primera migración a partir de `docs/referencia/esquema-base.sql`
-- [ ] Tests de aislamiento (RLS) y comprobación en el CI
-- [ ] Decidir cómo se entra y si se confirma el email (DECISIONES, P-09)
+- [x] Supabase local y primera migración a partir de `docs/referencia/esquema-base.sql` (PR 1.1, pendiente de fusionar)
+- [x] Tests de aislamiento (RLS) y comprobación en el CI (PR 1.1: 53 tests pgTAP; las tablas y funciones nuevas nacen sin permisos, D-032)
+- [x] Decidir cómo se entra: contraseña y enlace por email (DECISIONES D-035). Falta confirmar si se exige verificar el email
 - [ ] Registro, login y recuperar contraseña
 - [ ] Pantalla de bienvenida: "Soy coach" / "Tengo un código"
 - [ ] Crear negocio, ver y regenerar el código de invitación
@@ -80,10 +78,9 @@ Además de lo previsto, a petición del propietario:
 
 ## Bloqueos y dudas abiertas
 
-- El nombre ya está decidido: ATHLETE CORE (DECISIONES D-021). La sustitución de `[NOMBRE_APP]` en `AGENTS.md` y `docs/ARQUITECTURA.md` está en el PR 2, pendiente de fusionar.
 - Falta el dominio de la web (DECISIONES, P-01).
-- Antes del PR 1.2 hay que decidir cómo se entra y si se confirma el email (DECISIONES, P-09).
-- El PR 2 renombra `.github/CODEOWNERS.txt` a `CODEOWNERS` y corrige el usuario. Proteger `main` (GUIA-GIT §12) no es posible todavía: en un repositorio privado GitHub lo exige de pago (GitHub Pro, gratis con el Student Developer Pack). Mientras tanto protege el hook local que bloquea subir a `main`. Ya está activo: solo "Squash merge" y borrar la rama al fusionar.
+- Antes del PR 1.2 hay que confirmar dos puntos de D-035: si se exige verificar el email y si "elegir entrenador" incluye una lista pública de coaches.
+- Proteger `main` (GUIA-GIT §12) no es posible todavía: en un repositorio privado GitHub lo exige de pago (GitHub Pro, gratis con el Student Developer Pack). Mientras tanto protege el hook local que bloquea subir a `main`. Ya está activo: solo "Squash merge" y borrar la rama al fusionar.
 
 ## Ideas y deuda
 
@@ -98,11 +95,14 @@ Cosas que alguien ha visto y que no tocaban en su tarea. No se hacen sin convert
 - Test de fronteras: añadir el caso permitido de la tabla de dependencias entre módulos cuando existan dos módulos reales (`programs` → `exercises`).
 - Zod ocupa buena parte del peso de la app. Si el tamaño llega a importar, valorar su variante ligera.
 - Recordar la última elección del selector de desarrollo al recargar la página (hoy vuelve al primer coach de ejemplo).
+- Un test pgTAP que pruebe cada política de UPDATE por separado. Hoy, si se afloja `members_update`, la política de lectura sigue bloqueando (Postgres la aplica en los UPDATE con WHERE) y los tests no lo notan. No es un agujero, pero la segunda capa no está vigilada.
+- Los casos 15 a 19 y 28 de `docs/referencia/pruebas-aislamiento.sql` se escriben con la primera tabla de negocio (`programs`, Fase 2).
 
 ## Registro de cambios
 
 Lo más nuevo, arriba.
 
+- 2026-11-13 — PR 1.1 (base de datos): Supabase local con los comandos `db:*`, primera migración desde `esquema-base.sql` con privilegios por defecto cerrados (D-032), 53 tests pgTAP, seed con 2 coaches y 5 clientes, tipos generados y job "Base de datos" en el CI.
 - 2026-11-13 — Fase 0 terminada: proyecto base, estructura de carpetas, calidad (ESLint con fronteras, Prettier, hooks de Git), `core/` mínimo con datos de ejemplo, carcasas de coach y de cliente, módulo `_template`, tests (Vitest y Playwright), `supabase init`, Capacitor y CI. Versiones y decisiones en `docs/DECISIONES.md` (D-021 a D-031).
 - 2026-11-12 — Nombre de la app decidido: ATHLETE CORE (DECISIONES D-021).
 

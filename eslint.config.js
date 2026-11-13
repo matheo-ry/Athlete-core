@@ -80,6 +80,9 @@ export default defineConfig([
     'supabase',
     'android',
     'ios',
+    // Generado por Supabase (`npm run db:types`): no se edita a mano, así que el
+    // lint no puede pedir cambios en él (DECISIONES D-034). TypeScript sí lo comprueba.
+    'src/core/supabase/database.types.ts',
   ]),
 
   // Scripts y archivos de configuración en JavaScript (Node).

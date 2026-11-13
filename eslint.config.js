@@ -129,6 +129,21 @@ const boundaryPolicies = [
       ],
     },
   },
+
+  // 7. El cliente de Supabase (core/supabase) solo se importa desde carpetas
+  //    api/. Estas dos políticas van al final a propósito: gana la última que
+  //    coincide, así que mandan sobre todas las anteriores. Se comprueba el
+  //    archivo de destino, no el texto del import: da igual que se escriba
+  //    '@/core/supabase' o '../supabase'.
+  {
+    disallow: { to: { element: { type: 'core', captured: { area: 'supabase' } } } },
+    message:
+      'El cliente de Supabase solo se importa desde una carpeta api/ (ARQUITECTURA §6). Los componentes usan los hooks de api/.',
+  },
+  {
+    from: { file: { categories: 'api' } },
+    allow: { to: { element: { type: 'core', captured: { area: 'supabase' } } } },
+  },
 ];
 
 // ---------------------------------------------------------------------------
@@ -143,13 +158,9 @@ const SUPABASE_RESTRICTION = {
         'Solo core/supabase y las carpetas api/ hablan con Supabase (ARQUITECTURA §6). Usa un hook de api/.',
     },
   ],
-  patterns: [
-    {
-      group: ['@/core/supabase', '@/core/supabase/**', '**/core/supabase', '**/core/supabase/**'],
-      message:
-        'El cliente de Supabase solo se importa desde una carpeta api/ (ARQUITECTURA §6). Los componentes usan los hooks de api/.',
-    },
-  ],
+  // Importar `core/supabase` (nuestro cliente) lo vigila la política 7 de las
+  // fronteras, que es más fiable que un patrón sobre el texto del import.
+  patterns: [],
 };
 
 const CAPACITOR_RESTRICTION = {
@@ -257,7 +268,10 @@ export default defineConfig([
         { type: 'test-utils', pattern: 'src/test', partialMatch: false },
         { type: 'src-root', pattern: 'src', partialMatch: false },
       ],
-      'boundaries/files': [{ pattern: 'src/**/*.test.{ts,tsx}', category: 'test' }],
+      'boundaries/files': [
+        { pattern: 'src/**/*.test.{ts,tsx}', category: 'test' },
+        { pattern: 'src/**/api/**', category: 'api' },
+      ],
       'import/resolver': {
         [resolve(import.meta.dirname, 'scripts/eslint-alias-resolver.cjs')]: {},
         node: {},

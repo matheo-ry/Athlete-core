@@ -408,7 +408,7 @@ Cómo añadir una: copia el formato, usa el siguiente número y no borres las an
 
 ### D-062 · Orden y tamaño de los PR de la Fase 1
 - **Fecha:** 2026-11-14
-- **Decisión:** la Fase 1 se reparte en 16 PR, del 1.2 al 1.17, en el orden de `docs/PROMPTS.md` §5. Cada uno se puede revisar en unos 15 minutos y deja algo que se puede comprobar. Los cambios de la base de datos van en dos PR propios (1.2 y 1.8), antes de las pantallas que los usan. Los flujos críticos (entrar, registrarse y unirse con código) llevan su test de extremo a extremo en el mismo PR.
+- **Decisión:** la Fase 1 se reparte en 16 PR, del 1.2 al 1.17, en el orden de `docs/PROMPTS.md` §5. Cada uno se puede revisar en unos 15 minutos y deja algo que se puede comprobar. Los cambios grandes de la base de datos van en dos PR propios (1.2 y 1.8), antes de las pantallas que los usan; las dos migraciones pequeñas (el flag de `clients` y el Storage de logos) van con su función, en los PR 1.10 y 1.16. Los flujos críticos (entrar, registrarse y unirse con código) llevan su test de extremo a extremo en el mismo PR.
 - **Por qué:** sustituye a la propuesta de dividir el PR 1.2 en 1.2a, 1.2b y 1.2c: con "primero el código" (D-037) cambia el orden, y numerarlos seguidos es más fácil de seguir. Primero se entra con los usuarios inventados del seed, para ver datos reales cuanto antes; el registro llega después.
 
 ---

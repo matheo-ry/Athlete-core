@@ -80,10 +80,10 @@ Además de lo previsto, a petición del propietario:
 
 ## Bloqueos y dudas abiertas
 
-- El nombre ya está decidido: ATHLETE CORE (DECISIONES D-021). Falta sustituir `[NOMBRE_APP]` en los archivos protegidos (`AGENTS.md`, `docs/ARQUITECTURA.md`, `EMPEZAR-AQUI.md`, `docs/PROMPTS.md`): lo hace el propietario.
+- El nombre ya está decidido: ATHLETE CORE (DECISIONES D-021). La sustitución de `[NOMBRE_APP]` en `AGENTS.md` y `docs/ARQUITECTURA.md` está en el PR 2, pendiente de fusionar.
 - Falta el dominio de la web (DECISIONES, P-01).
 - Antes del PR 1.2 hay que decidir cómo se entra y si se confirma el email (DECISIONES, P-09).
-- `.github/CODEOWNERS.txt` no tiene efecto con ese nombre: GitHub solo lee el archivo si se llama `CODEOWNERS`, sin extensión. Hay que renombrarlo y comprobar el usuario antes de proteger `main`.
+- El PR 2 renombra `.github/CODEOWNERS.txt` a `CODEOWNERS` y corrige el usuario. Proteger `main` (GUIA-GIT §12) no es posible todavía: en un repositorio privado GitHub lo exige de pago (GitHub Pro, gratis con el Student Developer Pack). Mientras tanto protege el hook local que bloquea subir a `main`. Ya está activo: solo "Squash merge" y borrar la rama al fusionar.
 
 ## Ideas y deuda
 

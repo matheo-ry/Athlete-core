@@ -51,7 +51,7 @@ Los 5 más recientes, el más nuevo arriba. El historial completo está en `docs
 
 - El proyecto vive en `C:\dev\athlete-core`, **fuera de OneDrive** (sincronizar `node_modules` da errores).
 - Se usa **TypeScript 6**, no 7: el lint de TypeScript aún no admite la 7 (DECISIONES D-022).
-- `[NOMBRE_APP]` sigue escrito en archivos protegidos (`AGENTS.md`, `docs/ARQUITECTURA.md`, `EMPEZAR-AQUI.md`, `docs/PROMPTS.md`): lo sustituye el propietario.
+- El PR 2 pone el nombre en `AGENTS.md` y `docs/ARQUITECTURA.md` y activa `CODEOWNERS`. `main` no está protegida en GitHub: hace falta GitHub Pro (GUIA-GIT §12).
 - Antes del PR 1.2 hay que decidir cómo se entra y si se confirma el email (DECISIONES P-09).
 - El identificador de la app móvil (`app.athletecore.mobile`) es provisional: hay que fijarlo antes de publicar en las tiendas.
 

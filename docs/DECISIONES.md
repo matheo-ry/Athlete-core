@@ -119,7 +119,7 @@ Cómo añadir una: copia el formato, usa el siguiente número y no borres las an
 - **Fecha:** 2026-11-12
 - **Decisión:** la app se llama **ATHLETE CORE**. En lo técnico (repositorio, carpeta, paquete, web) se escribe `athlete-core`; en redes sociales, `athlete_core`; en el correo, `athlete.core`.
 - **Por qué:** decisión del propietario. Resuelve la parte del nombre de P-01; el dominio sigue pendiente.
-- **Pendiente:** sustituir `[NOMBRE_APP]` en los archivos protegidos (`AGENTS.md`, `docs/ARQUITECTURA.md`, `EMPEZAR-AQUI.md`, `docs/PROMPTS.md`). Lo hace el propietario.
+- **Aplicación:** `[NOMBRE_APP]` se sustituye en `AGENTS.md` y `docs/ARQUITECTURA.md` en el PR 2, a petición del propietario.
 
 ### D-022 · TypeScript 6 en lugar de la 7
 - **Fecha:** 2026-11-13

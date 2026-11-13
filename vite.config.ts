@@ -32,11 +32,31 @@ export default defineConfig({
     },
   },
   test: {
-    environment: 'jsdom',
-    setupFiles: ['./src/test/setup.ts'],
-    // Los tests unitarios viven junto al archivo que prueban. Los de flujos
-    // completos (e2e/) los ejecuta Playwright, no Vitest.
-    include: ['src/**/*.test.{ts,tsx}'],
-    css: false,
+    // Dos grupos de tests unitarios. Los de flujos completos (e2e/) los ejecuta
+    // Playwright, no Vitest.
+    projects: [
+      {
+        // La app: cada test vive junto al archivo que prueba y se ejecuta en un
+        // navegador simulado.
+        extends: true,
+        test: {
+          name: 'app',
+          environment: 'jsdom',
+          setupFiles: ['./src/test/setup.ts'],
+          include: ['src/**/*.test.{ts,tsx}'],
+          css: false,
+        },
+      },
+      {
+        // Las herramientas del repositorio (por ejemplo, el test de las
+        // fronteras de arquitectura): se ejecutan en Node, sin navegador.
+        extends: true,
+        test: {
+          name: 'tooling',
+          environment: 'node',
+          include: ['scripts/**/*.test.mjs'],
+        },
+      },
+    ],
   },
 });

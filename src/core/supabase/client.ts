@@ -7,7 +7,7 @@ import { env } from '../config';
 // (lo comprueba ESLint): los componentes nunca hablan con la base de datos.
 //
 // Usa SOLO la clave pública. La seguridad no depende de esta clave sino de las
-// políticas RLS de la base de datos. La clave `service_role` nunca entra en src/.
+// políticas RLS de la base de datos. La clave secreta de servicio nunca entra en src/.
 //
 // En la Fase 1, al generar los tipos (`npm run db:types`), el cliente pasará a
 // ser `SupabaseClient<Database>`.

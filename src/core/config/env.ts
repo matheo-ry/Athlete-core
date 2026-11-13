@@ -15,7 +15,7 @@ const rawEnvSchema = z.object({
   // Opcionales en la Fase 0: todavía no hay base de datos. En la Fase 1 pasan a
   // ser obligatorias.
   VITE_SUPABASE_URL: z.preprocess(emptyToUndefined, z.url().optional()),
-  // Clave PÚBLICA de Supabase (publishable / anon). La `service_role` nunca entra aquí.
+  // Clave PÚBLICA de Supabase (publishable / anon). La clave secreta de servicio nunca entra aquí.
   VITE_SUPABASE_PUBLISHABLE_KEY: z.preprocess(emptyToUndefined, z.string().min(1).optional()),
 });
 

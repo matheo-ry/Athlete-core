@@ -344,7 +344,7 @@ Cada archivo se guarda en una ruta que empieza por el `tenant_id`, con política
 
 - `core/branding` convierte esa marca en variables CSS (`--brand-primary`…). Todos los componentes pintan con esas variables.
 - Si un color no tiene contraste suficiente con el texto, se corrige automáticamente.
-- Antes de unirse a un coach, el usuario ve la marca por defecto de `[NOMBRE_APP]`.
+- Antes de unirse a un coach, el usuario ve la marca por defecto de ATHLETE CORE.
 
 ## 11. Idiomas y unidades
 

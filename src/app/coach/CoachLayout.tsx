@@ -40,7 +40,7 @@ export function CoachLayout() {
 
       <nav
         aria-label={t('app.nav.label')}
-        className="border-border bg-surface fixed inset-x-0 bottom-0 flex border-t md:hidden"
+        className="border-border bg-surface fixed inset-x-0 bottom-0 flex border-t pb-[env(safe-area-inset-bottom)] md:hidden"
       >
         {items.map((item) => (
           <ShellNavLink key={item.to} item={item} layout="bottom" />

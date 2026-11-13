@@ -27,7 +27,7 @@ export function ClientLayout() {
       </main>
       <nav
         aria-label={t('app.nav.label')}
-        className="border-border bg-surface fixed inset-x-0 bottom-0 flex border-t"
+        className="border-border bg-surface fixed inset-x-0 bottom-0 flex border-t pb-[env(safe-area-inset-bottom)]"
       >
         {items.map((item) => (
           <ShellNavLink key={item.to} item={item} layout="bottom" />

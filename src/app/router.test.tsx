@@ -49,13 +49,39 @@ describe('la app', () => {
     const { user } = await renderApp('/coach');
     const toolbar = await screen.findByTestId('dev-toolbar');
     const root = document.documentElement;
-    expect(root.style.getPropertyValue('--brand-primary')).toBe('#2563eb');
+    expect(root.style.getPropertyValue('--brand-primary')).toBe('#dc2626');
 
     await user.click(within(toolbar).getByRole('button', { name: 'Norte Strength' }));
 
     expect(root.style.getPropertyValue('--brand-primary')).toBe('#0f766e');
     expect(root.style.colorScheme).toBe('light');
     expect(screen.getAllByText('Norte Strength').length).toBeGreaterThan(0);
+  });
+
+  it('quien todavía no tiene coach va a la bienvenida y ve la marca de la plataforma', async () => {
+    const { user, router } = await renderApp('/coach');
+    const toolbar = await screen.findByTestId('dev-toolbar');
+    expect(screen.queryByText('ATHLETE CORE')).not.toBeInTheDocument();
+
+    await user.click(within(toolbar).getByRole('button', { name: 'No coach' }));
+
+    expect(await screen.findByRole('heading', { name: 'Welcome' })).toBeInTheDocument();
+    expect(router.state.location.pathname).toBe('/welcome');
+    expect(screen.getByText('ATHLETE CORE')).toBeInTheDocument();
+    expect(document.documentElement.style.getPropertyValue('--brand-primary')).toBe('#2563eb');
+  });
+
+  it('desde "sin coach", ver como cliente vuelve a entrar en un tenant', async () => {
+    const { user, router } = await renderApp('/coach');
+    const toolbar = await screen.findByTestId('dev-toolbar');
+    await user.click(within(toolbar).getByRole('button', { name: 'No coach' }));
+    expect(await screen.findByRole('heading', { name: 'Welcome' })).toBeInTheDocument();
+
+    await user.click(within(toolbar).getByRole('button', { name: 'Client' }));
+
+    expect(await screen.findByRole('heading', { name: 'Today' })).toBeInTheDocument();
+    expect(router.state.location.pathname).toBe('/client');
+    expect(screen.getAllByText('Iron Lab').length).toBeGreaterThan(0);
   });
 
   it('el menú se construye con los módulos registrados y sus pantallas cargan', async () => {

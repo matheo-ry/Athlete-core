@@ -16,9 +16,10 @@ function toggleClassName(isActive: boolean): string {
 }
 
 /**
- * Selector SOLO de desarrollo: ver la app como coach o como cliente y probar dos
- * marcas de ejemplo. `RootLayout` solo lo carga con `import.meta.env.DEV`, así
- * que no existe en la compilación de producción.
+ * Selector SOLO de desarrollo: ver la app como coach, como cliente o como alguien
+ * que todavía no tiene coach, y probar dos marcas de ejemplo. `RootLayout` solo
+ * lo carga con `import.meta.env.DEV`, así que no existe en la compilación de
+ * producción.
  */
 export function DevToolbar() {
   const { t } = useTranslation();
@@ -29,6 +30,12 @@ export function DevToolbar() {
   const viewAs = (nextProfile: Profile) => {
     selectRole(nextProfile === 'coach' ? 'owner' : 'client');
     void navigate(`/${nextProfile}`);
+  };
+
+  // Sin tenant, "/" lleva a la bienvenida, como le pasará a un usuario nuevo.
+  const viewWithoutTenant = () => {
+    selectTenant(null);
+    void navigate('/');
   };
 
   return (
@@ -65,6 +72,15 @@ export function DevToolbar() {
             {option.branding.appName}
           </button>
         ))}
+        <button
+          type="button"
+          data-testid="dev-no-tenant"
+          aria-pressed={tenant === null}
+          onClick={viewWithoutTenant}
+          className={toggleClassName(tenant === null)}
+        >
+          {t('app.dev.noTenant')}
+        </button>
       </div>
     </aside>
   );

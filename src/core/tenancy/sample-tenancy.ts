@@ -10,7 +10,7 @@ export const SAMPLE_TENANTS: readonly [Tenant, ...Tenant[]] = [
     branding: {
       appName: 'Iron Lab',
       logoPath: null,
-      colors: { primary: '#2563EB', accent: '#FF7A1A' },
+      colors: { primary: '#DC2626', accent: '#F59E0B' },
       mode: 'dark',
     },
   },
@@ -26,4 +26,11 @@ export const SAMPLE_TENANTS: readonly [Tenant, ...Tenant[]] = [
   },
 ];
 
-export const SAMPLE_INITIAL_ROLE: Role = 'owner';
+/**
+ * Rol de ejemplo al arrancar. Sin sesión real no hay forma de saber quién entra,
+ * así que se deduce de la dirección: quien abre `/client/...` entra como cliente.
+ * Así una recarga de la página no cambia de perfil.
+ */
+export function getSampleInitialRole(pathname: string): Role {
+  return pathname === '/client' || pathname.startsWith('/client/') ? 'client' : 'owner';
+}

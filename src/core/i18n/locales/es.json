@@ -57,7 +57,8 @@
       "profile": "Ver como",
       "coach": "Coach",
       "client": "Cliente",
-      "brand": "Marca"
+      "brand": "Marca",
+      "noTenant": "Sin coach"
     }
   }
 }

@@ -14,12 +14,14 @@ export interface Tenant {
   branding: Brand;
 }
 
-export interface Tenancy {
-  /** `null` cuando el usuario todavía no pertenece a ningún tenant. */
-  tenant: Tenant | null;
-  role: Role | null;
-  profile: Profile | null;
-}
+/**
+ * Tenant activo y papel del usuario en él. Van siempre juntos: o hay tenant, rol
+ * y perfil, o el usuario todavía no pertenece a ningún tenant y no hay ninguno.
+ */
+export type Tenancy =
+  { tenant: Tenant; role: Role; profile: Profile } | { tenant: null; role: null; profile: null };
+
+export const NO_TENANCY: Tenancy = { tenant: null, role: null, profile: null };
 
 export function profileForRole(role: Role): Profile {
   return role === 'client' ? 'client' : 'coach';

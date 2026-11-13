@@ -202,7 +202,214 @@ Cómo añadir una: copia el formato, usa el siguiente número y no borres las an
 - **Fecha:** 2026-11-13
 - **Decisión:** se puede entrar de dos formas: con email y contraseña, o con un enlace que llega por email. Sin cuentas de Google ni de Apple por ahora. Además, el cliente tiene que poder elegir quién es su entrenador: se resuelve con el código o enlace del coach al unirse y con el selector de tenant ya previsto en la Fase 1 para quien pertenezca a más de un coach.
 - **Por qué:** decisión del propietario. Resuelve P-09 salvo un punto.
-- **Pendiente de confirmar con el propietario:** si se exige confirmar el email al registrarse con contraseña (recomendado: sí), y si "elegir entrenador" incluye además una lista pública de coaches donde buscar (hoy no está prevista: solo se entra con código).
+- **Estado:** completada el 2026-11-14. Los dos puntos que quedaban se cerraron en D-038 (el email se verifica) y D-053 (no hay lista pública de coaches). El "enlace por email" pasa a ser un código de 6 dígitos (D-039), y las cuentas de Google y de Apple llegan en la Fase 4 (D-047).
+
+### D-036 · La Fase 1 se diseña entera antes de programar
+- **Fecha:** 2026-11-14
+- **Decisión:** antes de escribir código de la Fase 1 se decide cómo funciona todo (D-037 a D-062) y se escribe la lista de PR en `docs/PROMPTS.md` §5. Por decisión del propietario, el diseño y los PR de la Fase 1 se llevan desde un mismo chat. Sigue valiendo "una tarea = una rama = un PR", y `CONTEXTO.md` y `docs/ESTADO.md` se actualizan en cada PR para que otro chat pueda continuar.
+- **Por qué:** que ningún chat de ejecución tenga que inventarse una decisión de producto. Es una excepción a "un chat por tarea" (GUIA-GIT §8) solo para esta fase.
+
+### D-037 · Primero el código del coach, después la cuenta
+- **Fecha:** 2026-11-14
+- **Decisión:** quien abre la app sin sesión ve la **primera pantalla** (`/start`): el idioma arriba, el campo "Código de tu coach" con el botón "Continuar" y, debajo, dos enlaces: "¿Ya tienes cuenta? Entrar" y "¿Eres coach? Crea tu negocio". Con un código válido se ve la vista previa del coach (D-051) y desde ahí se crea la cuenta o se entra. El código se recuerda en el dispositivo (7 días como máximo) mientras se crea y se confirma la cuenta; al terminar, el alta con el coach se hace sola. "Soy coach" lleva al registro y después a crear el negocio (D-049).
+- **Por qué:** idea del propietario. Casi todos los que abren la app por primera vez son clientes con un código, y así ven la marca de su coach desde el primer minuto.
+- **Consecuencias:** cambia ARQUITECTURA §7, que decía "para escribir el código hace falta tener sesión", y obliga a que la vista previa funcione sin sesión (D-051 y D-052). `/welcome` queda para quien tiene sesión y ningún coach.
+
+### D-038 · El email se verifica con un código de 6 dígitos
+- **Fecha:** 2026-11-14
+- **Decisión:** al registrarse con contraseña llega por email un código de 6 dígitos que se escribe en la app (`/verify`). Sin confirmarlo no se puede entrar. El código caduca a los 15 minutos y se puede pedir otro pasados 60 segundos. Quien intenta entrar con una cuenta sin confirmar va a esa misma pantalla, con un código nuevo. Las cuentas de Google y de Apple (D-047) no pasarán por este paso, porque ya llegan verificadas.
+- **Por qué:** sin verificar, alguien puede registrarse con un email mal escrito o ajeno y después no puede recuperar la cuenta. Se usa un código y no un enlace porque en el móvil un enlace abre el navegador y no la app hasta la Fase 4.
+
+### D-039 · Entrar sin contraseña: código por email en lugar de enlace
+- **Fecha:** 2026-11-14
+- **Decisión:** ajusta D-035. La segunda forma de entrar es "Entrar con un código por email": se escribe el email, llega un código de 6 dígitos y con él se entra. Solo sirve para cuentas que ya existen: no crea cuentas. Los emails llevan solo el código, sin enlaces.
+- **Por qué:** el código funciona igual en la web, en iPhone y en Android. Un email sin enlaces además es más difícil de imitar para robar cuentas.
+- **Revisar si:** en la Fase 4 hay dominio y apps publicadas; entonces se puede añadir el enlace que abre la app.
+
+### D-040 · Una sola forma de registrarse
+- **Fecha:** 2026-11-14
+- **Decisión:** toda cuenta se crea con nombre, email y contraseña. El nombre tiene entre 2 y 60 caracteres. Al crear la cuenta se guardan también el idioma de la app en ese momento y la unidad de peso (D-058).
+- **Por qué:** si hubiera cuentas sin contraseña, "entrar con contraseña" les fallaría sin que entendieran por qué. Es un camino menos que construir y que probar.
+
+### D-041 · Reglas de la contraseña
+- **Fecha:** 2026-11-14
+- **Decisión:** mínimo 8 caracteres y máximo 72. No se exigen mayúsculas, números ni símbolos. Un solo campo, con un botón para mostrar lo escrito; no hay campo de "repetir contraseña".
+- **Por qué:** las guías de seguridad actuales piden longitud, no símbolos. El botón de mostrar evita el campo repetido.
+
+### D-042 · Recuperar y cambiar la contraseña
+- **Fecha:** 2026-11-14
+- **Decisión:** "He olvidado mi contraseña" pide el email, envía un código de 6 dígitos y, con el código, deja escribir una contraseña nueva; al guardarla el usuario queda dentro. Desde el perfil se puede cambiar la contraseña escribiendo la actual. En los dos casos se cierran las sesiones de los demás dispositivos y llega un email de aviso ("tu contraseña se ha cambiado").
+- **Por qué:** el mismo sistema de código que D-038 y D-039: una sola cosa que aprender. El aviso permite reaccionar si el cambio no lo hizo el dueño de la cuenta.
+
+### D-043 · La app dice si un email ya tiene cuenta
+- **Fecha:** 2026-11-14
+- **Decisión:** decisión del propietario. La app nunca cambia de pantalla sola: avisa y resalta la salida que toca.
+  - Registrarse con un email que ya tiene cuenta: "Ya existe una cuenta con este email". Botón resaltado "He olvidado mi contraseña" y, al lado, "Entrar".
+  - Registrarse con un email cuya cuenta está sin confirmar: "Esta cuenta está pendiente de confirmar". Botón resaltado "Confirmar mi email". Al confirmarla vale la contraseña que se acaba de escribir, no la antigua.
+  - Entrar, pedir un código o recuperar la contraseña con un email sin cuenta: "No hay ninguna cuenta con este email". Botón resaltado "Crear cuenta".
+  - Entrar con la contraseña equivocada: "La contraseña no es correcta". Botón resaltado "He olvidado mi contraseña".
+- **Por qué:** el propietario prefiere mensajes claros a mensajes neutros.
+- **Consecuencias:** cualquiera puede averiguar si un email tiene cuenta en ATHLETE CORE probando en la pantalla. Se limita con el tope de intentos de D-052. Que valga la última contraseña evita que alguien "reserve" el email de otra persona con una contraseña que solo él conoce.
+- **Revisar si:** aparecen intentos masivos de comprobar emails; entonces, añadir un captcha.
+
+### D-044 · Idioma de los emails
+- **Fecha:** 2026-11-14
+- **Decisión:** cada email llega en el idioma que tenía la app al registrarse y, después, en el idioma del perfil. Hay cuatro emails, en inglés y en español: confirmar la cuenta, código para entrar, código para cambiar la contraseña y aviso de contraseña cambiada. Llevan la marca de ATHLETE CORE, no la del coach.
+- **Por qué:** cada persona recibe el suyo sin hacer nada. Los emails de cuenta son de la plataforma: la cuenta es la misma aunque el usuario cambie de coach.
+
+### D-045 · La sesión queda iniciada
+- **Fecha:** 2026-11-14
+- **Decisión:** una vez dentro, la sesión se mantiene en ese dispositivo. Solo se vuelve a pedir entrar si pasan 30 días sin abrir la app, si el usuario cierra sesión (desde su perfil o sus ajustes) o si cambia la contraseña en otro dispositivo.
+- **Por qué:** decisión del propietario. En el gimnasio nadie quiere escribir la contraseña.
+- **Consecuencias:** cerrar la sesión por inactividad es, según la documentación de Supabase, una función del plan de pago (Pro). En local se puede configurar; en staging y producción hay que comprobarlo al crear los proyectos. Mientras no esté activo, la sesión no caduca por inactividad.
+
+### D-046 · Quién envía los emails
+- **Fecha:** 2026-11-14
+- **Decisión:**
+  - **Local:** no sale ningún email. Se ven en la bandeja de pruebas de Supabase local (`http://127.0.0.1:54324`).
+  - **Staging y producción:** los envía **Resend** (servicio de envío de emails), conectado a Supabase por SMTP, con el dominio propio verificado.
+  - **Remitente:** nombre "ATHLETE CORE" y dirección `no-reply@<dominio>`. Los textos de privacidad indican una dirección de soporte para responder.
+- **Por qué:** el envío que trae Supabase por defecto solo sirve para pruebas: tiene un tope de muy pocos emails por hora. Resend tiene plan gratuito suficiente para staging y los pilotos (comprobar sus límites al contratarlo).
+- **Consecuencias:** hace falta el dominio (P-01) antes de enviar el primer email real. Lo configura el propietario en el PR 1.17.
+- **Revisar si:** el volumen de emails supera el plan gratuito.
+
+### D-047 · Google y Apple, en la Fase 4
+- **Fecha:** 2026-11-14
+- **Decisión:** entrar con Google y con Apple se añade en la Fase 4, junto con las apps de móvil. La Fase 1 sale solo con email y contraseña.
+- **Por qué:** si la app de iPhone ofrece Google, Apple obliga a ofrecer también "Entrar con Apple", y eso exige la cuenta de desarrollador de Apple (de pago), que toca en la Fase 4.
+
+### D-048 · Coach y cliente a la vez, y cliente de varios coaches
+- **Fecha:** 2026-11-14
+- **Decisión:** una misma cuenta puede ser dueña de un negocio y, a la vez, cliente de otros coaches. Puede ser cliente de varios coaches. Sigue valiendo que un usuario solo puede ser dueño de un negocio. Cada pertenencia se llama **espacio** en la app (D-056).
+- **Por qué:** un coach puede entrenar con otro coach, y un cliente puede tener un coach de fuerza y otro de otra cosa. La base de datos ya lo permite; prohibirlo obligaría a crear segundas cuentas con otro email.
+
+### D-049 · Crear negocio
+- **Fecha:** 2026-11-14
+- **Decisión:** solo se pide el **nombre del negocio** (entre 2 y 60 caracteres) y aceptar las condiciones para coaches (D-060). El plan inicial es `free` (3 clientes, D-017). La marca empieza con ese nombre y los colores por defecto de ATHLETE CORE. Justo después el coach llega a su inicio (`/coach`), donde ve una tarjeta de **primeros pasos** con dos enlaces: "Comparte tu código" (a Clientes) y "Personaliza tu marca" (a Ajustes). La tarjeta desaparece cuando tiene su primer cliente activo.
+- **Por qué:** cuanto menos se pregunte antes de ver la app, más coaches terminan el alta. Todo lo demás se puede cambiar después en Ajustes.
+
+### D-050 · Código de invitación: formato, vigencia y regenerar
+- **Fecha:** 2026-11-14
+- **Decisión:**
+  - **Formato:** 8 caracteres, con letras mayúsculas y números, sin los que se confunden al leerlos (`0`, `O`, `1`, `I`, `L`). Se muestra en dos grupos de cuatro (`K7M4 9XQ2`). Al escribirlo no importan las mayúsculas, los espacios ni los guiones.
+  - **Vigencia:** no caduca. Cada negocio tiene un solo código activo.
+  - **Regenerar:** solo el dueño, con una confirmación. El código viejo y sus enlaces dejan de funcionar al instante. Los clientes que ya estaban dentro no notan nada.
+- **Por qué:** un código corto se puede dictar o escribir en una pizarra. Con 31 caracteres posibles y 8 posiciones hay unos 850.000 millones de combinaciones, suficiente junto al tope de intentos (D-052). El generador actual solo usa 16 caracteres.
+- **Consecuencias:** los códigos del seed (`IRONLAB1`, `NORTE001`) siguen valiendo: la base de datos acepta cualquier letra o número; solo el generador evita los confusos.
+
+### D-051 · Enlace de invitación y vista previa sin cuenta
+- **Fecha:** 2026-11-14
+- **Decisión:** el coach puede compartir el enlace `<web>/join?code=XXXX` con el botón de compartir del dispositivo, o copiarlo. Quien lo abre, con sesión o sin ella, ve la **vista previa del coach**: su nombre, su logo y sus colores, con el texto "Vas a entrenar con …". Sin sesión, los botones son "Crear cuenta" y "Ya tengo cuenta". Con sesión, el botón es "Unirme". La vista previa solo enseña nombre y marca, nunca clientes ni otros datos. Para que funcione sin sesión, los logos se pueden leer sin sesión.
+- **Por qué:** el cliente confirma que el código es de su coach antes de dar sus datos.
+- **Consecuencias:** en la Fase 1 el enlace abre la web. Que abra la app instalada llega en la Fase 4.
+
+### D-052 · Tope de intentos
+- **Fecha:** 2026-11-14
+- **Decisión:** tras 10 códigos de invitación equivocados en 10 minutos, hay que esperar 15 minutos. Se cuenta por usuario si hay sesión y por conexión (dirección IP) si no la hay. La comprobación de si un email tiene cuenta (D-043) tiene su propio tope: 20 comprobaciones en 10 minutos por conexión. El mensaje es "Demasiados intentos. Vuelve a probar en unos minutos".
+- **Por qué:** sin tope, un programa podría probar códigos hasta acertar, o comprobar listas enteras de emails.
+- **Revisar si:** contar por dirección IP resulta poco fiable en staging; entonces, añadir un captcha a las pantallas sin sesión.
+
+### D-053 · No hay lista pública de coaches
+- **Fecha:** 2026-11-14
+- **Decisión:** solo se entra con el código o el enlace que reparte cada coach. Cierra P-09.
+- **Por qué:** una lista pública obligaría a revisar perfiles y dejaría que desconocidos ocuparan las plazas del plan de un coach.
+
+### D-054 · Qué pasa al unirse en cada caso
+- **Fecha:** 2026-11-14
+- **Decisión:** unirse es inmediato; el coach no tiene que aprobar a nadie.
+  - **Código que no existe, regenerado o de un negocio suspendido:** "Este código no existe o ya no es válido. Pide a tu coach el código actual". El mismo mensaje en los tres casos.
+  - **Plan lleno:** "Tu coach no tiene plazas libres ahora mismo. Avísale para que te haga hueco".
+  - **Ya era cliente activo:** entra directamente a su zona de cliente.
+  - **Estaba dado de baja:** no entra. "Tu coach te ha dado de baja. Pídele que te reactive" (D-055).
+  - **Es el dueño de ese negocio:** "Este es el código de tu propio negocio".
+- **Por qué:** cada mensaje dice qué hacer después. Un mismo mensaje para los códigos no válidos evita dar pistas sobre códigos antiguos.
+- **Consecuencias:** hoy la función `join_tenant_with_code` reactiva sola a un cliente archivado; hay que cambiarla (PR 1.8).
+
+### D-055 · Dar de baja a un cliente
+- **Fecha:** 2026-11-14
+- **Decisión:** el coach puede **dar de baja** a un cliente (en la base de datos, `archived`) y **reactivarlo**.
+  - El cliente pierde al instante el acceso a todo lo de ese coach y libera su plaza del plan.
+  - Sus datos se guardan. El coach lo sigue viendo en la pestaña "Dados de baja".
+  - El cliente no puede volver a entrar con el código: solo el coach puede reactivarlo, y solo si hay plaza libre.
+  - Si era su único coach, al abrir la app ve la pantalla "Ya no tienes acceso a [nombre del coach]", con la marca de ATHLETE CORE y tres salidas: escribir otro código, crear su negocio o cerrar sesión.
+  - No se le avisa por email: lo ve al abrir la app.
+  - La cuenta (email y contraseña) es de la persona. El coach no puede borrarla.
+- **Por qué:** decisión del propietario: quien deja de pagar al coach no puede seguir usando la app con ese coach. No se borra la cuenta porque en Europa los datos de la cuenta son de la persona, y esa persona puede ser cliente de otro coach.
+- **Consecuencias:** hoy un coach puede reactivar a un cliente cambiando una columna, sin que se compruebe el límite del plan. Dar de baja y reactivar pasan a ser funciones de la base de datos, que comprueban el plan y lo anotan en `audit_log` (PR 1.8). Borrar para siempre los datos de un cliente dado de baja, y que el propio cliente pueda dejar a un coach o borrar su cuenta, quedan para la Fase 4.
+
+### D-056 · Qué ve cada uno al entrar: guardas y espacios
+- **Fecha:** 2026-11-14
+- **Decisión:** al abrir la app:
+
+  | Situación | Adónde va |
+  |---|---|
+  | Sin sesión | `/start` |
+  | Cuenta sin confirmar | `/verify` |
+  | Con sesión y ningún espacio activo | `/welcome`: escribir un código, crear su negocio o cerrar sesión |
+  | Un espacio activo | `/coach` si es dueño; `/client` si es cliente |
+  | Varios espacios activos | El último usado en ese dispositivo; si no hay, el selector (`/select`) |
+
+  - El **selector** lista cada espacio con su logo, su nombre y la etiqueta "Coach" o "Cliente".
+  - En el perfil (cliente) y en los ajustes (coach) hay un apartado **Mis espacios**: cambiar de espacio, "Añadir un coach con código" y, si aún no tiene negocio, "Crear mi negocio".
+  - **Guardas:** `/coach/...` solo se abre con un espacio activo de coach, y `/client/...` con uno de cliente. Si no, la app lleva al inicio que le toca. Las pantallas de entrada llevan al inicio si ya hay sesión. Quien entra desde un enlace vuelve a ese enlace después de entrar.
+- **Por qué:** casi todo el mundo tiene un solo espacio y no debe ver nunca un selector. Las guardas son comodidad; la seguridad sigue en la base de datos (regla de oro 2).
+
+### D-057 · Marca del coach
+- **Fecha:** 2026-11-14
+- **Decisión:**
+  - **Nombre:** un solo campo, "Nombre de tu negocio" (2 a 40 caracteres). Es el que ven los clientes; al guardarlo se actualizan el nombre del negocio y el de la marca.
+  - **Colores:** principal y acento (D-028). Se eligen de una paleta de 12 colores o escribiendo uno propio. Hay un botón para volver a los de ATHLETE CORE.
+  - **Modo:** claro u oscuro, lo elige el coach para sus clientes. Por defecto, oscuro.
+  - **Logo:** PNG, JPG o WebP, de 2 MB como máximo; se recomienda cuadrado y de 256 px o más. No se admite SVG. Sin logo se muestran las iniciales del negocio sobre el color principal. Se puede quitar.
+  - El coach ve una **vista previa** antes de guardar.
+  - **Qué ve el cliente:** la marca de ATHLETE CORE hasta que escribe un código válido. Desde la vista previa del coach, y durante el registro y la confirmación, la marca del coach. Después de unirse, toda su zona con la marca del coach. En el perfil aparece, pequeño, "Con tecnología de ATHLETE CORE".
+- **Por qué:** dos nombres distintos (negocio y marca) confunden al coach. El SVG puede llevar código dentro y es un riesgo de seguridad. Con la marca en el registro, el cliente siente que entra en la app de su coach.
+- **Consecuencias:** los logos se guardan en Storage en una ruta que empieza por el `tenant_id`; solo el dueño puede subirlos o borrarlos, y cualquiera puede leerlos (D-051).
+
+### D-058 · Perfil y cuenta
+- **Fecha:** 2026-11-14
+- **Decisión:** el perfil tiene: nombre (2 a 60 caracteres), idioma (inglés o español), unidad de peso (kg o lb), el email (solo se muestra), cambiar contraseña (D-042), Mis espacios (D-056), enlaces a los textos legales y cerrar sesión. La unidad inicial es lb si el dispositivo está en inglés de EE. UU. y kg en el resto. El cliente lo ve en `/client/profile`; el coach, en `/coach/settings`, junto al negocio y la marca.
+- **Por qué:** es lo mínimo para usar la app. Foto de perfil, cambiar el email y borrar la cuenta no son necesarios para probar con datos inventados.
+- **Consecuencias:** borrar la cuenta desde la app es obligatorio para publicar en las tiendas y sigue en la Fase 4. Hasta entonces, quien lo pida se atiende a mano desde la dirección de soporte.
+
+### D-059 · Módulo `clients`
+- **Fecha:** 2026-11-14
+- **Decisión:**
+  - **Lista** (`/coach/clients`): dos pestañas, "Activos" y "Dados de baja"; buscador por nombre; orden alfabético. Cada fila muestra las iniciales, el nombre, la fecha en que se unió y la etiqueta "Nuevo" durante 7 días. Arriba, el contador de plazas ("2 de 3 plazas"); con el plan lleno, el aviso "Has llegado al límite de tu plan. Quien use tu código no podrá entrar".
+  - **Tarjeta del código**, en la misma pantalla: ver el código, copiarlo, compartir el enlace y regenerarlo (D-050 y D-051).
+  - **Ficha del cliente** (`/coach/clients/:id`): nombre, fecha de alta y el botón "Dar de baja" o "Reactivar" (D-055). Las rutinas, las métricas y el tiempo de entreno de cada cliente se añaden aquí como pestañas en las Fases 2 y 3; los pagos, en la Fase 5.
+  - **Lista vacía:** "Aún no tienes clientes. Comparte tu código", con la tarjeta del código.
+  - El coach **no ve el email** de sus clientes.
+- **Por qué:** es lo que pidió el propietario: ver quién ha entrado con su código y poder darlo de baja. El email no hace falta para reconocer a un cliente y es un dato personal más que proteger.
+- **Revisar si:** los coaches piden ver el email para distinguir a dos clientes con el mismo nombre.
+
+### D-060 · Protección de datos mínima en el registro
+- **Fecha:** 2026-11-14
+- **Decisión:**
+  - **Al crear la cuenta:** una casilla obligatoria, sin marcar de antemano: "Tengo 16 años o más y acepto los Términos y la Política de privacidad", con enlaces a los dos textos. Se guarda la fecha y la versión de los textos aceptados.
+  - **Al crear un negocio:** otra casilla obligatoria: "Acepto las condiciones para coaches". Incluyen el acuerdo por el que ATHLETE CORE trata los datos de los clientes por encargo del coach.
+  - **Textos:** las páginas `/legal/terms` y `/legal/privacy` existen desde la Fase 1 con un texto marcado como borrador.
+  - **Sin** emails comerciales, analítica ni cookies de seguimiento en la Fase 1: por eso no hace falta aviso de cookies.
+  - **Proyectos de Supabase** de staging y de producción, en una región de la Unión Europea.
+- **Por qué:** es lo mínimo que piden las normas europeas para crear una cuenta: saber qué se acepta y poder demostrarlo. Los 16 años cubren a toda Europa sin pedir el permiso de los padres.
+- **Qué espera a la Fase 4:** los textos legales definitivos (revisados por un profesional), borrar la cuenta desde la app, descargar los propios datos y que un cliente pueda dejar a un coach.
+- **Consecuencias:** ningún usuario real puede registrarse antes de tener los textos definitivos. El peso y las medidas corporales pueden contar como datos de salud, que piden un consentimiento aparte: se decide en la Fase 3 (P-12).
+
+### D-061 · Sin conexión, sesión caducada y errores
+- **Fecha:** 2026-11-14
+- **Decisión:**
+  - **Sin conexión:** una franja fija "Sin conexión". Lo ya cargado se sigue viendo. Al enviar un formulario: "No hay conexión. Inténtalo de nuevo", sin perder lo escrito. No se guarda nada para enviarlo después (P-06).
+  - **Sesión caducada:** la app lleva a `/login` con el aviso "Tu sesión ha caducado. Vuelve a entrar" y, al entrar, devuelve a la pantalla donde se estaba.
+  - **Acceso retirado con la app abierta:** al volver a la app o al fallar una petición se comprueban de nuevo los espacios y se aplica D-056.
+  - **Código del email equivocado o caducado:** "El código no es correcto o ha caducado", con el botón "Enviar otro código".
+  - **Error inesperado:** un mensaje traducido con "Reintentar". El error se registra sin datos personales.
+  - Mientras se envía un formulario, su botón queda desactivado para que no se envíe dos veces.
+- **Por qué:** toda pantalla trata sus 4 estados (AGENTS.md §4). Estos son los casos comunes a todas.
+
+### D-062 · Orden y tamaño de los PR de la Fase 1
+- **Fecha:** 2026-11-14
+- **Decisión:** la Fase 1 se reparte en 16 PR, del 1.2 al 1.17, en el orden de `docs/PROMPTS.md` §5. Cada uno se puede revisar en unos 15 minutos y deja algo que se puede comprobar. Los cambios de la base de datos van en dos PR propios (1.2 y 1.8), antes de las pantallas que los usan. Los flujos críticos (entrar, registrarse y unirse con código) llevan su test de extremo a extremo en el mismo PR.
+- **Por qué:** sustituye a la propuesta de dividir el PR 1.2 en 1.2a, 1.2b y 1.2c: con "primero el código" (D-037) cambia el orden, y numerarlos seguidos es más fácil de seguir. Primero se entra con los usuarios inventados del seed, para ver datos reales cuanto antes; el registro llega después.
 
 ---
 
@@ -210,7 +417,7 @@ Cómo añadir una: copia el formato, usa el siguiente número y no borres las an
 
 | Nº | Qué | Cuándo hay que decidirlo |
 |---|---|---|
-| P-01 | Dominio de la web. El nombre ya está decidido: ATHLETE CORE (D-021) | Antes de enseñar la app a coaches |
+| P-01 | Dominio de la web. El nombre ya está decidido: ATHLETE CORE (D-021) | Antes del PR 1.17: sin dominio no se pueden enviar emails reales (D-046) |
 | P-02 | Nicho definitivo tras hablar con coaches | Antes de la Fase 2 |
 | P-03 | Hosting de la web: Vercel o Cloudflare Pages. Comprobar en ambos el coste con dos personas subiendo código y las condiciones de uso comercial | Antes de enseñar la app a coaches |
 | P-04 | Biblioteca global de ejercicios: cómo conviven los ejercicios de la plataforma con los propios de cada coach | Fase 2 |
@@ -218,8 +425,10 @@ Cómo añadir una: copia el formato, usa el siguiente número y no borres las an
 | P-06 | Modo sin conexión para registrar entrenos | Tras los primeros pilotos |
 | P-07 | Notificaciones push | Fase 4 |
 | P-08 | Servicio para compilar iOS en la nube | Fase 4 |
-| P-09 | Resuelto en parte por D-035. Queda: si se exige confirmar el email al registrarse con contraseña, y si habrá una lista pública de coaches | Antes del segundo PR de la Fase 1 |
+| P-09 | **Cerrado el 2026-11-14.** Cómo se entra: D-035, D-038 (se verifica el email), D-039 (código por email) y D-053 (sin lista pública de coaches) | — |
 | P-10 | Servicio de avisos de errores y de caídas | Fase 4 |
+| P-11 | Plan de Supabase en staging y en producción: el gratuito o el de pago. Del de pago depende cerrar la sesión a los 30 días sin uso (D-045) | Al crear el proyecto de staging (PR 1.17) |
+| P-12 | Consentimiento para datos de salud (peso y medidas corporales) y si se admiten menores de 16 años con permiso de sus padres (D-060) | Fase 3 |
 
 ---
 

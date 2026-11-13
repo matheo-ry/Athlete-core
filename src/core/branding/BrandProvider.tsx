@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useLayoutEffect } from 'react';
 import type { ReactNode } from 'react';
 
 import { useTenancy } from '../tenancy';
@@ -19,7 +19,9 @@ export function BrandProvider({ children }: BrandProviderProps) {
   const { tenant } = useTenancy();
   const brand = tenant?.branding ?? DEFAULT_BRAND;
 
-  useEffect(() => {
+  // `useLayoutEffect` y no `useEffect`: la marca se aplica ANTES de que el
+  // navegador pinte, para que no se vea un destello con los colores anteriores.
+  useLayoutEffect(() => {
     applyBrandToElement(brand, document.documentElement);
   }, [brand]);
 

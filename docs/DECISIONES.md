@@ -135,7 +135,7 @@ Cómo añadir una: copia el formato, usa el siguiente número y no borres las an
 ### D-024 · Cómo se comprueban las fronteras de ARQUITECTURA §6
 - **Fecha:** 2026-11-13
 - **Decisión:**
-  - Las fronteras entre carpetas las comprueba `eslint-plugin-boundaries` (v7, regla `boundaries/dependencies`).
+  - Las fronteras entre carpetas las comprueba `eslint-plugin-boundaries` (v7, regla `boundaries/dependencies`). Están en `eslint.boundaries.js`, aparte del resto de la configuración de ESLint.
   - Los paquetes que solo puede usar una zona (Supabase, Capacitor, React dentro de `model/`) se limitan con `no-restricted-imports`.
   - El alias `@/` lo resuelve un archivo propio, `scripts/eslint-alias-resolver.cjs`.
   - `scripts/eslint-boundaries.test.mjs` prueba a las propias reglas con imports prohibidos y permitidos.

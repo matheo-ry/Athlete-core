@@ -1,6 +1,7 @@
 // Test de las FRONTERAS DE ARQUITECTURA (ARQUITECTURA §6).
 //
-// Las fronteras las comprueba ESLint con las reglas de eslint.config.js. Este
+// Las fronteras las comprueba ESLint con las reglas de eslint.boundaries.js y
+// eslint.config.js. Este
 // test comprueba a las propias reglas: pasa por ESLint una serie de imports que
 // deben estar prohibidos y otros que deben estar permitidos. Si alguien afloja
 // la configuración (a propósito o sin querer), este test falla.

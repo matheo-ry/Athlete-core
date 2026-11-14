@@ -21,12 +21,12 @@
 
 ## Dónde estamos
 
-- **Fase actual:** 1 — Cuentas, negocio del coach y unirse con código. Todo hecho; falta fusionarlo en `main`.
+- **Fase actual:** 2 — Ejercicios y rutinas, sin empezar. La Fase 1 (cuentas, negocio del coach y unirse con código) está terminada y fusionada en `main` (2026-11-14).
 - **Última tarea terminada:** PR 1.17 — Staging y emails reales (2026-11-14), rama `chore/staging`.
-- **En curso:** 18 PR abiertos y apilados (del 4 al 21), esperando el visto bueno del propietario (D-064). La lista, en `docs/ESTADO.md`.
-- **Siguiente tarea:** fusionar los 18 PR en `main`, en orden: lo hace un agente cuando el propietario da el visto bueno (D-068), poniendo al día cada PR como explica D-064. Después, la Fase 2 (ejercicios y rutinas), en un chat nuevo.
+- **En curso:** nada. No hay ningún PR abierto.
+- **Siguiente tarea:** Fase 2, módulo `exercises` (biblioteca y ejercicios propios). Antes, el propietario decide P-02 (nicho) y P-04 (ejercicios de la plataforma y de cada coach).
 
-## Cómo funcionará la Fase 1 (ya decidido)
+## Cómo funciona la Fase 1 (hecha)
 
 - **Primero el código, después la cuenta:** la primera pantalla (`/start`) pide el código del coach; debajo, "Ya tengo cuenta" y "Soy coach" (D-037).
 - **Cuentas:** nombre, email y contraseña. El email se confirma con un código de 6 dígitos; con ese mismo sistema se entra sin contraseña y se recupera la contraseña. Los emails no llevan enlaces (D-038 a D-044).
@@ -52,7 +52,7 @@
 
 ## Qué falta (lo próximo)
 
-- Fusionar la Fase 1 en `main` y empezar la Fase 2. Publicar la web (P-03) sigue pendiente.
+- La Fase 2: ejercicios y rutinas. Publicar la web (P-03) sigue pendiente.
 - Las guardas por sesión y por rol son comodidad, no seguridad: los datos los protege el RLS.
 
 ## Últimos cambios

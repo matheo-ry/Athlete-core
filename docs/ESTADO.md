@@ -1,37 +1,17 @@
 # ESTADO DEL PROYECTO
 
 **Última actualización:** 2026-11-14
-**Fase actual:** 1 — Cuentas, negocio del coach y unirse con código: **todo hecho, pendiente de fusionar** (la Fase 0 terminó y se fusionó el 2026-11-13)
+**Fase actual:** 2 — Ejercicios y rutinas, sin empezar (la Fase 1 terminó y se fusionó el 2026-11-14)
 
 Este archivo lo actualiza quien termina una tarea, en el mismo Pull Request, junto con `CONTEXTO.md` (que resume este en una página).
 
 ## En curso
 
-PR abiertos, apilados y esperando el visto bueno del propietario (D-064). Los fusiona un agente cuando él lo dé (D-068), en este orden:
-
-1. Diseño de la Fase 1 (rama `docs/diseno-fase-1`, PR 4).
-2. PR 1.2 — Base de datos: cuentas y emails (rama `db/cuentas-y-emails`, PR 5).
-3. PR 1.3 — Sesión y login con contraseña (rama `feat/sesion-y-login`, PR 6).
-4. PR 1.4 — Tenant y rol reales, y guardas de ruta (rama `feat/tenancy-real`, PR 7).
-5. PR 1.5 — Flags reales (rama `feat/flags-reales`, PR 8).
-6. PR 1.6 — Recuperar la contraseña y entrar con un código por email (rama `feat/recuperar-y-codigo`, PR 9).
-7. PR 1.7 — Registro y verificación del email (rama `feat/registro`, PR 10).
-8. PR 1.8 — Base de datos: invitaciones, bajas y negocio (rama `db/invitaciones-y-bajas`, PR 11).
-9. PR 1.9a — Primera pantalla y unirse con código (rama `feat/unirse-con-codigo`, PR 12).
-10. PR 1.9b — Unirse al crear la cuenta (rama `feat/unirse-tras-registro`, PR 13).
-11. PR 1.10 — Módulo `clients`: lista y código de invitación (rama `feat/modulo-clients`, PR 14).
-12. PR 1.11 — Dar de baja y reactivar a un cliente (rama `feat/baja-de-clientes`, PR 15).
-13. PR 1.12 — Crear negocio y primeros pasos del coach (rama `feat/crear-negocio`, PR 16).
-14. PR 1.13 — Perfil y cuenta (rama `feat/perfil`, PR 17).
-15. PR 1.14 — Selector de espacio y "Mis espacios" (rama `feat/selector-de-espacio`, PR 18).
-16. PR 1.15 — Marca: nombre, colores y modo (rama `feat/marca-del-coach`, PR 19).
-17. PR 1.16 — Marca: logo (rama `feat/logo-del-coach`, PR 20).
-18. PR 1.17 — Staging y emails reales (rama `chore/staging`, PR 21). Staging está en marcha y probado con emails de verdad.
+Nada. No hay ningún PR abierto.
 
 ## Siguiente
 
-1. Fusionar los 18 PR de la Fase 1 en `main`, en orden, cuando el propietario dé el visto bueno (D-064 y D-068). Con eso la Fase 1 queda cerrada.
-2. Fase 2 — Ejercicios y rutinas, en un chat nuevo.
+1. Fase 2 — módulo `exercises` (biblioteca y ejercicios propios), en un chat nuevo. Antes hay que decidir P-02 (nicho) y P-04 (cómo conviven los ejercicios de la plataforma con los de cada coach).
 
 ## Fases
 
@@ -54,7 +34,7 @@ Además de lo previsto, a petición del propietario:
 - [x] Cliente de Supabase en `core/supabase`, sin usar todavía (DECISIONES D-025)
 - [x] Tests que vigilan las reglas: fronteras de arquitectura, textos en dos idiomas y forma fija de los módulos (DECISIONES D-024 y D-029)
 
-### Fase 1 — Cuentas, negocio del coach y unirse con código
+### Fase 1 — Cuentas, negocio del coach y unirse con código — ✅ terminada el 2026-11-14
 
 El diseño está en DECISIONES D-036 a D-067, y el detalle de cada PR, en `docs/PROMPTS.md` §5.
 
@@ -149,6 +129,7 @@ Cosas que alguien ha visto y que no tocaban en su tarea. No se hacen sin convert
 
 Lo más nuevo, arriba.
 
+- 2026-11-14 — Fase 1 fusionada en `main`: los 18 PR (del 4 al 21), en orden y con "Squash and merge", por un agente con el visto bueno del propietario (D-068). En cada uno se comprobó que `main` quedaba con el contenido exacto de la rama. Dos tropiezos, ninguno del código: un test de una rama intermedia (`JoinAfterSignup`) que a veces falla por lentitud y pasó al repetirlo, y un fallo de Docker en el CI de GitHub que pasó al relanzarlo.
 - 2026-11-14 — PR 1.17 (staging, terminado): proyecto `athlete-core-staging` en Fráncfort, plan gratuito, con las 7 migraciones, los datos inventados y los 150 tests pgTAP en verde. Emails por Resend desde `no-reply@athlete-core.com` (dominio en Cloudflare, con SPF, DKIM y DMARC). Probado por el propietario: registro y recuperar la contraseña con emails de verdad, en Gmail y en Outlook, sin caer en spam. El tope de intentos cuenta la IP real de cada conexión (D-052): no hizo falta ninguna migración. D-063 revisada: sin cambios. Guía corregida: Resend va antes que `config push`, y los tests en staging piden la contraseña de la base de datos. Cerrado P-01. Los agentes fusionan con el visto bueno del propietario (D-068).
 - 2026-11-14 — PR 1.17 (staging, preparado): guía paso a paso en `supabase/README.md` (crear el proyecto en la UE, aplicar migraciones y datos inventados, configurar las cuentas con `config push`, conectar Resend, probar y reanudar si se pausa); las variables de staging en `.env.example`; `npm run dev:staging`. Comprobado en la CLI de Supabase 3.1 que los comandos de la guía existen. Falta seguirla con el propietario: necesita el dominio y las cuentas.
 - 2026-11-14 — PR 1.16 (logo): en "Marca", subir, cambiar y quitar el logo (PNG, JPG o WebP de 2 MB como máximo), con vista previa antes de guardar. Se ve en la cabecera, el selector, "Mis espacios", la vista previa del código y el registro con marca; sin logo, o si no carga, las iniciales. Migración 7: espacio `logos` en Storage (público; solo el dueño escribe en la carpeta de su negocio; el propio Storage rechaza otros formatos y más de 2 MB), `set_logo` y `remove_logo`. 19 tests pgTAP nuevos (150 en total). El test de humo del idioma pasa a hacerse sin sesión: con sesión cambiaba el idioma de la cuenta de `coach.iron` y otro test que entraba a la vez la veía en español.

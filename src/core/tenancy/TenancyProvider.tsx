@@ -36,7 +36,9 @@ export function TenancyProvider({ children, source }: TenancyProviderProps) {
     queryKey: [...MEMBERSHIPS_QUERY_KEY, userId],
     queryFn: () => tenancySource.listMemberships(userId ?? ''),
     enabled: userId !== null,
-    refetchOnWindowFocus: true,
+    // Siempre que se vuelve a la app, aunque se pidieran hace nada: así un
+    // cliente dado de baja con la app abierta lo nota al momento (D-061).
+    refetchOnWindowFocus: 'always',
   });
 
   // Al cerrar sesión no se queda en memoria nada del usuario anterior. Si la

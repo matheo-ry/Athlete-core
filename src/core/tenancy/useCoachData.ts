@@ -1,5 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
+import type { MemberActionResult } from './membership';
 import { useTenancyContext } from './useTenancy';
 
 // Datos que solo ve el coach del negocio activo: sus miembros, su código de
@@ -45,6 +46,31 @@ export function useRegenerateInviteCode() {
     mutationFn: () => source.regenerateInviteCode(tenantId ?? ''),
     onSuccess: (code) => {
       queryClient.setQueryData(['tenancy', 'invite-code', tenantId], code);
+    },
+  });
+}
+
+/**
+ * Dar de baja o reactivar a un cliente (D-055). Si sale bien, se vuelve a pedir
+ * la lista de miembros. Sin conexión no se intenta.
+ */
+export function useClientStatusChange(action: 'archive' | 'reactivate') {
+  const { source } = useTenancyContext();
+  const tenantId = useActiveTenantId();
+  const queryClient = useQueryClient();
+  return useMutation<MemberActionResult, Error, string>({
+    mutationFn: async (userId) => {
+      if (!navigator.onLine) {
+        return 'offline';
+      }
+      return action === 'archive'
+        ? source.archiveClient(tenantId ?? '', userId)
+        : source.reactivateClient(tenantId ?? '', userId);
+    },
+    onSuccess: async (result) => {
+      if (result === 'ok') {
+        await queryClient.invalidateQueries({ queryKey: tenantMembersQueryKey(tenantId) });
+      }
     },
   });
 }

@@ -16,9 +16,15 @@ export interface Membership {
   role: Role;
   status: MembershipStatus;
   joinedAt: string;
+  /** El nombre del negocio: se sabe también si el usuario fue dado de baja (D-055). */
+  tenantName: string;
   /** `null` si el usuario ya no puede ver ese negocio (dado de baja, D-055). */
   tenant: Tenant | null;
 }
+
+/** Cómo le va al usuario con un coach: 'ok', 'plan_full' al reactivar sin plazas… */
+export type MemberActionResult =
+  'ok' | 'plan_full' | 'not_allowed' | 'not_found' | 'offline' | 'error';
 
 /** De dónde salen los espacios. En la app, de Supabase; en los tests, de una lista falsa. */
 export interface TenancySource {
@@ -34,31 +40,53 @@ export interface TenancySource {
   /** Crea un código nuevo; el anterior deja de valer al instante (D-050). Solo el dueño. */
   regenerateInviteCode(tenantId: string): Promise<string>;
   getPlanLimit(tenantId: string): Promise<PlanLimit>;
+  /** Dar de baja a un cliente (D-055). Solo el dueño. */
+  archiveClient(tenantId: string, userId: string): Promise<MemberActionResult>;
+  /** Reactivar a un cliente, si hay plaza en el plan (D-055). Solo el dueño. */
+  reactivateClient(tenantId: string, userId: string): Promise<MemberActionResult>;
 }
 
-// Lo que devuelve la base de datos es un dato de fuera: se valida (AGENTS.md §4).
-const membershipRowSchema = z.object({
+// Las filas de la función my_spaces. Son un dato de fuera: se validan (AGENTS.md §4).
+const spaceRowSchema = z.object({
   tenant_id: z.string(),
   role: z.enum(ROLES),
   status: z.enum(['active', 'archived']),
-  created_at: z.string(),
-  tenant: z.object({ id: z.string(), name: z.string(), branding: z.unknown() }).nullable(),
+  joined_at: z.string(),
+  tenant_name: z.string(),
+  // Solo llega en los espacios activos: de uno dado de baja solo se sabe el nombre.
+  branding: z.unknown(),
 });
 
 export function parseMemberships(rows: unknown): Membership[] {
   return z
-    .array(membershipRowSchema)
+    .array(spaceRowSchema)
     .parse(rows)
     .map((row) => ({
       tenantId: row.tenant_id,
       role: row.role,
       status: row.status,
-      joinedAt: row.created_at,
+      joinedAt: row.joined_at,
+      tenantName: row.tenant_name,
       tenant:
-        row.tenant === null
-          ? null
-          : { id: row.tenant.id, name: row.tenant.name, branding: parseBrand(row.tenant.branding) },
+        row.status === 'active'
+          ? { id: row.tenant_id, name: row.tenant_name, branding: parseBrand(row.branding) }
+          : null,
     }));
+}
+
+/**
+ * Si el usuario no tiene ningún espacio activo pero lo dieron de baja de
+ * alguno, el nombre de ese coach (el más reciente), para decirle "Ya no tienes
+ * acceso a …" (D-055). Si no, `null`.
+ */
+export function lostAccessTo(memberships: readonly Membership[]): string | null {
+  if (activeMemberships(memberships).length > 0) {
+    return null;
+  }
+  const archived = memberships
+    .filter((membership) => membership.status === 'archived')
+    .sort((a, b) => b.joinedAt.localeCompare(a.joinedAt));
+  return archived[0]?.tenantName ?? null;
 }
 
 /** Espacios en los que el usuario puede entrar: activos y con el negocio visible. */

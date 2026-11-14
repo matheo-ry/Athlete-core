@@ -2,6 +2,7 @@ import { normalizeInviteCode } from '@/core/tenancy';
 import type {
   InvitePreview,
   JoinResult,
+  MemberActionResult,
   Membership,
   PlanLimit,
   TenancySource,
@@ -46,10 +47,15 @@ function member(
     role,
     status: 'active',
     joinedAt: '2026-11-01T10:00:00Z',
+    tenantName: tenant.name,
     tenant,
     ...overrides,
   };
 }
+
+const TENANTS_BY_ID = new Map<string, Tenant>(
+  Object.values(TEST_TENANTS).map((tenant) => [tenant.id, tenant]),
+);
 
 /** Los espacios de cada cuenta de `fake-auth-service.ts`, por email. */
 export const FAKE_MEMBERSHIPS: Readonly<Record<string, Membership[]>> = {
@@ -240,5 +246,48 @@ export function createFakeTenancySource({
     getPlanLimit(tenantId) {
       return Promise.resolve(FAKE_PLANS[tenantId] ?? { plan: 'free', maxClients: 3 });
     },
+
+    archiveClient: (tenantId, userId) => changeStatus(tenantId, userId, 'archived'),
+    reactivateClient: (tenantId, userId) => changeStatus(tenantId, userId, 'active'),
   };
+
+  // Como archive_client y reactivate_client: solo el dueño, solo a clientes, y
+  // reactivar comprueba las plazas del plan (D-055).
+  function changeStatus(
+    tenantId: string,
+    userId: string,
+    next: 'active' | 'archived',
+  ): Promise<MemberActionResult> {
+    const ownerEmail = currentEmail() ?? '';
+    const isOwner = (store.get(ownerEmail) ?? []).some(
+      (membership) => membership.tenantId === tenantId && membership.role === 'owner',
+    );
+    if (!isOwner) {
+      return Promise.resolve('not_allowed');
+    }
+    const email = userId.replace(/^user-/, '');
+    const list = store.get(email) ?? [];
+    const target = list.find(
+      (membership) => membership.tenantId === tenantId && membership.role === 'client',
+    );
+    if (target === undefined || (next === 'archived' && target.status === 'archived')) {
+      return Promise.resolve('not_found');
+    }
+    if (next === 'active' && target.status === 'archived' && isFull(tenantId)) {
+      return Promise.resolve('plan_full');
+    }
+    store.set(
+      email,
+      list.map((membership) =>
+        membership === target
+          ? {
+              ...membership,
+              status: next,
+              tenant: next === 'active' ? (TENANTS_BY_ID.get(tenantId) ?? null) : null,
+            }
+          : membership,
+      ),
+    );
+    return Promise.resolve('ok');
+  }
 }

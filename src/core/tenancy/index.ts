@@ -12,6 +12,7 @@ export { countActiveClients, parseMembers, parsePlanLimit } from './members';
 export type { PlanLimit, TenantMember } from './members';
 export {
   tenantMembersQueryKey,
+  useClientStatusChange,
   useInviteCode,
   usePlanLimit,
   useRegenerateInviteCode,
@@ -27,11 +28,12 @@ export type { PendingInvite } from './pending-invite';
 export {
   activeMemberships,
   homePathFor,
+  lostAccessTo,
   parseMemberships,
   pickActiveMembership,
   tenancyFor,
 } from './membership';
-export type { Membership, MembershipStatus, TenancySource } from './membership';
+export type { MemberActionResult, Membership, MembershipStatus, TenancySource } from './membership';
 export { RequireProfile } from './RequireProfile';
 export { MEMBERSHIPS_QUERY_KEY, TenancyProvider } from './TenancyProvider';
 export type { TenancyContextValue, TenancyStatus } from './tenancy-context';

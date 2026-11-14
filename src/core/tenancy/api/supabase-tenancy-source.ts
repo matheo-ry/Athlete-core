@@ -7,7 +7,7 @@ import { normalizeInviteCode } from '../invite-code';
 import { parseInvitePreview, parseJoinResult } from '../invite';
 import { parseMembers, parsePlanLimit } from '../members';
 import { parseMemberships } from '../membership';
-import type { TenancySource } from '../membership';
+import type { MemberActionResult, TenancySource } from '../membership';
 
 interface RpcError {
   code?: string;
@@ -25,15 +25,11 @@ function failureStatus(error: RpcError, action: string): { status: 'offline' | '
 
 export function createSupabaseTenancySource(): TenancySource {
   return {
-    // Los espacios del usuario. No hace falta filtrar por tenant a mano: el RLS
-    // solo deja ver las filas propias de tenant_members, y el negocio solo si el
-    // usuario es miembro activo (por eso un espacio dado de baja llega sin negocio).
-    async listMemberships(userId) {
-      const { data, error } = await getSupabaseClient()
-        .from('tenant_members')
-        .select('tenant_id, role, status, created_at, tenant:tenants(id, name, branding)')
-        .eq('user_id', userId)
-        .order('created_at');
+    // Los espacios del usuario que tiene la sesión (my_spaces solo devuelve los
+    // suyos). De uno dado de baja llega solo el nombre del coach (D-055). El id
+    // del usuario solo sirve para la caché: la base de datos lo saca de la sesión.
+    async listMemberships() {
+      const { data, error } = await getSupabaseClient().rpc('my_spaces');
       if (error !== null) {
         // El registro lo hace la caché de TanStack Query (app/query-client.ts).
         throw new Error(`Could not load memberships: ${error.code}`);
@@ -113,5 +109,35 @@ export function createSupabaseTenancySource(): TenancySource {
       }
       return parsePlanLimit(data);
     },
+
+    async archiveClient(tenantId, userId) {
+      const { error } = await getSupabaseClient().rpc('archive_client', {
+        p_tenant: tenantId,
+        p_user: userId,
+      });
+      return error === null ? 'ok' : memberActionFailure(error, 'archive client');
+    },
+
+    async reactivateClient(tenantId, userId) {
+      const { error } = await getSupabaseClient().rpc('reactivate_client', {
+        p_tenant: tenantId,
+        p_user: userId,
+      });
+      return error === null ? 'ok' : memberActionFailure(error, 'reactivate client');
+    },
   };
+}
+
+/** Los errores de dar de baja y reactivar, con los motivos que entiende la app. */
+function memberActionFailure(error: RpcError, action: string): MemberActionResult {
+  switch (error.message) {
+    case 'plan_limit_reached':
+      return 'plan_full';
+    case 'not_allowed':
+      return 'not_allowed';
+    case 'not_found':
+      return 'not_found';
+    default:
+      return failureStatus(error, action).status;
+  }
 }

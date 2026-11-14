@@ -7,6 +7,14 @@ export type WeightUnit = (typeof WEIGHT_UNITS)[number];
 
 export const DEFAULT_WEIGHT_UNIT: WeightUnit = 'kg';
 
+/**
+ * Unidad inicial de una cuenta nueva (DECISIONES D-058): libras si el dispositivo
+ * está en inglés de EE. UU.; kilos en el resto. El usuario la cambia en su perfil.
+ */
+export function defaultWeightUnitFor(languageTag: string | undefined): WeightUnit {
+  return languageTag?.toLowerCase() === 'en-us' ? 'lb' : DEFAULT_WEIGHT_UNIT;
+}
+
 // Valor exacto de la libra internacional.
 const KG_PER_LB = 0.45359237;
 

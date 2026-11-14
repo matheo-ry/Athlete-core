@@ -1,6 +1,20 @@
 import { describe, expect, it } from 'vitest';
 
-import { formatWeight, fromKg, kgToLb, lbToKg, toKg } from './units';
+import { defaultWeightUnitFor, formatWeight, fromKg, kgToLb, lbToKg, toKg } from './units';
+
+describe('defaultWeightUnitFor (D-058)', () => {
+  it('libras solo en inglés de EE. UU.', () => {
+    expect(defaultWeightUnitFor('en-US')).toBe('lb');
+    expect(defaultWeightUnitFor('en-us')).toBe('lb');
+  });
+
+  it('kilos en el resto', () => {
+    expect(defaultWeightUnitFor('en-GB')).toBe('kg');
+    expect(defaultWeightUnitFor('es-ES')).toBe('kg');
+    expect(defaultWeightUnitFor('en')).toBe('kg');
+    expect(defaultWeightUnitFor(undefined)).toBe('kg');
+  });
+});
 
 describe('kgToLb / lbToKg', () => {
   it('convierte kg a lb', () => {

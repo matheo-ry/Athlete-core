@@ -27,6 +27,8 @@ const CODE_KINDS: Readonly<Record<string, AuthErrorKind>> = {
   otp_disabled: 'no_account',
   user_not_found: 'no_account',
   weak_password: 'weak_password',
+  user_already_exists: 'account_exists',
+  email_exists: 'account_exists',
   same_password: 'same_password',
   current_password_required: 'wrong_password',
   current_password_invalid: 'wrong_password',

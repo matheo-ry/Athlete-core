@@ -2,6 +2,7 @@ export { Button } from './Button';
 export { buttonClassName } from './button-styles';
 export type { ButtonVariant } from './button-styles';
 export { Card } from './Card';
+export { Checkbox } from './Checkbox';
 export { EmptyState } from './EmptyState';
 export { ErrorState } from './ErrorState';
 export { Icon } from './Icon';

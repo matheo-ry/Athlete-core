@@ -1,3 +1,5 @@
+import type { SignupInput, SignupProfile } from './signup';
+
 // Tipos de la sesión. La app no conoce a Supabase: habla con un `AuthService`.
 // La implementación real vive en `api/` (la única carpeta que toca Supabase) y
 // los tests usan una falsa (`src/test/fake-auth-service.ts`).
@@ -11,6 +13,7 @@ export interface AuthUser {
 /** Por qué no se ha podido hacer algo. Cada motivo tiene su mensaje (DECISIONES D-043 y D-061). */
 export type AuthFailureReason =
   | 'no_account'
+  | 'account_exists'
   | 'wrong_password'
   | 'email_not_confirmed'
   | 'invalid_code'
@@ -44,6 +47,25 @@ export interface AuthService {
    * demás dispositivos (D-042). La actual solo hace falta si entró con contraseña.
    */
   updatePassword(newPassword: string, currentPassword?: string): Promise<AuthResult>;
+  /**
+   * Crea la cuenta y envía el código para confirmar el email (D-038 y D-040).
+   * Si el email ya tiene cuenta: 'account_exists' (confirmada) o
+   * 'email_not_confirmed' (pendiente), y no se crea nada (D-043).
+   */
+  signUp(input: SignupInput): Promise<AuthResult>;
+  /** Vuelve a enviar el código de confirmar el email. */
+  resendSignupCode(email: string): Promise<AuthResult>;
+  /** Confirma el email con el código. Si vale, el usuario queda dentro. */
+  verifySignupCode(email: string, code: string): Promise<AuthResult>;
+  /**
+   * Justo después de confirmar: guarda otra vez la contraseña recién escrita (vale
+   * siempre la última, D-043) y los datos del formulario, y apunta la aceptación
+   * de los términos. `null` en lo que no se sepa.
+   */
+  completeSignup(input: {
+    password: string | null;
+    profile: SignupProfile | null;
+  }): Promise<AuthResult>;
   /** Cierra la sesión en este dispositivo. Funciona también sin conexión. */
   signOut(): Promise<void>;
 }

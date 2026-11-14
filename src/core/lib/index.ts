@@ -5,6 +5,7 @@ export type { LogContext } from './logger';
 export {
   DEFAULT_WEIGHT_UNIT,
   WEIGHT_UNITS,
+  defaultWeightUnitFor,
   formatWeight,
   fromKg,
   kgToLb,

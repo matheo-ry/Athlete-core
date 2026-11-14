@@ -4,6 +4,7 @@ import type { AuthFailureReason } from './auth-types';
 // de cuenta (entrar, registrarse, recuperar la contraseña…).
 const FAILURE_MESSAGE_KEYS: Record<AuthFailureReason, string> = {
   no_account: 'core.auth.errors.noAccount',
+  account_exists: 'core.auth.errors.accountExists',
   wrong_password: 'core.auth.errors.wrongPassword',
   email_not_confirmed: 'core.auth.errors.notConfirmed',
   invalid_code: 'core.auth.errors.invalidCode',

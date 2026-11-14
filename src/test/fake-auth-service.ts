@@ -4,6 +4,7 @@ import type {
   AuthResult,
   AuthService,
   AuthUser,
+  SignupProfile,
 } from '@/core/auth';
 
 // Un AuthService en memoria para los tests: sin Supabase ni red. Imita lo que
@@ -30,7 +31,7 @@ export const FAKE_ACCOUNTS: readonly FakeAccount[] = [
   { email: 'pending@example.test', password: FAKE_PASSWORD, confirmed: false },
 ];
 
-export type FakeCodeKind = 'sign-in' | 'reset';
+export type FakeCodeKind = 'sign-in' | 'reset' | 'signup';
 
 interface FakeAuthOptions {
   accounts?: readonly FakeAccount[];
@@ -47,6 +48,8 @@ export interface FakeAuthService extends AuthService {
   /** Cuántas veces se cerraron las sesiones de los demás dispositivos. */
   readonly otherSessionsClosed: number;
   passwordOf(email: string): string | undefined;
+  /** Los datos guardados al completar el registro, por email. */
+  readonly completedProfiles: ReadonlyMap<string, SignupProfile>;
 }
 
 const OK: AuthResult = { ok: true };
@@ -67,6 +70,7 @@ export function createFakeAuthService({
   let current: AuthUser | null = signedInAs === null ? null : userFor(signedInAs);
   const listeners = new Set<AuthChangeListener>();
   const sentCodes: { email: string; kind: FakeCodeKind }[] = [];
+  const completedProfiles = new Map<string, SignupProfile>();
   let otherSessionsClosed = 0;
 
   const notify = (event: AuthChangeEvent) => {
@@ -92,6 +96,8 @@ export function createFakeAuthService({
     if (!wasSent || account === undefined || code !== FAKE_CODE) {
       return fail('invalid_code');
     }
+    // Confirmar el código confirma también el email, como en Supabase.
+    account.confirmed = true;
     signInAs(account.email);
     return Promise.resolve(OK);
   };
@@ -105,6 +111,9 @@ export function createFakeAuthService({
     },
     get otherSessionsClosed() {
       return otherSessionsClosed;
+    },
+    get completedProfiles() {
+      return completedProfiles;
     },
     passwordOf(email) {
       return find(email)?.password;
@@ -153,6 +162,45 @@ export function createFakeAuthService({
       }
       account.password = newPassword;
       otherSessionsClosed += 1;
+      return Promise.resolve(OK);
+    },
+
+    signUp(input) {
+      const existing = find(input.email);
+      if (existing !== undefined) {
+        // Como Supabase con confirmación: no se toca la cuenta que ya existe.
+        return fail(existing.confirmed === false ? 'email_not_confirmed' : 'account_exists');
+      }
+      store.set(input.email, { email: input.email, password: input.password, confirmed: false });
+      sentCodes.push({ email: input.email, kind: 'signup' });
+      return Promise.resolve(OK);
+    },
+
+    resendSignupCode(email) {
+      const account = find(email);
+      if (account === undefined) {
+        return fail('no_account');
+      }
+      if (account.confirmed !== false) {
+        return fail('account_exists');
+      }
+      sentCodes.push({ email: account.email, kind: 'signup' });
+      return Promise.resolve(OK);
+    },
+
+    verifySignupCode: (email, code) => verifyCode(email, code, 'signup'),
+
+    completeSignup({ password, profile }) {
+      const account = current === null ? undefined : find(current.email);
+      if (account === undefined) {
+        return fail('unknown');
+      }
+      if (password !== null) {
+        account.password = password;
+      }
+      if (profile !== null) {
+        completedProfiles.set(account.email, profile);
+      }
       return Promise.resolve(OK);
     },
 

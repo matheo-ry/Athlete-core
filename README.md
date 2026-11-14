@@ -75,13 +75,14 @@ El idioma (inglés o español) se cambia con los botones **English / Español** 
 | Comando | Qué hace |
 |---|---|
 | `npm run dev` | Arranca la app en local |
+| `npm run dev:staging` | Arranca la app en tu ordenador contra staging (necesita `.env.staging.local`; ver `supabase/README.md`) |
 | `npm run check` | Formato + lint + tipos + tests + build. **Tiene que pasar antes de pedir revisión** |
 | `npm run test` / `npm run test:watch` | Tests unitarios (una vez / al guardar) |
 | `npm run test:e2e` | Tests en un navegador de verdad. La primera vez: `npx playwright install chromium` |
 | `npm run lint:fix` y `npm run format` | Arreglan solos lo que se puede arreglar de estilo y formato |
 | `npm run new:module <nombre>` | Crea un módulo nuevo a partir de `src/modules/_template` |
 
-La lista completa está en `docs/ARQUITECTURA.md` §13. Los comandos `db:*` (base de datos local) llegan en la Fase 1.
+La lista completa está en `docs/ARQUITECTURA.md` §13. Los de la base de datos local (`db:*`) están en `supabase/README.md`.
 
 ### Si algo falla
 

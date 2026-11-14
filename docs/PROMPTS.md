@@ -165,7 +165,7 @@ No crees pantallas en este PR.
 
 ### Los PR de la Fase 1, del 1.2 al 1.17
 
-El diseño está decidido en `docs/DECISIONES.md` (D-036 a D-064). Se piden **en este orden y de uno en uno**: cada PR sale de `main` con el anterior ya fusionado o, si el anterior aún no se ha fusionado, de su rama, con el PR apilado encima (D-064).
+El diseño está decidido en `docs/DECISIONES.md` (D-036 a D-064; D-065 a D-067 lo ajustan al implementarlo). Se piden **en este orden y de uno en uno**: cada PR sale de `main` con el anterior ya fusionado o, si el anterior aún no se ha fusionado, de su rama, con el PR apilado encima (D-064).
 
 | PR | Qué hace | Rama |
 |---|---|---|

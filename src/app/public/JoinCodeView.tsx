@@ -1,10 +1,16 @@
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, useNavigate } from 'react-router';
 
 import { useAuth } from '@/core/auth';
 import { useBrandPreview } from '@/core/branding';
-import { useInvitePreview, useJoinWithCode } from '@/core/tenancy';
+import {
+  clearPendingInvite,
+  rememberPendingInvite,
+  useInvitePreview,
+  useJoinWithCode,
+  usePendingInvite,
+} from '@/core/tenancy';
 import { Button, Card, Spinner, buttonClassName } from '@/core/ui';
 
 import { BrandBadge } from '../BrandBadge';
@@ -18,19 +24,22 @@ interface JoinCodeViewProps {
 }
 
 /**
- * La vista previa del coach de un código y el alta (D-051 y D-054). Se ve con
- * la marca del coach. Sin sesión: "Crear cuenta" o "Ya tengo cuenta", y al
- * terminar se vuelve aquí. Con sesión: "Unirme".
+ * La vista previa del coach de un código y el alta (D-037, D-051 y D-054). Se ve
+ * con la marca del coach. Sin sesión: "Crear cuenta" o "Ya tengo cuenta"; el
+ * código se recuerda y, al volver aquí con la cuenta lista, el alta se hace sola.
+ * Con sesión: "Unirme".
  */
 export function JoinCodeView({ code, onOtherCode }: JoinCodeViewProps) {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { status: authStatus } = useAuth();
+  const pending = usePendingInvite();
   const { mutate: requestPreview, data: preview } = useInvitePreview();
-  const join = useJoinWithCode();
+  const { mutateAsync: joinWithCode, isPending: isJoining } = useJoinWithCode();
   const [joinFailure, setJoinFailure] = useState<JoinFailure | null>(null);
   const [ownTenant, setOwnTenant] = useState<string | null>(null);
   const requested = useRef<string | null>(null);
+  const autoJoined = useRef(false);
 
   // Una sola vez por código, aunque React repita el efecto en desarrollo: un
   // código equivocado pedido dos veces contaría dos intentos (D-052).
@@ -44,9 +53,12 @@ export function JoinCodeView({ code, onOtherCode }: JoinCodeViewProps) {
 
   useBrandPreview(preview?.status === 'ok' ? preview.branding : null);
 
-  const handleJoin = () => {
+  const handleJoin = useCallback(() => {
     setJoinFailure(null);
-    void join.mutateAsync(code).then((result) => {
+    void joinWithCode(code).then((result) => {
+      // Pase lo que pase, el código ya no queda pendiente: o ha entrado, o el
+      // mensaje dice qué hacer.
+      clearPendingInvite();
       if (result.status === 'joined' || result.status === 'already_member') {
         void navigate('/client', { replace: true });
       } else {
@@ -54,10 +66,21 @@ export function JoinCodeView({ code, onOtherCode }: JoinCodeViewProps) {
         setOwnTenant(result.status === 'own_business' ? result.tenantId : null);
       }
     });
-  };
+  }, [code, joinWithCode, navigate]);
 
-  if (preview === undefined) {
-    return <Spinner label={t('app.join.checking')} />;
+  // D-037: quien vuelve aquí tras crear la cuenta o entrar, con este código
+  // recordado, se une solo, sin volver a pulsar nada.
+  const shouldAutoJoin =
+    authStatus === 'signed-in' && pending?.code === code && preview?.status === 'ok';
+  useEffect(() => {
+    if (shouldAutoJoin && !autoJoined.current) {
+      autoJoined.current = true;
+      handleJoin();
+    }
+  }, [shouldAutoJoin, handleJoin]);
+
+  if (preview === undefined || (shouldAutoJoin && isJoining)) {
+    return <Spinner label={t(isJoining ? 'app.join.joining' : 'app.join.checking')} />;
   }
 
   if (preview.status !== 'ok') {
@@ -72,6 +95,10 @@ export function JoinCodeView({ code, onOtherCode }: JoinCodeViewProps) {
   }
 
   const next = new URLSearchParams({ next: `/join?code=${code}` }).toString();
+  // Al ir a crear la cuenta o a entrar, el código se recuerda (D-037): esas
+  // pantallas se ven con la marca del coach y, al terminar, el alta se hace sola.
+  const { name, branding } = preview;
+  const rememberCode = () => rememberPendingInvite({ code, name, branding });
 
   return (
     <>
@@ -95,17 +122,25 @@ export function JoinCodeView({ code, onOtherCode }: JoinCodeViewProps) {
               {t('app.join.goToBusiness')}
             </Button>
           ) : (
-            <Button onClick={handleJoin} disabled={join.isPending}>
-              {join.isPending ? t('app.join.joining') : t('app.join.submit')}
+            <Button onClick={handleJoin} disabled={isJoining}>
+              {isJoining ? t('app.join.joining') : t('app.join.submit')}
             </Button>
           )}
         </div>
       ) : (
         <div className="flex flex-col gap-2">
-          <Link to={`/signup?${next}`} className={buttonClassName('primary')}>
+          <Link
+            to={`/signup?${next}`}
+            onClick={rememberCode}
+            className={buttonClassName('primary')}
+          >
             {t('app.join.createAccount')}
           </Link>
-          <Link to={`/login?${next}`} className={buttonClassName('secondary')}>
+          <Link
+            to={`/login?${next}`}
+            onClick={rememberCode}
+            className={buttonClassName('secondary')}
+          >
             {t('app.join.haveAccount')}
           </Link>
         </div>

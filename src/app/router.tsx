@@ -19,6 +19,7 @@ import { JoinPage } from './public/JoinPage';
 import { LegalPage } from './public/LegalPage';
 import { LoginPage } from './public/LoginPage';
 import { NotFoundPage } from './public/NotFoundPage';
+import { PendingInviteBrand } from './public/PendingInviteBrand';
 import { PublicLayout } from './public/PublicLayout';
 import { ResetPasswordPage } from './public/ResetPasswordPage';
 import { SignupPage } from './public/SignupPage';
@@ -109,17 +110,28 @@ export function buildRoutes(modules: readonly ModuleManifest[]): RouteObject[] {
               element: <RequireGuest />,
               children: [
                 { path: 'start', element: <StartPage /> },
-                { path: 'login', element: <LoginPage /> },
-                { path: 'login/code', element: <CodeSignInPage /> },
-                { path: 'signup', element: <SignupPage /> },
+                {
+                  // Con un código recordado, se ven con la marca de ese coach (D-037).
+                  element: <PendingInviteBrand />,
+                  children: [
+                    { path: 'login', element: <LoginPage /> },
+                    { path: 'login/code', element: <CodeSignInPage /> },
+                    { path: 'signup', element: <SignupPage /> },
+                  ],
+                },
               ],
             },
             // Hasta el PR 1.12, crear negocio es un aviso de "Disponible pronto".
             { path: 'create-business', element: <ComingSoonPage /> },
-            // Recuperar la contraseña y confirmar el email siguen con sesión: el
-            // último paso ocurre después de confirmar el código.
-            { path: 'reset-password', element: <ResetPasswordPage /> },
-            { path: 'verify', element: <VerifyEmailPage /> },
+            {
+              // Recuperar la contraseña y confirmar el email siguen con sesión: el
+              // último paso ocurre después de confirmar el código.
+              element: <PendingInviteBrand />,
+              children: [
+                { path: 'reset-password', element: <ResetPasswordPage /> },
+                { path: 'verify', element: <VerifyEmailPage /> },
+              ],
+            },
             // Se pueden leer con sesión y sin ella (D-060).
             { path: 'legal/terms', element: <LegalPage document="terms" /> },
             { path: 'legal/privacy', element: <LegalPage document="privacy" /> },

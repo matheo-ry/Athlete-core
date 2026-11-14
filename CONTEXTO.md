@@ -24,7 +24,7 @@
 - **Fase actual:** 1 — Cuentas, negocio del coach y unirse con código.
 - **Última tarea terminada:** PR 1.16 — Marca: logo (2026-11-14), rama `feat/logo-del-coach`.
 - **En curso:** PR abiertos y apilados, esperando revisión del propietario (D-064). La lista, en `docs/ESTADO.md`.
-- **Siguiente tarea:** Fase 1, PR 1.17 — Staging y emails reales. Antes, el propietario necesita el dominio (P-01) y las cuentas de Supabase y Resend. Los 16 PR de la fase (1.2 a 1.17) están en orden, con sus criterios de aceptación, en `docs/PROMPTS.md` §5.
+- **Siguiente tarea:** Fase 1, PR 1.17 — Staging y emails reales. Está preparado en borrador (rama `chore/staging`): falta seguir con el propietario la guía de `supabase/README.md`. Antes, él necesita el dominio (P-01) y las cuentas de Supabase y Resend. Los 16 PR de la fase (1.2 a 1.17) están en orden, con sus criterios de aceptación, en `docs/PROMPTS.md` §5.
 
 ## Cómo funcionará la Fase 1 (ya decidido)
 
@@ -53,7 +53,7 @@
 
 ## Qué falta (lo próximo)
 
-- **Staging y emails reales** (PR 1.17): necesita el dominio (P-01) y las cuentas del propietario.
+- **Staging y emails reales** (PR 1.17): la guía está escrita; se sigue con el propietario cuando tenga el dominio (P-01) y las cuentas de Supabase y Resend.
 - Las guardas por sesión y por rol son comodidad, no seguridad: los datos los protege el RLS.
 
 ## Últimos cambios

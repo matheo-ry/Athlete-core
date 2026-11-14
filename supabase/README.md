@@ -39,3 +39,79 @@ La base de datos del proyecto (ARQUITECTURA §8). Supabase en local necesita Doc
 | `npm run db:types` | Regenera `src/core/supabase/database.types.ts` (va en el mismo commit que la migración) |
 
 Al escribir un test nuevo: cada archivo crea pgTAP y da permiso de ejecución a sus funciones dentro de la transacción, porque las funciones nuevas nacen sin permisos (D-032). Copia la cabecera de un test existente.
+
+## Guía: poner en marcha staging (PR 1.17)
+
+Staging es una copia de la app en la nube, con datos inventados, para probar con emails de verdad antes de producción (D-013). La sigue el propietario con un agente al lado: cada paso dice quién hace qué. **Es solo para staging.** Producción la crea y la toca solo el propietario (AGENTS.md, regla 12).
+
+**Antes de empezar hace falta:** el dominio (P-01), una cuenta de Supabase (plan gratuito, D-063) y una cuenta de Resend (D-046).
+
+**Contraseñas y claves:** la contraseña de la base de datos, la clave de Resend y cualquier clave secreta de Supabase van solo al panel que corresponda y a tu gestor de contraseñas. Nunca al repositorio, a un archivo que se suba ni al chat.
+
+### 1. Crear el proyecto (tú, en el panel de Supabase)
+
+1. En supabase.com, **New project**. Nombre: `athlete-core-staging`. Región: una de la Unión Europea, por ejemplo **Central EU (Frankfurt)** (D-060). Ojo: Londres y Zúrich no son de la Unión Europea.
+2. Genera la contraseña de la base de datos con el botón del panel y guárdala en tu gestor de contraseñas.
+3. Apunta tres cosas (no son secretas): el **Project ref** (el código de la dirección del panel, `…/project/<ref>`), la **Project URL** y la **publishable key** (Settings → API Keys).
+4. Comprueba D-063 con el agente: que el plan es Free, cuántos proyectos activos permite, que no hay copias de seguridad recuperables (Database → Backups) y el aviso de pausa por falta de uso. Si algo ha cambiado, el agente corrige D-063.
+
+### 2. Aplicar las migraciones y los datos inventados (tú escribes, el agente te guía)
+
+```
+npx supabase login
+npx supabase link --project-ref <ref de staging>
+npx supabase db push --remote --dry-run
+npx supabase db push --remote --include-seed
+npx supabase test db --remote
+```
+
+- `login` abre el navegador para entrar en tu cuenta de Supabase. `link` pide la contraseña de la base de datos.
+- `--dry-run` solo enseña las migraciones que se aplicarán (todas las de `migrations/`, en orden). Revisadlas juntos antes del siguiente paso.
+- `--include-seed` carga `seed.sql`: los mismos coaches y clientes inventados que en local, con la contraseña `password123`. Solo en staging, nunca en producción.
+- `test db --remote` pasa los tests de seguridad en staging. No deja nada: cada test se deshace al terminar.
+
+### 3. Configurar las cuentas igual que en local (tú confirmas, el agente revisa)
+
+```
+npx supabase config diff
+npx supabase config push
+```
+
+- `config diff` enseña qué cambiaría en staging sin tocar nada. `config push` lo aplica después de preguntarte (por defecto, "no").
+- Sube lo que dice `config.toml`: confirmar el email, contraseña de 8 caracteres como mínimo y pedir la actual para cambiarla, códigos de 6 dígitos que caducan a los 15 minutos y 60 segundos entre uno y otro, las 4 plantillas de email en dos idiomas, el aviso de contraseña cambiada y el tope de 100 emails por hora (D-038 a D-046).
+- `site_url` es la dirección local (`http://localhost:5173`). No importa por ahora: los emails no llevan enlaces (D-039). Cuando haya web publicada (P-03), el agente añade la dirección de staging.
+- Si `config diff` no enseña las plantillas, se pegan a mano en Authentication → Emails, desde `templates/`.
+
+### 4. Conectar Resend para enviar los emails (tú, con el agente)
+
+1. En Resend, **Domains → Add domain** con tu dominio. Resend te da unos registros DNS: añádelos donde compraste el dominio y espera a que el dominio salga como **Verified**. Añade también el registro DMARC que te recomiende el agente: ayuda a que los emails no caigan en spam.
+2. En Resend, **API Keys → Create API key**, con permiso solo para enviar y solo desde tu dominio. Se ve una sola vez: pégala directamente en el paso siguiente.
+3. En Supabase, **Authentication → Emails → SMTP Settings**, activa el envío propio:
+
+   | Campo | Valor |
+   |---|---|
+   | Sender email | `no-reply@<tu dominio>` |
+   | Sender name | `ATHLETE CORE` |
+   | Host | `smtp.resend.com` |
+   | Port | `465` |
+   | Username | `resend` |
+   | Password | la API key de Resend |
+
+4. En Supabase, **Authentication → Rate Limits**, comprueba que el tope de emails por hora es **100** (D-046). Supabase solo deja subirlo con el envío propio activado.
+
+### 5. Probar desde tu ordenador contra staging (tú)
+
+1. Crea en la carpeta del proyecto el archivo `.env.staging.local` (no se sube a Git) con lo que apuntaste en el paso 1:
+
+   ```
+   VITE_APP_ENV=staging
+   VITE_SUPABASE_URL=<Project URL de staging>
+   VITE_SUPABASE_PUBLISHABLE_KEY=<publishable key de staging>
+   ```
+
+2. Arranca la app contra staging con `npm run dev:staging` y ábrela en <http://localhost:5173>.
+3. Comprueba los criterios del PR 1.17: te registras con tu email de verdad y el código llega en menos de un minuto; el remitente es "ATHLETE CORE" con una dirección de tu dominio; no cae en spam en Gmail ni en Outlook; llega en español o en inglés según el idioma de la app; recuperar la contraseña funciona de principio a fin.
+
+### 6. Si staging se pausa
+
+Con el plan gratuito, un proyecto que pasa una semana sin uso se pausa (D-063). En el panel de Supabase, abre el proyecto y pulsa **Restore project**: tarda un par de minutos y no se pierde nada.

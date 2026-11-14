@@ -25,11 +25,12 @@ PR abiertos, apilados y esperando revisión (D-064). Se fusionan en este orden:
 14. PR 1.13 — Perfil y cuenta (rama `feat/perfil`, PR 17).
 15. PR 1.14 — Selector de espacio y "Mis espacios" (rama `feat/selector-de-espacio`, PR 18).
 16. PR 1.15 — Marca: nombre, colores y modo (rama `feat/marca-del-coach`, PR 19).
-17. PR 1.16 — Marca: logo (rama `feat/logo-del-coach`).
+17. PR 1.16 — Marca: logo (rama `feat/logo-del-coach`, PR 20).
+18. PR 1.17 — Staging y emails reales: **preparado, en borrador** (rama `chore/staging`). Tiene la guía paso a paso, las variables de staging y `npm run dev:staging`. Se termina con el propietario siguiendo la guía.
 
 ## Siguiente
 
-1. Fase 1, PR 1.17 — Staging y emails reales. **Necesita antes al propietario:** el dominio (P-01) y las cuentas de Supabase y Resend. El prompt está en `docs/PROMPTS.md` §5.
+1. Fase 1, PR 1.17 — terminar staging con el propietario: **antes hacen falta** el dominio (P-01) y las cuentas de Supabase y Resend. La guía está en `supabase/README.md`, "Guía: poner en marcha staging". Al terminarla, la Fase 1 queda hecha.
 
 ## Fases
 
@@ -143,6 +144,7 @@ Cosas que alguien ha visto y que no tocaban en su tarea. No se hacen sin convert
 
 Lo más nuevo, arriba.
 
+- 2026-11-14 — PR 1.17 (staging, preparado): guía paso a paso en `supabase/README.md` (crear el proyecto en la UE, aplicar migraciones y datos inventados, configurar las cuentas con `config push`, conectar Resend, probar y reanudar si se pausa); las variables de staging en `.env.example`; `npm run dev:staging`. Comprobado en la CLI de Supabase 3.1 que los comandos de la guía existen. Falta seguirla con el propietario: necesita el dominio y las cuentas.
 - 2026-11-14 — PR 1.16 (logo): en "Marca", subir, cambiar y quitar el logo (PNG, JPG o WebP de 2 MB como máximo), con vista previa antes de guardar. Se ve en la cabecera, el selector, "Mis espacios", la vista previa del código y el registro con marca; sin logo, o si no carga, las iniciales. Migración 7: espacio `logos` en Storage (público; solo el dueño escribe en la carpeta de su negocio; el propio Storage rechaza otros formatos y más de 2 MB), `set_logo` y `remove_logo`. 19 tests pgTAP nuevos (150 en total). El test de humo del idioma pasa a hacerse sin sesión: con sesión cambiaba el idioma de la cuenta de `coach.iron` y otro test que entraba a la vez la veía en español.
 - 2026-11-14 — PR 1.15 (marca): "Marca" en los ajustes del coach, solo para el dueño: nombre del negocio (cambia también el de la marca), color principal y de acento (12 de la paleta o uno propio, escrito o con la rueda de colores), modo claro u oscuro, una vista previa que cambia antes de guardar y "Volver a los colores de ATHLETE CORE". Migración 6 con `update_brand`, que valida cada dato; `name` y `branding` ya no se cambian a mano (D-067). 14 tests pgTAP nuevos (131 en total).
 - 2026-11-14 — PR 1.14 (espacios): con varios espacios y ninguno elegido en el dispositivo, el selector `/select` (primero el negocio propio, cada uno con su distintivo y "Coach" o "Cliente"); el elegido se recuerda en el dispositivo y se olvida al cerrar sesión (D-066). "Mis espacios" en el perfil y en los ajustes: cambiar de espacio, "Añadir un coach con código" y "Crear mi negocio". Al unirse a un coach o crear el negocio se entra en el espacio nuevo sin pasar un momento por la bienvenida (antes pasaba, y un test fallaba de vez en cuando por eso). `coach.iron@example.com` ve ahora el selector al entrar.

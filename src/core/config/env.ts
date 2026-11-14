@@ -12,11 +12,10 @@ const rawEnvSchema = z.object({
     emptyToUndefined,
     z.enum(['local', 'staging', 'production']).default('local'),
   ),
-  // Opcionales en la Fase 0: todavía no hay base de datos. En la Fase 1 pasan a
-  // ser obligatorias.
-  VITE_SUPABASE_URL: z.preprocess(emptyToUndefined, z.url().optional()),
+  // Obligatorias desde la Fase 1 (DECISIONES D-025): sin base de datos no hay app.
+  VITE_SUPABASE_URL: z.preprocess(emptyToUndefined, z.url()),
   // Clave PÚBLICA de Supabase (publishable / anon). La clave secreta de servicio nunca entra aquí.
-  VITE_SUPABASE_PUBLISHABLE_KEY: z.preprocess(emptyToUndefined, z.string().min(1).optional()),
+  VITE_SUPABASE_PUBLISHABLE_KEY: z.preprocess(emptyToUndefined, z.string().min(1)),
 });
 
 export interface SupabaseEnv {
@@ -26,32 +25,21 @@ export interface SupabaseEnv {
 
 export interface AppEnv {
   appEnv: 'local' | 'staging' | 'production';
-  /** `null` mientras no se configuren las dos variables de Supabase. */
-  supabase: SupabaseEnv | null;
+  supabase: SupabaseEnv;
 }
 
 export function parseEnv(raw: unknown): AppEnv {
   const result = rawEnvSchema.safeParse(raw);
   if (!result.success) {
-    throw new Error(`Invalid environment variables: ${z.prettifyError(result.error)}`);
-  }
-
-  const { VITE_APP_ENV, VITE_SUPABASE_URL, VITE_SUPABASE_PUBLISHABLE_KEY } = result.data;
-  const hasUrl = VITE_SUPABASE_URL !== undefined;
-  const hasKey = VITE_SUPABASE_PUBLISHABLE_KEY !== undefined;
-
-  if (hasUrl !== hasKey) {
     throw new Error(
-      'Invalid environment variables: VITE_SUPABASE_URL and VITE_SUPABASE_PUBLISHABLE_KEY must be set together',
+      `Invalid environment variables (copy .env.example to .env.local and fill it in): ${z.prettifyError(result.error)}`,
     );
   }
 
+  const { VITE_APP_ENV, VITE_SUPABASE_URL, VITE_SUPABASE_PUBLISHABLE_KEY } = result.data;
   return {
     appEnv: VITE_APP_ENV,
-    supabase:
-      hasUrl && hasKey
-        ? { url: VITE_SUPABASE_URL, publishableKey: VITE_SUPABASE_PUBLISHABLE_KEY }
-        : null,
+    supabase: { url: VITE_SUPABASE_URL, publishableKey: VITE_SUPABASE_PUBLISHABLE_KEY },
   };
 }
 

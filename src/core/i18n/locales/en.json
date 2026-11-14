@@ -28,7 +28,12 @@
         "passwordRequired": "Enter your password.",
         "noAccount": "There's no account with this email.",
         "wrongPassword": "The password is not correct.",
-        "notConfirmed": "This account is waiting for email confirmation."
+        "notConfirmed": "This account is waiting for email confirmation.",
+        "invalidCode": "The code is not correct or has expired.",
+        "codeRequired": "Enter the 6 digits of the code.",
+        "passwordTooShort": "The password must have at least 8 characters.",
+        "passwordTooLong": "The password can have at most 72 characters.",
+        "samePassword": "The new password must be different from the old one."
       }
     }
   },
@@ -48,7 +53,9 @@
       "passwordLabel": "Password",
       "submit": "Sign in",
       "submitting": "Signing in…",
-      "sessionExpired": "Your session has expired. Please sign in again."
+      "sessionExpired": "Your session has expired. Please sign in again.",
+      "forgotPassword": "Forgot my password",
+      "codeSignIn": "Sign in with a code by email"
     },
     "coachHome": {
       "title": "Coach dashboard",
@@ -82,6 +89,37 @@
       "title": "Page not found",
       "description": "The page you are looking for doesn't exist or was moved.",
       "action": "Go to home"
+    },
+    "codeStep": {
+      "title": "Check your email",
+      "sentTo": "We've sent a 6-digit code to {{email}}.",
+      "label": "Code",
+      "submit": "Continue",
+      "verifying": "Checking…",
+      "resend": "Send another code",
+      "resendIn": "Send another code in {{seconds}} s",
+      "resent": "We've sent you a new code.",
+      "changeEmail": "Use another email"
+    },
+    "emailStep": {
+      "emailLabel": "Email",
+      "submit": "Send code",
+      "sending": "Sending…",
+      "back": "Back to sign in"
+    },
+    "codeSignIn": {
+      "title": "Sign in with a code",
+      "description": "We'll email you a 6-digit code. You won't need your password."
+    },
+    "resetPassword": {
+      "title": "Forgot your password?",
+      "description": "We'll email you a code to choose a new one.",
+      "newTitle": "Choose a new password",
+      "newDescription": "You'll use it from now on to sign in.",
+      "newLabel": "New password",
+      "newHint": "At least 8 characters.",
+      "save": "Save password",
+      "saving": "Saving…"
     }
   }
 }

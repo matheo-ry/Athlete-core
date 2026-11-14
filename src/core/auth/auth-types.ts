@@ -10,7 +10,15 @@ export interface AuthUser {
 
 /** Por qué no se ha podido hacer algo. Cada motivo tiene su mensaje (DECISIONES D-043 y D-061). */
 export type AuthFailureReason =
-  'no_account' | 'wrong_password' | 'email_not_confirmed' | 'rate_limited' | 'offline' | 'unknown';
+  | 'no_account'
+  | 'wrong_password'
+  | 'email_not_confirmed'
+  | 'invalid_code'
+  | 'weak_password'
+  | 'same_password'
+  | 'rate_limited'
+  | 'offline'
+  | 'unknown';
 
 export type AuthResult = { ok: true } | { ok: false; reason: AuthFailureReason };
 
@@ -23,6 +31,19 @@ export interface AuthService {
   /** Avisa de cada cambio. La primera llamada ('initial') dice si ya había sesión. */
   onChange(listener: AuthChangeListener): () => void;
   signInWithPassword(email: string, password: string): Promise<AuthResult>;
+  /** Envía un código de 6 dígitos para entrar sin contraseña. No crea cuentas (D-039). */
+  sendSignInCode(email: string): Promise<AuthResult>;
+  /** Entra con el código del email. */
+  verifySignInCode(email: string, code: string): Promise<AuthResult>;
+  /** Envía un código para cambiar la contraseña (D-042). */
+  sendPasswordResetCode(email: string): Promise<AuthResult>;
+  /** Comprueba el código de cambiar la contraseña. Si vale, el usuario queda dentro. */
+  verifyPasswordResetCode(email: string, code: string): Promise<AuthResult>;
+  /**
+   * Cambia la contraseña del usuario que ha entrado y cierra sus sesiones en los
+   * demás dispositivos (D-042). La actual solo hace falta si entró con contraseña.
+   */
+  updatePassword(newPassword: string, currentPassword?: string): Promise<AuthResult>;
   /** Cierra la sesión en este dispositivo. Funciona también sin conexión. */
   signOut(): Promise<void>;
 }

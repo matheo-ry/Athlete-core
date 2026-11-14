@@ -28,7 +28,12 @@
         "passwordRequired": "Escribe tu contraseña.",
         "noAccount": "No hay ninguna cuenta con este email.",
         "wrongPassword": "La contraseña no es correcta.",
-        "notConfirmed": "Esta cuenta está pendiente de confirmar."
+        "notConfirmed": "Esta cuenta está pendiente de confirmar.",
+        "invalidCode": "El código no es correcto o ha caducado.",
+        "codeRequired": "Escribe los 6 dígitos del código.",
+        "passwordTooShort": "La contraseña tiene que tener al menos 8 caracteres.",
+        "passwordTooLong": "La contraseña puede tener 72 caracteres como máximo.",
+        "samePassword": "La contraseña nueva tiene que ser distinta de la anterior."
       }
     }
   },
@@ -48,7 +53,9 @@
       "passwordLabel": "Contraseña",
       "submit": "Entrar",
       "submitting": "Entrando…",
-      "sessionExpired": "Tu sesión ha caducado. Vuelve a entrar."
+      "sessionExpired": "Tu sesión ha caducado. Vuelve a entrar.",
+      "forgotPassword": "He olvidado mi contraseña",
+      "codeSignIn": "Entrar con un código por email"
     },
     "coachHome": {
       "title": "Panel del coach",
@@ -82,6 +89,37 @@
       "title": "Página no encontrada",
       "description": "La página que buscas no existe o se ha movido.",
       "action": "Ir al inicio"
+    },
+    "codeStep": {
+      "title": "Revisa tu email",
+      "sentTo": "Te hemos enviado un código de 6 dígitos a {{email}}.",
+      "label": "Código",
+      "submit": "Continuar",
+      "verifying": "Comprobando…",
+      "resend": "Enviar otro código",
+      "resendIn": "Enviar otro código en {{seconds}} s",
+      "resent": "Te hemos enviado un código nuevo.",
+      "changeEmail": "Usar otro email"
+    },
+    "emailStep": {
+      "emailLabel": "Email",
+      "submit": "Enviar código",
+      "sending": "Enviando…",
+      "back": "Volver a entrar"
+    },
+    "codeSignIn": {
+      "title": "Entrar con un código",
+      "description": "Te enviaremos por email un código de 6 dígitos. No te hará falta la contraseña."
+    },
+    "resetPassword": {
+      "title": "¿Has olvidado tu contraseña?",
+      "description": "Te enviaremos por email un código para elegir una nueva.",
+      "newTitle": "Elige una contraseña nueva",
+      "newDescription": "La usarás a partir de ahora para entrar.",
+      "newLabel": "Contraseña nueva",
+      "newHint": "Al menos 8 caracteres.",
+      "save": "Guardar contraseña",
+      "saving": "Guardando…"
     }
   }
 }

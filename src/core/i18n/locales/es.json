@@ -222,8 +222,7 @@
       "submitting": "Creando…"
     },
     "coachSettings": {
-      "title": "Ajustes",
-      "soon": "Aquí estará muy pronto tu marca."
+      "title": "Ajustes"
     },
     "clientProfile": {
       "title": "Perfil"
@@ -265,6 +264,49 @@
       "current": "Estás aquí",
       "addCoach": "Añadir un coach con código",
       "createBusiness": "Crear mi negocio"
+    },
+    "brand": {
+      "title": "Marca",
+      "description": "Cómo ven la app tus clientes: el nombre de tu negocio, tus colores y el modo claro u oscuro.",
+      "nameLabel": "Nombre de tu negocio",
+      "nameHint": "Lo ven tus clientes. Entre 2 y 40 caracteres.",
+      "nameTooShort": "Escribe al menos 2 caracteres.",
+      "nameTooLong": "El nombre puede tener 40 caracteres como máximo.",
+      "primaryLabel": "Color principal",
+      "primaryCustomLabel": "Tu propio color principal",
+      "accentLabel": "Color de acento",
+      "accentCustomLabel": "Tu propio color de acento",
+      "customHint": "Como #1E5BD8.",
+      "pickerLabel": "O elígelo en la rueda de colores",
+      "colorInvalid": "Escribe un color como #1E5BD8.",
+      "modeLabel": "Modo",
+      "modeDark": "Oscuro",
+      "modeLight": "Claro",
+      "previewLabel": "Vista previa",
+      "previewTitle": "Hoy",
+      "previewBadge": "Nuevo",
+      "previewText": "Así verán la app tus clientes.",
+      "previewButton": "Empezar entreno",
+      "previewLink": "Ver mi progreso",
+      "reset": "Volver a los colores de ATHLETE CORE",
+      "save": "Guardar marca",
+      "saving": "Guardando…",
+      "saved": "Guardado. Tus clientes lo verán la próxima vez que abran la app.",
+      "notAllowed": "Solo el dueño del negocio puede cambiar la marca.",
+      "palette": {
+        "blue": "Azul",
+        "sky": "Celeste",
+        "teal": "Verde azulado",
+        "green": "Verde",
+        "lime": "Lima",
+        "yellow": "Amarillo",
+        "orange": "Naranja",
+        "red": "Rojo",
+        "pink": "Rosa",
+        "purple": "Morado",
+        "indigo": "Índigo",
+        "slate": "Gris pizarra"
+      }
     }
   }
 }

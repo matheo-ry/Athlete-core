@@ -22,9 +22,9 @@
 ## Dónde estamos
 
 - **Fase actual:** 1 — Cuentas, negocio del coach y unirse con código.
-- **Última tarea terminada:** PR 1.9b — Unirse al crear la cuenta (2026-11-14), rama `feat/unirse-tras-registro`.
+- **Última tarea terminada:** PR 1.10 — Módulo `clients`: lista y código de invitación (2026-11-14), rama `feat/modulo-clients`.
 - **En curso:** PR abiertos y apilados, esperando revisión del propietario (D-064). La lista, en `docs/ESTADO.md`.
-- **Siguiente tarea:** Fase 1, PR 1.10 — Módulo `clients`: lista y código de invitación. Los 16 PR de la fase (1.2 a 1.17) están en orden, con sus criterios de aceptación, en `docs/PROMPTS.md` §5.
+- **Siguiente tarea:** Fase 1, PR 1.11 — Dar de baja y reactivar a un cliente. Los 16 PR de la fase (1.2 a 1.17) están en orden, con sus criterios de aceptación, en `docs/PROMPTS.md` §5.
 
 ## Cómo funcionará la Fase 1 (ya decidido)
 
@@ -47,17 +47,18 @@
 ## Qué falta (lo próximo)
 
 - **Unirse con código** (PR 1.9): `/start`, `/join?code=…` con la vista previa del coach y "Unirme"; el código se recuerda mientras se crea la cuenta y el alta se hace sola al terminar.
-- **Faltan** clientes, crear negocio, perfil, espacios y marca: PR 1.10 a 1.16.
+- **Módulo `clients`** (PR 1.10): el primero del producto. Lista de clientes con plazas del plan y la tarjeta del código de invitación.
+- **Faltan** dar de baja (1.11), crear negocio, perfil, espacios y marca: PR 1.11 a 1.16.
 - Las guardas por sesión y por rol son comodidad, no seguridad: los datos los protege el RLS.
 
 ## Últimos cambios
 
 Los 5 más recientes, el más nuevo arriba. El historial completo está en `docs/ESTADO.md`.
 
+- 2026-11-14 — PR 1.10: módulo `clients` con la lista de clientes y el código de invitación.
 - 2026-11-14 — PR 1.9b: el código se recuerda al crear la cuenta y el alta se hace sola.
 - 2026-11-14 — PR 1.9a: primera pantalla y unirse con código, con la vista previa del coach.
 - 2026-11-14 — PR 1.8: invitaciones, bajas y crear negocio en la base de datos; topes para redes compartidas (D-065).
-- 2026-11-14 — PR 1.7: registro y confirmar el email; vale siempre la última contraseña.
 - 2026-11-14 — Diseño de la Fase 1: decisiones D-036 a D-064, lista de los 16 PR en `docs/PROMPTS.md` §5 y ARQUITECTURA §7, §8 y §10 al día.
 
 ## A tener en cuenta ahora

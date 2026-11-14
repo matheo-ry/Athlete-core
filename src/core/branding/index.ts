@@ -1,5 +1,14 @@
 export { brandInitials } from './brand-initials';
 export { BRAND_PALETTE, normalizeHexColor } from './brand-palette';
+export {
+  LOGO_ACCEPT,
+  LOGO_BUCKET,
+  LOGO_MAX_BYTES,
+  checkLogoFile,
+  logoPathFor,
+  logoUrl,
+} from './logo';
+export type { LogoProblem, LogoType } from './logo';
 export type { PaletteColor } from './brand-palette';
 export { BrandProvider } from './BrandProvider';
 export { brandSchema } from './brand-schema';

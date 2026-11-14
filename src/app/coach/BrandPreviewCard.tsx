@@ -8,6 +8,8 @@ import { BrandBadge } from '../BrandBadge';
 
 interface BrandPreviewCardProps {
   brand: Brand;
+  /** El logo elegido y aún sin guardar (`null`: quitado). Si no se pasa, el guardado. */
+  logoSrc?: string | null | undefined;
 }
 
 /**
@@ -16,7 +18,7 @@ interface BrandPreviewCardProps {
  * de contraste que la app de verdad. Solo cambia este recuadro: el resto de la
  * app sigue con la marca guardada hasta pulsar "Guardar".
  */
-export function BrandPreviewCard({ brand }: BrandPreviewCardProps) {
+export function BrandPreviewCard({ brand, logoSrc }: BrandPreviewCardProps) {
   const { t } = useTranslation();
   // Las clases de color (bg-primary, text-foreground…) leen estas variables.
   const style = { ...brandToCssVars(brand), colorScheme: brand.mode } as CSSProperties;
@@ -30,7 +32,7 @@ export function BrandPreviewCard({ brand }: BrandPreviewCardProps) {
       className="bg-background text-foreground border-border overflow-hidden rounded-lg border"
     >
       <div className="bg-surface border-border flex items-center gap-3 border-b p-3">
-        <BrandBadge brand={brand} />
+        <BrandBadge brand={brand} logoSrc={logoSrc} />
         <span className="font-semibold">{brand.appName}</span>
       </div>
       <div className="flex flex-col gap-3 p-4">

@@ -1,6 +1,12 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
-import type { BrandInput, MemberActionResult, UpdateBrandResult } from './membership';
+import type {
+  BrandInput,
+  LogoChange,
+  MemberActionResult,
+  SaveLogoResult,
+  UpdateBrandResult,
+} from './membership';
 import { useTenancyContext } from './useTenancy';
 
 // Datos que solo ve el coach del negocio activo: sus miembros, su código de
@@ -75,22 +81,47 @@ export function useClientStatusChange(action: 'archive' | 'reactivate') {
   });
 }
 
+const LOGO_FAILURES: Record<Exclude<SaveLogoResult['status'], 'ok'>, UpdateBrandResult> = {
+  too_large: 'logo_too_large',
+  invalid_type: 'logo_invalid_type',
+  not_allowed: 'not_allowed',
+  offline: 'offline',
+  error: 'error',
+};
+
 /**
- * Guardar la marca del negocio activo (D-057). Si sale bien, se vuelven a pedir
- * los espacios: la marca nueva se ve al momento en toda la app del coach. Sin
- * conexión no se intenta.
+ * Guardar la marca del negocio activo (D-057): nombre, colores, modo y logo.
+ * Primero el logo: si el archivo no se puede subir, no cambia nada. Después se
+ * vuelven a pedir los espacios, para que la marca nueva se vea al momento en
+ * toda la app del coach, y se borra el archivo del logo anterior. Sin conexión
+ * no se intenta.
  */
 export function useUpdateBrand() {
-  const { source, refresh } = useTenancyContext();
-  const tenantId = useActiveTenantId();
-  return useMutation<UpdateBrandResult, Error, BrandInput>({
-    mutationFn: async (input) => {
+  const { source, refresh, tenancy } = useTenancyContext();
+  const tenantId = tenancy.tenant?.id ?? '';
+  const currentLogo = tenancy.tenant?.branding.logoPath ?? null;
+  return useMutation<UpdateBrandResult, Error, { brand: BrandInput; logo: LogoChange }>({
+    mutationFn: async ({ brand, logo }) => {
       if (!navigator.onLine) {
         return 'offline';
       }
-      const result = await source.updateBrand(tenantId ?? '', input);
-      if (result === 'ok') {
-        await refresh();
+      if (logo.kind === 'replace') {
+        const saved = await source.saveLogo(tenantId, logo.file);
+        if (saved.status !== 'ok') {
+          return LOGO_FAILURES[saved.status];
+        }
+      }
+      if (logo.kind === 'remove' && currentLogo !== null) {
+        const removed = await source.removeLogo(tenantId);
+        if (removed !== 'ok') {
+          return removed;
+        }
+      }
+      const result = await source.updateBrand(tenantId, brand);
+      // Aunque falle, el logo puede haber cambiado ya: se piden los espacios igual.
+      await refresh();
+      if (logo.kind !== 'keep' && currentLogo !== null) {
+        await source.deleteLogoFile(currentLogo);
       }
       return result;
     },

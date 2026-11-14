@@ -1,4 +1,4 @@
-import { screen, within } from '@testing-library/react';
+import { fireEvent, screen, waitFor, within } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 
 import { createFakeTenancySource, TEST_TENANTS } from '@/test/fake-tenancy-source';
@@ -141,5 +141,161 @@ describe('la marca del coach (PR 1.15)', () => {
 
     expect(await screen.findByRole('heading', { name: 'My account' })).toBeVisible();
     expect(screen.queryByRole('heading', { name: 'Brand' })).toBeNull();
+  });
+});
+
+const MB = 1024 * 1024;
+const OLD_LOGO = `${TEST_TENANTS.iron.id}/old-logo.png`;
+
+function imageFile(name: string, type: string, size = 1000): File {
+  const file = new File(['fake image'], name, { type });
+  Object.defineProperty(file, 'size', { value: size });
+  return file;
+}
+
+/** Las imágenes del logo guardado que se ven fuera de la vista previa (cabecera, espacios…). */
+function savedLogosInApp(): HTMLElement[] {
+  const preview = screen.getByTestId('brand-preview');
+  return screen
+    .queryAllByTestId('brand-logo')
+    .filter((img) => !preview.contains(img) && img.getAttribute('src')?.includes('/logos/'));
+}
+
+/** Iron Lab con un logo ya guardado. */
+function ironWithLogo() {
+  const iron = {
+    ...TEST_TENANTS.iron,
+    branding: { ...TEST_TENANTS.iron.branding, logoPath: OLD_LOGO },
+  };
+  return createFakeTenancySource({
+    currentEmail: () => 'coach@example.test',
+    memberships: {
+      'coach@example.test': [
+        {
+          tenantId: iron.id,
+          role: 'owner',
+          status: 'active',
+          joinedAt: '2026-11-01T10:00:00Z',
+          tenantName: iron.name,
+          tenant: iron,
+        },
+      ],
+    },
+  });
+}
+
+describe('el logo (PR 1.16)', () => {
+  it('se ve en la vista previa al elegirlo y, al guardar, en toda la app', async () => {
+    const { user } = await openBrand();
+    expect(savedLogosInApp()).toHaveLength(0);
+
+    fireEvent.change(screen.getByLabelText('Upload logo'), {
+      target: { files: [imageFile('logo.png', 'image/png')] },
+    });
+
+    const preview = screen.getByTestId('brand-preview');
+    expect(await within(preview).findByTestId('brand-logo')).toHaveAttribute(
+      'src',
+      expect.stringMatching(/^data:image\/png/),
+    );
+    expect(savedLogosInApp()).toHaveLength(0);
+
+    await user.click(screen.getByRole('button', { name: 'Save brand' }));
+
+    await screen.findByText('Saved. Your clients will see it the next time they open the app.');
+    await waitFor(() =>
+      expect(savedLogosInApp()[0]).toHaveAttribute(
+        'src',
+        `http://127.0.0.1:54321/storage/v1/object/public/logos/${TEST_TENANTS.iron.id}/fake-logo-1.png`,
+      ),
+    );
+    // También en "Mis espacios".
+    expect(
+      within(screen.getByRole('list', { name: 'Your spaces' })).getByTestId('brand-logo'),
+    ).toBeVisible();
+    expect(screen.getByRole('button', { name: 'Remove logo' })).toBeVisible();
+  });
+
+  it('con una imagen de más de 2 MB, o un SVG o un PDF, lo dice y no la usa', async () => {
+    await openBrand();
+    const input = screen.getByLabelText('Upload logo');
+
+    fireEvent.change(input, { target: { files: [imageFile('big.png', 'image/png', 3 * MB)] } });
+    expect(screen.getByRole('alert')).toHaveTextContent("The logo can't be larger than 2 MB.");
+
+    fireEvent.change(input, { target: { files: [imageFile('logo.svg', 'image/svg+xml')] } });
+    expect(screen.getByRole('alert')).toHaveTextContent(
+      'Format not supported. Use PNG, JPG or WebP.',
+    );
+
+    fireEvent.change(input, { target: { files: [imageFile('logo.pdf', 'application/pdf')] } });
+    expect(screen.getByRole('alert')).toHaveTextContent(
+      'Format not supported. Use PNG, JPG or WebP.',
+    );
+    expect(within(screen.getByTestId('brand-preview')).queryByTestId('brand-logo')).toBeNull();
+  });
+
+  it('"Quitar logo" vuelve a enseñar las iniciales y borra el archivo', async () => {
+    const tenancy = ironWithLogo();
+    const { user } = await renderApp('/coach/settings', { tenancy });
+    await screen.findByRole('heading', { name: 'Brand' });
+    expect(savedLogosInApp().length).toBeGreaterThan(0);
+
+    await user.click(screen.getByRole('button', { name: 'Remove logo' }));
+    const preview = screen.getByTestId('brand-preview');
+    expect(within(preview).getByTestId('brand-initials')).toHaveTextContent('IL');
+
+    await user.click(screen.getByRole('button', { name: 'Save brand' }));
+
+    await screen.findByText('Saved. Your clients will see it the next time they open the app.');
+    await waitFor(() => expect(savedLogosInApp()).toHaveLength(0));
+    expect(screen.getByLabelText('Upload logo')).toBeInTheDocument();
+    expect(tenancy.deletedLogoFiles).toEqual([OLD_LOGO]);
+  });
+
+  it('cambiar el logo borra el archivo del anterior', async () => {
+    const tenancy = ironWithLogo();
+    const { user } = await renderApp('/coach/settings', { tenancy });
+    await screen.findByRole('heading', { name: 'Brand' });
+
+    fireEvent.change(screen.getByLabelText('Change logo'), {
+      target: { files: [imageFile('new.webp', 'image/webp')] },
+    });
+    // La vista previa ya tenía el logo anterior: hay que esperar a la imagen nueva.
+    await waitFor(() =>
+      expect(within(screen.getByTestId('brand-preview')).getByTestId('brand-logo')).toHaveAttribute(
+        'src',
+        expect.stringMatching(/^data:image\/webp/),
+      ),
+    );
+    await user.click(screen.getByRole('button', { name: 'Save brand' }));
+
+    await screen.findByText('Saved. Your clients will see it the next time they open the app.');
+    await waitFor(() =>
+      expect(savedLogosInApp()[0]).toHaveAttribute(
+        'src',
+        expect.stringContaining('fake-logo-1.webp'),
+      ),
+    );
+    expect(tenancy.deletedLogoFiles).toEqual([OLD_LOGO]);
+    // La vista previa enseña ya el logo guardado, no la imagen elegida.
+    expect(within(screen.getByTestId('brand-preview')).getByTestId('brand-logo')).toHaveAttribute(
+      'src',
+      expect.stringContaining('fake-logo-1.webp'),
+    );
+  });
+
+  it('si el logo no carga, se ven las iniciales', async () => {
+    await renderApp('/coach/settings', { tenancy: ironWithLogo() });
+    await screen.findByRole('heading', { name: 'Brand' });
+    const logos = savedLogosInApp();
+    const initialsBefore = screen.queryAllByTestId('brand-initials').length;
+    const [logo] = logos;
+
+    fireEvent.error(logo as HTMLElement);
+
+    expect(logo).not.toBeInTheDocument();
+    expect(savedLogosInApp()).toHaveLength(logos.length - 1);
+    expect(screen.getAllByTestId('brand-initials')).toHaveLength(initialsBefore + 1);
   });
 });

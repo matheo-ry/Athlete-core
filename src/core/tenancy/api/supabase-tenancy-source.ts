@@ -1,6 +1,7 @@
 import { z } from 'zod';
 
 import { isNetworkError } from '../../auth/auth-errors';
+import { LOGO_BUCKET, checkLogoFile, logoPathFor } from '../../branding/logo';
 import { logger } from '../../lib';
 import { getSupabaseClient } from '../../supabase';
 import { normalizeInviteCode } from '../invite-code';
@@ -166,7 +167,83 @@ export function createSupabaseTenancySource(): TenancySource {
       }
       return failureStatus(error, 'update brand').status;
     },
+
+    // El logo va en Storage, en la carpeta del negocio, con un nombre nuevo cada
+    // vez (D-057). Storage vuelve a comprobar el formato y el tamaño, y que es
+    // el dueño. Después set_logo lo apunta en la marca.
+    async saveLogo(tenantId, file) {
+      const problem = checkLogoFile(file);
+      const path = logoPathFor(tenantId, file.type, crypto.randomUUID());
+      if (problem !== null || path === null) {
+        return { status: problem ?? 'invalid_type' };
+      }
+      const client = getSupabaseClient();
+      const upload = await client.storage
+        .from(LOGO_BUCKET)
+        .upload(path, file, { contentType: file.type, upsert: false });
+      if (upload.error !== null) {
+        return { status: storageFailure(upload.error, 'upload logo') };
+      }
+      const { error } = await client.rpc('set_logo', { p_tenant: tenantId, p_path: path });
+      if (error !== null) {
+        // Sin apuntarlo en la marca, el archivo no sirve: se borra.
+        await client.storage.from(LOGO_BUCKET).remove([path]);
+        return {
+          status:
+            error.message === 'not_allowed'
+              ? 'not_allowed'
+              : failureStatus(error, 'set logo').status,
+        };
+      }
+      return { status: 'ok', path };
+    },
+
+    async removeLogo(tenantId) {
+      const { error } = await getSupabaseClient().rpc('remove_logo', { p_tenant: tenantId });
+      if (error === null) {
+        return 'ok';
+      }
+      return error.message === 'not_allowed'
+        ? 'not_allowed'
+        : failureStatus(error, 'remove logo').status;
+    },
+
+    async deleteLogoFile(path) {
+      const { error } = await getSupabaseClient().storage.from(LOGO_BUCKET).remove([path]);
+      if (error !== null) {
+        // El logo ya no se ve; solo queda un archivo de más en Storage.
+        logger.warn('Tenancy: could not delete an old logo file', { status: error.status });
+      }
+    },
   };
+}
+
+interface StorageFailure {
+  message: string;
+  status?: number | undefined;
+  statusCode?: string | undefined;
+}
+
+/** Los errores de Storage al subir un logo, con los motivos que entiende la app. */
+function storageFailure(
+  error: StorageFailure,
+  action: string,
+): 'too_large' | 'invalid_type' | 'not_allowed' | 'offline' | 'error' {
+  const status = error.status ?? Number(error.statusCode ?? 0);
+  if (status === 413 || /maximum allowed size/i.test(error.message)) {
+    return 'too_large';
+  }
+  if (status === 415 || /mime type/i.test(error.message)) {
+    return 'invalid_type';
+  }
+  if (status === 403 || /row-level security/i.test(error.message)) {
+    return 'not_allowed';
+  }
+  if (isNetworkError(error)) {
+    return 'offline';
+  }
+  logger.error(`Tenancy: ${action} failed`, { status });
+  return 'error';
 }
 
 /** Los errores de dar de baja y reactivar, con los motivos que entiende la app. */

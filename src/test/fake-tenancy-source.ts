@@ -1,4 +1,4 @@
-import { DEFAULT_BRAND } from '@/core/branding';
+import { DEFAULT_BRAND, checkLogoFile, logoPathFor } from '@/core/branding';
 import { normalizeInviteCode } from '@/core/tenancy';
 import type {
   CreateBusinessResult,
@@ -7,6 +7,7 @@ import type {
   MemberActionResult,
   Membership,
   PlanLimit,
+  SaveLogoResult,
   TenancySource,
   Tenant,
   TenantMember,
@@ -113,6 +114,8 @@ interface FakeTenancyOptions {
 export interface FakeTenancySource extends TenancySource {
   /** Cuántas veces se ha probado un código equivocado. */
   readonly failedAttempts: number;
+  /** Los archivos de logos viejos que la app ha pedido borrar. */
+  readonly deletedLogoFiles: readonly string[];
 }
 
 const userIdFor = (email: string) => `user-${email}`;
@@ -129,9 +132,20 @@ export function createFakeTenancySource({
     ['IRONLAB1', TEST_TENANTS.iron],
     ['NORTE001', TEST_TENANTS.norte],
   ]);
+  // Los negocios: los de siempre y, si un test pasa espacios propios, los suyos
+  // (por ejemplo, Iron Lab con un logo ya guardado).
   const tenants = new Map(TENANTS_BY_ID);
+  for (const list of Object.values(memberships)) {
+    for (const membership of list) {
+      if (membership.tenant !== null) {
+        tenants.set(membership.tenant.id, membership.tenant);
+      }
+    }
+  }
   const plans = new Map(Object.entries(FAKE_PLANS));
   let failedAttempts = 0;
+  let logoCount = 0;
+  const deletedLogoFiles: string[] = [];
 
   const findTenant = (code: string): Tenant | undefined => {
     const tenant = codes.get(normalizeInviteCode(code));
@@ -287,12 +301,8 @@ export function createFakeTenancySource({
     // Como update_brand: solo el dueño; nombre de 2 a 40, colores #RRGGBB y modo
     // claro u oscuro. El nombre del negocio y el de la marca cambian a la vez.
     updateBrand(tenantId, { name, primary, accent, mode }) {
-      const email = currentEmail() ?? '';
-      const isOwner = (store.get(email) ?? []).some(
-        (membership) => membership.tenantId === tenantId && membership.role === 'owner',
-      );
       const current = tenants.get(tenantId);
-      if (!isOwner || current === undefined) {
+      if (!isOwnerOf(tenantId) || current === undefined) {
         return Promise.resolve('not_allowed');
       }
       const trimmed = name.trim();
@@ -303,7 +313,7 @@ export function createFakeTenancySource({
       if (!hex.test(primary) || !hex.test(accent)) {
         return Promise.resolve('invalid_color');
       }
-      const next: Tenant = {
+      applyTenant({
         id: tenantId,
         name: trimmed,
         branding: {
@@ -312,30 +322,73 @@ export function createFakeTenancySource({
           colors: { primary: primary.toUpperCase(), accent: accent.toUpperCase() },
           mode,
         },
-      };
-      tenants.set(tenantId, next);
-      for (const [code, tenant] of codes) {
-        if (tenant.id === tenantId) {
-          codes.set(code, next);
-        }
-      }
-      for (const [memberEmail, list] of store) {
-        store.set(
-          memberEmail,
-          list.map((membership) =>
-            membership.tenantId === tenantId
-              ? {
-                  ...membership,
-                  tenantName: trimmed,
-                  tenant: membership.tenant === null ? null : next,
-                }
-              : membership,
-          ),
-        );
-      }
+      });
       return Promise.resolve('ok');
     },
+
+    // Como Storage y set_logo: formato y tamaño, y solo el dueño.
+    saveLogo(tenantId, file): Promise<SaveLogoResult> {
+      const current = tenants.get(tenantId);
+      if (!isOwnerOf(tenantId) || current === undefined) {
+        return Promise.resolve({ status: 'not_allowed' });
+      }
+      const problem = checkLogoFile(file);
+      if (problem !== null) {
+        return Promise.resolve({ status: problem });
+      }
+      logoCount += 1;
+      const path = logoPathFor(tenantId, file.type, `fake-logo-${logoCount}`) ?? '';
+      applyTenant({ ...current, branding: { ...current.branding, logoPath: path } });
+      return Promise.resolve({ status: 'ok', path });
+    },
+
+    removeLogo(tenantId) {
+      const current = tenants.get(tenantId);
+      if (!isOwnerOf(tenantId) || current === undefined) {
+        return Promise.resolve('not_allowed');
+      }
+      applyTenant({ ...current, branding: { ...current.branding, logoPath: null } });
+      return Promise.resolve('ok');
+    },
+
+    deleteLogoFile(path) {
+      deletedLogoFiles.push(path);
+      return Promise.resolve();
+    },
+
+    deletedLogoFiles,
   };
+
+  function isOwnerOf(tenantId: string): boolean {
+    return (store.get(currentEmail() ?? '') ?? []).some(
+      (membership) => membership.tenantId === tenantId && membership.role === 'owner',
+    );
+  }
+
+  // Un negocio cambiado se ve igual en todas partes: sus espacios, sus códigos
+  // y la vista previa.
+  function applyTenant(next: Tenant): void {
+    tenants.set(next.id, next);
+    for (const [code, tenant] of codes) {
+      if (tenant.id === next.id) {
+        codes.set(code, next);
+      }
+    }
+    for (const [memberEmail, list] of store) {
+      store.set(
+        memberEmail,
+        list.map((membership) =>
+          membership.tenantId === next.id
+            ? {
+                ...membership,
+                tenantName: next.name,
+                tenant: membership.tenant === null ? null : next,
+              }
+            : membership,
+        ),
+      );
+    }
+  }
 
   // Como archive_client y reactivate_client: solo el dueño, solo a clientes, y
   // reactivar comprueba las plazas del plan (D-055).

@@ -2,31 +2,44 @@ import { useState } from 'react';
 import type { FormEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { DEFAULT_BRAND, normalizeHexColor } from '@/core/branding';
+import { DEFAULT_BRAND, checkLogoFile, normalizeHexColor } from '@/core/branding';
 import type { Brand, BrandMode } from '@/core/branding';
 import { useUpdateBrand } from '@/core/tenancy';
-import type { Tenant, UpdateBrandResult } from '@/core/tenancy';
+import type { LogoChange, Tenant, UpdateBrandResult } from '@/core/tenancy';
 import { Button, Card, Input } from '@/core/ui';
 
 import { BrandPreviewCard } from './BrandPreviewCard';
 import { ColorChoice } from './ColorChoice';
+import { LogoChoice } from './LogoChoice';
 import { ModeChoice } from './ModeChoice';
 
 interface BrandSectionProps {
   tenant: Tenant;
 }
 
+/**
+ * El logo en el borrador: el guardado, uno nuevo (con su imagen para verlo) o
+ * ninguno. `base` es el logo guardado cuando se eligió el cambio: si el guardado
+ * cambia (porque se acaba de guardar), el cambio ya está hecho.
+ */
+type LogoDraft =
+  | { kind: 'keep' }
+  | { kind: 'replace'; file: File; dataUrl: string; base: string | null }
+  | { kind: 'remove'; base: string | null };
+
 interface Draft {
   name: string;
   primary: string;
   accent: string;
   mode: BrandMode;
+  logo: LogoDraft;
 }
 
 interface DraftErrors {
   name?: string;
   primary?: string;
   accent?: string;
+  logo?: string;
 }
 
 const NAME_MIN = 2;
@@ -35,6 +48,8 @@ const NAME_MAX = 40; // D-057: el mismo límite que al crear el negocio (D-049)
 const FAILURE_KEYS: Record<Exclude<UpdateBrandResult, 'ok'>, string> = {
   invalid_name: 'app.brand.nameTooShort',
   invalid_color: 'app.brand.colorInvalid',
+  logo_too_large: 'app.brand.logoTooLarge',
+  logo_invalid_type: 'app.brand.logoInvalidType',
   not_allowed: 'app.brand.notAllowed',
   offline: 'core.errors.offline',
   error: 'core.errors.unexpected',
@@ -46,14 +61,23 @@ function draftFrom(tenant: Tenant): Draft {
     primary: tenant.branding.colors.primary,
     accent: tenant.branding.colors.accent,
     mode: tenant.branding.mode,
+    logo: { kind: 'keep' },
   };
+}
+
+function toLogoChange(logo: LogoDraft): LogoChange {
+  if (logo.kind === 'replace') {
+    return { kind: 'replace', file: logo.file };
+  }
+  return { kind: logo.kind };
 }
 
 /**
  * "Marca" en los ajustes del coach, solo para el dueño (D-057): el nombre del
- * negocio, los colores principal y de acento, el modo claro u oscuro, una vista
- * previa antes de guardar y "Volver a los colores de ATHLETE CORE". Al guardar
- * cambia toda su app, y la de sus clientes la próxima vez que la abran.
+ * negocio, el logo, los colores principal y de acento, el modo claro u oscuro,
+ * una vista previa antes de guardar y "Volver a los colores de ATHLETE CORE".
+ * Al guardar cambia toda su app, y la de sus clientes la próxima vez que la
+ * abran.
  */
 export function BrandSection({ tenant }: BrandSectionProps) {
   const { t } = useTranslation();
@@ -77,6 +101,48 @@ export function BrandSection({ tenant }: BrandSectionProps) {
     },
     mode: draft.mode,
   };
+  // Un cambio de logo deja de estar pendiente en cuanto llega la marca guardada:
+  // así la vista previa no vuelve un momento al logo anterior al guardar.
+  const logo: LogoDraft =
+    draft.logo.kind !== 'keep' && draft.logo.base !== tenant.branding.logoPath
+      ? { kind: 'keep' }
+      : draft.logo;
+  const logoSrc =
+    logo.kind === 'replace' ? logo.dataUrl : logo.kind === 'remove' ? null : undefined;
+  const hasLogo =
+    logo.kind === 'replace' || (logo.kind === 'keep' && tenant.branding.logoPath !== null);
+
+  // Se comprueba al elegirlo, para avisar sin esperar a guardar (D-057).
+  const pickLogo = (file: File) => {
+    const problem = checkLogoFile(file);
+    if (problem !== null) {
+      setErrors((previous) => ({
+        ...previous,
+        logo: t(problem === 'too_large' ? 'app.brand.logoTooLarge' : 'app.brand.logoInvalidType'),
+      }));
+      return;
+    }
+    setErrors((previous) => ({ ...previous, logo: undefined }));
+    const reader = new FileReader();
+    reader.onload = () => {
+      if (typeof reader.result === 'string') {
+        change({
+          logo: { kind: 'replace', file, dataUrl: reader.result, base: tenant.branding.logoPath },
+        });
+      }
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const removeLogo = () => {
+    setErrors((previous) => ({ ...previous, logo: undefined }));
+    change({
+      logo:
+        tenant.branding.logoPath === null
+          ? { kind: 'keep' }
+          : { kind: 'remove', base: tenant.branding.logoPath },
+    });
+  };
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -98,13 +164,18 @@ export function BrandSection({ tenant }: BrandSectionProps) {
     if (primary === null || accent === null || nextErrors.name !== undefined) {
       return;
     }
-    void updateBrand.mutateAsync({ name, primary, accent, mode: draft.mode }).then((result) => {
-      setMessage(
-        result === 'ok'
-          ? { text: t('app.brand.saved'), isError: false }
-          : { text: t(FAILURE_KEYS[result]), isError: true },
-      );
-    });
+    void updateBrand
+      .mutateAsync({
+        brand: { name, primary, accent, mode: draft.mode },
+        logo: toLogoChange(logo),
+      })
+      .then((result) => {
+        setMessage(
+          result === 'ok'
+            ? { text: t('app.brand.saved'), isError: false }
+            : { text: t(FAILURE_KEYS[result]), isError: true },
+        );
+      });
   };
 
   const resetColors = () => {
@@ -134,6 +205,14 @@ export function BrandSection({ tenant }: BrandSectionProps) {
           onChange={(event) => change({ name: event.target.value })}
           error={errors.name}
         />
+        <LogoChoice
+          brand={preview}
+          logoSrc={logoSrc}
+          hasLogo={hasLogo}
+          onPick={pickLogo}
+          onRemove={removeLogo}
+          error={errors.logo}
+        />
         <ColorChoice
           name="primary"
           legend={t('app.brand.primaryLabel')}
@@ -154,7 +233,7 @@ export function BrandSection({ tenant }: BrandSectionProps) {
 
         <div className="flex flex-col gap-1.5">
           <span className="text-sm font-medium">{t('app.brand.previewLabel')}</span>
-          <BrandPreviewCard brand={preview} />
+          <BrandPreviewCard brand={preview} logoSrc={logoSrc} />
         </div>
 
         {message !== null ? (

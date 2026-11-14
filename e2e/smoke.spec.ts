@@ -62,16 +62,17 @@ test('un cliente de Norte Strength ve la marca de su coach', async ({ page }) =>
   await expect(page.locator('html')).toHaveAttribute('style', /--brand-primary: #0f766e;/);
 });
 
+// Sin sesión: con sesión, el idioma se guarda en la cuenta (D-058) y otro test
+// que entrara a la vez con el mismo usuario del seed lo vería cambiado.
 test('el selector de idioma cambia entre inglés y español', async ({ page }) => {
-  await signIn(page, 'coach.iron@example.com');
-  await chooseSpace(page, 'Iron Lab');
-  await expect(page.getByRole('heading', { name: 'Coach dashboard' })).toBeVisible();
+  await page.goto('/login');
+  await expect(page.getByRole('heading', { name: 'Sign in' })).toBeVisible();
 
   await page.getByRole('button', { name: 'Español' }).first().click();
-  await expect(page.getByRole('heading', { name: 'Panel del coach' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Entrar' })).toBeVisible();
 
   await page.getByRole('button', { name: 'English' }).first().click();
-  await expect(page.getByRole('heading', { name: 'Coach dashboard' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Sign in' })).toBeVisible();
 });
 
 test('el módulo de ejemplo aparece en el menú y carga sus datos', async ({ page }) => {

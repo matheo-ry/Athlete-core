@@ -24,11 +24,12 @@ PR abiertos, apilados y esperando revisión (D-064). Se fusionan en este orden:
 13. PR 1.12 — Crear negocio y primeros pasos del coach (rama `feat/crear-negocio`, PR 16).
 14. PR 1.13 — Perfil y cuenta (rama `feat/perfil`, PR 17).
 15. PR 1.14 — Selector de espacio y "Mis espacios" (rama `feat/selector-de-espacio`, PR 18).
-16. PR 1.15 — Marca: nombre, colores y modo (rama `feat/marca-del-coach`).
+16. PR 1.15 — Marca: nombre, colores y modo (rama `feat/marca-del-coach`, PR 19).
+17. PR 1.16 — Marca: logo (rama `feat/logo-del-coach`).
 
 ## Siguiente
 
-1. Fase 1, PR 1.16 — Marca: logo. El prompt está en `docs/PROMPTS.md` §5, con los 16 PR de la fase en orden.
+1. Fase 1, PR 1.17 — Staging y emails reales. **Necesita antes al propietario:** el dominio (P-01) y las cuentas de Supabase y Resend. El prompt está en `docs/PROMPTS.md` §5.
 
 ## Fases
 
@@ -73,7 +74,7 @@ El diseño está en DECISIONES D-036 a D-064, y el detalle de cada PR, en `docs/
 - [x] PR 1.13 — Perfil y cuenta
 - [x] PR 1.14 — Selector de espacio y "Mis espacios"
 - [x] PR 1.15 — Marca: nombre, colores y modo
-- [ ] PR 1.16 — Marca: logo
+- [x] PR 1.16 — Marca: logo
 - [ ] PR 1.17 — Staging y emails reales (necesita el dominio, P-01)
 
 ### Fase 2 — Ejercicios y rutinas (coach)
@@ -122,6 +123,9 @@ Cosas que alguien ha visto y que no tocaban en su tarea. No se hacen sin convert
 - Que el coach vea el email de sus clientes, si lo piden para distinguir nombres repetidos (D-059).
 - Avisar por email al cliente cuando su coach lo da de baja o lo reactiva (D-055).
 - Foto de perfil y cambiar el email de la cuenta (D-058).
+- Recortar o encuadrar el logo dentro de la app (PR 1.16 no lo incluye).
+- Borrar los archivos de logos que quedaran sueltos en Storage si, al cambiar el logo, falla el borrado del anterior (hoy solo se registra).
+- Que los clientes vean la marca nueva al momento con la app abierta, sin tener que volver a ella (necesitaría una conexión en tiempo real).
 - Borrar solas las cuentas que llevan días sin confirmar el email.
 - Captcha en las pantallas sin sesión, si el tope de intentos por dirección IP no basta (D-052).
 - Qué ven los miembros de un negocio suspendido o cancelado (llega con los pagos, Fase 5).
@@ -139,6 +143,7 @@ Cosas que alguien ha visto y que no tocaban en su tarea. No se hacen sin convert
 
 Lo más nuevo, arriba.
 
+- 2026-11-14 — PR 1.16 (logo): en "Marca", subir, cambiar y quitar el logo (PNG, JPG o WebP de 2 MB como máximo), con vista previa antes de guardar. Se ve en la cabecera, el selector, "Mis espacios", la vista previa del código y el registro con marca; sin logo, o si no carga, las iniciales. Migración 7: espacio `logos` en Storage (público; solo el dueño escribe en la carpeta de su negocio; el propio Storage rechaza otros formatos y más de 2 MB), `set_logo` y `remove_logo`. 19 tests pgTAP nuevos (150 en total). El test de humo del idioma pasa a hacerse sin sesión: con sesión cambiaba el idioma de la cuenta de `coach.iron` y otro test que entraba a la vez la veía en español.
 - 2026-11-14 — PR 1.15 (marca): "Marca" en los ajustes del coach, solo para el dueño: nombre del negocio (cambia también el de la marca), color principal y de acento (12 de la paleta o uno propio, escrito o con la rueda de colores), modo claro u oscuro, una vista previa que cambia antes de guardar y "Volver a los colores de ATHLETE CORE". Migración 6 con `update_brand`, que valida cada dato; `name` y `branding` ya no se cambian a mano (D-067). 14 tests pgTAP nuevos (131 en total).
 - 2026-11-14 — PR 1.14 (espacios): con varios espacios y ninguno elegido en el dispositivo, el selector `/select` (primero el negocio propio, cada uno con su distintivo y "Coach" o "Cliente"); el elegido se recuerda en el dispositivo y se olvida al cerrar sesión (D-066). "Mis espacios" en el perfil y en los ajustes: cambiar de espacio, "Añadir un coach con código" y "Crear mi negocio". Al unirse a un coach o crear el negocio se entra en el espacio nuevo sin pasar un momento por la bienvenida (antes pasaba, y un test fallaba de vez en cuando por eso). `coach.iron@example.com` ve ahora el selector al entrar.
 - 2026-11-14 — PR 1.13 (perfil y cuenta): "Perfil" en el menú del cliente y "Mi cuenta" en los Ajustes del coach, con nombre (lo ve el coach en su lista), idioma (se guarda en la cuenta: al entrar en otro dispositivo, la app se pone en ese idioma, y los emails llegan en él), kilos o libras, el email (solo se ve), cambiar la contraseña (pide la actual salvo a quien entró con un código; cierra los demás dispositivos y llega un aviso por email), los textos legales y "Cerrar sesión", que sale de la cabecera. El cliente ve "Powered by ATHLETE CORE". En el seed, todos los usuarios tienen la cuenta en inglés (lo esperan los tests) salvo carla, en español.

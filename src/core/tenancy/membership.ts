@@ -49,7 +49,17 @@ export interface TenancySource {
   createBusiness(name: string, coachTermsVersion: string): Promise<CreateBusinessResult>;
   /** Guardar el nombre, los colores y el modo del negocio (D-057). Solo el dueño. */
   updateBrand(tenantId: string, input: BrandInput): Promise<UpdateBrandResult>;
+  /** Subir un logo nuevo y apuntarlo en la marca (D-057). Solo el dueño. */
+  saveLogo(tenantId: string, file: File): Promise<SaveLogoResult>;
+  /** Quitar el logo de la marca: se vuelven a ver las iniciales. Solo el dueño. */
+  removeLogo(tenantId: string): Promise<'ok' | 'not_allowed' | 'offline' | 'error'>;
+  /** Borrar el archivo de un logo que ya no se usa. Si falla, solo se registra. */
+  deleteLogoFile(path: string): Promise<void>;
 }
+
+export type SaveLogoResult =
+  | { status: 'ok'; path: string }
+  | { status: 'too_large' | 'invalid_type' | 'not_allowed' | 'offline' | 'error' };
 
 /** Lo que el coach cambia de su marca. El nombre es a la vez el del negocio y el de la marca. */
 export interface BrandInput {
@@ -60,7 +70,17 @@ export interface BrandInput {
 }
 
 export type UpdateBrandResult =
-  'ok' | 'invalid_name' | 'invalid_color' | 'not_allowed' | 'offline' | 'error';
+  | 'ok'
+  | 'invalid_name'
+  | 'invalid_color'
+  | 'logo_too_large'
+  | 'logo_invalid_type'
+  | 'not_allowed'
+  | 'offline'
+  | 'error';
+
+/** Qué pasa con el logo al guardar la marca: se deja, se cambia por otro o se quita. */
+export type LogoChange = { kind: 'keep' } | { kind: 'replace'; file: File } | { kind: 'remove' };
 
 export type CreateBusinessResult =
   | { status: 'created'; tenantId: string }

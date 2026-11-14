@@ -267,7 +267,7 @@
     },
     "brand": {
       "title": "Marca",
-      "description": "Cómo ven la app tus clientes: el nombre de tu negocio, tus colores y el modo claro u oscuro.",
+      "description": "Cómo ven la app tus clientes: el nombre de tu negocio, tu logo, tus colores y el modo claro u oscuro.",
       "nameLabel": "Nombre de tu negocio",
       "nameHint": "Lo ven tus clientes. Entre 2 y 40 caracteres.",
       "nameTooShort": "Escribe al menos 2 caracteres.",
@@ -306,7 +306,14 @@
         "purple": "Morado",
         "indigo": "Índigo",
         "slate": "Gris pizarra"
-      }
+      },
+      "logoLabel": "Logo",
+      "logoHint": "PNG, JPG o WebP, de 2 MB como máximo. Queda mejor cuadrado y de 256 px o más.",
+      "logoUpload": "Subir logo",
+      "logoChange": "Cambiar logo",
+      "logoRemove": "Quitar logo",
+      "logoTooLarge": "El logo no puede pasar de 2 MB.",
+      "logoInvalidType": "Formato no admitido. Usa PNG, JPG o WebP."
     }
   }
 }

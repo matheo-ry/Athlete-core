@@ -42,6 +42,8 @@ export type {
   BrandInput,
   CreateBusinessResult,
   HomePath,
+  LogoChange,
+  SaveLogoResult,
   UpdateBrandResult,
   MemberActionResult,
   Membership,

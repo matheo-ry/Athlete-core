@@ -18,6 +18,7 @@ export {
   usePlanLimit,
   useRegenerateInviteCode,
   useTenantMembers,
+  useUpdateBrand,
 } from './useCoachData';
 export {
   clearPendingInvite,
@@ -38,8 +39,10 @@ export {
   tenancyFor,
 } from './membership';
 export type {
+  BrandInput,
   CreateBusinessResult,
   HomePath,
+  UpdateBrandResult,
   MemberActionResult,
   Membership,
   MembershipStatus,

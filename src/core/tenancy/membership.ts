@@ -1,5 +1,6 @@
 import { z } from 'zod';
 
+import type { BrandMode } from '../branding/brand-schema';
 import { parseBrand } from '../branding/parse-brand';
 import type { InvitePreview, JoinResult } from './invite';
 import type { PlanLimit, TenantMember } from './members';
@@ -46,7 +47,20 @@ export interface TenancySource {
   reactivateClient(tenantId: string, userId: string): Promise<MemberActionResult>;
   /** Crear el negocio del usuario, que pasa a ser su dueño (D-049 y D-060). */
   createBusiness(name: string, coachTermsVersion: string): Promise<CreateBusinessResult>;
+  /** Guardar el nombre, los colores y el modo del negocio (D-057). Solo el dueño. */
+  updateBrand(tenantId: string, input: BrandInput): Promise<UpdateBrandResult>;
 }
+
+/** Lo que el coach cambia de su marca. El nombre es a la vez el del negocio y el de la marca. */
+export interface BrandInput {
+  name: string;
+  primary: string;
+  accent: string;
+  mode: BrandMode;
+}
+
+export type UpdateBrandResult =
+  'ok' | 'invalid_name' | 'invalid_color' | 'not_allowed' | 'offline' | 'error';
 
 export type CreateBusinessResult =
   | { status: 'created'; tenantId: string }

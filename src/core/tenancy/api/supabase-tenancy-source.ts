@@ -143,6 +143,29 @@ export function createSupabaseTenancySource(): TenancySource {
       });
       return error === null ? 'ok' : memberActionFailure(error, 'reactivate client');
     },
+
+    // update_brand valida otra vez el nombre, los colores y el modo, y solo deja
+    // al dueño (D-057).
+    async updateBrand(tenantId, { name, primary, accent, mode }) {
+      const { error } = await getSupabaseClient().rpc('update_brand', {
+        p_tenant: tenantId,
+        p_name: name,
+        p_primary: primary,
+        p_accent: accent,
+        p_mode: mode,
+      });
+      if (error === null) {
+        return 'ok';
+      }
+      if (
+        error.message === 'invalid_name' ||
+        error.message === 'invalid_color' ||
+        error.message === 'not_allowed'
+      ) {
+        return error.message;
+      }
+      return failureStatus(error, 'update brand').status;
+    },
   };
 }
 

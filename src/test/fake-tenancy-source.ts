@@ -283,6 +283,58 @@ export function createFakeTenancySource({
       store.set(email, [...own, member(tenant, 'owner', { joinedAt: new Date().toISOString() })]);
       return Promise.resolve({ status: 'created', tenantId: tenant.id });
     },
+
+    // Como update_brand: solo el dueño; nombre de 2 a 40, colores #RRGGBB y modo
+    // claro u oscuro. El nombre del negocio y el de la marca cambian a la vez.
+    updateBrand(tenantId, { name, primary, accent, mode }) {
+      const email = currentEmail() ?? '';
+      const isOwner = (store.get(email) ?? []).some(
+        (membership) => membership.tenantId === tenantId && membership.role === 'owner',
+      );
+      const current = tenants.get(tenantId);
+      if (!isOwner || current === undefined) {
+        return Promise.resolve('not_allowed');
+      }
+      const trimmed = name.trim();
+      if (trimmed.length < 2 || trimmed.length > 40) {
+        return Promise.resolve('invalid_name');
+      }
+      const hex = /^#[0-9a-fA-F]{6}$/;
+      if (!hex.test(primary) || !hex.test(accent)) {
+        return Promise.resolve('invalid_color');
+      }
+      const next: Tenant = {
+        id: tenantId,
+        name: trimmed,
+        branding: {
+          ...current.branding,
+          appName: trimmed,
+          colors: { primary: primary.toUpperCase(), accent: accent.toUpperCase() },
+          mode,
+        },
+      };
+      tenants.set(tenantId, next);
+      for (const [code, tenant] of codes) {
+        if (tenant.id === tenantId) {
+          codes.set(code, next);
+        }
+      }
+      for (const [memberEmail, list] of store) {
+        store.set(
+          memberEmail,
+          list.map((membership) =>
+            membership.tenantId === tenantId
+              ? {
+                  ...membership,
+                  tenantName: trimmed,
+                  tenant: membership.tenant === null ? null : next,
+                }
+              : membership,
+          ),
+        );
+      }
+      return Promise.resolve('ok');
+    },
   };
 
   // Como archive_client y reactivate_client: solo el dueño, solo a clientes, y

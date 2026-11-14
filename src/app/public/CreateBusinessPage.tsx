@@ -1,12 +1,12 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import type { FormEvent } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
-import { Navigate, useNavigate } from 'react-router';
+import { useNavigate } from 'react-router';
 
 import { TERMS_VERSION } from '@/core/auth';
 import { clearCoachIntent, useCreateBusiness, useTenancyContext } from '@/core/tenancy';
 import type { CreateBusinessResult } from '@/core/tenancy';
-import { Button, Checkbox, Input } from '@/core/ui';
+import { Button, Checkbox, Input, Spinner } from '@/core/ui';
 
 const NAME_MIN = 2;
 const NAME_MAX = 40; // D-049: el mismo límite que el nombre de la marca (D-057)
@@ -25,17 +25,26 @@ const FAILURE_KEYS: Partial<Record<CreateBusinessResult['status'], string>> = {
 export function CreateBusinessPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const { memberships } = useTenancyContext();
+  const { memberships, selectTenant } = useTenancyContext();
   const createBusiness = useCreateBusiness();
   const [name, setName] = useState('');
   const [accepted, setAccepted] = useState(false);
   const [nameError, setNameError] = useState<string | undefined>();
   const [termsError, setTermsError] = useState<string | undefined>();
   const [failure, setFailure] = useState<string | null>(null);
+  const ownBusiness = memberships.find((membership) => membership.role === 'owner')?.tenantId;
 
-  if (memberships.some((membership) => membership.role === 'owner')) {
-    clearCoachIntent();
-    return <Navigate to="/coach" replace />;
+  // Quien ya tiene negocio entra en él (con varios espacios, hay que elegirlo).
+  useEffect(() => {
+    if (ownBusiness !== undefined) {
+      clearCoachIntent();
+      selectTenant(ownBusiness);
+      void navigate('/coach', { replace: true });
+    }
+  }, [ownBusiness, selectTenant, navigate]);
+
+  if (ownBusiness !== undefined) {
+    return <Spinner />;
   }
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {

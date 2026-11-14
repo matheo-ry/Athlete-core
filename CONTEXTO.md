@@ -22,16 +22,16 @@
 ## Dónde estamos
 
 - **Fase actual:** 1 — Cuentas, negocio del coach y unirse con código.
-- **Última tarea terminada:** PR 1.13 — Perfil y cuenta (2026-11-14), rama `feat/perfil`.
+- **Última tarea terminada:** PR 1.14 — Selector de espacio y "Mis espacios" (2026-11-14), rama `feat/selector-de-espacio`.
 - **En curso:** PR abiertos y apilados, esperando revisión del propietario (D-064). La lista, en `docs/ESTADO.md`.
-- **Siguiente tarea:** Fase 1, PR 1.14 — Selector de espacio y "Mis espacios". Los 16 PR de la fase (1.2 a 1.17) están en orden, con sus criterios de aceptación, en `docs/PROMPTS.md` §5.
+- **Siguiente tarea:** Fase 1, PR 1.15 — Marca: nombre, colores y modo. Los 16 PR de la fase (1.2 a 1.17) están en orden, con sus criterios de aceptación, en `docs/PROMPTS.md` §5.
 
 ## Cómo funcionará la Fase 1 (ya decidido)
 
 - **Primero el código, después la cuenta:** la primera pantalla (`/start`) pide el código del coach; debajo, "Ya tengo cuenta" y "Soy coach" (D-037).
 - **Cuentas:** nombre, email y contraseña. El email se confirma con un código de 6 dígitos; con ese mismo sistema se entra sin contraseña y se recupera la contraseña. Los emails no llevan enlaces (D-038 a D-044).
 - **Dar de baja:** el coach quita el acceso a un cliente y puede reactivarlo; nunca borra su cuenta (D-055).
-- **Espacios:** una cuenta puede ser coach y cliente a la vez, y cliente de varios coaches (D-048 y D-056).
+- **Espacios:** una cuenta puede ser coach y cliente a la vez, y cliente de varios coaches (D-048 y D-056). Con varios, se entra en el último usado en el dispositivo o se elige en el selector (D-066).
 
 ## Qué existe ya
 
@@ -46,12 +46,12 @@
 - **Módulo `clients`** (PR 1.10 y 1.11): el primero del producto. Lista de clientes con las plazas del plan, el código de invitación y la ficha con dar de baja y reactivar.
 - **Crear negocio** (PR 1.12): desde "¿Eres coach?" o la bienvenida, con primeros pasos en el inicio del coach.
 - **Perfil y cuenta** (PR 1.13): "Perfil" del cliente y "Ajustes" del coach con nombre, idioma (guardado en la cuenta), kilos o libras, cambiar la contraseña, textos legales y cerrar sesión.
+- **Espacios** (PR 1.14): selector `/select` para quien tiene varios y "Mis espacios" en el perfil y en los ajustes (cambiar, añadir un coach con código, crear el negocio).
 - **Cuentas configuradas** (PR 1.2): confirmar el email con código de 6 dígitos, los 4 emails en dos idiomas (`supabase/templates/`, se ven en `http://127.0.0.1:54324`), `email_status` y tope de intentos.
 - **Reglas que se comprueban solas:** ESLint con las fronteras de ARQUITECTURA §6, hooks de Git (formato, mensaje de commit, no subir `main`), CI con `npm run check`, y tests que vigilan las fronteras, los textos en dos idiomas y la forma fija de los módulos.
 
 ## Qué falta (lo próximo)
 
-- **Espacios** (PR 1.14): elegir con qué coach o negocio entrar, si hay más de uno, y "Mis espacios" en el perfil y en los ajustes.
 - **Marca** (PR 1.15 y 1.16): el coach cambia el nombre, los colores, el modo claro u oscuro y el logo.
 - **Staging y emails reales** (PR 1.17): necesita el dominio (P-01) y las cuentas del propietario.
 - Las guardas por sesión y por rol son comodidad, no seguridad: los datos los protege el RLS.
@@ -60,11 +60,11 @@
 
 Los 5 más recientes, el más nuevo arriba. El historial completo está en `docs/ESTADO.md`.
 
+- 2026-11-14 — PR 1.14: selector de espacio y "Mis espacios"; el último espacio se recuerda hasta cerrar sesión (D-066).
 - 2026-11-14 — PR 1.13: perfil y cuenta; "Cerrar sesión" pasa al perfil y a los ajustes.
 - 2026-11-14 — PR 1.12: crear negocio y primeros pasos del coach.
 - 2026-11-14 — PR 1.11: dar de baja y reactivar a un cliente; "Ya no tienes acceso a …".
 - 2026-11-14 — PR 1.10: módulo `clients` con la lista de clientes y el código de invitación.
-- 2026-11-14 — PR 1.9b: unirse al crear la cuenta, con la marca del coach.
 
 ## A tener en cuenta ahora
 

@@ -47,6 +47,8 @@ describe('unirse al crear la cuenta (PR 1.9b, D-037)', () => {
 
   it('con "Ya tengo cuenta": entrar y quedar unido solo', async () => {
     const { user, router } = await renderApp('/join?code=NORTE001', { auth: signedOut() });
+    const visited: string[] = [];
+    router.subscribe((state) => visited.push(state.location.pathname));
 
     await user.click(await screen.findByRole('link', { name: 'I already have an account' }));
     expect(await screen.findByText("You're joining Norte Strength.")).toBeVisible();
@@ -56,6 +58,9 @@ describe('unirse al crear la cuenta (PR 1.9b, D-037)', () => {
 
     expect(await screen.findByRole('heading', { name: 'Today' })).toBeInTheDocument();
     expect(router.state.location.pathname).toBe('/client');
+    // Entra directamente: no pasa un momento por la bienvenida mientras llega
+    // la lista de espacios con el coach nuevo (PR 1.14).
+    expect(visited).not.toContain('/welcome');
   });
 
   it('si se cerró la app a medias, "/" lleva a terminar el alta', async () => {

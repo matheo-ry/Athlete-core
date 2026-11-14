@@ -29,18 +29,23 @@ export type { PendingInvite } from './pending-invite';
 export {
   activeMemberships,
   homePathFor,
+  homePathOf,
   lostAccessTo,
+  needsSpaceChoice,
   parseMemberships,
   pickActiveMembership,
+  sortedSpaces,
   tenancyFor,
 } from './membership';
 export type {
   CreateBusinessResult,
+  HomePath,
   MemberActionResult,
   Membership,
   MembershipStatus,
   TenancySource,
 } from './membership';
+export { clearLastSpace, readLastSpace, rememberLastSpace } from './last-space';
 export { RequireProfile } from './RequireProfile';
 export { MEMBERSHIPS_QUERY_KEY, TenancyProvider } from './TenancyProvider';
 export type { TenancyContextValue, TenancyStatus } from './tenancy-context';

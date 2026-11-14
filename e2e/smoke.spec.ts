@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test';
 
-import { signIn } from './helpers';
+import { chooseSpace, signIn } from './helpers';
 
 // Test de humo: la app arranca de verdad en un navegador, sin errores, y cada
 // usuario ve su zona con la marca de su negocio. Solo datos inventados
@@ -18,6 +18,8 @@ test('la coach de Iron Lab entra en su zona, en rojo y con fondo oscuro, sin err
   });
 
   await signIn(page, 'coach.iron@example.com');
+  // También es clienta de Norte Strength: elige dónde entrar (D-056).
+  await chooseSpace(page, 'Iron Lab');
 
   await expect(page).toHaveURL(/\/coach$/);
   await expect(page.getByRole('heading', { name: 'Coach dashboard' })).toBeVisible();
@@ -62,6 +64,7 @@ test('un cliente de Norte Strength ve la marca de su coach', async ({ page }) =>
 
 test('el selector de idioma cambia entre inglés y español', async ({ page }) => {
   await signIn(page, 'coach.iron@example.com');
+  await chooseSpace(page, 'Iron Lab');
   await expect(page.getByRole('heading', { name: 'Coach dashboard' })).toBeVisible();
 
   await page.getByRole('button', { name: 'Español' }).first().click();
@@ -73,6 +76,7 @@ test('el selector de idioma cambia entre inglés y español', async ({ page }) =
 
 test('el módulo de ejemplo aparece en el menú y carga sus datos', async ({ page }) => {
   await signIn(page, 'coach.iron@example.com');
+  await chooseSpace(page, 'Iron Lab');
 
   await page.getByRole('link', { name: 'Template' }).first().click();
 

@@ -4,7 +4,6 @@ import { useAuth } from '@/core/auth';
 import {
   WhenTenancyReady,
   hasCoachIntent,
-  homePathFor,
   usePendingInvite,
   useTenancyContext,
 } from '@/core/tenancy';
@@ -15,12 +14,13 @@ import { Spinner } from '@/core/ui';
  * - sin sesión, a la primera pantalla (el código del coach);
  * - con sesión y algo a medias de antes de crear la cuenta (se cerró la app):
  *   un código recordado lleva a terminar el alta; "Soy coach", a crear el negocio;
- * - si no, a su zona de coach o de cliente, o a la bienvenida si todavía no
- *   tiene ningún espacio.
+ * - si no, a su zona de coach o de cliente; al selector si tiene varios
+ *   espacios y ninguno elegido en este dispositivo; o a la bienvenida si
+ *   todavía no tiene ningún espacio.
  */
 export function RootRedirect() {
   const { status } = useAuth();
-  const { tenancy, memberships } = useTenancyContext();
+  const { homePath, memberships } = useTenancyContext();
   const pending = usePendingInvite();
 
   if (status === 'loading') {
@@ -36,7 +36,7 @@ export function RootRedirect() {
     hasCoachIntent() && !memberships.some((membership) => membership.role === 'owner');
   return (
     <WhenTenancyReady>
-      <Navigate to={wantsBusiness ? '/create-business' : homePathFor(tenancy)} replace />
+      <Navigate to={wantsBusiness ? '/create-business' : homePath} replace />
     </WhenTenancyReady>
   );
 }

@@ -109,7 +109,8 @@
         "planFull": "Tu coach no tiene plazas libres ahora mismo. Avísale para que te haga hueco.",
         "archived": "Tu coach te ha dado de baja. Pídele que te reactive.",
         "ownBusiness": "Este es el código de tu propio negocio."
-      }
+      },
+      "back": "Volver"
     },
     "notFound": {
       "title": "Página no encontrada",
@@ -253,6 +254,17 @@
       "changing": "Cambiando…",
       "changed": "Contraseña cambiada. Se ha cerrado la sesión en tus otros dispositivos.",
       "currentRequired": "Escribe tu contraseña actual."
+    },
+    "spaces": {
+      "title": "Mis espacios",
+      "listLabel": "Tus espacios",
+      "selectTitle": "¿Dónde quieres entrar?",
+      "selectDescription": "Tienes más de un espacio. Puedes cambiar cuando quieras desde tu perfil o tus ajustes.",
+      "roleCoach": "Coach",
+      "roleClient": "Cliente",
+      "current": "Estás aquí",
+      "addCoach": "Añadir un coach con código",
+      "createBusiness": "Crear mi negocio"
     }
   }
 }

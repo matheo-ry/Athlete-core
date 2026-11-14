@@ -448,6 +448,14 @@ Cómo añadir una: copia el formato, usa el siguiente número y no borres las an
 - **Consecuencias:** quien quiera averiguar qué emails tienen cuenta puede probar más por hora desde una misma conexión. El dato que se filtra vale poco (que alguien usa una app de entrenamiento) y bloquear a clientes de verdad es peor. Si se ven abusos, se añade un captcha (ya apuntado en "Ideas y deuda").
 - **En local:** si al repetir muchas veces los tests de extremo a extremo aparece "Demasiados intentos", espera 10 minutos o ejecuta `npm run db:reset`.
 
+### D-066 · Cuánto se recuerda el último espacio
+- **Fecha:** 2026-11-14
+- **Decisión:** completa D-056. El último espacio usado se recuerda en el dispositivo, para cada cuenta, mientras la sesión siga abierta: al cerrar y abrir la app se entra directamente en él. Al **cerrar sesión** se olvida, y la próxima vez que se entra con varios espacios se ve el selector. Si la sesión se cierra sola (30 días sin uso), se conserva.
+  - Se recuerda al elegir en el selector o en "Mis espacios", al unirse a un coach y al crear el negocio: en los dos últimos casos se entra en el espacio nuevo.
+  - Si el espacio recordado deja de estar activo (el coach dio de baja al usuario) y le queda uno, se entra en ese; si le quedan varios, el selector.
+  - En el selector y en "Mis espacios", primero el negocio propio y después los coaches, del más antiguo al más nuevo.
+- **Por qué:** quien entra a diario en el mismo espacio no debe elegir cada vez, y en un dispositivo compartido la siguiente persona no debe heredar la elección de otra. Es la misma regla que la del código del coach recordado (D-037).
+
 ---
 
 ## Pendientes de decidir

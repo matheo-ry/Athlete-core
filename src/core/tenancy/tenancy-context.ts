@@ -1,6 +1,6 @@
 import { createContext } from 'react';
 
-import type { Membership, TenancySource } from './membership';
+import type { HomePath, Membership, TenancySource } from './membership';
 import type { Tenancy } from './tenancy-types';
 
 /** 'loading' mientras se piden los espacios; 'error' si no se pudieron pedir. */
@@ -12,7 +12,9 @@ export interface TenancyContextValue {
   /** Todos los espacios del usuario, también los dados de baja. */
   memberships: readonly Membership[];
   status: TenancyStatus;
-  /** Entrar en otro espacio (lo usará el selector, PR 1.14). */
+  /** La pantalla de inicio que le toca: su zona, el selector o la bienvenida (D-056). */
+  homePath: HomePath;
+  /** Entrar en otro espacio. Se recuerda en el dispositivo hasta cerrar sesión (D-066). */
   selectTenant: (tenantId: string) => void;
   /** Vuelve a pedir los espacios (por ejemplo, después de unirse a un coach). */
   refresh: () => Promise<void>;

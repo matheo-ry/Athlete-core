@@ -1,14 +1,14 @@
 # core/tenancy
 
-Tenant activo, rol del usuario y perfil (coach, cliente o todavía sin espacio), sacados de la sesión y de la base de datos (DECISIONES D-048 y D-056).
+Tenant activo, rol del usuario y perfil (coach, cliente o todavía sin espacio), sacados de la sesión y de la base de datos (DECISIONES D-048, D-056 y D-066).
 
-- `membership.ts`: los **espacios** del usuario (cada negocio al que pertenece, con su rol y su estado), cómo se elige en cuál se entra y adónde lleva cada uno (`homePathFor`). Lógica pura, con tests.
+- `membership.ts`: los **espacios** del usuario (cada negocio al que pertenece, con su rol y su estado), cómo se elige en cuál se entra (`pickActiveMembership`, `needsSpaceChoice`), en qué orden se enseñan (`sortedSpaces`: primero el negocio propio) y adónde lleva cada uno (`homePathFor`, `homePathOf`). Lógica pura, con tests.
 - `api/supabase-tenancy-source.ts`: los espacios salen de la función `my_spaces`. De un espacio dado de baja solo llega el nombre del coach, para la pantalla "Ya no tienes acceso a …" (`lostAccessTo`, D-055).
 - **Dar de baja y reactivar** (`useClientStatusChange`, D-055): solo el dueño; si sale bien, se vuelve a pedir la lista de miembros.
 - `TenancyProvider`: pide los espacios al entrar y **cada vez** que se vuelve a la app, aunque se pidieran hace nada (así nota al momento si el coach ha dado de baja al usuario, D-061). Al cerrar sesión borra de memoria los datos del usuario. Nunca oculta las pantallas mientras carga (una pantalla a medias perdería lo escrito): lo dice en `status`.
-- `RequireProfile`: guarda por rol. `/coach` solo con espacio de coach, `/client` solo con espacio de cliente y `/welcome` solo sin espacio. Mientras cargan los espacios enseña un indicador; si fallan, un error con "Reintentar". `WhenTenancyReady` hace lo mismo para otras pantallas.
-- `useTenancy()` da el espacio activo; `useTenancyContext()` da además la lista y `selectTenant` (para el selector del PR 1.14).
-- Con varios espacios y sin elección, se entra en el de coach y, si no hay, en el más antiguo. El selector llega en el PR 1.14.
+- `RequireProfile`: guarda por rol. `/coach` solo con espacio de coach activo, `/client` solo con espacio de cliente activo y `/welcome` solo sin ningún espacio. Si no, a `homePath`. Mientras cargan los espacios enseña un indicador; si fallan, un error con "Reintentar". `WhenTenancyReady` hace lo mismo para otras pantallas.
+- `useTenancy()` da el espacio activo; `useTenancyContext()` da además la lista, `homePath` (su zona, `/select` o `/welcome`) y `selectTenant`.
+- **Varios espacios** (D-056 y D-066): se entra en el último usado en el dispositivo (`last-space.ts`, uno por cuenta); si no hay, `homePath` es el selector (`/select`). `selectTenant` lo recuerda; cerrar sesión lo olvida. Tras unirse a un coach o crear el negocio, las guardas esperan a que llegue la lista con el espacio nuevo, para no pasar un momento por la bienvenida.
 - **Unirse con código** (D-050 a D-054): `invite-code.ts` limpia y da formato al código (no importan mayúsculas, espacios ni guiones; se muestra en dos grupos de cuatro). `invite.ts` lee las respuestas de la vista previa y de unirse. `useInvitePreview` y `useJoinWithCode` las piden; al unirse, el espacio nuevo pasa a ser el activo.
 - **Datos del coach** (`useCoachData.ts`, D-059): los miembros del negocio activo con su nombre (`useTenantMembers`, sin el email), el código de invitación (`useInviteCode` y `useRegenerateInviteCode`) y el límite del plan (`usePlanLimit`). La lista de miembros vive aquí para que ningún módulo dependa de `clients` para elegir a un cliente (ARQUITECTURA §6).
 - **Crear negocio** (`useCreateBusiness`, D-049): el negocio nuevo pasa a ser el espacio activo. `coach-intent.ts` recuerda 7 días que se pulsó "¿Eres coach?", para llevar a crear el negocio al terminar la cuenta.

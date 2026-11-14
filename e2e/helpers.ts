@@ -26,9 +26,20 @@ export async function signIn(
 }
 
 /**
+ * Con varios espacios y ninguno elegido en este navegador, la app pregunta
+ * dónde entrar (D-056): se elige uno por el nombre del negocio. Le pasa, por
+ * ejemplo, a coach.iron@example.com, dueña de Iron Lab y clienta de Norte.
+ */
+export async function chooseSpace(page: Page, businessName: string): Promise<void> {
+  await expect(page).toHaveURL(/\/select$/);
+  await page.getByRole('button', { name: new RegExp(businessName) }).click();
+  await expect(page).not.toHaveURL(/\/select$/);
+}
+
+/**
  * Cierra la sesión (en inglés) desde donde está el botón: Ajustes en la zona de
- * coach, Perfil en la de cliente, o la propia pantalla de bienvenida o de
- * "ya no tienes acceso" (PR 1.13).
+ * coach, Perfil en la de cliente, o la propia pantalla de bienvenida, de
+ * "ya no tienes acceso" o del selector de espacio (PR 1.13 y 1.14).
  */
 export async function signOut(page: Page): Promise<void> {
   await page.goto('/');

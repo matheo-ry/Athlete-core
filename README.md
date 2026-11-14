@@ -58,7 +58,7 @@ Abre <http://localhost:5173> y entra con uno de los usuarios inventados de `supa
 
 | Usuario | Qué es |
 |---|---|
-| `coach.iron@example.com` | Coach de Iron Lab (rojo, fondo oscuro, plan lleno: 3 de 3). Además, clienta de Norte Strength |
+| `coach.iron@example.com` | Coach de Iron Lab (rojo, fondo oscuro, plan lleno: 3 de 3). Además, clienta de Norte Strength: al entrar elige en cuál de los dos (`/select`) |
 | `coach.norte@example.com` | Coach de Norte Strength (verde azulado, fondo claro, plan de 10) |
 | `ana@`, `bruno@`, `carla@example.com` | Clientes de Iron Lab. Carla tiene la cuenta en español: al entrar, la app se pone en español |
 | `diego@`, `elena@example.com` | Clientes de Norte Strength |

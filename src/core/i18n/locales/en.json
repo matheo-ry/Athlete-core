@@ -109,7 +109,8 @@
         "planFull": "Your coach has no free spots right now. Let them know so they can make room for you.",
         "archived": "Your coach has removed you. Ask them to reactivate you.",
         "ownBusiness": "This is your own business's code."
-      }
+      },
+      "back": "Back"
     },
     "notFound": {
       "title": "Page not found",
@@ -253,6 +254,17 @@
       "changing": "Changing…",
       "changed": "Password changed. Your other devices have been signed out.",
       "currentRequired": "Enter your current password."
+    },
+    "spaces": {
+      "title": "My spaces",
+      "listLabel": "Your spaces",
+      "selectTitle": "Where do you want to go?",
+      "selectDescription": "You have more than one space. You can switch any time from your profile or your settings.",
+      "roleCoach": "Coach",
+      "roleClient": "Client",
+      "current": "You're here",
+      "addCoach": "Add a coach with a code",
+      "createBusiness": "Create my business"
     }
   }
 }

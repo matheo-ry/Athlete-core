@@ -3,9 +3,12 @@ import { Link } from 'react-router';
 
 import { buttonClassName } from '@/core/ui';
 
+import { SignOutButton } from '../SignOutButton';
+
 /**
- * Bienvenida para quien todavía no pertenece a ningún tenant (ARQUITECTURA §7).
- * En la Fase 0 solo navega; crear el negocio y unirse con código llegan en la Fase 1.
+ * Bienvenida para quien tiene sesión pero ningún espacio activo (ARQUITECTURA §7,
+ * DECISIONES D-056). Escribir un código lleva a /join; crear el negocio llega en
+ * el PR 1.12 y la pantalla definitiva, en el PR 1.9.
  */
 export function WelcomePage() {
   const { t } = useTranslation();
@@ -17,13 +20,11 @@ export function WelcomePage() {
         <p className="text-muted">{t('app.welcome.description')}</p>
       </header>
       <div className="flex flex-col gap-3">
-        <Link to="/coach" className={buttonClassName('primary')}>
-          {t('app.welcome.coachOption')}
-        </Link>
-        <Link to="/join" className={buttonClassName('secondary')}>
+        <Link to="/join" className={buttonClassName('primary')}>
           {t('app.welcome.clientOption')}
         </Link>
       </div>
+      <SignOutButton />
     </>
   );
 }

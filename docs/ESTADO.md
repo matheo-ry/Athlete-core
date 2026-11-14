@@ -11,11 +11,12 @@ PR abiertos, apilados y esperando revisión (D-064). Se fusionan en este orden:
 
 1. Diseño de la Fase 1 (rama `docs/diseno-fase-1`, PR 4).
 2. PR 1.2 — Base de datos: cuentas y emails (rama `db/cuentas-y-emails`, PR 5).
-3. PR 1.3 — Sesión y login con contraseña (rama `feat/sesion-y-login`).
+3. PR 1.3 — Sesión y login con contraseña (rama `feat/sesion-y-login`, PR 6).
+4. PR 1.4 — Tenant y rol reales, y guardas de ruta (rama `feat/tenancy-real`).
 
 ## Siguiente
 
-1. Fase 1, PR 1.4 — Tenant y rol reales, y guardas de ruta. El prompt está en `docs/PROMPTS.md` §5, con los 16 PR de la fase en orden.
+1. Fase 1, PR 1.5 — Flags reales. El prompt está en `docs/PROMPTS.md` §5, con los 16 PR de la fase en orden.
 
 ## Fases
 
@@ -46,7 +47,7 @@ El diseño está en DECISIONES D-036 a D-064, y el detalle de cada PR, en `docs/
 - [x] Decidir cómo se entra y cómo funciona toda la fase (D-035 a D-064)
 - [x] PR 1.2 — Base de datos: cuentas y emails
 - [x] PR 1.3 — Sesión y login con contraseña
-- [ ] PR 1.4 — Tenant y rol reales, y guardas de ruta
+- [x] PR 1.4 — Tenant y rol reales, y guardas de ruta
 - [ ] PR 1.5 — Flags reales
 - [ ] PR 1.6 — Recuperar la contraseña y entrar con un código por email
 - [ ] PR 1.7 — Registro y verificación del email
@@ -117,7 +118,6 @@ Cosas que alguien ha visto y que no tocaban en su tarea. No se hacen sin convert
 - Añadir reglas de accesibilidad al lint (etiquetas, botones de verdad). Haría falta una librería nueva.
 - Test de fronteras: añadir el caso permitido de la tabla de dependencias entre módulos cuando existan dos módulos reales (`programs` → `exercises`).
 - Zod ocupa buena parte del peso de la app. Si el tamaño llega a importar, valorar su variante ligera.
-- Recordar la última elección del selector de desarrollo al recargar la página (hoy vuelve al primer coach de ejemplo).
 - Un test pgTAP que pruebe cada política de UPDATE por separado. Hoy, si se afloja `members_update`, la política de lectura sigue bloqueando (Postgres la aplica en los UPDATE con WHERE) y los tests no lo notan. No es un agujero, pero la segunda capa no está vigilada.
 - Los casos 15 a 19 y 28 de `docs/referencia/pruebas-aislamiento.sql` se escriben con la primera tabla de negocio (`programs`, Fase 2).
 
@@ -125,6 +125,7 @@ Cosas que alguien ha visto y que no tocaban en su tarea. No se hacen sin convert
 
 Lo más nuevo, arriba.
 
+- 2026-11-14 — PR 1.4 (tenancy real): `core/tenancy` lee los espacios del usuario de la base de datos, la marca del negocio se aplica al tema, guardas por rol (`RequireProfile`) en `/coach`, `/client` y `/welcome`, "/" lleva a cada uno a su sitio. Desaparecen los datos de ejemplo de tenancy y la barra de desarrollo.
 - 2026-11-14 — PR 1.3 (sesión y login): `core/auth` con la sesión guardada en el dispositivo, `/login` con los mensajes de D-043, guardas `RequireAuth` y `RequireGuest`, cerrar sesión, aviso de sesión caducada, cierre a los 30 días sin uso, franja "Sin conexión", variables de Supabase obligatorias y tests de extremo a extremo contra Supabase local.
 - 2026-11-14 — PR 1.2 (base de datos: cuentas y emails): confirmar el email es obligatorio, con código de 6 dígitos; las 4 plantillas de email en dos idiomas; el perfil nace con los datos del registro; `accept_terms`; `email_status` con tope de intentos; 24 tests pgTAP nuevos (77 en total).
 - 2026-11-14 — Diseño de la Fase 1: decisiones D-036 a D-064 (primero el código del coach y después la cuenta, email verificado con código de 6 dígitos, dar de baja a un cliente, marca, perfil, protección de datos mínima y plan gratuito de Supabase), la lista de los 16 PR en `docs/PROMPTS.md` §5, P-09 y P-11 cerrados, D-035 completada, y ARQUITECTURA §7, §8 y §10 y el glosario de AGENTS.md actualizados con la aprobación del propietario.

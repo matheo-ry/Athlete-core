@@ -2,16 +2,13 @@ import { expect, test } from '@playwright/test';
 
 import { signIn } from './helpers';
 
-// Test de humo: la app arranca de verdad en un navegador, sin errores, y se
-// puede usar lo básico. Solo datos inventados (supabase/seed.sql).
-// Desde el PR 1.3 hay que entrar antes de ver las zonas de coach y de cliente.
+// Test de humo: la app arranca de verdad en un navegador, sin errores, y cada
+// usuario ve su zona con la marca de su negocio. Solo datos inventados
+// (supabase/seed.sql). Desde el PR 1.4 el tenant y el rol son los reales.
 
-test.beforeEach(async ({ page }) => {
-  await signIn(page, 'coach.iron@example.com', '/login?next=%2Fcoach');
-  await expect(page.getByRole('heading', { name: 'Coach dashboard' })).toBeVisible();
-});
-
-test('la app carga sin errores y se pasa de la zona de coach a la de cliente', async ({ page }) => {
+test('la coach de Iron Lab entra en su zona, en rojo y con fondo oscuro, sin errores', async ({
+  page,
+}) => {
   const errors: string[] = [];
   page.on('pageerror', (error) => errors.push(error.message));
   page.on('console', (message) => {
@@ -20,19 +17,53 @@ test('la app carga sin errores y se pasa de la zona de coach a la de cliente', a
     }
   });
 
-  await page.goto('/');
+  await signIn(page, 'coach.iron@example.com');
 
   await expect(page).toHaveURL(/\/coach$/);
   await expect(page.getByRole('heading', { name: 'Coach dashboard' })).toBeVisible();
-
-  await page.getByTestId('dev-profile-client').click();
-
-  await expect(page).toHaveURL(/\/client$/);
-  await expect(page.getByRole('heading', { name: 'Today' })).toBeVisible();
+  await expect(page.getByText('Iron Lab').first()).toBeVisible();
+  const root = page.locator('html');
+  await expect(root).toHaveAttribute('style', /--brand-primary: #dc2626;/);
+  await expect(root).toHaveAttribute('style', /color-scheme: dark;/);
   expect(errors).toEqual([]);
 });
 
+test('la coach de Norte Strength ve su marca en verde azulado y con fondo claro', async ({
+  page,
+}) => {
+  await signIn(page, 'coach.norte@example.com');
+
+  await expect(page.getByRole('heading', { name: 'Coach dashboard' })).toBeVisible();
+  await expect(page.getByText('Norte Strength').first()).toBeVisible();
+  const root = page.locator('html');
+  await expect(root).toHaveAttribute('style', /--brand-primary: #0f766e;/);
+  await expect(root).toHaveAttribute('style', /color-scheme: light;/);
+});
+
+test('una clienta entra en su zona con la marca de su coach y no puede abrir la de coach', async ({
+  page,
+}) => {
+  await signIn(page, 'ana@example.com');
+
+  await expect(page).toHaveURL(/\/client$/);
+  await expect(page.getByRole('heading', { name: 'Today' })).toBeVisible();
+  await expect(page.getByText('Iron Lab').first()).toBeVisible();
+
+  await page.goto('/coach');
+  await expect(page).toHaveURL(/\/client$/);
+});
+
+test('un cliente de Norte Strength ve la marca de su coach', async ({ page }) => {
+  await signIn(page, 'diego@example.com');
+
+  await expect(page.getByRole('heading', { name: 'Today' })).toBeVisible();
+  await expect(page.locator('html')).toHaveAttribute('style', /--brand-primary: #0f766e;/);
+});
+
 test('el selector de idioma cambia entre inglés y español', async ({ page }) => {
+  await signIn(page, 'coach.iron@example.com');
+  await expect(page.getByRole('heading', { name: 'Coach dashboard' })).toBeVisible();
+
   await page.getByRole('button', { name: 'Español' }).first().click();
   await expect(page.getByRole('heading', { name: 'Panel del coach' })).toBeVisible();
 
@@ -40,29 +71,9 @@ test('el selector de idioma cambia entre inglés y español', async ({ page }) =
   await expect(page.getByRole('heading', { name: 'Coach dashboard' })).toBeVisible();
 });
 
-test('al cambiar de marca cambia el tema de la app', async ({ page }) => {
-  // La marca se aplica como variables CSS en la etiqueta <html>.
-  const root = page.locator('html');
-
-  await expect(root).toHaveAttribute('style', /--brand-primary: #dc2626;/);
-
-  await page.getByRole('button', { name: 'Norte Strength' }).click();
-
-  await expect(root).toHaveAttribute('style', /--brand-primary: #0f766e;/);
-});
-
-test('quien todavía no tiene coach va a la bienvenida con la marca de la plataforma', async ({
-  page,
-}) => {
-  await page.getByTestId('dev-no-tenant').click();
-
-  await expect(page).toHaveURL(/\/welcome$/);
-  await expect(page.getByRole('heading', { name: 'Welcome' })).toBeVisible();
-  await expect(page.getByText('ATHLETE CORE')).toBeVisible();
-  await expect(page.locator('html')).toHaveAttribute('style', /--brand-primary: #2563eb;/);
-});
-
 test('el módulo de ejemplo aparece en el menú y carga sus datos', async ({ page }) => {
+  await signIn(page, 'coach.iron@example.com');
+
   await page.getByRole('link', { name: 'Template' }).first().click();
 
   await expect(page).toHaveURL(/\/coach\/template$/);

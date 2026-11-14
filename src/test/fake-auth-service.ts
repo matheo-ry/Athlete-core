@@ -17,9 +17,14 @@ export interface FakeAccount {
 
 export const FAKE_PASSWORD = 'password123';
 
+// Sus espacios están en `fake-tenancy-source.ts`. `nobody-yet@` no tiene ninguno.
 export const FAKE_ACCOUNTS: readonly FakeAccount[] = [
   { email: 'coach@example.test', password: FAKE_PASSWORD },
   { email: 'client@example.test', password: FAKE_PASSWORD },
+  { email: 'norte-client@example.test', password: FAKE_PASSWORD },
+  { email: 'dual@example.test', password: FAKE_PASSWORD },
+  { email: 'archived@example.test', password: FAKE_PASSWORD },
+  { email: 'nobody-yet@example.test', password: FAKE_PASSWORD },
   { email: 'pending@example.test', password: FAKE_PASSWORD, confirmed: false },
 ];
 

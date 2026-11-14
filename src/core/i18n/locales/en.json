@@ -66,8 +66,7 @@
     },
     "welcome": {
       "title": "Welcome",
-      "description": "How do you want to use the app?",
-      "coachOption": "I'm a coach",
+      "description": "You don't belong to any coach yet. Enter the code your coach gave you.",
       "clientOption": "I have a code"
     },
     "join": {
@@ -83,14 +82,6 @@
       "title": "Page not found",
       "description": "The page you are looking for doesn't exist or was moved.",
       "action": "Go to home"
-    },
-    "dev": {
-      "label": "Development tools",
-      "profile": "View as",
-      "coach": "Coach",
-      "client": "Client",
-      "brand": "Brand",
-      "noTenant": "No coach"
     }
   }
 }

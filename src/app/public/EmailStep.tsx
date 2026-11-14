@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import type { FormEvent } from 'react';
+import type { FormEvent, ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router';
 
@@ -19,6 +19,8 @@ interface EmailStepProps {
   isSending: boolean;
   /** Adónde lleva "Volver a entrar". */
   backTo: string;
+  /** La salida que toca para cada fallo, resaltada junto al mensaje (D-043). */
+  failureAction?: (reason: AuthFailureReason, email: string) => ReactNode;
 }
 
 /** Primer paso de un código por email: escribir el email y mandarlo. */
@@ -30,6 +32,7 @@ export function EmailStep({
   onSent,
   isSending,
   backTo,
+  failureAction,
 }: EmailStepProps) {
   const { t } = useTranslation();
   const [email, setEmail] = useState(initialEmail);
@@ -75,7 +78,10 @@ export function EmailStep({
           onChange={(event) => setEmail(event.target.value)}
           error={emailError}
         />
-        <FailureMessage reason={failure} />
+        <FailureMessage
+          reason={failure}
+          action={failure === null ? undefined : failureAction?.(failure, email)}
+        />
         <Button type="submit" disabled={isSending}>
           {isSending ? t('app.emailStep.sending') : t('app.emailStep.submit')}
         </Button>

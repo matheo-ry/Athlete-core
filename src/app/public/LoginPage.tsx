@@ -9,10 +9,16 @@ import { Button, Input, PasswordInput, buttonClassName } from '@/core/ui';
 
 import { readEmailState } from './auth-navigation';
 import { FailureMessage } from './FailureMessage';
+import { LoginFailureAction } from './LoginFailureAction';
 
 interface FieldErrors {
   email?: string;
   password?: string;
+}
+
+/** Con estos fallos se resalta otra salida y "Entrar" pasa a segundo plano (D-043). */
+function hasHighlightedAction(reason: AuthFailureReason | null): boolean {
+  return reason === 'wrong_password' || reason === 'no_account' || reason === 'email_not_confirmed';
 }
 
 /**
@@ -93,21 +99,11 @@ export function LoginPage() {
         />
         <FailureMessage
           reason={failure}
-          action={
-            failure === 'wrong_password' ? (
-              <Link
-                to={`/reset-password${location.search}`}
-                state={{ email }}
-                className={buttonClassName('primary')}
-              >
-                {t('app.login.forgotPassword')}
-              </Link>
-            ) : undefined
-          }
+          action={<LoginFailureAction reason={failure} email={email} password={password} />}
         />
         <Button
           type="submit"
-          variant={failure === 'wrong_password' ? 'secondary' : 'primary'}
+          variant={hasHighlightedAction(failure) ? 'secondary' : 'primary'}
           disabled={signIn.isPending}
         >
           {signIn.isPending ? t('app.login.submitting') : t('app.login.submit')}
@@ -127,6 +123,13 @@ export function LoginPage() {
           className={buttonClassName('ghost')}
         >
           {t('app.login.codeSignIn')}
+        </Link>
+        <Link
+          to={`/signup${location.search}`}
+          state={{ email }}
+          className={buttonClassName('ghost')}
+        >
+          {t('app.login.noAccountYet')}
         </Link>
       </nav>
     </>

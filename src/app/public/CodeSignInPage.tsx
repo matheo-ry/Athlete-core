@@ -6,6 +6,7 @@ import { useAuthAction } from '@/core/auth';
 
 import { readEmailState } from './auth-navigation';
 import { CodeStep } from './CodeStep';
+import { CreateAccountLink } from './CreateAccountLink';
 import { EmailStep } from './EmailStep';
 
 /**
@@ -33,6 +34,9 @@ export function CodeSignInPage() {
         onSent={setEmail}
         isSending={sendCode.isPending}
         backTo={loginPath}
+        failureAction={(reason, value) =>
+          reason === 'no_account' ? <CreateAccountLink email={value} /> : null
+        }
       />
     );
   }

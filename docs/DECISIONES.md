@@ -206,7 +206,7 @@ Cómo añadir una: copia el formato, usa el siguiente número y no borres las an
 
 ### D-036 · La Fase 1 se diseña entera antes de programar
 - **Fecha:** 2026-11-14
-- **Decisión:** antes de escribir código de la Fase 1 se decide cómo funciona todo (D-037 a D-062) y se escribe la lista de PR en `docs/PROMPTS.md` §5. Por decisión del propietario, el diseño y los PR de la Fase 1 se llevan desde un mismo chat. Sigue valiendo "una tarea = una rama = un PR", y `CONTEXTO.md` y `docs/ESTADO.md` se actualizan en cada PR para que otro chat pueda continuar.
+- **Decisión:** antes de escribir código de la Fase 1 se decide cómo funciona todo (D-037 a D-063) y se escribe la lista de PR en `docs/PROMPTS.md` §5. Por decisión del propietario, el diseño y los PR de la Fase 1 se llevan desde un mismo chat. Sigue valiendo "una tarea = una rama = un PR", y `CONTEXTO.md` y `docs/ESTADO.md` se actualizan en cada PR para que otro chat pueda continuar.
 - **Por qué:** que ningún chat de ejecución tenga que inventarse una decisión de producto. Es una excepción a "un chat por tarea" (GUIA-GIT §8) solo para esta fase.
 
 ### D-037 · Primero el código del coach, después la cuenta
@@ -238,7 +238,7 @@ Cómo añadir una: copia el formato, usa el siguiente número y no borres las an
 
 ### D-042 · Recuperar y cambiar la contraseña
 - **Fecha:** 2026-11-14
-- **Decisión:** "He olvidado mi contraseña" pide el email, envía un código de 6 dígitos y, con el código, deja escribir una contraseña nueva; al guardarla el usuario queda dentro. Desde el perfil se puede cambiar la contraseña escribiendo la actual. En los dos casos se cierran las sesiones de los demás dispositivos y llega un email de aviso ("tu contraseña se ha cambiado").
+- **Decisión:** "He olvidado mi contraseña" pide el email, envía un código de 6 dígitos y, con el código, deja escribir una contraseña nueva; al guardarla el usuario queda dentro. Desde el perfil se puede cambiar la contraseña escribiendo la actual; quien entró con un código por email no tiene que escribirla, porque ya ha demostrado que el email es suyo. En los dos casos la app cierra después las sesiones de los demás dispositivos, y llega un email de aviso ("tu contraseña se ha cambiado").
 - **Por qué:** el mismo sistema de código que D-038 y D-039: una sola cosa que aprender. El aviso permite reaccionar si el cambio no lo hizo el dueño de la cuenta.
 
 ### D-043 · La app dice si un email ya tiene cuenta
@@ -249,19 +249,21 @@ Cómo añadir una: copia el formato, usa el siguiente número y no borres las an
   - Entrar, pedir un código o recuperar la contraseña con un email sin cuenta: "No hay ninguna cuenta con este email". Botón resaltado "Crear cuenta".
   - Entrar con la contraseña equivocada: "La contraseña no es correcta". Botón resaltado "He olvidado mi contraseña".
 - **Por qué:** el propietario prefiere mensajes claros a mensajes neutros.
-- **Consecuencias:** cualquiera puede averiguar si un email tiene cuenta en ATHLETE CORE probando en la pantalla. Se limita con el tope de intentos de D-052. Que valga la última contraseña evita que alguien "reserve" el email de otra persona con una contraseña que solo él conoce.
+- **Consecuencias:** cualquiera puede averiguar si un email tiene cuenta en ATHLETE CORE probando en la pantalla. Se limita con el tope de intentos de D-052.
+- **Seguridad (que valga la última contraseña):** sin esta regla, alguien podría registrar el email de otra persona con una contraseña que solo él conoce. Cuando la dueña del email confirmase la cuenta, esa contraseña seguiría valiendo y el intruso podría entrar en su cuenta. Para no depender de cómo lo haga Supabase, la app vuelve a guardar la contraseña recién escrita nada más confirmar el código. Si entre medias se cerró la app y la contraseña ya no está, después de confirmar se pide elegir una contraseña.
 - **Revisar si:** aparecen intentos masivos de comprobar emails; entonces, añadir un captcha.
 
 ### D-044 · Idioma de los emails
 - **Fecha:** 2026-11-14
-- **Decisión:** cada email llega en el idioma que tenía la app al registrarse y, después, en el idioma del perfil. Hay cuatro emails, en inglés y en español: confirmar la cuenta, código para entrar, código para cambiar la contraseña y aviso de contraseña cambiada. Llevan la marca de ATHLETE CORE, no la del coach.
+- **Decisión:** cada email llega en el idioma que tenía la app al registrarse y, después, en el idioma del perfil. Los emails los envía Supabase Auth, que no lee `profiles`: el idioma se guarda también en los datos de la cuenta (`user_metadata.locale`), y al cambiarlo en el perfil se cambian los dos. Si el asunto de un email no puede depender del idioma, se usa uno bilingüe: "Tu código de ATHLETE CORE · Your ATHLETE CORE code". Hay cuatro emails, en inglés y en español: confirmar la cuenta, código para entrar, código para cambiar la contraseña y aviso de contraseña cambiada. Llevan la marca de ATHLETE CORE, no la del coach.
 - **Por qué:** cada persona recibe el suyo sin hacer nada. Los emails de cuenta son de la plataforma: la cuenta es la misma aunque el usuario cambie de coach.
 
 ### D-045 · La sesión queda iniciada
 - **Fecha:** 2026-11-14
 - **Decisión:** una vez dentro, la sesión se mantiene en ese dispositivo. Solo se vuelve a pedir entrar si pasan 30 días sin abrir la app, si el usuario cierra sesión (desde su perfil o sus ajustes) o si cambia la contraseña en otro dispositivo.
 - **Por qué:** decisión del propietario. En el gimnasio nadie quiere escribir la contraseña.
-- **Consecuencias:** cerrar la sesión por inactividad es, según la documentación de Supabase, una función del plan de pago (Pro). En local se puede configurar; en staging y producción hay que comprobarlo al crear los proyectos. Mientras no esté activo, la sesión no caduca por inactividad.
+- **Cómo se hace:** lo comprueba la propia app (`core/auth`). Guarda en el dispositivo la última vez que se abrió y, si han pasado más de 30 días, cierra la sesión al arrancar. No se usa el cierre por inactividad de Supabase, que según su documentación es del plan de pago (D-063).
+- **Consecuencias:** es una comodidad, no una medida de seguridad: la sesión sigue siendo válida en el servidor. Si algún día hace falta que caduque también allí, se activa la opción de Supabase al pasar al plan de pago.
 
 ### D-046 · Quién envía los emails
 - **Fecha:** 2026-11-14
@@ -270,7 +272,7 @@ Cómo añadir una: copia el formato, usa el siguiente número y no borres las an
   - **Staging y producción:** los envía **Resend** (servicio de envío de emails), conectado a Supabase por SMTP, con el dominio propio verificado.
   - **Remitente:** nombre "ATHLETE CORE" y dirección `no-reply@<dominio>`. Los textos de privacidad indican una dirección de soporte para responder.
 - **Por qué:** el envío que trae Supabase por defecto solo sirve para pruebas: tiene un tope de muy pocos emails por hora. Resend tiene plan gratuito suficiente para staging y los pilotos (comprobar sus límites al contratarlo).
-- **Consecuencias:** hace falta el dominio (P-01) antes de enviar el primer email real. Lo configura el propietario en el PR 1.17.
+- **Consecuencias:** hace falta el dominio (P-01) antes de enviar el primer email real. Lo configura el propietario en el PR 1.17. Con el envío propio conectado, Supabase sigue poniendo un tope de emails por hora a todo el proyecto: hay que subirlo en el panel (el valor queda en el PR 1.17).
 - **Revisar si:** el volumen de emails supera el plan gratuito.
 
 ### D-047 · Google y Apple, en la Fase 4
@@ -394,6 +396,7 @@ Cómo añadir una: copia el formato, usa el siguiente número y no borres las an
 - **Por qué:** es lo mínimo que piden las normas europeas para crear una cuenta: saber qué se acepta y poder demostrarlo. Los 16 años cubren a toda Europa sin pedir el permiso de los padres.
 - **Qué espera a la Fase 4:** los textos legales definitivos (revisados por un profesional), borrar la cuenta desde la app, descargar los propios datos y que un cliente pueda dejar a un coach.
 - **Consecuencias:** ningún usuario real puede registrarse antes de tener los textos definitivos. El peso y las medidas corporales pueden contar como datos de salud, que piden un consentimiento aparte: se decide en la Fase 3 (P-12).
+- **Menores:** el propietario quiere admitir menores. Se decide en la Fase 3 (P-12); hasta entonces la casilla dice 16 años. La edad mínima para aceptar sin permiso de los padres cambia según el país: 14 en España, 13 en el Reino Unido y en EE. UU., y entre 13 y 16 en el resto de Europa. En EE. UU., aceptar a menores de 13 años obliga a cumplir una ley específica (COPPA) y las tiendas piden revisiones extra, así que se recomienda no bajar de 13.
 
 ### D-061 · Sin conexión, sesión caducada y errores
 - **Fecha:** 2026-11-14
@@ -410,6 +413,18 @@ Cómo añadir una: copia el formato, usa el siguiente número y no borres las an
 - **Fecha:** 2026-11-14
 - **Decisión:** la Fase 1 se reparte en 16 PR, del 1.2 al 1.17, en el orden de `docs/PROMPTS.md` §5. Cada uno se puede revisar en unos 15 minutos y deja algo que se puede comprobar. Los cambios grandes de la base de datos van en dos PR propios (1.2 y 1.8), antes de las pantallas que los usan; las dos migraciones pequeñas (el flag de `clients` y el Storage de logos) van con su función, en los PR 1.10 y 1.16. Los flujos críticos (entrar, registrarse y unirse con código) llevan su test de extremo a extremo en el mismo PR.
 - **Por qué:** sustituye a la propuesta de dividir el PR 1.2 en 1.2a, 1.2b y 1.2c: con "primero el código" (D-037) cambia el orden, y numerarlos seguidos es más fácil de seguir. Primero se entra con los usuarios inventados del seed, para ver datos reales cuanto antes; el registro llega después.
+- **Si un PR crece:** los dos con más riesgo de pasar de 300 líneas (1.9 y 1.10) traen ya escrito cómo partirlos, en `a` y `b`, para que nadie tenga que inventarlo.
+
+### D-063 · Plan gratuito de Supabase
+- **Fecha:** 2026-11-14
+- **Decisión:** staging y producción usan el plan gratuito de Supabase. Cierra P-11.
+- **Por qué:** decisión del propietario. En la Fase 1 solo hay datos inventados.
+- **Consecuencias** (según la documentación de Supabase; se comprueban al crear los proyectos en el PR 1.17):
+  - El plan gratuito permite dos proyectos activos: uno para staging y otro para producción. No queda sitio para un tercero.
+  - Un proyecto que pasa una semana sin uso se pausa. A staging le pasará a menudo: se reanuda desde el panel en un par de minutos y no pierde nada.
+  - No hay copias de seguridad automáticas que se puedan recuperar.
+  - El cierre de sesión por inactividad de Supabase es de pago: lo hace la propia app (D-045).
+- **Revisar:** antes del primer usuario real. Con datos reales sin copias de seguridad, un fallo o un borrado por error no se puede deshacer: se recomienda el plan de pago en producción para entonces.
 
 ---
 
@@ -427,8 +442,8 @@ Cómo añadir una: copia el formato, usa el siguiente número y no borres las an
 | P-08 | Servicio para compilar iOS en la nube | Fase 4 |
 | P-09 | **Cerrado el 2026-11-14.** Cómo se entra: D-035, D-038 (se verifica el email), D-039 (código por email) y D-053 (sin lista pública de coaches) | — |
 | P-10 | Servicio de avisos de errores y de caídas | Fase 4 |
-| P-11 | Plan de Supabase en staging y en producción: el gratuito o el de pago. Del de pago depende cerrar la sesión a los 30 días sin uso (D-045) | Al crear el proyecto de staging (PR 1.17) |
-| P-12 | Consentimiento para datos de salud (peso y medidas corporales) y si se admiten menores de 16 años con permiso de sus padres (D-060) | Fase 3 |
+| P-11 | **Cerrado el 2026-11-14** por D-063: plan gratuito de Supabase. Se revisa antes del primer usuario real | — |
+| P-12 | Consentimiento para datos de salud (peso y medidas corporales), y desde qué edad y en qué países se admiten menores, con permiso de sus padres o sin él. El propietario quiere admitirlos (D-060) | Fase 3 |
 
 ---
 

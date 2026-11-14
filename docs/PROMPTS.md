@@ -134,10 +134,7 @@ Acaba con un veredicto: "listo para fusionar", "cambios pequeños" o "rehacer".
 
 Es una fase grande: va en varios PR. Pídelos de uno en uno.
 
-Antes de empezar:
-
-- Instala **Docker Desktop** y déjalo abierto: Supabase local lo necesita.
-- Decide el nombre de la app (DECISIONES, P-01) y sustituye `[NOMBRE_APP]`.
+Antes de empezar cada PR: abre **Docker Desktop** y déjalo abierto, porque Supabase local lo necesita.
 
 ### PR 1.1 — Base de datos
 
@@ -168,7 +165,7 @@ No crees pantallas en este PR.
 
 ### Los PR de la Fase 1, del 1.2 al 1.17
 
-El diseño está decidido en `docs/DECISIONES.md` (D-036 a D-062). Se piden **en este orden y de uno en uno**: cada PR sale de `main` con el anterior ya fusionado.
+El diseño está decidido en `docs/DECISIONES.md` (D-036 a D-063). Se piden **en este orden y de uno en uno**: cada PR sale de `main` con el anterior ya fusionado.
 
 | PR | Qué hace | Rama |
 |---|---|---|
@@ -213,12 +210,16 @@ DECISIONES: D-038 a D-046, D-052, D-058 y D-060.
 INCLUYE:
 1. supabase/config.toml: confirmar el email es obligatorio; contraseña
    de 8 caracteres como mínimo; código de 6 dígitos que caduca a los
-   15 minutos; 60 segundos entre un envío y el siguiente; la sesión se
-   cierra tras 30 días sin uso; aviso por email al cambiar la
-   contraseña; la dirección de la app local bien puesta.
+   15 minutos; 60 segundos entre un envío y el siguiente; pedir la
+   contraseña actual para cambiarla (salvo si se entró con un código);
+   aviso por email al cambiar la contraseña; la dirección de la app
+   local bien puesta. NO se activa el cierre de sesión por inactividad
+   de Supabase: lo hace la app en el PR 1.3 (D-045 y D-063).
 2. Las 4 plantillas de email en supabase/templates/, cada una en inglés
-   y en español según el idioma guardado en la cuenta. Solo llevan el
-   código: ningún enlace. Textos, más abajo.
+   y en español según el idioma guardado en los datos de la cuenta
+   (user_metadata.locale, D-044). Solo llevan el código: ningún
+   enlace. Textos, más abajo. Si el asunto no puede cambiar según el
+   idioma, se usa el asunto bilingüe de D-044.
 3. Una migración nueva (la primera no se edita):
    - Al crearse un usuario, su perfil toma de los datos del registro el
      nombre, el idioma, la unidad de peso, la fecha y la versión de los
@@ -283,7 +284,10 @@ INCLUYE:
 6. Un botón provisional "Cerrar sesión" en la cabecera de las dos
    zonas (pasa al perfil en el PR 1.13).
 7. Sesión caducada: aviso y vuelta a /login (D-061).
-8. Test de extremo a extremo: entrar y cerrar sesión con un usuario
+8. Los 30 días sin uso de D-045: la app guarda en el dispositivo la
+   última vez que se abrió y, si han pasado más de 30 días, cierra la
+   sesión al arrancar. Con test unitario.
+9. Test de extremo a extremo: entrar y cerrar sesión con un usuario
    del seed.
 
 NO INCLUYE: registro, verificación ni recuperar contraseña; el tenant
@@ -301,6 +305,8 @@ CRITERIOS DE ACEPTACIÓN:
 5. Con la base de datos parada (npm run db:stop), "Entrar" muestra
    "No hay conexión. Inténtalo de nuevo".
 6. La pantalla se ve bien en inglés y en español, y en un móvil.
+7. El PR explica en "Cómo probarlo" qué test demuestra que, pasados
+   31 días sin abrir la app, hay que volver a entrar.
 ```
 
 ### PR 1.4 — Tenant y rol reales, y guardas de ruta
@@ -376,7 +382,8 @@ INCLUYE:
 1. Un campo para el código de 6 dígitos: admite pegar el código entero
    y abre el teclado numérico en el móvil.
 2. /reset-password: email, código y contraseña nueva. Al guardarla, el
-   usuario queda dentro y se cierran sus otras sesiones.
+   usuario queda dentro y la app cierra sus sesiones en los demás
+   dispositivos.
 3. "Entrar con un código por email", desde /login: email, código y
    dentro.
 4. En /login: los enlaces a las dos cosas. El mensaje de contraseña
@@ -420,8 +427,11 @@ INCLUYE:
    unidad de peso y la fecha y versión de los términos.
 2. /verify: el código de 6 dígitos, con "Enviar otro código".
 3. Los avisos de D-043 al registrarse, con su botón resaltado: cuenta
-   que ya existe y cuenta pendiente de confirmar. Al confirmar una
-   cuenta pendiente vale la contraseña recién escrita.
+   que ya existe y cuenta pendiente de confirmar.
+   Seguridad: nada más confirmar el código, la app vuelve a guardar la
+   contraseña recién escrita, para que valga siempre la última. Si ya
+   no la tiene (se cerró la app entre medias), pide elegir una
+   contraseña antes de seguir (D-043).
 4. En /login: el enlace "Crear cuenta", que además se resalta con el
    mensaje "No hay ninguna cuenta con este email". Quien entra con una
    cuenta sin confirmar pasa a /verify con un código nuevo.
@@ -528,6 +538,14 @@ pronto". La pantalla "Ya no tienes acceso" (PR 1.11). Añadir un coach
 desde el perfil (PR 1.14). Que el enlace abra la app instalada
 (Fase 4).
 
+SI PASA DE 300 LÍNEAS, se parte así:
+- 1.9a: /start, la vista previa de /join, unirse con sesión, todos los
+  mensajes de D-054, el tope de intentos y /welcome. Criterios 1, 2, 4
+  a 10, entrando primero con una cuenta ya creada.
+- 1.9b: recordar el código mientras se crea la cuenta, la marca del
+  coach en /signup, /verify y /login, el alta automática al terminar y
+  el test de extremo a extremo. Criterio 3.
+
 CRITERIOS DE ACEPTACIÓN:
 1. Sin sesión, al abrir la app veo la primera pantalla: idioma arriba,
    el campo del código y los dos enlaces debajo.
@@ -576,6 +594,12 @@ INCLUYE:
 
 NO INCLUYE: la ficha del cliente, dar de baja y reactivar (PR 1.11);
 el email del cliente; el alta de un segundo coach (staff).
+
+SI PASA DE 300 LÍNEAS, se parte así:
+- 1.10a: el módulo, su flag y la lista (puntos 1, 2, 4, 5 y 6).
+  Criterios 1, 2, 3, 6 y 7.
+- 1.10b: la tarjeta del código y la variable de la dirección pública
+  (puntos 3 y 7). Criterios 4 y 5.
 
 CRITERIOS DE ACEPTACIÓN:
 1. coach.iron@example.com ve "Clientes" en el menú. Dentro: Ana, Bruno
@@ -689,9 +713,12 @@ INCLUYE:
    de peso, el email (solo se muestra), cambiar la contraseña,
    enlaces a los textos legales y cerrar sesión.
 2. Cambiar el idioma cambia la app al momento y se guarda en el
-   perfil. Al entrar en otro dispositivo, la app toma el idioma del
-   perfil.
-3. Cambiar la contraseña pide la actual (D-042).
+   perfil y en los datos de la cuenta (user_metadata.locale), para que
+   los emails lleguen en el idioma nuevo (D-044). Al entrar en otro
+   dispositivo, la app toma el idioma del perfil.
+3. Cambiar la contraseña pide la actual, salvo a quien entró con un
+   código por email (D-042). Después la app cierra las sesiones de los
+   demás dispositivos.
 4. El botón provisional de cerrar sesión de la cabecera desaparece.
 5. En el perfil del cliente, pequeño: "Con tecnología de ATHLETE
    CORE".
@@ -817,11 +844,11 @@ CRITERIOS DE ACEPTACIÓN:
 TAREA: poner en marcha el entorno de pruebas en la nube (staging) y
 el envío real de emails.
 RAMA: chore/staging
-DECISIONES: D-013, D-045, D-046 y D-060. Pendientes P-01 y P-11.
+DECISIONES: D-013, D-046, D-060 y D-063. Pendiente P-01.
 
 ANTES DE PEDIRLO, el propietario tiene que tener:
 - El dominio comprado (P-01).
-- Una cuenta de Supabase y otra de Resend.
+- Una cuenta de Supabase (plan gratuito, D-063) y otra de Resend.
 
 INCLUYE:
 1. Una guía paso a paso en supabase/README.md, y el agente acompaña al
@@ -829,8 +856,11 @@ INCLUYE:
    región de la Unión Europea; aplicar las migraciones; dejar las
    cuentas configuradas igual que en local (confirmación, contraseña,
    códigos y plantillas); conectar Resend por SMTP; verificar el
-   dominio; cargar los datos inventados.
-2. Decidir P-11 (plan de Supabase) y anotarlo en DECISIONES.md.
+   dominio; subir el tope de emails por hora de Supabase a 100; cargar
+   los datos inventados.
+2. Comprobar las consecuencias del plan gratuito de D-063 (proyectos,
+   pausa y copias de seguridad) y corregir D-063 si algo ha cambiado.
+   Explicar en la guía cómo reanudar staging si se pausa.
 3. Las variables de staging, documentadas en .env.example sin valores.
 4. docs/ESTADO.md: la Fase 1 queda terminada.
 

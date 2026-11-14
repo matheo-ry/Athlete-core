@@ -222,8 +222,7 @@
       "submitting": "Creating…"
     },
     "coachSettings": {
-      "title": "Settings",
-      "soon": "Your brand will be here very soon."
+      "title": "Settings"
     },
     "clientProfile": {
       "title": "Profile"
@@ -265,6 +264,49 @@
       "current": "You're here",
       "addCoach": "Add a coach with a code",
       "createBusiness": "Create my business"
+    },
+    "brand": {
+      "title": "Brand",
+      "description": "How your clients see the app: your business name, your colors and light or dark mode.",
+      "nameLabel": "Business name",
+      "nameHint": "Your clients see it. Between 2 and 40 characters.",
+      "nameTooShort": "Write at least 2 characters.",
+      "nameTooLong": "The name can have at most 40 characters.",
+      "primaryLabel": "Main color",
+      "primaryCustomLabel": "Your own main color",
+      "accentLabel": "Accent color",
+      "accentCustomLabel": "Your own accent color",
+      "customHint": "Like #1E5BD8.",
+      "pickerLabel": "Or choose it on the color wheel",
+      "colorInvalid": "Write a color like #1E5BD8.",
+      "modeLabel": "Mode",
+      "modeDark": "Dark",
+      "modeLight": "Light",
+      "previewLabel": "Preview",
+      "previewTitle": "Today",
+      "previewBadge": "New",
+      "previewText": "This is how your clients will see the app.",
+      "previewButton": "Start workout",
+      "previewLink": "See my progress",
+      "reset": "Back to ATHLETE CORE colors",
+      "save": "Save brand",
+      "saving": "Saving…",
+      "saved": "Saved. Your clients will see it the next time they open the app.",
+      "notAllowed": "Only the owner of the business can change the brand.",
+      "palette": {
+        "blue": "Blue",
+        "sky": "Sky blue",
+        "teal": "Teal",
+        "green": "Green",
+        "lime": "Lime",
+        "yellow": "Yellow",
+        "orange": "Orange",
+        "red": "Red",
+        "pink": "Pink",
+        "purple": "Purple",
+        "indigo": "Indigo",
+        "slate": "Slate gray"
+      }
     }
   }
 }

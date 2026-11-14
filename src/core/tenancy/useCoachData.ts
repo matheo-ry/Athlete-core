@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
-import type { MemberActionResult } from './membership';
+import type { BrandInput, MemberActionResult, UpdateBrandResult } from './membership';
 import { useTenancyContext } from './useTenancy';
 
 // Datos que solo ve el coach del negocio activo: sus miembros, su código de
@@ -71,6 +71,28 @@ export function useClientStatusChange(action: 'archive' | 'reactivate') {
       if (result === 'ok') {
         await queryClient.invalidateQueries({ queryKey: tenantMembersQueryKey(tenantId) });
       }
+    },
+  });
+}
+
+/**
+ * Guardar la marca del negocio activo (D-057). Si sale bien, se vuelven a pedir
+ * los espacios: la marca nueva se ve al momento en toda la app del coach. Sin
+ * conexión no se intenta.
+ */
+export function useUpdateBrand() {
+  const { source, refresh } = useTenancyContext();
+  const tenantId = useActiveTenantId();
+  return useMutation<UpdateBrandResult, Error, BrandInput>({
+    mutationFn: async (input) => {
+      if (!navigator.onLine) {
+        return 'offline';
+      }
+      const result = await source.updateBrand(tenantId ?? '', input);
+      if (result === 'ok') {
+        await refresh();
+      }
+      return result;
     },
   });
 }

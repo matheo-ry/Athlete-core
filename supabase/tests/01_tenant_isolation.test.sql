@@ -78,7 +78,7 @@ select is(
   0, '06c: B no ve los miembros de A'
 );
 select is(
-  pg_temp.affected_rows($$ update public.tenants set name = 'hack' where id = current_setting('t.ta')::uuid $$),
+  pg_temp.affected_rows($$ update public.tenants set settings = '{"hack":true}' where id = current_setting('t.ta')::uuid $$),
   0, '06d: B no puede editar el tenant de A'
 );
 select throws_ok(
@@ -114,7 +114,7 @@ select is((select count(*)::int from public.tenants), 1, '08f: tras unirse, C ve
 select is((select count(*)::int from public.tenant_members), 1, '08g: C solo ve su propia fila de miembro');
 select is((select count(*)::int from public.tenant_invites), 0, '08h: el cliente no ve el código');
 select is(
-  pg_temp.affected_rows($$ update public.tenants set name = 'hack' $$),
+  pg_temp.affected_rows($$ update public.tenants set settings = '{"hack":true}' $$),
   0, '08i: el cliente no puede editar el tenant'
 );
 select is((select count(*)::int from public.profiles), 1, '08j: el cliente solo ve su perfil');
@@ -133,8 +133,8 @@ select throws_ok(
 -- ----- A: permisos de dueño -----
 set local request.jwt.claims to '{"sub":"00000000-0000-4000-8000-00000000000a","role":"authenticated"}';
 select is(
-  pg_temp.affected_rows($$ update public.tenants set name = 'Coach A2', branding = '{"appName":"A"}' where id = current_setting('t.ta')::uuid $$),
-  1, '13a: el dueño edita el nombre y la marca de su negocio'
+  pg_temp.affected_rows($$ update public.tenants set settings = '{"units":"kg"}' where id = current_setting('t.ta')::uuid $$),
+  1, '13a: el dueño edita los ajustes de su negocio'
 );
 select throws_ok($$ update public.tenants set plan = 'studio' $$, '42501', null, '11: el coach no puede cambiar su plan');
 select throws_ok($$ update public.tenants set status = 'active' $$, '42501', null, '12: el coach no puede cambiar su estado');

@@ -1,4 +1,6 @@
 export { brandInitials } from './brand-initials';
+export { BRAND_PALETTE, normalizeHexColor } from './brand-palette';
+export type { PaletteColor } from './brand-palette';
 export { BrandProvider } from './BrandProvider';
 export { brandSchema } from './brand-schema';
 export type { Brand, BrandMode } from './brand-schema';

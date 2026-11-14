@@ -456,6 +456,12 @@ Cómo añadir una: copia el formato, usa el siguiente número y no borres las an
   - En el selector y en "Mis espacios", primero el negocio propio y después los coaches, del más antiguo al más nuevo.
 - **Por qué:** quien entra a diario en el mismo espacio no debe elegir cada vez, y en un dispositivo compartido la siguiente persona no debe heredar la elección de otra. Es la misma regla que la del código del coach recordado (D-037).
 
+### D-067 · La marca solo se guarda con una función
+- **Fecha:** 2026-11-14
+- **Decisión:** completa D-057. El nombre, los colores y el modo del negocio se guardan con la función `update_brand`: comprueba que quien la llama es el dueño, que el nombre tiene de 2 a 40 caracteres, que los colores son como `#1E5BD8` y que el modo es claro u oscuro, y cambia a la vez el nombre del negocio y el de la marca. Ya nadie puede cambiar `tenants.name` ni `tenants.branding` a mano desde la app; `tenants.settings`, sí (el dueño).
+- **Por qué:** la marca la ven todos los clientes del coach. Si se guardara rota, la app la cambiaría por la de ATHLETE CORE sin avisar; y con dos caminos para guardar, el nombre del negocio y el de la marca podrían quedar distintos.
+- **Consecuencias:** el logo (PR 1.16) también tendrá su función. Los tests de aislamiento que editaban el nombre a mano ahora editan `settings`, que sigue protegido por la misma regla de acceso.
+
 ---
 
 ## Pendientes de decidir

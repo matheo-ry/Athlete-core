@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test';
 
-import { signIn } from './helpers';
+import { chooseSpace, signIn } from './helpers';
 import { E2E_PASSWORD, createConfirmedUser, localEnv, rpc, signInApi } from './supabase-helpers';
 
 // Módulo clients (PR 1.10), contra Supabase local y los datos del seed.
@@ -11,6 +11,7 @@ test('la coach de Iron Lab ve a sus 3 clientes, en orden, y el aviso de plan lle
   page,
 }) => {
   await signIn(page, 'coach.iron@example.com');
+  await chooseSpace(page, 'Iron Lab');
   await page.getByRole('link', { name: 'Clients' }).first().click();
 
   await expect(page).toHaveURL(/\/coach\/clients$/);

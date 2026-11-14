@@ -8,7 +8,8 @@ import { expect } from '@playwright/test';
 
 const MAILPIT = 'http://127.0.0.1:54324/api/v1';
 
-function localEnv(): { url: string; key: string } {
+/** La dirección y la clave PÚBLICA de Supabase local, leídas de `.env.local`. */
+export function localEnv(): { url: string; key: string } {
   let text = '';
   try {
     text = readFileSync('.env.local', 'utf8');

@@ -1,17 +1,19 @@
 import { useTranslation } from 'react-i18next';
-import { Link } from 'react-router';
+import { Link, useNavigate } from 'react-router';
 
 import { buttonClassName } from '@/core/ui';
 
 import { SignOutButton } from '../SignOutButton';
+import { InviteCodeForm } from './InviteCodeForm';
 
 /**
  * Bienvenida para quien tiene sesión pero ningún espacio activo (ARQUITECTURA §7,
- * DECISIONES D-056). Escribir un código lleva a /join; crear el negocio llega en
- * el PR 1.12 y la pantalla definitiva, en el PR 1.9.
+ * DECISIONES D-056): escribir el código de un coach, crear su negocio (PR 1.12)
+ * o cerrar sesión.
  */
 export function WelcomePage() {
   const { t } = useTranslation();
+  const navigate = useNavigate();
 
   return (
     <>
@@ -19,12 +21,13 @@ export function WelcomePage() {
         <h1 className="text-2xl font-bold">{t('app.welcome.title')}</h1>
         <p className="text-muted">{t('app.welcome.description')}</p>
       </header>
-      <div className="flex flex-col gap-3">
-        <Link to="/join" className={buttonClassName('primary')}>
-          {t('app.welcome.clientOption')}
+      <InviteCodeForm onSubmit={(code) => void navigate(`/join?code=${code}`)} />
+      <div className="border-border flex flex-col gap-2 border-t pt-4">
+        <Link to="/create-business" className={buttonClassName('secondary')}>
+          {t('app.welcome.createBusiness')}
         </Link>
+        <SignOutButton />
       </div>
-      <SignOutButton />
     </>
   );
 }

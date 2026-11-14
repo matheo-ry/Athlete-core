@@ -14,6 +14,7 @@ import { CoachHomePage } from './coach/CoachHomePage';
 import { CoachLayout } from './coach/CoachLayout';
 import { ModuleGate } from './ModuleGate';
 import { CodeSignInPage } from './public/CodeSignInPage';
+import { ComingSoonPage } from './public/ComingSoonPage';
 import { JoinPage } from './public/JoinPage';
 import { LegalPage } from './public/LegalPage';
 import { LoginPage } from './public/LoginPage';
@@ -21,6 +22,7 @@ import { NotFoundPage } from './public/NotFoundPage';
 import { PublicLayout } from './public/PublicLayout';
 import { ResetPasswordPage } from './public/ResetPasswordPage';
 import { SignupPage } from './public/SignupPage';
+import { StartPage } from './public/StartPage';
 import { VerifyEmailPage } from './public/VerifyEmailPage';
 import { WelcomePage } from './public/WelcomePage';
 import { RequireFlags } from './RequireFlags';
@@ -106,11 +108,14 @@ export function buildRoutes(modules: readonly ModuleManifest[]): RouteObject[] {
             {
               element: <RequireGuest />,
               children: [
+                { path: 'start', element: <StartPage /> },
                 { path: 'login', element: <LoginPage /> },
                 { path: 'login/code', element: <CodeSignInPage /> },
                 { path: 'signup', element: <SignupPage /> },
               ],
             },
+            // Hasta el PR 1.12, crear negocio es un aviso de "Disponible pronto".
+            { path: 'create-business', element: <ComingSoonPage /> },
             // Recuperar la contraseña y confirmar el email siguen con sesión: el
             // último paso ocurre después de confirmar el código.
             { path: 'reset-password', element: <ResetPasswordPage /> },

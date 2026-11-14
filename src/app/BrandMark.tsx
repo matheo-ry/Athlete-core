@@ -1,20 +1,17 @@
 import { useBrand } from '@/core/branding';
 
+import { BrandBadge } from './BrandBadge';
+
 /**
- * Nombre de la marca que se está mostrando (la del coach o la de la plataforma).
- * El logo llegará en la Fase 1, cuando exista Storage; mientras, la inicial.
+ * Nombre de la marca que se está mostrando (la del coach o la de la plataforma),
+ * con sus iniciales. El logo llega en el PR 1.16.
  */
 export function BrandMark() {
   const brand = useBrand();
 
   return (
     <div className="flex items-center gap-2">
-      <span
-        aria-hidden="true"
-        className="bg-primary text-on-primary flex size-8 items-center justify-center rounded-lg text-sm font-bold"
-      >
-        {brand.appName.charAt(0).toUpperCase()}
-      </span>
+      <BrandBadge brand={brand} />
       <span className="text-foreground font-semibold">{brand.appName}</span>
     </div>
   );

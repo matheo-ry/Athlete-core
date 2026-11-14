@@ -9,7 +9,27 @@
       "loading": "Loading…",
       "errorTitle": "Something went wrong",
       "errorDescription": "We couldn't load this. Please try again.",
-      "retry": "Try again"
+      "retry": "Try again",
+      "showPassword": "Show password",
+      "hidePassword": "Hide password"
+    },
+    "network": {
+      "offline": "No connection"
+    },
+    "errors": {
+      "offline": "No connection. Please try again.",
+      "rateLimited": "Too many attempts. Try again in a few minutes.",
+      "unexpected": "Something went wrong. Please try again."
+    },
+    "auth": {
+      "errors": {
+        "emailRequired": "Enter your email.",
+        "emailInvalid": "Enter a valid email.",
+        "passwordRequired": "Enter your password.",
+        "noAccount": "There's no account with this email.",
+        "wrongPassword": "The password is not correct.",
+        "notConfirmed": "This account is waiting for email confirmation."
+      }
     }
   },
   "app": {
@@ -17,6 +37,18 @@
       "label": "Main menu",
       "coachHome": "Home",
       "clientHome": "Today"
+    },
+    "shell": {
+      "signOut": "Sign out"
+    },
+    "login": {
+      "title": "Sign in",
+      "description": "Welcome back.",
+      "emailLabel": "Email",
+      "passwordLabel": "Password",
+      "submit": "Sign in",
+      "submitting": "Signing in…",
+      "sessionExpired": "Your session has expired. Please sign in again."
     },
     "coachHome": {
       "title": "Coach dashboard",

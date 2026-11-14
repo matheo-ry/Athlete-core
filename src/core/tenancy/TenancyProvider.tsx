@@ -5,6 +5,7 @@ import type { ReactNode } from 'react';
 import { useAuth } from '../auth';
 import { createSupabaseTenancySource } from './api/supabase-tenancy-source';
 import { pickActiveMembership, tenancyFor } from './membership';
+import { clearPendingInvite } from './pending-invite';
 import type { Membership, TenancySource } from './membership';
 import { TenancyContext } from './tenancy-context';
 import type { TenancyContextValue, TenancyStatus } from './tenancy-context';
@@ -25,7 +26,7 @@ export const MEMBERSHIPS_QUERY_KEY = ['tenancy', 'memberships'] as const;
  * si el coach ha dado de baja al usuario, la app lo nota sola (D-061).
  */
 export function TenancyProvider({ children, source }: TenancyProviderProps) {
-  const { status, user } = useAuth();
+  const { status, user, signedOutReason } = useAuth();
   const queryClient = useQueryClient();
   const [tenancySource] = useState(() => source ?? createSupabaseTenancySource());
   const [preferred, setPreferred] = useState<{ userId: string; tenantId: string } | null>(null);
@@ -38,12 +39,17 @@ export function TenancyProvider({ children, source }: TenancyProviderProps) {
     refetchOnWindowFocus: true,
   });
 
-  // Al cerrar sesión no se queda en memoria nada del usuario anterior.
+  // Al cerrar sesión no se queda en memoria nada del usuario anterior. Si la
+  // cerró él mismo, tampoco el código que estaba a medias: en un dispositivo
+  // compartido, otra persona no debe acabar unida a ese coach (D-037).
   useEffect(() => {
     if (status === 'signed-out') {
       queryClient.clear();
     }
-  }, [status, queryClient]);
+    if (status === 'signed-out' && signedOutReason === 'explicit') {
+      clearPendingInvite();
+    }
+  }, [status, signedOutReason, queryClient]);
 
   const refetch = query.refetch;
   const refresh = useCallback(async () => {

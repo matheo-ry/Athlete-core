@@ -191,6 +191,9 @@
       "title": "Disponible pronto",
       "createBusiness": "Crear tu negocio estará disponible muy pronto.",
       "back": "Volver"
+    },
+    "pendingInvite": {
+      "joining": "Te estás uniendo a {{name}}."
     }
   }
 }

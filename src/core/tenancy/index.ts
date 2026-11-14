@@ -9,6 +9,13 @@ export {
 } from './invite-code';
 export { useInvitePreview, useJoinWithCode } from './useInviteActions';
 export {
+  clearPendingInvite,
+  readPendingInvite,
+  rememberPendingInvite,
+  usePendingInvite,
+} from './pending-invite';
+export type { PendingInvite } from './pending-invite';
+export {
   activeMemberships,
   homePathFor,
   parseMemberships,

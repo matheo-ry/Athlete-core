@@ -12,7 +12,17 @@ describe('parseEnv', () => {
     expect(parseEnv(SUPABASE)).toEqual({
       appEnv: 'local',
       supabase: { url: 'http://127.0.0.1:54321', publishableKey: 'example-public-key' },
+      publicAppUrl: null,
     });
+  });
+
+  it('la dirección pública de la web es opcional y se guarda sin la barra final', () => {
+    expect(
+      parseEnv({ ...SUPABASE, VITE_PUBLIC_APP_URL: 'https://app.example.com/' }).publicAppUrl,
+    ).toBe('https://app.example.com');
+    expect(() => parseEnv({ ...SUPABASE, VITE_PUBLIC_APP_URL: 'not a url' })).toThrow(
+      'Invalid environment variables',
+    );
   });
 
   it('devuelve el entorno y la configuración de Supabase', () => {

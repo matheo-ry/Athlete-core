@@ -25,10 +25,11 @@ select is(
   'toda vista pública usa security_invoker (respeta el RLS de sus tablas)'
 );
 
+-- Cada módulo del producto añade aquí su flag al crearse (ARQUITECTURA §15).
 select is(
-  (select count(*)::int from public.features),
-  0,
-  'el catálogo de flags empieza vacío (ARQUITECTURA §15)'
+  array(select key from public.features order by key),
+  array['clients'],
+  'el catálogo de flags tiene uno por módulo del producto, y nada más (ARQUITECTURA §15)'
 );
 
 select * from finish();

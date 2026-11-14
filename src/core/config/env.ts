@@ -16,6 +16,9 @@ const rawEnvSchema = z.object({
   VITE_SUPABASE_URL: z.preprocess(emptyToUndefined, z.url()),
   // Clave PÚBLICA de Supabase (publishable / anon). La clave secreta de servicio nunca entra aquí.
   VITE_SUPABASE_PUBLISHABLE_KEY: z.preprocess(emptyToUndefined, z.string().min(1)),
+  // Opcional: la dirección pública de la web, para los enlaces de invitación
+  // (/join?code=…). Sin ella se usa la dirección desde la que se ve la app.
+  VITE_PUBLIC_APP_URL: z.preprocess(emptyToUndefined, z.url().optional()),
 });
 
 export interface SupabaseEnv {
@@ -26,6 +29,8 @@ export interface SupabaseEnv {
 export interface AppEnv {
   appEnv: 'local' | 'staging' | 'production';
   supabase: SupabaseEnv;
+  /** Sin la barra final. `null` si no se ha configurado. */
+  publicAppUrl: string | null;
 }
 
 export function parseEnv(raw: unknown): AppEnv {
@@ -36,10 +41,12 @@ export function parseEnv(raw: unknown): AppEnv {
     );
   }
 
-  const { VITE_APP_ENV, VITE_SUPABASE_URL, VITE_SUPABASE_PUBLISHABLE_KEY } = result.data;
+  const { VITE_APP_ENV, VITE_SUPABASE_URL, VITE_SUPABASE_PUBLISHABLE_KEY, VITE_PUBLIC_APP_URL } =
+    result.data;
   return {
     appEnv: VITE_APP_ENV,
     supabase: { url: VITE_SUPABASE_URL, publishableKey: VITE_SUPABASE_PUBLISHABLE_KEY },
+    publicAppUrl: VITE_PUBLIC_APP_URL?.replace(/\/+$/, '') ?? null,
   };
 }
 

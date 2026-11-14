@@ -1,0 +1,47 @@
+{
+  "nav": {
+    "coach": "Clientes"
+  },
+  "list": {
+    "title": "Clientes",
+    "description": "Quién ha entrado con tu código.",
+    "tabsLabel": "Mostrar",
+    "tabs": {
+      "active": "Activos",
+      "archived": "Dados de baja"
+    },
+    "search": "Buscar por nombre",
+    "empty": {
+      "title": "Aún no tienes clientes",
+      "description": "Comparte tu código para que se unan."
+    },
+    "emptyArchived": {
+      "title": "No hay clientes dados de baja",
+      "description": "Aquí verás a los clientes que des de baja."
+    },
+    "noResults": "Ningún cliente coincide con «{{query}}».",
+    "joinedOn": "Se unió el {{date}}",
+    "new": "Nuevo"
+  },
+  "seats": {
+    "used": "{{used}} de {{max}} plazas",
+    "unlimited": "{{used}} clientes · sin límite",
+    "full": "Has llegado al límite de tu plan. Quien use tu código no podrá entrar."
+  },
+  "code": {
+    "title": "Tu código de invitación",
+    "description": "Compártelo con tus clientes para que se unan.",
+    "copy": "Copiar código",
+    "copied": "Copiado",
+    "copyFailed": "No se ha podido copiar. Selecciona el código y cópialo a mano.",
+    "share": "Compartir enlace",
+    "linkCopied": "Enlace copiado",
+    "shareTitle": "Únete a {{name}} en ATHLETE CORE",
+    "regenerate": "Regenerar código",
+    "regenerateConfirm": "El código actual y sus enlaces dejarán de funcionar al momento. Los clientes que ya se unieron no notarán nada.",
+    "regenerateYes": "Sí, regenerar",
+    "cancel": "Cancelar",
+    "regenerating": "Regenerando…",
+    "regenerated": "Código nuevo listo."
+  }
+}

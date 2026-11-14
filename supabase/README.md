@@ -9,6 +9,7 @@ La base de datos del proyecto (ARQUITECTURA §8). Supabase en local necesita Doc
   - `20261114100000_accounts_and_emails.sql`: el perfil nace con los datos del registro; `accept_terms`; `email_status` (dice si un email tiene cuenta, sin sesión); el tope de intentos en el esquema `private`, que la API no expone.
   - `20261114120000_invites_and_memberships.sql`: códigos de 8 caracteres sin los que se confunden; `preview_invite` sin sesión; `join_tenant_with_code` con un resultado por caso (D-054); el tope de 10 códigos equivocados; `archive_client` y `reactivate_client` (solo el dueño, comprobando el plan); `my_spaces`; `create_tenant` con las condiciones para coaches.
   - `20261114130000_rate_limits_for_shared_networks.sql`: topes más altos para lo que se cuenta por conexión, pensando en el wifi de un gimnasio (D-065).
+  - `20261114140000_clients_feature.sql`: el flag del módulo `clients`. Cada módulo nuevo añade el suyo y lo apunta en la lista del test `04_rls_enabled`.
   - **Ojo:** `preview_invite` y `join_tenant_with_code` devuelven `{status: …}` en vez de lanzar un error. Un error desharía también el apunte del intento fallido, y el tope de intentos no contaría.
 - `tests/`: tests pgTAP de seguridad. Cada archivo va en una transacción que se deshace, con usuarios inventados.
   - `01_tenant_isolation`: un tenant no ve ni toca nada de otro; permisos de cada rol; código de invitación; límite del plan.

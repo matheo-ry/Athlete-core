@@ -8,6 +8,15 @@ export {
   parseInviteCodeParam,
 } from './invite-code';
 export { useInvitePreview, useJoinWithCode } from './useInviteActions';
+export { countActiveClients, parseMembers, parsePlanLimit } from './members';
+export type { PlanLimit, TenantMember } from './members';
+export {
+  tenantMembersQueryKey,
+  useInviteCode,
+  usePlanLimit,
+  useRegenerateInviteCode,
+  useTenantMembers,
+} from './useCoachData';
 export {
   clearPendingInvite,
   readPendingInvite,

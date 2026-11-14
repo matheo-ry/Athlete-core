@@ -1,8 +1,17 @@
 import { normalizeInviteCode } from '@/core/tenancy';
-import type { InvitePreview, JoinResult, Membership, TenancySource, Tenant } from '@/core/tenancy';
+import type {
+  InvitePreview,
+  JoinResult,
+  Membership,
+  PlanLimit,
+  TenancySource,
+  Tenant,
+  TenantMember,
+} from '@/core/tenancy';
 
 // Espacios falsos para los tests: los mismos dos negocios que el seed de la base
 // de datos (Iron Lab y Norte Strength), con su marca, y cuentas de cada caso.
+// Todo es inventado. La lógica imita a la base de datos (mismos resultados).
 
 export const TEST_TENANTS = {
   iron: {
@@ -60,14 +69,30 @@ export const FAKE_MEMBERSHIPS: Readonly<Record<string, Membership[]>> = {
   'norte-coach@example.test': [member(TEST_TENANTS.norte, 'owner')],
 };
 
-/** Los códigos de cada negocio falso, como en el seed. */
-export const FAKE_CODES: Readonly<Record<string, Tenant>> = {
-  IRONLAB1: TEST_TENANTS.iron,
-  NORTE001: TEST_TENANTS.norte,
+/** El nombre de cada cuenta falsa (el perfil). */
+export const FAKE_NAMES: Readonly<Record<string, string>> = {
+  'coach@example.test': 'Iris Coach',
+  'client@example.test': 'Ana Cliente',
+  'norte-client@example.test': 'Diego Norte',
+  'dual@example.test': 'Dana Dual',
+  'archived@example.test': 'Fran Baja',
+  'norte-coach@example.test': 'Nora Coach',
 };
 
-/** Negocios falsos con el plan lleno: nadie nuevo puede unirse. */
-const FULL_TENANTS = new Set([TEST_TENANTS.iron.id]);
+/** Planes falsos. Iron Lab tiene 1 plaza y ya está ocupada: su plan está lleno. */
+const FAKE_PLANS: Readonly<Record<string, PlanLimit>> = {
+  [TEST_TENANTS.iron.id]: { plan: 'free', maxClients: 1 },
+  [TEST_TENANTS.norte.id]: { plan: 'starter', maxClients: 10 },
+};
+
+const CODE_ALPHABET = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';
+
+function randomCode(): string {
+  return Array.from(
+    { length: 8 },
+    () => CODE_ALPHABET[Math.floor(Math.random() * CODE_ALPHABET.length)],
+  ).join('');
+}
 
 interface FakeTenancyOptions {
   memberships?: Readonly<Record<string, Membership[]>>;
@@ -82,24 +107,51 @@ export interface FakeTenancySource extends TenancySource {
   readonly failedAttempts: number;
 }
 
+const userIdFor = (email: string) => `user-${email}`;
+
 /** Los ids de usuario de la sesión falsa son `user-<email>`. */
 export function createFakeTenancySource({
   memberships = FAKE_MEMBERSHIPS,
   fail = false,
   currentEmail = () => null,
 }: FakeTenancyOptions = {}): FakeTenancySource {
-  // Copia propia: unirse añade espacios sin tocar la lista compartida.
+  // Copias propias: unirse o regenerar no tocan las listas compartidas.
   const store = new Map(Object.entries(memberships).map(([email, list]) => [email, [...list]]));
+  const codes = new Map<string, Tenant>([
+    ['IRONLAB1', TEST_TENANTS.iron],
+    ['NORTE001', TEST_TENANTS.norte],
+  ]);
   let failedAttempts = 0;
 
   const findTenant = (code: string): Tenant | undefined => {
-    const tenant = FAKE_CODES[normalizeInviteCode(code)];
+    const tenant = codes.get(normalizeInviteCode(code));
     if (tenant === undefined) {
       failedAttempts += 1;
     }
     return tenant;
   };
   const isLockedOut = () => failedAttempts >= 10;
+
+  const membersOf = (tenantId: string): TenantMember[] =>
+    [...store.entries()].flatMap(([email, list]) =>
+      list
+        .filter((membership) => membership.tenantId === tenantId)
+        .map((membership) => ({
+          userId: userIdFor(email),
+          role: membership.role,
+          status: membership.status,
+          joinedAt: membership.joinedAt,
+          displayName: FAKE_NAMES[email] ?? email.split('@')[0] ?? email,
+        })),
+    );
+
+  const isFull = (tenantId: string) => {
+    const limit = FAKE_PLANS[tenantId]?.maxClients ?? null;
+    const active = membersOf(tenantId).filter(
+      (item) => item.role === 'client' && item.status === 'active',
+    ).length;
+    return limit !== null && active >= limit;
+  };
 
   return {
     get failedAttempts() {
@@ -150,11 +202,43 @@ export function createFakeTenancySource({
             : { status: 'archived' },
         );
       }
-      if (FULL_TENANTS.has(tenant.id)) {
+      if (isFull(tenant.id)) {
         return Promise.resolve({ status: 'plan_full' });
       }
       store.set(email, [...own, member(tenant, 'client', { joinedAt: new Date().toISOString() })]);
       return Promise.resolve({ status: 'joined', tenantId: tenant.id });
+    },
+
+    listMembers(tenantId) {
+      return Promise.resolve(membersOf(tenantId));
+    },
+
+    getInviteCode(tenantId) {
+      const code = [...codes.entries()].find(([, tenant]) => tenant.id === tenantId)?.[0];
+      return Promise.resolve(code ?? null);
+    },
+
+    regenerateInviteCode(tenantId) {
+      const email = currentEmail();
+      const isOwner = (store.get(email ?? '') ?? []).some(
+        (membership) => membership.tenantId === tenantId && membership.role === 'owner',
+      );
+      if (!isOwner) {
+        return Promise.reject(new Error('not_allowed'));
+      }
+      for (const [code, tenant] of codes) {
+        if (tenant.id === tenantId) {
+          codes.delete(code);
+          const next = randomCode();
+          codes.set(next, tenant);
+          return Promise.resolve(next);
+        }
+      }
+      return Promise.reject(new Error('not_found'));
+    },
+
+    getPlanLimit(tenantId) {
+      return Promise.resolve(FAKE_PLANS[tenantId] ?? { plan: 'free', maxClients: 3 });
     },
   };
 }

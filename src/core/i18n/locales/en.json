@@ -45,7 +45,8 @@
     "nav": {
       "label": "Main menu",
       "coachHome": "Home",
-      "clientHome": "Today"
+      "clientHome": "Today",
+      "coachSettings": "Settings"
     },
     "shell": {
       "signOut": "Sign out"
@@ -69,7 +70,14 @@
       "description": "From here you will follow your clients and their training.",
       "businessLabel": "Your business",
       "emptyTitle": "Nothing to show yet",
-      "emptyDescription": "Clients, programs and exercises arrive in the next phases."
+      "emptyDescription": "Clients, programs and exercises arrive in the next phases.",
+      "firstSteps": {
+        "title": "First steps",
+        "shareCode": "Share your code",
+        "shareCodeHint": "So your clients can join.",
+        "brand": "Customize your brand",
+        "brandHint": "Your name, colors and logo."
+      }
     },
     "clientHome": {
       "title": "Today",
@@ -175,6 +183,13 @@
         "p2": "Your coach sees your name and the data of the space you share. Your coach doesn't see your email.",
         "p3": "We don't use tracking cookies and we don't send you marketing emails.",
         "p4": "You can ask us to delete your account by writing to the support address. Deleting it from inside the app will come later."
+      },
+      "coachTerms": {
+        "title": "Terms for coaches",
+        "p1": "As a coach, you use ATHLETE CORE to run your business and your clients' training.",
+        "p2": "ATHLETE CORE processes your clients' data on your behalf, only to provide the service (data processing agreement).",
+        "p3": "You decide which clients have access and you can remove them at any time. Your plan sets how many active clients you can have.",
+        "p4": "Until payments arrive, ATHLETE CORE sets your plan. You can't change it from the app."
       }
     },
     "start": {
@@ -189,13 +204,24 @@
       "submit": "Continue",
       "invalidFormat": "This doesn't look like a code. Check it with your coach."
     },
-    "comingSoon": {
-      "title": "Coming soon",
-      "createBusiness": "Creating your business will be available very soon.",
-      "back": "Back"
-    },
     "pendingInvite": {
       "joining": "You're joining {{name}}."
+    },
+    "createBusiness": {
+      "title": "Create your business",
+      "description": "Your clients will see this name. You can change it later in Settings.",
+      "nameLabel": "Business name",
+      "nameHint": "Between 2 and 40 characters.",
+      "terms": "I accept the <terms>Terms for coaches</terms>.",
+      "termsRequired": "To create your business you need to accept the terms for coaches.",
+      "nameTooShort": "Write at least 2 characters.",
+      "nameTooLong": "The name can have at most 40 characters.",
+      "submit": "Create business",
+      "submitting": "Creating…"
+    },
+    "coachSettings": {
+      "title": "Settings",
+      "soon": "Your account and your brand will be here very soon."
     }
   }
 }

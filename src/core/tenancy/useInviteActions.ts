@@ -1,7 +1,29 @@
 import { useMutation } from '@tanstack/react-query';
 
 import type { InvitePreview, JoinResult } from './invite';
+import type { CreateBusinessResult } from './membership';
 import { useTenancyContext } from './useTenancy';
+
+/**
+ * Crear el negocio (D-049). Si sale bien, se vuelven a pedir los espacios y el
+ * negocio nuevo pasa a ser el activo.
+ */
+export function useCreateBusiness() {
+  const { source, refresh, selectTenant } = useTenancyContext();
+  return useMutation<CreateBusinessResult, Error, { name: string; coachTermsVersion: string }>({
+    mutationFn: async ({ name, coachTermsVersion }) => {
+      if (!navigator.onLine) {
+        return { status: 'offline' };
+      }
+      const result = await source.createBusiness(name, coachTermsVersion);
+      if (result.status === 'created') {
+        selectTenant(result.tenantId);
+        await refresh();
+      }
+      return result;
+    },
+  });
+}
 
 /** Ver a qué coach pertenece un código (D-051). Sin conexión no se intenta. */
 export function useInvitePreview() {

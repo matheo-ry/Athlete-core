@@ -45,7 +45,8 @@
     "nav": {
       "label": "Menú principal",
       "coachHome": "Inicio",
-      "clientHome": "Hoy"
+      "clientHome": "Hoy",
+      "coachSettings": "Ajustes"
     },
     "shell": {
       "signOut": "Cerrar sesión"
@@ -69,7 +70,14 @@
       "description": "Desde aquí seguirás a tus clientes y sus entrenos.",
       "businessLabel": "Tu negocio",
       "emptyTitle": "Todavía no hay nada que mostrar",
-      "emptyDescription": "Los clientes, las rutinas y los ejercicios llegan en las próximas fases."
+      "emptyDescription": "Los clientes, las rutinas y los ejercicios llegan en las próximas fases.",
+      "firstSteps": {
+        "title": "Primeros pasos",
+        "shareCode": "Comparte tu código",
+        "shareCodeHint": "Para que tus clientes se unan.",
+        "brand": "Personaliza tu marca",
+        "brandHint": "Tu nombre, tus colores y tu logo."
+      }
     },
     "clientHome": {
       "title": "Hoy",
@@ -175,6 +183,13 @@
         "p2": "Tu coach ve tu nombre y los datos del espacio que compartís. Tu coach no ve tu email.",
         "p3": "No usamos cookies de seguimiento ni te enviamos emails comerciales.",
         "p4": "Puedes pedirnos que borremos tu cuenta escribiendo a la dirección de soporte. Borrarla desde dentro de la app llegará más adelante."
+      },
+      "coachTerms": {
+        "title": "Condiciones para coaches",
+        "p1": "Como coach, usas ATHLETE CORE para llevar tu negocio y el entrenamiento de tus clientes.",
+        "p2": "ATHLETE CORE trata los datos de tus clientes por encargo tuyo y solo para darte el servicio (acuerdo de encargado del tratamiento).",
+        "p3": "Tú decides qué clientes tienen acceso y puedes darlos de baja cuando quieras. Tu plan marca cuántos clientes activos puedes tener.",
+        "p4": "Hasta que lleguen los pagos, tu plan lo pone ATHLETE CORE. No se puede cambiar desde la app."
       }
     },
     "start": {
@@ -189,13 +204,24 @@
       "submit": "Continuar",
       "invalidFormat": "Esto no parece un código. Revísalo con tu coach."
     },
-    "comingSoon": {
-      "title": "Disponible pronto",
-      "createBusiness": "Crear tu negocio estará disponible muy pronto.",
-      "back": "Volver"
-    },
     "pendingInvite": {
       "joining": "Te estás uniendo a {{name}}."
+    },
+    "createBusiness": {
+      "title": "Crea tu negocio",
+      "description": "Es el nombre que verán tus clientes. Podrás cambiarlo después en Ajustes.",
+      "nameLabel": "Nombre de tu negocio",
+      "nameHint": "Entre 2 y 40 caracteres.",
+      "terms": "Acepto las <terms>condiciones para coaches</terms>.",
+      "termsRequired": "Para crear tu negocio tienes que aceptar las condiciones para coaches.",
+      "nameTooShort": "Escribe al menos 2 caracteres.",
+      "nameTooLong": "El nombre puede tener 40 caracteres como máximo.",
+      "submit": "Crear negocio",
+      "submitting": "Creando…"
+    },
+    "coachSettings": {
+      "title": "Ajustes",
+      "soon": "Aquí estarán muy pronto tu cuenta y tu marca."
     }
   }
 }

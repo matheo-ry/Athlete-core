@@ -7,7 +7,8 @@ export {
   normalizeInviteCode,
   parseInviteCodeParam,
 } from './invite-code';
-export { useInvitePreview, useJoinWithCode } from './useInviteActions';
+export { useCreateBusiness, useInvitePreview, useJoinWithCode } from './useInviteActions';
+export { clearCoachIntent, hasCoachIntent, rememberCoachIntent } from './coach-intent';
 export { countActiveClients, parseMembers, parsePlanLimit } from './members';
 export type { PlanLimit, TenantMember } from './members';
 export {
@@ -33,7 +34,13 @@ export {
   pickActiveMembership,
   tenancyFor,
 } from './membership';
-export type { MemberActionResult, Membership, MembershipStatus, TenancySource } from './membership';
+export type {
+  CreateBusinessResult,
+  MemberActionResult,
+  Membership,
+  MembershipStatus,
+  TenancySource,
+} from './membership';
 export { RequireProfile } from './RequireProfile';
 export { MEMBERSHIPS_QUERY_KEY, TenancyProvider } from './TenancyProvider';
 export type { TenancyContextValue, TenancyStatus } from './tenancy-context';

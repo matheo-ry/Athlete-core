@@ -5,12 +5,14 @@ import { RouterProvider, createMemoryRouter } from 'react-router';
 
 import { AppProviders } from '@/app/providers';
 import { buildRoutes } from '@/app/router';
+import type { FlagsSource } from '@/core/flags';
 import { loadModuleTranslations } from '@/core/i18n';
 import type { TenancySource } from '@/core/tenancy';
 import { registeredModules } from '@/modules';
 
 import { createFakeAuthService } from './fake-auth-service';
 import type { FakeAuthService } from './fake-auth-service';
+import { createFakeFlagsSource } from './fake-flags-source';
 import { createFakeTenancySource } from './fake-tenancy-source';
 
 interface RenderAppOptions {
@@ -18,6 +20,8 @@ interface RenderAppOptions {
   auth?: FakeAuthService;
   /** Los espacios falsos. Por defecto, los de `fake-tenancy-source.ts`. */
   tenancy?: TenancySource;
+  /** Los flags falsos. Por defecto, ninguno activo. */
+  flags?: FlagsSource;
 }
 
 /**
@@ -30,6 +34,7 @@ export async function renderApp(initialPath = '/', options: RenderAppOptions = {
 
   const auth = options.auth ?? createFakeAuthService();
   const tenancy = options.tenancy ?? createFakeTenancySource();
+  const flags = options.flags ?? createFakeFlagsSource();
   const router = createMemoryRouter(buildRoutes(registeredModules), {
     initialEntries: [initialPath],
   });
@@ -37,7 +42,12 @@ export async function renderApp(initialPath = '/', options: RenderAppOptions = {
   const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
 
   const view = render(
-    <AppProviders queryClient={queryClient} authService={auth} tenancySource={tenancy}>
+    <AppProviders
+      queryClient={queryClient}
+      authService={auth}
+      tenancySource={tenancy}
+      flagsSource={flags}
+    >
       <RouterProvider router={router} />
     </AppProviders>,
   );

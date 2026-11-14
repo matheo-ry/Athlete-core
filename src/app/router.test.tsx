@@ -104,6 +104,14 @@ describe('la app', () => {
     expect(screen.getByRole('button', { name: 'Try again' })).toBeInTheDocument();
   });
 
+  it('si no se pueden cargar los flags del negocio, lo dice y deja reintentar', async () => {
+    const flags = { listEnabledFeatures: () => Promise.reject(new Error('fake failure')) };
+    await renderApp('/coach', { flags });
+
+    expect(await screen.findByRole('alert')).toHaveTextContent('Something went wrong');
+    expect(screen.getByRole('button', { name: 'Try again' })).toBeInTheDocument();
+  });
+
   it('cambia entre inglés y español con el selector de idioma', async () => {
     const { user } = await renderApp('/coach');
     expect(await screen.findByRole('heading', { name: 'Coach dashboard' })).toBeInTheDocument();

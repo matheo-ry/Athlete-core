@@ -9,7 +9,8 @@ export {
 export type { Membership, MembershipStatus, TenancySource } from './membership';
 export { RequireProfile } from './RequireProfile';
 export { MEMBERSHIPS_QUERY_KEY, TenancyProvider } from './TenancyProvider';
-export type { TenancyContextValue } from './tenancy-context';
+export type { TenancyContextValue, TenancyStatus } from './tenancy-context';
 export { NO_TENANCY, ROLES, profileForRole } from './tenancy-types';
 export type { Profile, Role, Tenancy, Tenant } from './tenancy-types';
 export { useTenancy, useTenancyContext } from './useTenancy';
+export { WhenTenancyReady } from './WhenTenancyReady';

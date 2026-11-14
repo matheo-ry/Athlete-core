@@ -40,7 +40,7 @@ export function SignOutButton({ className }: SignOutButtonProps) {
       </button>
       {hasFailed ? (
         <p role="alert" className="text-danger text-xs">
-          {t('core.errors.offline')}
+          {t('core.errors.unexpected')}
         </p>
       ) : null}
     </div>

@@ -3,12 +3,11 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import type { ReactNode } from 'react';
 
 import { useAuth } from '../auth';
-import { ErrorState, Spinner } from '../ui';
 import { createSupabaseTenancySource } from './api/supabase-tenancy-source';
 import { pickActiveMembership, tenancyFor } from './membership';
 import type { Membership, TenancySource } from './membership';
 import { TenancyContext } from './tenancy-context';
-import type { TenancyContextValue } from './tenancy-context';
+import type { TenancyContextValue, TenancyStatus } from './tenancy-context';
 
 interface TenancyProviderProps {
   children: ReactNode;
@@ -64,23 +63,28 @@ export function TenancyProvider({ children, source }: TenancyProviderProps) {
   const preferredTenantId =
     preferred !== null && preferred.userId === userId ? preferred.tenantId : null;
 
+  let tenancyStatus: TenancyStatus = 'ready';
+  if (status === 'loading' || (userId !== null && query.isPending)) {
+    tenancyStatus = 'loading';
+  } else if (userId !== null && query.isError) {
+    tenancyStatus = 'error';
+  }
+
   const value = useMemo<TenancyContextValue>(
     () => ({
       tenancy: tenancyFor(
         userId === null ? null : pickActiveMembership(memberships, preferredTenantId),
       ),
       memberships: userId === null ? NO_MEMBERSHIPS : memberships,
+      status: tenancyStatus,
       selectTenant,
       refresh,
     }),
-    [userId, memberships, preferredTenantId, selectTenant, refresh],
+    [userId, memberships, preferredTenantId, tenancyStatus, selectTenant, refresh],
   );
 
-  if (status === 'loading' || (userId !== null && query.isPending)) {
-    return <Spinner className="min-h-dvh" />;
-  }
-  if (userId !== null && query.isError) {
-    return <ErrorState className="min-h-dvh justify-center" onRetry={() => void refetch()} />;
-  }
+  // Nunca se ocultan las pantallas mientras carga: una pantalla a medias (por
+  // ejemplo, la de escribir un código del email) perdería lo escrito. Espera
+  // quien necesita saber el espacio (las guardas, con `WhenTenancyReady`).
   return <TenancyContext value={value}>{children}</TenancyContext>;
 }

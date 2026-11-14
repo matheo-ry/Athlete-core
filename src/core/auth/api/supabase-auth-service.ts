@@ -91,11 +91,16 @@ export function createSupabaseAuthService(): AuthService {
     },
 
     async signOut() {
-      // 'local': solo este dispositivo. Las demás sesiones siguen abiertas.
+      // 'local': solo este dispositivo; las demás sesiones siguen abiertas.
+      // Supabase borra la sesión del dispositivo ANTES de avisar al servidor, así
+      // que cerrar sesión funciona aunque no haya conexión. Si el aviso al
+      // servidor falla, la sesión ya está cerrada aquí: solo se registra.
       const { error } = await client.auth.signOut({ scope: 'local' });
       if (error !== null) {
-        logger.warn('Auth: sign out failed', { code: error.code, status: error.status });
-        throw error;
+        logger.warn('Auth: could not revoke the session on the server', {
+          code: error.code,
+          status: error.status,
+        });
       }
     },
   };

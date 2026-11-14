@@ -1,3 +1,4 @@
+export { brandInitials } from './brand-initials';
 export { BrandProvider } from './BrandProvider';
 export { brandSchema } from './brand-schema';
 export type { Brand, BrandMode } from './brand-schema';
@@ -7,3 +8,4 @@ export { MIN_TEXT_CONTRAST, contrastRatio, ensureContrast, pickReadableOn } from
 export { DEFAULT_BRAND } from './default-brand';
 export { parseBrand } from './parse-brand';
 export { useBrand } from './useBrand';
+export { useBrandPreview } from './useBrandPreview';

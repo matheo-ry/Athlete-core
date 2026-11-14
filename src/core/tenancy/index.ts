@@ -1,4 +1,13 @@
 export { createSupabaseTenancySource } from './api/supabase-tenancy-source';
+export { parseInvitePreview, parseJoinResult } from './invite';
+export type { InvitePreview, JoinResult } from './invite';
+export {
+  formatInviteCode,
+  isInviteCodeFormat,
+  normalizeInviteCode,
+  parseInviteCodeParam,
+} from './invite-code';
+export { useInvitePreview, useJoinWithCode } from './useInviteActions';
 export {
   activeMemberships,
   homePathFor,

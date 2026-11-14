@@ -1,4 +1,5 @@
-import type { Membership, TenancySource, Tenant } from '@/core/tenancy';
+import { normalizeInviteCode } from '@/core/tenancy';
+import type { InvitePreview, JoinResult, Membership, TenancySource, Tenant } from '@/core/tenancy';
 
 // Espacios falsos para los tests: los mismos dos negocios que el seed de la base
 // de datos (Iron Lab y Norte Strength), con su marca, y cuentas de cada caso.
@@ -55,26 +56,105 @@ export const FAKE_MEMBERSHIPS: Readonly<Record<string, Membership[]>> = {
   'archived@example.test': [
     member(TEST_TENANTS.norte, 'client', { status: 'archived', tenant: null }),
   ],
+  // Dueña de Norte Strength.
+  'norte-coach@example.test': [member(TEST_TENANTS.norte, 'owner')],
 };
+
+/** Los códigos de cada negocio falso, como en el seed. */
+export const FAKE_CODES: Readonly<Record<string, Tenant>> = {
+  IRONLAB1: TEST_TENANTS.iron,
+  NORTE001: TEST_TENANTS.norte,
+};
+
+/** Negocios falsos con el plan lleno: nadie nuevo puede unirse. */
+const FULL_TENANTS = new Set([TEST_TENANTS.iron.id]);
 
 interface FakeTenancyOptions {
   memberships?: Readonly<Record<string, Membership[]>>;
   /** Simula que la base de datos no responde. */
   fail?: boolean;
+  /** Quién tiene la sesión abierta (lo da `render-app.tsx`): hace falta para unirse. */
+  currentEmail?: () => string | null;
+}
+
+export interface FakeTenancySource extends TenancySource {
+  /** Cuántas veces se ha probado un código equivocado. */
+  readonly failedAttempts: number;
 }
 
 /** Los ids de usuario de la sesión falsa son `user-<email>`. */
 export function createFakeTenancySource({
   memberships = FAKE_MEMBERSHIPS,
   fail = false,
-}: FakeTenancyOptions = {}): TenancySource {
+  currentEmail = () => null,
+}: FakeTenancyOptions = {}): FakeTenancySource {
+  // Copia propia: unirse añade espacios sin tocar la lista compartida.
+  const store = new Map(Object.entries(memberships).map(([email, list]) => [email, [...list]]));
+  let failedAttempts = 0;
+
+  const findTenant = (code: string): Tenant | undefined => {
+    const tenant = FAKE_CODES[normalizeInviteCode(code)];
+    if (tenant === undefined) {
+      failedAttempts += 1;
+    }
+    return tenant;
+  };
+  const isLockedOut = () => failedAttempts >= 10;
+
   return {
+    get failedAttempts() {
+      return failedAttempts;
+    },
+
     listMemberships(userId) {
       if (fail) {
         return Promise.reject(new Error('Could not load memberships: fake failure'));
       }
       const email = userId.replace(/^user-/, '');
-      return Promise.resolve(memberships[email] ?? []);
+      return Promise.resolve(store.get(email) ?? []);
+    },
+
+    previewInvite(code): Promise<InvitePreview> {
+      if (isLockedOut()) {
+        return Promise.resolve({ status: 'rate_limited' });
+      }
+      const tenant = findTenant(code);
+      return Promise.resolve(
+        tenant === undefined
+          ? { status: 'invalid_code' }
+          : { status: 'ok', name: tenant.name, branding: tenant.branding },
+      );
+    },
+
+    joinWithCode(code): Promise<JoinResult> {
+      const email = currentEmail();
+      if (email === null) {
+        return Promise.resolve({ status: 'error' });
+      }
+      if (isLockedOut()) {
+        return Promise.resolve({ status: 'rate_limited' });
+      }
+      const tenant = findTenant(code);
+      if (tenant === undefined) {
+        return Promise.resolve({ status: 'invalid_code' });
+      }
+      const own = store.get(email) ?? [];
+      const existing = own.find((membership) => membership.tenantId === tenant.id);
+      if (existing !== undefined) {
+        if (existing.role !== 'client') {
+          return Promise.resolve({ status: 'own_business', tenantId: tenant.id });
+        }
+        return Promise.resolve(
+          existing.status === 'active'
+            ? { status: 'already_member', tenantId: tenant.id }
+            : { status: 'archived' },
+        );
+      }
+      if (FULL_TENANTS.has(tenant.id)) {
+        return Promise.resolve({ status: 'plan_full' });
+      }
+      store.set(email, [...own, member(tenant, 'client', { joinedAt: new Date().toISOString() })]);
+      return Promise.resolve({ status: 'joined', tenantId: tenant.id });
     },
   };
 }

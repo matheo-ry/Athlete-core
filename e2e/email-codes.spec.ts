@@ -32,22 +32,22 @@ test('recuperar la contraseña: el email llega en el idioma de la cuenta y la co
   await page.getByLabel('New password').fill('a-brand-new-password');
   await page.getByRole('button', { name: 'Save password' }).click();
 
-  // Sin ningún coach todavía: la bienvenida.
-  await expect(page.getByRole('heading', { name: 'Welcome' })).toBeVisible();
+  // Sin ningún coach todavía: la bienvenida, ya en el idioma de la cuenta (D-058).
+  await expect(page.getByRole('heading', { name: 'Te damos la bienvenida' })).toBeVisible();
   await expect
     .poll(async () => (await messagesFor(email)).map((message) => message.Subject))
     .toContain('Tu contraseña de ATHLETE CORE se ha cambiado');
 
   // La contraseña antigua ya no sirve; la nueva, sí.
-  await page.getByRole('button', { name: 'Sign out' }).click();
+  await page.getByRole('button', { name: 'Cerrar sesión' }).click();
   await page.getByLabel('Email').fill(email);
-  await page.getByLabel('Password', { exact: true }).fill(E2E_PASSWORD);
-  await page.getByRole('button', { name: 'Sign in' }).click();
-  await expect(page.getByRole('alert')).toHaveText('The password is not correct.');
+  await page.getByLabel('Contraseña', { exact: true }).fill(E2E_PASSWORD);
+  await page.getByRole('button', { name: 'Entrar', exact: true }).click();
+  await expect(page.getByRole('alert')).toHaveText('La contraseña no es correcta.');
 
-  await page.getByLabel('Password', { exact: true }).fill('a-brand-new-password');
-  await page.getByRole('button', { name: 'Sign in' }).click();
-  await expect(page.getByRole('heading', { name: 'Welcome' })).toBeVisible();
+  await page.getByLabel('Contraseña', { exact: true }).fill('a-brand-new-password');
+  await page.getByRole('button', { name: 'Entrar', exact: true }).click();
+  await expect(page.getByRole('heading', { name: 'Te damos la bienvenida' })).toBeVisible();
 });
 
 test('entrar con un código por email, sin contraseña', async ({ page }) => {

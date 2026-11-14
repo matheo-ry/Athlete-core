@@ -22,9 +22,9 @@
 ## Dónde estamos
 
 - **Fase actual:** 1 — Cuentas, negocio del coach y unirse con código.
-- **Última tarea terminada:** PR 1.4 — Tenant y rol reales, y guardas de ruta (2026-11-14), rama `feat/tenancy-real`.
+- **Última tarea terminada:** PR 1.5 — Flags reales (2026-11-14), rama `feat/flags-reales`.
 - **En curso:** PR abiertos y apilados, esperando revisión del propietario (D-064). La lista, en `docs/ESTADO.md`.
-- **Siguiente tarea:** Fase 1, PR 1.5 — Flags reales. Los 16 PR de la fase (1.2 a 1.17) están en orden, con sus criterios de aceptación, en `docs/PROMPTS.md` §5.
+- **Siguiente tarea:** Fase 1, PR 1.6 — Recuperar la contraseña y entrar con un código por email. Los 16 PR de la fase (1.2 a 1.17) están en orden, con sus criterios de aceptación, en `docs/PROMPTS.md` §5.
 
 ## Cómo funcionará la Fase 1 (ya decidido)
 
@@ -36,7 +36,7 @@
 ## Qué existe ya
 
 - **La app arranca** (`npm run db:start`, `npm run dev`; ver `README.md`) con los usuarios inventados del seed: entrar (`/login`), zona de coach (`/coach`), zona de cliente (`/client`), bienvenida (`/welcome`), unirse con código (`/join`, solo la pantalla) y 404. Inglés y español.
-- **`core/` mínimo:** variables de entorno validadas, i18n, componentes base, marca → variables de tema (con corrección de contraste), unidades kg/lb, fechas, logger, `defineModule`, flags **con datos de ejemplo**, tenancy real (PR 1.4) y el cliente de Supabase.
+- **`core/` mínimo:** variables de entorno validadas, i18n, componentes base, marca → variables de tema (con corrección de contraste), unidades kg/lb, fechas, logger, `defineModule`, flags y tenancy reales (PR 1.4 y 1.5) y el cliente de Supabase.
 - **Sesión real** (PR 1.3): `/login` con email y contraseña contra Supabase, sesión guardada en el dispositivo, guardas de `/coach` y `/client`, cerrar sesión y cierre a los 30 días sin uso. Hace falta `.env.local` (ver `.env.example`).
 - **Módulo `_template`** para copiar (`npm run new:module <nombre>`). Solo se registra en desarrollo.
 - **Base de datos local** (Supabase en Docker): tablas base, funciones de negocio, permisos y RLS en `supabase/migrations/`; 77 tests pgTAP (`npm run db:test`); 2 coaches y 5 clientes inventados (`supabase/seed.sql`, contraseña `password123`); tipos generados en `core/supabase/database.types.ts`.
@@ -45,18 +45,18 @@
 
 ## Qué falta (lo próximo)
 
-- **Los flags todavía son de ejemplo** (`core/flags/sample-flags.ts`): pasan a leerse de la base de datos en el PR 1.5.
+- **Faltan las pantallas de cuenta** (registro, verificar el email, recuperar la contraseña) y todo lo de unirse, crear negocio, clientes, perfil y marca: PR 1.6 a 1.16.
 - Las guardas por sesión y por rol son comodidad, no seguridad: los datos los protege el RLS.
 
 ## Últimos cambios
 
 Los 5 más recientes, el más nuevo arriba. El historial completo está en `docs/ESTADO.md`.
 
+- 2026-11-14 — PR 1.5: flags leídos de la base de datos.
 - 2026-11-14 — PR 1.4: tenant, rol y marca reales; guardas por rol; adiós a los datos de ejemplo de tenancy y a la barra de desarrollo.
 - 2026-11-14 — PR 1.3: sesión y login con contraseña, guardas por sesión, cerrar sesión y franja "Sin conexión".
 - 2026-11-14 — PR 1.2: cuentas y emails en la base de datos (confirmar el email, plantillas, `email_status`, tope de intentos).
 - 2026-11-14 — Diseño de la Fase 1: decisiones D-036 a D-064, lista de los 16 PR en `docs/PROMPTS.md` §5 y ARQUITECTURA §7, §8 y §10 al día.
-- 2026-11-13 — PR 1.1: base de datos local, primera migración, tests de RLS en el CI, seed y tipos.
 
 ## A tener en cuenta ahora
 

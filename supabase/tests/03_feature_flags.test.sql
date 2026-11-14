@@ -25,7 +25,10 @@ select public.create_tenant('Coach B', 'test-terms');
 set local request.jwt.claims to '{"sub":"00000000-0000-4000-8000-00000000000a","role":"authenticated"}';
 select set_config('t.ta', public.create_tenant('Coach A', 'test-terms')::text, true);
 
-select is((select count(*)::int from public.tenant_effective_features), 4,
+-- Una fila por flag del catálogo (los de este test y los de los módulos reales),
+-- y solo de su tenant.
+select is((select count(*)::int from public.tenant_effective_features),
+  (select count(*)::int from public.features),
   '23a: el coach solo ve los flags de su tenant');
 select ok((select enabled from public.tenant_effective_features where feature_key = 'workouts'),
   '23b: un flag core está activo');

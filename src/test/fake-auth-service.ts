@@ -27,6 +27,7 @@ export const FAKE_ACCOUNTS: readonly FakeAccount[] = [
   { email: 'norte-client@example.test', password: FAKE_PASSWORD },
   { email: 'dual@example.test', password: FAKE_PASSWORD },
   { email: 'archived@example.test', password: FAKE_PASSWORD },
+  { email: 'norte-coach@example.test', password: FAKE_PASSWORD },
   { email: 'nobody-yet@example.test', password: FAKE_PASSWORD },
   { email: 'pending@example.test', password: FAKE_PASSWORD, confirmed: false },
 ];

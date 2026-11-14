@@ -33,7 +33,9 @@ export async function renderApp(initialPath = '/', options: RenderAppOptions = {
   await loadModuleTranslations(registeredModules);
 
   const auth = options.auth ?? createFakeAuthService();
-  const tenancy = options.tenancy ?? createFakeTenancySource();
+  const tenancy =
+    options.tenancy ??
+    createFakeTenancySource({ currentEmail: () => auth.currentUser?.email ?? null });
   const flags = options.flags ?? createFakeFlagsSource();
   const router = createMemoryRouter(buildRoutes(registeredModules), {
     initialEntries: [initialPath],

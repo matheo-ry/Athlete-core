@@ -81,16 +81,24 @@
     "welcome": {
       "title": "Welcome",
       "description": "You don't belong to any coach yet. Enter the code your coach gave you.",
-      "clientOption": "I have a code"
+      "createBusiness": "Create my business"
     },
     "join": {
       "title": "Join your coach",
-      "description": "Enter the code your coach gave you.",
-      "codeLabel": "Coach code",
-      "codeHint": "Letters and numbers, without spaces.",
       "submit": "Join",
-      "notAvailable": "Joining with a code is not available yet.",
-      "back": "Back"
+      "checking": "Checking the code…",
+      "trainWith": "You're going to train with {{name}}",
+      "createAccount": "Create account",
+      "haveAccount": "I already have an account",
+      "joining": "Joining…",
+      "otherCode": "Use another code",
+      "goToBusiness": "Go to my business",
+      "errors": {
+        "invalidCode": "This code doesn't exist or is no longer valid. Ask your coach for the current code.",
+        "planFull": "Your coach has no free spots right now. Let them know so they can make room for you.",
+        "archived": "Your coach has removed you. Ask them to reactivate you.",
+        "ownBusiness": "This is your own business's code."
+      }
     },
     "notFound": {
       "title": "Page not found",
@@ -166,6 +174,23 @@
         "p3": "We don't use tracking cookies and we don't send you marketing emails.",
         "p4": "You can ask us to delete your account by writing to the support address. Deleting it from inside the app will come later."
       }
+    },
+    "start": {
+      "title": "Train with your coach",
+      "description": "Enter the code your coach gave you to get started.",
+      "haveAccount": "Already have an account? Sign in",
+      "isCoach": "Are you a coach? Create your business"
+    },
+    "inviteForm": {
+      "label": "Your coach's code",
+      "hint": "Letters and numbers. Uppercase, spaces and dashes don't matter.",
+      "submit": "Continue",
+      "invalidFormat": "This doesn't look like a code. Check it with your coach."
+    },
+    "comingSoon": {
+      "title": "Coming soon",
+      "createBusiness": "Creating your business will be available very soon.",
+      "back": "Back"
     }
   }
 }

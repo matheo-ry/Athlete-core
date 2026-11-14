@@ -73,12 +73,14 @@ describe('la app', () => {
     expect(brandPrimary()).toBe('#dc2626');
   });
 
-  it('sin sesión, "/" lleva a entrar y la bienvenida también', async () => {
+  it('sin sesión, "/" lleva a la primera pantalla, y la bienvenida pide entrar', async () => {
     const auth = createFakeAuthService({ signedInAs: null });
     const { router } = await renderApp('/', { auth });
 
-    expect(await screen.findByRole('heading', { name: 'Sign in' })).toBeInTheDocument();
-    expect(router.state.location.pathname).toBe('/login');
+    expect(
+      await screen.findByRole('heading', { name: 'Train with your coach' }),
+    ).toBeInTheDocument();
+    expect(router.state.location.pathname).toBe('/start');
 
     await act(() => router.navigate('/welcome'));
     expect(router.state.location.pathname).toBe('/login');
@@ -140,18 +142,14 @@ describe('la app', () => {
     expect(screen.getByText('Total volume: 5,500 kg')).toBeInTheDocument();
   });
 
-  it('la bienvenida lleva a unirse con código', async () => {
-    const { user } = await renderAppAs('nobody-yet@example.test', '/welcome');
+  it('la bienvenida pide el código y lleva a la vista previa del coach', async () => {
+    const { user, router } = await renderAppAs('nobody-yet@example.test', '/welcome');
 
-    await user.click(await screen.findByRole('link', { name: 'I have a code' }));
+    await user.type(await screen.findByLabelText("Your coach's code"), 'norte001');
+    await user.click(screen.getByRole('button', { name: 'Continue' }));
 
-    expect(await screen.findByRole('heading', { name: 'Join your coach' })).toBeInTheDocument();
-  });
-
-  it('rellena el código cuando llega en el enlace', async () => {
-    await renderApp('/join?code=iron42');
-
-    expect(await screen.findByLabelText('Coach code')).toHaveValue('IRON42');
+    expect(await screen.findByText("You're going to train with Norte Strength")).toBeVisible();
+    expect(router.state.location.search).toBe('?code=NORTE001');
   });
 
   it('muestra la página 404 en una ruta que no existe', async () => {

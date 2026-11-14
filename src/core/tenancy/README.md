@@ -8,3 +8,4 @@ Tenant activo, rol del usuario y perfil (coach, cliente o todavía sin espacio),
 - `RequireProfile`: guarda por rol. `/coach` solo con espacio de coach, `/client` solo con espacio de cliente y `/welcome` solo sin espacio. Mientras cargan los espacios enseña un indicador; si fallan, un error con "Reintentar". `WhenTenancyReady` hace lo mismo para otras pantallas.
 - `useTenancy()` da el espacio activo; `useTenancyContext()` da además la lista y `selectTenant` (para el selector del PR 1.14).
 - Con varios espacios y sin elección, se entra en el de coach y, si no hay, en el más antiguo. El selector llega en el PR 1.14.
+- **Unirse con código** (D-050 a D-054): `invite-code.ts` limpia y da formato al código (no importan mayúsculas, espacios ni guiones; se muestra en dos grupos de cuatro). `invite.ts` lee las respuestas de la vista previa y de unirse. `useInvitePreview` y `useJoinWithCode` las piden; al unirse, el espacio nuevo pasa a ser el activo.

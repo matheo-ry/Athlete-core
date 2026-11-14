@@ -81,16 +81,24 @@
     "welcome": {
       "title": "Te damos la bienvenida",
       "description": "Todavía no perteneces a ningún coach. Escribe el código que te ha dado tu coach.",
-      "clientOption": "Tengo un código"
+      "createBusiness": "Crear mi negocio"
     },
     "join": {
       "title": "Únete a tu coach",
-      "description": "Escribe el código que te ha dado tu coach.",
-      "codeLabel": "Código del coach",
-      "codeHint": "Letras y números, sin espacios.",
       "submit": "Unirme",
-      "notAvailable": "Unirse con un código todavía no está disponible.",
-      "back": "Volver"
+      "checking": "Comprobando el código…",
+      "trainWith": "Vas a entrenar con {{name}}",
+      "createAccount": "Crear cuenta",
+      "haveAccount": "Ya tengo cuenta",
+      "joining": "Uniéndote…",
+      "otherCode": "Usar otro código",
+      "goToBusiness": "Ir a mi negocio",
+      "errors": {
+        "invalidCode": "Este código no existe o ya no es válido. Pide a tu coach el código actual.",
+        "planFull": "Tu coach no tiene plazas libres ahora mismo. Avísale para que te haga hueco.",
+        "archived": "Tu coach te ha dado de baja. Pídele que te reactive.",
+        "ownBusiness": "Este es el código de tu propio negocio."
+      }
     },
     "notFound": {
       "title": "Página no encontrada",
@@ -166,6 +174,23 @@
         "p3": "No usamos cookies de seguimiento ni te enviamos emails comerciales.",
         "p4": "Puedes pedirnos que borremos tu cuenta escribiendo a la dirección de soporte. Borrarla desde dentro de la app llegará más adelante."
       }
+    },
+    "start": {
+      "title": "Entrena con tu coach",
+      "description": "Escribe el código que te ha dado tu coach para empezar.",
+      "haveAccount": "¿Ya tienes cuenta? Entrar",
+      "isCoach": "¿Eres coach? Crea tu negocio"
+    },
+    "inviteForm": {
+      "label": "Código de tu coach",
+      "hint": "Letras y números. Da igual mayúsculas, espacios o guiones.",
+      "submit": "Continuar",
+      "invalidFormat": "Esto no parece un código. Revísalo con tu coach."
+    },
+    "comingSoon": {
+      "title": "Disponible pronto",
+      "createBusiness": "Crear tu negocio estará disponible muy pronto.",
+      "back": "Volver"
     }
   }
 }

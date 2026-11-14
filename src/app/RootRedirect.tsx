@@ -5,9 +5,9 @@ import { WhenTenancyReady, homePathFor, useTenancy } from '@/core/tenancy';
 import { Spinner } from '@/core/ui';
 
 /**
- * "/" lleva a cada uno a su sitio (ARQUITECTURA §7, DECISIONES D-056): sin sesión,
- * a entrar; con sesión, a su zona de coach o de cliente, o a la bienvenida si
- * todavía no tiene ningún espacio.
+ * "/" lleva a cada uno a su sitio (ARQUITECTURA §7, DECISIONES D-037 y D-056):
+ * sin sesión, a la primera pantalla; con sesión, a su zona de coach o de
+ * cliente, o a la bienvenida si todavía no tiene ningún espacio.
  */
 export function RootRedirect() {
   const { status } = useAuth();
@@ -17,7 +17,8 @@ export function RootRedirect() {
     return <Spinner className="min-h-dvh" />;
   }
   if (status === 'signed-out') {
-    return <Navigate to="/login" replace />;
+    // La primera pantalla: el código del coach (D-037).
+    return <Navigate to="/start" replace />;
   }
   return (
     <WhenTenancyReady>

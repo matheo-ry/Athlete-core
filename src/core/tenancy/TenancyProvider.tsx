@@ -79,8 +79,9 @@ export function TenancyProvider({ children, source }: TenancyProviderProps) {
       status: tenancyStatus,
       selectTenant,
       refresh,
+      source: tenancySource,
     }),
-    [userId, memberships, preferredTenantId, tenancyStatus, selectTenant, refresh],
+    [userId, memberships, preferredTenantId, tenancyStatus, selectTenant, refresh, tenancySource],
   );
 
   // Nunca se ocultan las pantallas mientras carga: una pantalla a medias (por

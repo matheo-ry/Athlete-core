@@ -132,7 +132,16 @@ export function createFakeTenancySource({
     ['IRONLAB1', TEST_TENANTS.iron],
     ['NORTE001', TEST_TENANTS.norte],
   ]);
+  // Los negocios: los de siempre y, si un test pasa espacios propios, los suyos
+  // (por ejemplo, Iron Lab con un logo ya guardado).
   const tenants = new Map(TENANTS_BY_ID);
+  for (const list of Object.values(memberships)) {
+    for (const membership of list) {
+      if (membership.tenant !== null) {
+        tenants.set(membership.tenant.id, membership.tenant);
+      }
+    }
+  }
   const plans = new Map(Object.entries(FAKE_PLANS));
   let failedAttempts = 0;
   let logoCount = 0;

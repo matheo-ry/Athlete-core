@@ -1,4 +1,4 @@
-import { act, screen } from '@testing-library/react';
+import { act, screen, waitFor } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 
 import { DEFAULT_BRAND } from '@/core/branding';
@@ -120,9 +120,8 @@ describe('unirse al crear la cuenta (PR 1.9b, D-037)', () => {
 
     await screen.findByRole('heading', { name: 'Create your account' });
     // En la cabecera y en el aviso "Te estás uniendo a…".
-    const logos = screen.getAllByTestId('brand-logo');
-    expect(logos).toHaveLength(2);
-    for (const logo of logos) {
+    await waitFor(() => expect(screen.getAllByTestId('brand-logo')).toHaveLength(2));
+    for (const logo of screen.getAllByTestId('brand-logo')) {
       expect(logo).toHaveAttribute(
         'src',
         'http://127.0.0.1:54321/storage/v1/object/public/logos/norte/logo.png',

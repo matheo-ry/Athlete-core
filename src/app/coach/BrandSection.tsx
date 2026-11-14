@@ -17,9 +17,15 @@ interface BrandSectionProps {
   tenant: Tenant;
 }
 
-/** El logo en el borrador: el guardado, uno nuevo (con su imagen para verlo) o ninguno. */
+/**
+ * El logo en el borrador: el guardado, uno nuevo (con su imagen para verlo) o
+ * ninguno. `base` es el logo guardado cuando se eligió el cambio: si el guardado
+ * cambia (porque se acaba de guardar), el cambio ya está hecho.
+ */
 type LogoDraft =
-  { kind: 'keep' } | { kind: 'replace'; file: File; dataUrl: string } | { kind: 'remove' };
+  | { kind: 'keep' }
+  | { kind: 'replace'; file: File; dataUrl: string; base: string | null }
+  | { kind: 'remove'; base: string | null };
 
 interface Draft {
   name: string;
@@ -60,7 +66,10 @@ function draftFrom(tenant: Tenant): Draft {
 }
 
 function toLogoChange(logo: LogoDraft): LogoChange {
-  return logo.kind === 'replace' ? { kind: 'replace', file: logo.file } : logo;
+  if (logo.kind === 'replace') {
+    return { kind: 'replace', file: logo.file };
+  }
+  return { kind: logo.kind };
 }
 
 /**
@@ -92,15 +101,16 @@ export function BrandSection({ tenant }: BrandSectionProps) {
     },
     mode: draft.mode,
   };
+  // Un cambio de logo deja de estar pendiente en cuanto llega la marca guardada:
+  // así la vista previa no vuelve un momento al logo anterior al guardar.
+  const logo: LogoDraft =
+    draft.logo.kind !== 'keep' && draft.logo.base !== tenant.branding.logoPath
+      ? { kind: 'keep' }
+      : draft.logo;
   const logoSrc =
-    draft.logo.kind === 'replace'
-      ? draft.logo.dataUrl
-      : draft.logo.kind === 'remove'
-        ? null
-        : undefined;
+    logo.kind === 'replace' ? logo.dataUrl : logo.kind === 'remove' ? null : undefined;
   const hasLogo =
-    draft.logo.kind === 'replace' ||
-    (draft.logo.kind === 'keep' && tenant.branding.logoPath !== null);
+    logo.kind === 'replace' || (logo.kind === 'keep' && tenant.branding.logoPath !== null);
 
   // Se comprueba al elegirlo, para avisar sin esperar a guardar (D-057).
   const pickLogo = (file: File) => {
@@ -116,7 +126,9 @@ export function BrandSection({ tenant }: BrandSectionProps) {
     const reader = new FileReader();
     reader.onload = () => {
       if (typeof reader.result === 'string') {
-        change({ logo: { kind: 'replace', file, dataUrl: reader.result } });
+        change({
+          logo: { kind: 'replace', file, dataUrl: reader.result, base: tenant.branding.logoPath },
+        });
       }
     };
     reader.readAsDataURL(file);
@@ -124,7 +136,12 @@ export function BrandSection({ tenant }: BrandSectionProps) {
 
   const removeLogo = () => {
     setErrors((previous) => ({ ...previous, logo: undefined }));
-    change({ logo: tenant.branding.logoPath === null ? { kind: 'keep' } : { kind: 'remove' } });
+    change({
+      logo:
+        tenant.branding.logoPath === null
+          ? { kind: 'keep' }
+          : { kind: 'remove', base: tenant.branding.logoPath },
+    });
   };
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
@@ -150,16 +167,14 @@ export function BrandSection({ tenant }: BrandSectionProps) {
     void updateBrand
       .mutateAsync({
         brand: { name, primary, accent, mode: draft.mode },
-        logo: toLogoChange(draft.logo),
+        logo: toLogoChange(logo),
       })
       .then((result) => {
-        if (result === 'ok') {
-          // El logo ya está guardado: a partir de aquí se ve el de la marca.
-          setDraft((previous) => ({ ...previous, logo: { kind: 'keep' } }));
-          setMessage({ text: t('app.brand.saved'), isError: false });
-        } else {
-          setMessage({ text: t(FAILURE_KEYS[result]), isError: true });
-        }
+        setMessage(
+          result === 'ok'
+            ? { text: t('app.brand.saved'), isError: false }
+            : { text: t(FAILURE_KEYS[result]), isError: true },
+        );
       });
   };
 

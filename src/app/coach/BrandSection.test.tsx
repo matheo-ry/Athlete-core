@@ -1,4 +1,4 @@
-import { fireEvent, screen, within } from '@testing-library/react';
+import { fireEvent, screen, waitFor, within } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 
 import { createFakeTenancySource, TEST_TENANTS } from '@/test/fake-tenancy-source';
@@ -203,11 +203,11 @@ describe('el logo (PR 1.16)', () => {
     await user.click(screen.getByRole('button', { name: 'Save brand' }));
 
     await screen.findByText('Saved. Your clients will see it the next time they open the app.');
-    const logos = savedLogosInApp();
-    expect(logos.length).toBeGreaterThan(0);
-    expect(logos[0]).toHaveAttribute(
-      'src',
-      `http://127.0.0.1:54321/storage/v1/object/public/logos/${TEST_TENANTS.iron.id}/fake-logo-1.png`,
+    await waitFor(() =>
+      expect(savedLogosInApp()[0]).toHaveAttribute(
+        'src',
+        `http://127.0.0.1:54321/storage/v1/object/public/logos/${TEST_TENANTS.iron.id}/fake-logo-1.png`,
+      ),
     );
     // También en "Mis espacios".
     expect(
@@ -248,7 +248,7 @@ describe('el logo (PR 1.16)', () => {
     await user.click(screen.getByRole('button', { name: 'Save brand' }));
 
     await screen.findByText('Saved. Your clients will see it the next time they open the app.');
-    expect(savedLogosInApp()).toHaveLength(0);
+    await waitFor(() => expect(savedLogosInApp()).toHaveLength(0));
     expect(screen.getByLabelText('Upload logo')).toBeInTheDocument();
     expect(tenancy.deletedLogoFiles).toEqual([OLD_LOGO]);
   });
@@ -261,15 +261,28 @@ describe('el logo (PR 1.16)', () => {
     fireEvent.change(screen.getByLabelText('Change logo'), {
       target: { files: [imageFile('new.webp', 'image/webp')] },
     });
-    await within(screen.getByTestId('brand-preview')).findByTestId('brand-logo');
+    // La vista previa ya tenía el logo anterior: hay que esperar a la imagen nueva.
+    await waitFor(() =>
+      expect(within(screen.getByTestId('brand-preview')).getByTestId('brand-logo')).toHaveAttribute(
+        'src',
+        expect.stringMatching(/^data:image\/webp/),
+      ),
+    );
     await user.click(screen.getByRole('button', { name: 'Save brand' }));
 
     await screen.findByText('Saved. Your clients will see it the next time they open the app.');
-    expect(savedLogosInApp()[0]).toHaveAttribute(
+    await waitFor(() =>
+      expect(savedLogosInApp()[0]).toHaveAttribute(
+        'src',
+        expect.stringContaining('fake-logo-1.webp'),
+      ),
+    );
+    expect(tenancy.deletedLogoFiles).toEqual([OLD_LOGO]);
+    // La vista previa enseña ya el logo guardado, no la imagen elegida.
+    expect(within(screen.getByTestId('brand-preview')).getByTestId('brand-logo')).toHaveAttribute(
       'src',
       expect.stringContaining('fake-logo-1.webp'),
     );
-    expect(tenancy.deletedLogoFiles).toEqual([OLD_LOGO]);
   });
 
   it('si el logo no carga, se ven las iniciales', async () => {

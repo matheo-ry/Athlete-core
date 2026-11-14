@@ -6,8 +6,10 @@ import {
   E2E_PASSWORD,
   archiveFromNorte,
   createConfirmedUser,
+  latestCode,
   rpc,
   signInApi,
+  uniqueEmail,
 } from './supabase-helpers';
 
 // Primera pantalla y unirse con código (PR 1.9), contra Supabase local.
@@ -39,6 +41,37 @@ test('sin sesión, la primera pantalla pide el código y enseña al coach con su
   await expect(page.locator('html')).toHaveAttribute('style', /--brand-primary: #0f766e;/);
   await expect(page.getByRole('link', { name: 'Create account' })).toBeVisible();
   await expect(page.getByRole('link', { name: 'I already have an account' })).toBeVisible();
+});
+
+test('D-037: código, crear la cuenta con la marca del coach, confirmar y dentro sin volver a escribirlo', async ({
+  page,
+}) => {
+  const email = uniqueEmail('start');
+
+  await page.goto('/start');
+  await page.getByLabel("Your coach's code").fill('norte001');
+  await page.getByRole('button', { name: 'Continue' }).click();
+  await page.getByRole('link', { name: 'Create account' }).click();
+
+  // El registro se ve con los colores de Norte Strength.
+  await expect(page.getByText("You're joining Norte Strength.")).toBeVisible();
+  await expect(page.locator('html')).toHaveAttribute('style', /--brand-primary: #0f766e;/);
+  await page.getByLabel('Name').fill('E2E Nuevo');
+  await page.getByLabel('Email').fill(email);
+  await page.getByLabel('Password', { exact: true }).fill(E2E_PASSWORD);
+  await page.getByRole('checkbox').check();
+  await page.getByRole('button', { name: 'Create account' }).click();
+
+  // Y también la confirmación del email.
+  await expect(page.getByText("You're joining Norte Strength.")).toBeVisible();
+  await page.getByLabel('Code').fill(await latestCode(email));
+  await page.getByRole('button', { name: 'Continue' }).click();
+
+  await expect(page).toHaveURL(/\/client$/);
+  await expect(page.getByRole('heading', { name: 'Today' })).toBeVisible();
+  await expect(page.locator('html')).toHaveAttribute('style', /--brand-primary: #0f766e;/);
+
+  await archiveFromNorte(email);
 });
 
 test('el enlace /join?code=NORTE001 sin sesión enseña la misma vista previa', async ({ page }) => {

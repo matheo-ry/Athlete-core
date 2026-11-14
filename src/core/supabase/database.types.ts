@@ -383,6 +383,7 @@ export type Database = {
     Functions: {
       accept_terms: { Args: { p_version: string }; Returns: undefined };
       archive_client: { Args: { p_tenant: string; p_user: string }; Returns: undefined };
+      can_manage_logo: { Args: { p_object_name: string }; Returns: boolean };
       create_tenant: { Args: { p_coach_terms_version: string; p_name: string }; Returns: string };
       email_status: { Args: { p_email: string }; Returns: string };
       generate_invite_code: { Args: Record<PropertyKey, never>; Returns: string };
@@ -402,6 +403,8 @@ export type Database = {
       preview_invite: { Args: { p_code: string }; Returns: Json };
       reactivate_client: { Args: { p_tenant: string; p_user: string }; Returns: undefined };
       regenerate_invite_code: { Args: { p_tenant: string }; Returns: string };
+      remove_logo: { Args: { p_tenant: string }; Returns: undefined };
+      set_logo: { Args: { p_path: string; p_tenant: string }; Returns: undefined };
       update_brand: {
         Args: {
           p_accent: string;

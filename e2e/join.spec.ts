@@ -113,7 +113,9 @@ test('código que no existe y plan lleno: cada uno con su mensaje', async ({ pag
 
 test('quien fue dado de baja no vuelve a entrar con el código', async ({ page }) => {
   await signIn(page, 'fran@example.com');
-  await expect(page.getByRole('heading', { name: 'Welcome' })).toBeVisible();
+  await expect(
+    page.getByRole('heading', { name: 'You no longer have access to Norte Strength' }),
+  ).toBeVisible();
 
   await page.goto('/join?code=NORTE001');
   await page.getByRole('button', { name: 'Join' }).click();

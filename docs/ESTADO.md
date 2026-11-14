@@ -19,11 +19,12 @@ PR abiertos, apilados y esperando revisión (D-064). Se fusionan en este orden:
 8. PR 1.8 — Base de datos: invitaciones, bajas y negocio (rama `db/invitaciones-y-bajas`, PR 11).
 9. PR 1.9a — Primera pantalla y unirse con código (rama `feat/unirse-con-codigo`, PR 12).
 10. PR 1.9b — Unirse al crear la cuenta (rama `feat/unirse-tras-registro`, PR 13).
-11. PR 1.10 — Módulo `clients`: lista y código de invitación (rama `feat/modulo-clients`).
+11. PR 1.10 — Módulo `clients`: lista y código de invitación (rama `feat/modulo-clients`, PR 14).
+12. PR 1.11 — Dar de baja y reactivar a un cliente (rama `feat/baja-de-clientes`).
 
 ## Siguiente
 
-1. Fase 1, PR 1.11 — Dar de baja y reactivar a un cliente. El prompt está en `docs/PROMPTS.md` §5, con los 16 PR de la fase en orden.
+1. Fase 1, PR 1.12 — Crear negocio y primeros pasos del coach. El prompt está en `docs/PROMPTS.md` §5, con los 16 PR de la fase en orden.
 
 ## Fases
 
@@ -63,7 +64,7 @@ El diseño está en DECISIONES D-036 a D-064, y el detalle de cada PR, en `docs/
   - [x] 1.9a — `/start`, vista previa del coach, unirse con sesión, todos los mensajes de D-054 y el tope de intentos
   - [x] 1.9b — recordar el código al crear la cuenta, marca del coach en las pantallas de cuenta y alta automática
 - [x] PR 1.10 — Módulo `clients`: lista y código de invitación
-- [ ] PR 1.11 — Dar de baja y reactivar a un cliente
+- [x] PR 1.11 — Dar de baja y reactivar a un cliente
 - [ ] PR 1.12 — Crear negocio y primeros pasos del coach
 - [ ] PR 1.13 — Perfil y cuenta
 - [ ] PR 1.14 — Selector de espacio y "Mis espacios"
@@ -134,6 +135,7 @@ Cosas que alguien ha visto y que no tocaban en su tarea. No se hacen sin convert
 
 Lo más nuevo, arriba.
 
+- 2026-11-14 — PR 1.11 (bajas): ficha del cliente con "Dar de baja" (con confirmación) y "Reactivar" (avisa si el plan está lleno); el cliente dado de baja ve "Ya no tienes acceso a …" con la marca de la plataforma y tres salidas; los espacios salen de `my_spaces` y se piden otra vez cada vez que se vuelve a la app, así una baja se nota con la app abierta.
 - 2026-11-14 — PR 1.10 (módulo `clients`): el primer módulo del producto. `/coach/clients` con pestañas "Activos" y "Dados de baja", buscador, plazas del plan con aviso de plan lleno, etiqueta "Nuevo" y la tarjeta del código (copiar, compartir el enlace y regenerar con confirmación, solo el dueño). Flag `clients` en una migración. La lista de miembros, el código y el plan, en `core/tenancy`. Variable opcional `VITE_PUBLIC_APP_URL` para los enlaces.
 - 2026-11-14 — PR 1.9b (unirse al crear la cuenta): el código se recuerda 7 días mientras se crea y se confirma la cuenta; esas pantallas se ven con la marca del coach; al terminar, el alta se hace sola; "/" retoma un alta a medias; cerrar sesión olvida el código.
 - 2026-11-14 — PR 1.9a (unirse con código): primera pantalla `/start`; `/join?code=…` con la vista previa del coach pintada con su marca, con sesión y sin ella; "Unirme" con un mensaje para cada caso de D-054; `/welcome` con el código y "Crear mi negocio" (aviso "Disponible pronto" hasta el PR 1.12). En el PR 1.8, topes más altos por conexión para el wifi de un gimnasio (D-065).

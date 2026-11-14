@@ -43,5 +43,23 @@
     "cancel": "Cancel",
     "regenerating": "Regenerating…",
     "regenerated": "New code ready."
+  },
+  "detail": {
+    "back": "Back to clients",
+    "joinedOn": "Joined {{date}}",
+    "statusActive": "Active",
+    "statusArchived": "Removed",
+    "notFound": "We couldn't find this client.",
+    "archive": "Remove client",
+    "archiveConfirm": "They will stop seeing your content and free up a spot. Their data is kept and you can reactivate them whenever you want.",
+    "archiveYes": "Yes, remove",
+    "cancel": "Cancel",
+    "archiving": "Removing…",
+    "archived": "{{name}} no longer has access.",
+    "reactivate": "Reactivate",
+    "reactivating": "Reactivating…",
+    "reactivated": "{{name}} has access again.",
+    "planFull": "You have no free spots. Remove another client or change your plan.",
+    "comingTabs": "Programs and progress will appear here in the next phases."
   }
 }

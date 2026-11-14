@@ -103,6 +103,40 @@ export async function select(session: ApiSession, path: string): Promise<unknown
   return (await response.json()) as unknown[];
 }
 
+interface TestBusiness {
+  coachEmail: string;
+  coach: ApiSession;
+  tenantId: string;
+  code: string;
+}
+
+/**
+ * Un negocio propio para un test (plan free: 3 plazas), creado por la API. Así
+ * el test puede dar de baja o llenar el plan sin tocar los datos del seed.
+ */
+export async function createTestBusiness(name: string): Promise<TestBusiness> {
+  const coachEmail = await createConfirmedUser('coach');
+  const coach = await signInApi(coachEmail, E2E_PASSWORD);
+  const tenantId = (await rpc(coach, 'create_tenant', {
+    p_name: name,
+    p_coach_terms_version: 'draft-2026-11',
+  })) as string;
+  const [invite] = (await select(coach, 'tenant_invites?select=code&is_active=eq.true')) as {
+    code: string;
+  }[];
+  return { coachEmail, coach, tenantId, code: invite?.code ?? '' };
+}
+
+/** Una cuenta nueva que se une como cliente con el código. Devuelve su email. */
+export async function createJoinedClient(code: string): Promise<string> {
+  const email = await createConfirmedUser('client');
+  const session = await signInApi(email, E2E_PASSWORD);
+  expect(await rpc(session, 'join_tenant_with_code', { p_code: code })).toMatchObject({
+    status: 'joined',
+  });
+  return email;
+}
+
 /**
  * Limpieza: la coach de Norte Strength da de baja a un cliente que se unió en un
  * test. Así su plan no se llena aunque los tests se repitan sin `db:reset`.

@@ -43,5 +43,23 @@
     "cancel": "Cancelar",
     "regenerating": "Regenerando…",
     "regenerated": "Código nuevo listo."
+  },
+  "detail": {
+    "back": "Volver a clientes",
+    "joinedOn": "Se unió el {{date}}",
+    "statusActive": "Activo",
+    "statusArchived": "Dado de baja",
+    "notFound": "No encontramos a este cliente.",
+    "archive": "Dar de baja",
+    "archiveConfirm": "Dejará de ver tu contenido y liberará una plaza. Sus datos se guardan y puedes reactivarlo cuando quieras.",
+    "archiveYes": "Sí, dar de baja",
+    "cancel": "Cancelar",
+    "archiving": "Dando de baja…",
+    "archived": "{{name}} ya no tiene acceso.",
+    "reactivate": "Reactivar",
+    "reactivating": "Reactivando…",
+    "reactivated": "{{name}} vuelve a tener acceso.",
+    "planFull": "No tienes plazas libres. Da de baja a otro cliente o cambia de plan.",
+    "comingTabs": "Las rutinas y el progreso aparecerán aquí en las próximas fases."
   }
 }

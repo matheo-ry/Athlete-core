@@ -4,6 +4,7 @@ import { DEFAULT_BRAND } from '../branding/default-brand';
 import {
   activeMemberships,
   homePathFor,
+  lostAccessTo,
   parseMemberships,
   pickActiveMembership,
   tenancyFor,
@@ -15,6 +16,7 @@ function membership(overrides: Partial<Membership> & Pick<Membership, 'tenantId'
     role: 'client',
     status: 'active',
     joinedAt: '2026-11-01T10:00:00Z',
+    tenantName: `Tenant ${overrides.tenantId}`,
     tenant: {
       id: overrides.tenantId,
       name: `Tenant ${overrides.tenantId}`,
@@ -25,14 +27,15 @@ function membership(overrides: Partial<Membership> & Pick<Membership, 'tenantId'
 }
 
 describe('parseMemberships', () => {
-  it('convierte las filas de la base de datos y valida la marca', () => {
+  it('convierte las filas de my_spaces y valida la marca', () => {
     const [first] = parseMemberships([
       {
         tenant_id: 't1',
         role: 'owner',
         status: 'active',
-        created_at: '2026-11-01T10:00:00Z',
-        tenant: { id: 't1', name: 'Iron Lab', branding: { broken: true } },
+        joined_at: '2026-11-01T10:00:00Z',
+        tenant_name: 'Iron Lab',
+        branding: { broken: true },
       },
     ]);
 
@@ -42,17 +45,19 @@ describe('parseMemberships', () => {
     expect(first?.tenant?.branding).toEqual(DEFAULT_BRAND);
   });
 
-  it('un espacio dado de baja llega sin negocio visible', () => {
+  it('de un espacio dado de baja solo se sabe el nombre del coach (D-055)', () => {
     const [first] = parseMemberships([
       {
         tenant_id: 't1',
         role: 'client',
         status: 'archived',
-        created_at: '2026-11-01',
-        tenant: null,
+        joined_at: '2026-11-01',
+        tenant_name: 'Norte Strength',
+        branding: null,
       },
     ]);
     expect(first?.tenant).toBeNull();
+    expect(first?.tenantName).toBe('Norte Strength');
   });
 
   it('falla si la fila no tiene la forma esperada', () => {
@@ -98,6 +103,39 @@ describe('pickActiveMembership (D-056)', () => {
   it('activeMemberships deja fuera los dados de baja', () => {
     const list = [membership({ tenantId: 'a' }), membership({ tenantId: 'b', status: 'archived' })];
     expect(activeMemberships(list).map((item) => item.tenantId)).toEqual(['a']);
+  });
+});
+
+describe('lostAccessTo (D-055)', () => {
+  it('sin espacios activos y dado de baja: el nombre del coach más reciente', () => {
+    expect(
+      lostAccessTo([
+        membership({
+          tenantId: 'a',
+          status: 'archived',
+          tenant: null,
+          tenantName: 'Viejo',
+          joinedAt: '2026-01-01',
+        }),
+        membership({
+          tenantId: 'b',
+          status: 'archived',
+          tenant: null,
+          tenantName: 'Norte',
+          joinedAt: '2026-10-01',
+        }),
+      ]),
+    ).toBe('Norte');
+  });
+
+  it('con algún espacio activo, o sin ninguno, no hay aviso', () => {
+    expect(
+      lostAccessTo([
+        membership({ tenantId: 'a', status: 'archived', tenant: null }),
+        membership({ tenantId: 'b' }),
+      ]),
+    ).toBeNull();
+    expect(lostAccessTo([])).toBeNull();
   });
 });
 

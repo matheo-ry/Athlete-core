@@ -81,7 +81,9 @@
     "welcome": {
       "title": "Welcome",
       "description": "You don't belong to any coach yet. Enter the code your coach gave you.",
-      "createBusiness": "Create my business"
+      "createBusiness": "Create my business",
+      "lostAccessTitle": "You no longer have access to {{name}}",
+      "lostAccessDescription": "Your coach has removed you. If you want to keep training with them, ask them to reactivate you. You can also enter another coach's code or create your own business."
     },
     "join": {
       "title": "Join your coach",

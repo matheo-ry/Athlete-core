@@ -3,7 +3,7 @@ import type { RouteObject } from 'react-router';
 
 import { RequireAuth, RequireGuest } from '@/core/auth';
 import type { ModuleManifest } from '@/core/modules';
-import { RequireProfile } from '@/core/tenancy';
+import { RequireProfile, WhenTenancyReady } from '@/core/tenancy';
 import type { Profile } from '@/core/tenancy';
 import { Spinner } from '@/core/ui';
 import { registeredModules } from '@/modules';
@@ -12,9 +12,10 @@ import { ClientHomePage } from './client/ClientHomePage';
 import { ClientLayout } from './client/ClientLayout';
 import { CoachHomePage } from './coach/CoachHomePage';
 import { CoachLayout } from './coach/CoachLayout';
+import { CoachSettingsPage } from './coach/CoachSettingsPage';
 import { ModuleGate } from './ModuleGate';
 import { CodeSignInPage } from './public/CodeSignInPage';
-import { ComingSoonPage } from './public/ComingSoonPage';
+import { CreateBusinessPage } from './public/CreateBusinessPage';
 import { JoinPage } from './public/JoinPage';
 import { LegalPage } from './public/LegalPage';
 import { LoginPage } from './public/LoginPage';
@@ -75,6 +76,7 @@ export function buildRoutes(modules: readonly ModuleManifest[]): RouteObject[] {
                       element: <CoachLayout />,
                       children: [
                         { index: true, element: <CoachHomePage /> },
+                        { path: 'settings', element: <CoachSettingsPage /> },
                         ...moduleRoutes(modules, 'coach'),
                       ],
                     },
@@ -121,8 +123,6 @@ export function buildRoutes(modules: readonly ModuleManifest[]): RouteObject[] {
                 },
               ],
             },
-            // Hasta el PR 1.12, crear negocio es un aviso de "Disponible pronto".
-            { path: 'create-business', element: <ComingSoonPage /> },
             {
               // Recuperar la contraseña y confirmar el email siguen con sesión: el
               // último paso ocurre después de confirmar el código.
@@ -135,13 +135,23 @@ export function buildRoutes(modules: readonly ModuleManifest[]): RouteObject[] {
             // Se pueden leer con sesión y sin ella (D-060).
             { path: 'legal/terms', element: <LegalPage document="terms" /> },
             { path: 'legal/privacy', element: <LegalPage document="privacy" /> },
+            { path: 'legal/coach-terms', element: <LegalPage document="coachTerms" /> },
             {
-              // La bienvenida es para quien tiene sesión y ningún espacio.
               element: <RequireAuth />,
               children: [
                 {
+                  // La bienvenida es para quien tiene sesión y ningún espacio.
                   element: <RequireProfile profile={null} />,
                   children: [{ path: 'welcome', element: <WelcomePage /> }],
+                },
+                {
+                  // Crear negocio: con sesión, y sabiendo ya si es dueño de uno (D-049).
+                  path: 'create-business',
+                  element: (
+                    <WhenTenancyReady>
+                      <CreateBusinessPage />
+                    </WhenTenancyReady>
+                  ),
                 },
               ],
             },

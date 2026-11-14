@@ -18,10 +18,18 @@ const HOME_ITEMS: Record<Profile, ShellNavItem> = {
   client: { to: '/client', labelKey: 'app.nav.clientHome', icon: 'calendar', order: 0, end: true },
 };
 
+// Las entradas fijas del final del menú: los ajustes, que no son un módulo.
+const END_ITEMS: Record<Profile, readonly ShellNavItem[]> = {
+  coach: [
+    { to: '/coach/settings', labelKey: 'app.nav.coachSettings', icon: 'settings', order: 1000 },
+  ],
+  client: [],
+};
+
 export function useShellNav(profile: Profile): ShellNavItem[] {
   const modules = useActiveModules();
   return useMemo(
-    () => [HOME_ITEMS[profile], ...collectNavItems(modules, profile)],
+    () => [HOME_ITEMS[profile], ...collectNavItems(modules, profile), ...END_ITEMS[profile]],
     [modules, profile],
   );
 }

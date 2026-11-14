@@ -1,6 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import { Link, useNavigate } from 'react-router';
 
+import { rememberCoachIntent } from '@/core/tenancy';
 import { buttonClassName } from '@/core/ui';
 
 import { InviteCodeForm } from './InviteCodeForm';
@@ -25,7 +26,12 @@ export function StartPage() {
         <Link to="/login" className={buttonClassName('ghost')}>
           {t('app.start.haveAccount')}
         </Link>
-        <Link to="/create-business" className={buttonClassName('ghost')}>
+        {/* D-037: "Soy coach" lleva al registro y, al terminar, a crear el negocio. */}
+        <Link
+          to={`/signup?${new URLSearchParams({ next: '/create-business' }).toString()}`}
+          onClick={() => rememberCoachIntent()}
+          className={buttonClassName('ghost')}
+        >
           {t('app.start.isCoach')}
         </Link>
       </nav>

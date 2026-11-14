@@ -51,10 +51,12 @@ describe('la app', () => {
     expect(brandPrimary()).toBe('#2563eb');
   });
 
-  it('quien fue dado de baja de su único coach también va a la bienvenida', async () => {
+  it('quien fue dado de baja de su único coach va a la bienvenida, que se lo dice (D-055)', async () => {
     const { router } = await renderAppAs('archived@example.test', '/client');
 
-    expect(await screen.findByRole('heading', { name: 'Welcome' })).toBeInTheDocument();
+    expect(
+      await screen.findByRole('heading', { name: 'You no longer have access to Norte Strength' }),
+    ).toBeInTheDocument();
     expect(router.state.location.pathname).toBe('/welcome');
   });
 

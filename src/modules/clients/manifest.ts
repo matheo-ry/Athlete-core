@@ -14,6 +14,13 @@ export const clientsModule = defineModule({
             Component: page.ClientListPage,
           })),
       },
+      {
+        path: 'clients/:clientId',
+        lazy: () =>
+          import('./coach/ClientDetailPage').then((page) => ({
+            Component: page.ClientDetailPage,
+          })),
+      },
     ],
     client: [],
   },

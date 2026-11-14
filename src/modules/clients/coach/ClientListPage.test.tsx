@@ -111,6 +111,7 @@ describe('módulo clients: lista y código de invitación (PR 1.10)', () => {
       role: 'client',
       status: 'active',
       joinedAt: new Date().toISOString(),
+      tenantName: TEST_TENANTS.norte.name,
       tenant: TEST_TENANTS.norte,
     };
     const tenancy = createFakeTenancySource({

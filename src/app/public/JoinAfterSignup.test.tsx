@@ -81,8 +81,8 @@ describe('unirse al crear la cuenta (PR 1.9b, D-037)', () => {
   it('cerrar sesión olvida el código pendiente (en un dispositivo compartido)', async () => {
     rememberPendingInvite({ code: 'NORTE001', name: 'Norte', branding: DEFAULT_BRAND });
     const auth = createFakeAuthService({ signedInAs: 'client@example.test' });
-    const { user, router } = await renderApp('/client', { auth });
-    await screen.findByRole('heading', { name: 'Today' });
+    const { user, router } = await renderApp('/client/profile', { auth });
+    await screen.findByRole('heading', { name: 'Profile' });
 
     await user.click(screen.getByRole('button', { name: 'Sign out' }));
 

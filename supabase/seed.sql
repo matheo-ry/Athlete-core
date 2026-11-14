@@ -12,6 +12,10 @@
 -- Todos entran con la contraseña "password123". Solo existe en la base de
 -- datos local: no es un secreto.
 --
+-- Idioma: al entrar, la app se pone en el idioma de la cuenta (D-058). Todos
+-- están en inglés, que es lo que esperan los tests de extremo a extremo, salvo
+-- carla, en español, para probar a mano que la app cambia sola al entrar.
+--
 -- Los negocios se crean con las mismas funciones que usará la app
 -- (create_tenant, join_tenant_with_code, archive_client): así el seed también
 -- las prueba.
@@ -39,13 +43,13 @@ select
   '', '', '', ''
 from (values
   ('10000000-0000-4000-8000-000000000001'::uuid, 'coach.iron@example.com',  'Iris Hierro',     'en', 'lb'),
-  ('10000000-0000-4000-8000-000000000002'::uuid, 'coach.norte@example.com', 'Nora Norte',      'es', 'kg'),
-  ('20000000-0000-4000-8000-000000000001'::uuid, 'ana@example.com',         'Ana Ejemplo',     'es', 'kg'),
+  ('10000000-0000-4000-8000-000000000002'::uuid, 'coach.norte@example.com', 'Nora Norte',      'en', 'kg'),
+  ('20000000-0000-4000-8000-000000000001'::uuid, 'ana@example.com',         'Ana Ejemplo',     'en', 'kg'),
   ('20000000-0000-4000-8000-000000000002'::uuid, 'bruno@example.com',       'Bruno Prueba',    'en', 'lb'),
   ('20000000-0000-4000-8000-000000000003'::uuid, 'carla@example.com',       'Carla Demo',      'es', 'kg'),
-  ('20000000-0000-4000-8000-000000000004'::uuid, 'diego@example.com',       'Diego Ficticio',  'es', 'kg'),
+  ('20000000-0000-4000-8000-000000000004'::uuid, 'diego@example.com',       'Diego Ficticio',  'en', 'kg'),
   ('20000000-0000-4000-8000-000000000005'::uuid, 'elena@example.com',       'Elena Inventada', 'en', 'kg'),
-  ('20000000-0000-4000-8000-000000000006'::uuid, 'fran@example.com',        'Fran Ejemplo',    'es', 'kg')
+  ('20000000-0000-4000-8000-000000000006'::uuid, 'fran@example.com',        'Fran Ejemplo',    'en', 'kg')
 ) as u (id, email, display_name, locale, weight_unit);
 
 insert into auth.identities (

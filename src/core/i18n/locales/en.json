@@ -46,7 +46,8 @@
       "label": "Main menu",
       "coachHome": "Home",
       "clientHome": "Today",
-      "coachSettings": "Settings"
+      "coachSettings": "Settings",
+      "clientProfile": "Profile"
     },
     "shell": {
       "signOut": "Sign out"
@@ -221,7 +222,37 @@
     },
     "coachSettings": {
       "title": "Settings",
-      "soon": "Your account and your brand will be here very soon."
+      "soon": "Your brand will be here very soon."
+    },
+    "clientProfile": {
+      "title": "Profile"
+    },
+    "account": {
+      "title": "My account",
+      "nameLabel": "Name",
+      "saveName": "Save",
+      "saving": "Saving…",
+      "saved": "Saved.",
+      "languageLabel": "Language",
+      "unitLabel": "Weight unit",
+      "unitKg": "Kilograms (kg)",
+      "unitLb": "Pounds (lb)",
+      "emailLabel": "Email",
+      "emailHint": "You can't change it from the app yet.",
+      "legalTitle": "Legal",
+      "terms": "Terms of use",
+      "privacy": "Privacy policy",
+      "poweredBy": "Powered by ATHLETE CORE"
+    },
+    "changePassword": {
+      "title": "Change password",
+      "currentLabel": "Current password",
+      "newLabel": "New password",
+      "newHint": "At least 8 characters.",
+      "submit": "Change password",
+      "changing": "Changing…",
+      "changed": "Password changed. Your other devices have been signed out.",
+      "currentRequired": "Enter your current password."
     }
   }
 }

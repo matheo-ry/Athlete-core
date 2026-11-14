@@ -46,7 +46,8 @@
       "label": "Menú principal",
       "coachHome": "Inicio",
       "clientHome": "Hoy",
-      "coachSettings": "Ajustes"
+      "coachSettings": "Ajustes",
+      "clientProfile": "Perfil"
     },
     "shell": {
       "signOut": "Cerrar sesión"
@@ -221,7 +222,37 @@
     },
     "coachSettings": {
       "title": "Ajustes",
-      "soon": "Aquí estarán muy pronto tu cuenta y tu marca."
+      "soon": "Aquí estará muy pronto tu marca."
+    },
+    "clientProfile": {
+      "title": "Perfil"
+    },
+    "account": {
+      "title": "Mi cuenta",
+      "nameLabel": "Nombre",
+      "saveName": "Guardar",
+      "saving": "Guardando…",
+      "saved": "Guardado.",
+      "languageLabel": "Idioma",
+      "unitLabel": "Unidad de peso",
+      "unitKg": "Kilos (kg)",
+      "unitLb": "Libras (lb)",
+      "emailLabel": "Email",
+      "emailHint": "Por ahora no se puede cambiar desde la app.",
+      "legalTitle": "Textos legales",
+      "terms": "Términos de uso",
+      "privacy": "Política de privacidad",
+      "poweredBy": "Con tecnología de ATHLETE CORE"
+    },
+    "changePassword": {
+      "title": "Cambiar contraseña",
+      "currentLabel": "Contraseña actual",
+      "newLabel": "Contraseña nueva",
+      "newHint": "Al menos 8 caracteres.",
+      "submit": "Cambiar contraseña",
+      "changing": "Cambiando…",
+      "changed": "Contraseña cambiada. Se ha cerrado la sesión en tus otros dispositivos.",
+      "currentRequired": "Escribe tu contraseña actual."
     }
   }
 }

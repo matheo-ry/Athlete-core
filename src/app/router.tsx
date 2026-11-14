@@ -10,6 +10,7 @@ import { registeredModules } from '@/modules';
 
 import { ClientHomePage } from './client/ClientHomePage';
 import { ClientLayout } from './client/ClientLayout';
+import { ClientProfilePage } from './client/ClientProfilePage';
 import { CoachHomePage } from './coach/CoachHomePage';
 import { CoachLayout } from './coach/CoachLayout';
 import { CoachSettingsPage } from './coach/CoachSettingsPage';
@@ -95,6 +96,7 @@ export function buildRoutes(modules: readonly ModuleManifest[]): RouteObject[] {
                       element: <ClientLayout />,
                       children: [
                         { index: true, element: <ClientHomePage /> },
+                        { path: 'profile', element: <ClientProfilePage /> },
                         ...moduleRoutes(modules, 'client'),
                       ],
                     },

@@ -1,39 +1,86 @@
-import { useMemo, useState } from 'react';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import type { ReactNode } from 'react';
 
-import { SAMPLE_TENANTS, getSampleInitialRole } from './sample-tenancy';
+import { useAuth } from '../auth';
+import { ErrorState, Spinner } from '../ui';
+import { createSupabaseTenancySource } from './api/supabase-tenancy-source';
+import { pickActiveMembership, tenancyFor } from './membership';
+import type { Membership, TenancySource } from './membership';
 import { TenancyContext } from './tenancy-context';
 import type { TenancyContextValue } from './tenancy-context';
-import { NO_TENANCY, profileForRole } from './tenancy-types';
-import type { Role } from './tenancy-types';
 
 interface TenancyProviderProps {
   children: ReactNode;
+  /** Solo para tests: espacios falsos, sin Supabase. */
+  source?: TenancySource;
 }
 
+const NO_MEMBERSHIPS: readonly Membership[] = [];
+
+export const MEMBERSHIPS_QUERY_KEY = ['tenancy', 'memberships'] as const;
+
 /**
- * Tenant activo y rol del usuario. En la Fase 0 salen de datos de ejemplo; en la
- * Fase 1 saldrán de la sesión y de la base de datos. Quien usa `useTenancy()` no
- * tendrá que cambiar.
+ * Tenant activo y rol del usuario, sacados de la sesión y de la base de datos
+ * (DECISIONES D-048 y D-056). Al volver a la app se piden de nuevo los espacios:
+ * si el coach ha dado de baja al usuario, la app lo nota sola (D-061).
  */
-export function TenancyProvider({ children }: TenancyProviderProps) {
-  const [tenantId, setTenantId] = useState<string | null>(SAMPLE_TENANTS[0].id);
-  const [role, setRole] = useState<Role>(() => getSampleInitialRole(window.location.pathname));
+export function TenancyProvider({ children, source }: TenancyProviderProps) {
+  const { status, user } = useAuth();
+  const queryClient = useQueryClient();
+  const [tenancySource] = useState(() => source ?? createSupabaseTenancySource());
+  const [preferred, setPreferred] = useState<{ userId: string; tenantId: string } | null>(null);
+  const userId = status === 'signed-in' && user !== null ? user.id : null;
 
-  const value = useMemo<TenancyContextValue>(() => {
-    const tenant = SAMPLE_TENANTS.find((candidate) => candidate.id === tenantId) ?? null;
-    return {
-      tenancy: tenant === null ? NO_TENANCY : { tenant, role, profile: profileForRole(role) },
-      sampleControls: {
-        tenants: SAMPLE_TENANTS,
-        selectTenant: setTenantId,
-        selectRole: (nextRole) => {
-          setRole(nextRole);
-          setTenantId((current) => current ?? SAMPLE_TENANTS[0].id);
-        },
-      },
-    };
-  }, [tenantId, role]);
+  const query = useQuery({
+    queryKey: [...MEMBERSHIPS_QUERY_KEY, userId],
+    queryFn: () => tenancySource.listMemberships(userId ?? ''),
+    enabled: userId !== null,
+    refetchOnWindowFocus: true,
+  });
 
+  // Al cerrar sesión no se queda en memoria nada del usuario anterior.
+  useEffect(() => {
+    if (status === 'signed-out') {
+      queryClient.clear();
+    }
+  }, [status, queryClient]);
+
+  const refetch = query.refetch;
+  const refresh = useCallback(async () => {
+    await refetch();
+  }, [refetch]);
+
+  const selectTenant = useCallback(
+    (tenantId: string) => {
+      if (userId !== null) {
+        setPreferred({ userId, tenantId });
+      }
+    },
+    [userId],
+  );
+
+  const memberships = query.data ?? NO_MEMBERSHIPS;
+  const preferredTenantId =
+    preferred !== null && preferred.userId === userId ? preferred.tenantId : null;
+
+  const value = useMemo<TenancyContextValue>(
+    () => ({
+      tenancy: tenancyFor(
+        userId === null ? null : pickActiveMembership(memberships, preferredTenantId),
+      ),
+      memberships: userId === null ? NO_MEMBERSHIPS : memberships,
+      selectTenant,
+      refresh,
+    }),
+    [userId, memberships, preferredTenantId, selectTenant, refresh],
+  );
+
+  if (status === 'loading' || (userId !== null && query.isPending)) {
+    return <Spinner className="min-h-dvh" />;
+  }
+  if (userId !== null && query.isError) {
+    return <ErrorState className="min-h-dvh justify-center" onRetry={() => void refetch()} />;
+  }
   return <TenancyContext value={value}>{children}</TenancyContext>;
 }

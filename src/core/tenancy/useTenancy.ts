@@ -4,6 +4,7 @@ import { TenancyContext } from './tenancy-context';
 import type { TenancyContextValue } from './tenancy-context';
 import type { Tenancy } from './tenancy-types';
 
+/** Los espacios del usuario y cómo cambiar de uno a otro. */
 export function useTenancyContext(): TenancyContextValue {
   const value = use(TenancyContext);
   if (value === null) {

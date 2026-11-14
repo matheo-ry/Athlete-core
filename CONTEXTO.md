@@ -21,12 +21,12 @@
 
 ## Dónde estamos
 
-- **Fase actual:** 1 — Cuentas, negocio del coach y unirse con código. Todo hecho; falta fusionarlo en `main`.
+- **Fase actual:** 2 — Ejercicios y rutinas, sin empezar. La Fase 1 (cuentas, negocio del coach y unirse con código) está terminada y fusionada en `main` (2026-11-14).
 - **Última tarea terminada:** PR 1.17 — Staging y emails reales (2026-11-14), rama `chore/staging`.
-- **En curso:** 18 PR abiertos y apilados (del 4 al 21), esperando el visto bueno del propietario (D-064). La lista, en `docs/ESTADO.md`.
-- **Siguiente tarea:** fusionar los 18 PR en `main`, en orden: lo hace un agente cuando el propietario da el visto bueno (D-068), poniendo al día cada PR como explica D-064. Después, la Fase 2 (ejercicios y rutinas), en un chat nuevo.
+- **En curso:** nada. No hay ningún PR abierto.
+- **Siguiente tarea:** Fase 2, módulo `exercises` (biblioteca y ejercicios propios). Antes, el propietario decide P-02 (nicho) y P-04 (ejercicios de la plataforma y de cada coach).
 
-## Cómo funcionará la Fase 1 (ya decidido)
+## Cómo funciona la Fase 1 (hecha)
 
 - **Primero el código, después la cuenta:** la primera pantalla (`/start`) pide el código del coach; debajo, "Ya tengo cuenta" y "Soy coach" (D-037).
 - **Cuentas:** nombre, email y contraseña. El email se confirma con un código de 6 dígitos; con ese mismo sistema se entra sin contraseña y se recupera la contraseña. Los emails no llevan enlaces (D-038 a D-044).
@@ -52,7 +52,7 @@
 
 ## Qué falta (lo próximo)
 
-- Fusionar la Fase 1 en `main` y empezar la Fase 2. Publicar la web (P-03) sigue pendiente.
+- La Fase 2: ejercicios y rutinas. Publicar la web (P-03) sigue pendiente.
 - Las guardas por sesión y por rol son comodidad, no seguridad: los datos los protege el RLS.
 
 ## Últimos cambios
@@ -71,7 +71,9 @@ Los 5 más recientes, el más nuevo arriba. El historial completo está en `docs
 - Se usa **TypeScript 6**, no 7: el lint de TypeScript aún no admite la 7 (DECISIONES D-022).
 - `main` no está protegida en GitHub: hace falta GitHub Pro (GUIA-GIT §12).
 - Un agente puede fusionar PR, pero solo con el visto bueno expreso del propietario para ese lote (D-068).
-- Supabase en plan gratuito (D-063): la sesión de 30 días la controla la propia app, no hay copias de seguridad recuperables y staging se pausa tras una semana sin uso. Resend gratuito: 100 emails al día.
+- Supabase en plan gratuito (D-063): la sesión de 30 días la controla la propia app, y no hay copias de seguridad recuperables. Resend gratuito: 100 emails al día.
+- **Si staging deja de responder** (la app contra staging no carga o no llegan emails), lo más probable es que Supabase lo haya pausado por pasar una semana sin uso: es normal en el plan gratuito. Se reanuda en el panel de Supabase con **Restore project**, tarda un par de minutos y no se pierde nada (`supabase/README.md`, paso 6).
+- El proyecto de staging de Supabase está conectado al repositorio de GitHub (comprobación "Supabase Preview", siempre omitida). No hace nada; se quita en el panel, Settings → Integrations.
 - El dominio es `athlete-core.com`, en Cloudflare. Antes del primer usuario real hacen falta los textos legales definitivos (D-060) y revisar el plan de Supabase (D-063).
 - El identificador de la app móvil (`app.athletecore.mobile`) es provisional: hay que fijarlo antes de publicar en las tiendas.
 

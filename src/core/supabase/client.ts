@@ -15,18 +15,18 @@ import type { Database } from './database.types';
 
 let client: SupabaseClient<Database> | null = null;
 
-/** `false` mientras `.env.local` no tenga las dos variables de Supabase (Fase 0). */
-export function isSupabaseConfigured(): boolean {
-  return env.supabase !== null;
-}
-
-/** Se crea la primera vez que se pide, para que la app arranque sin Supabase en la Fase 0. */
+/** Se crea la primera vez que se pide. */
 export function getSupabaseClient(): SupabaseClient<Database> {
-  if (env.supabase === null) {
-    throw new Error(
-      'Supabase is not configured: set VITE_SUPABASE_URL and VITE_SUPABASE_PUBLISHABLE_KEY in .env.local',
-    );
-  }
-  client ??= createClient<Database>(env.supabase.url, env.supabase.publishableKey);
+  client ??= createClient<Database>(env.supabase.url, env.supabase.publishableKey, {
+    auth: {
+      // La sesión se guarda en el dispositivo y se renueva sola (D-045).
+      persistSession: true,
+      autoRefreshToken: true,
+      // Los emails llevan un código, no un enlace (D-039): no hay nada que leer
+      // de la dirección al abrir la app.
+      detectSessionInUrl: false,
+      storageKey: 'athlete-core.auth',
+    },
+  });
   return client;
 }

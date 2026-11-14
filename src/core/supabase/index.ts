@@ -1,2 +1,2 @@
-export { getSupabaseClient, isSupabaseConfigured } from './client';
+export { getSupabaseClient } from './client';
 export type { Database, Json, Tables, TablesInsert, TablesUpdate } from './database.types';

@@ -5,6 +5,7 @@ import { LanguageSwitcher } from '@/core/i18n';
 
 import { BrandMark } from '../BrandMark';
 import { ShellNavLink } from '../ShellNavLink';
+import { SignOutButton } from '../SignOutButton';
 import { useShellNav } from '../useShellNav';
 
 /**
@@ -25,12 +26,16 @@ export function CoachLayout() {
           ))}
         </nav>
         <LanguageSwitcher />
+        <SignOutButton />
       </aside>
 
       <div className="flex min-w-0 flex-1 flex-col">
-        <header className="border-border bg-surface flex items-center justify-between border-b px-4 py-2 md:hidden">
+        <header className="border-border bg-surface flex items-center justify-between gap-2 border-b px-4 py-2 md:hidden">
           <BrandMark />
-          <LanguageSwitcher />
+          <div className="flex items-center gap-2">
+            <LanguageSwitcher />
+            <SignOutButton />
+          </div>
         </header>
         {/* pb-20 en móvil: deja sitio a la barra inferior fija. */}
         <main className="flex-1 p-4 pb-20 md:p-8">

@@ -9,7 +9,27 @@
       "loading": "Cargando…",
       "errorTitle": "Algo ha salido mal",
       "errorDescription": "No hemos podido cargar esto. Inténtalo de nuevo.",
-      "retry": "Reintentar"
+      "retry": "Reintentar",
+      "showPassword": "Mostrar contraseña",
+      "hidePassword": "Ocultar contraseña"
+    },
+    "network": {
+      "offline": "Sin conexión"
+    },
+    "errors": {
+      "offline": "No hay conexión. Inténtalo de nuevo.",
+      "rateLimited": "Demasiados intentos. Vuelve a probar en unos minutos.",
+      "unexpected": "Algo ha salido mal. Inténtalo de nuevo."
+    },
+    "auth": {
+      "errors": {
+        "emailRequired": "Escribe tu email.",
+        "emailInvalid": "Escribe un email válido.",
+        "passwordRequired": "Escribe tu contraseña.",
+        "noAccount": "No hay ninguna cuenta con este email.",
+        "wrongPassword": "La contraseña no es correcta.",
+        "notConfirmed": "Esta cuenta está pendiente de confirmar."
+      }
     }
   },
   "app": {
@@ -17,6 +37,18 @@
       "label": "Menú principal",
       "coachHome": "Inicio",
       "clientHome": "Hoy"
+    },
+    "shell": {
+      "signOut": "Cerrar sesión"
+    },
+    "login": {
+      "title": "Entrar",
+      "description": "Hola de nuevo.",
+      "emailLabel": "Email",
+      "passwordLabel": "Contraseña",
+      "submit": "Entrar",
+      "submitting": "Entrando…",
+      "sessionExpired": "Tu sesión ha caducado. Vuelve a entrar."
     },
     "coachHome": {
       "title": "Panel del coach",

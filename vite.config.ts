@@ -45,6 +45,13 @@ export default defineConfig({
           setupFiles: ['./src/test/setup.ts'],
           include: ['src/**/*.test.{ts,tsx}'],
           css: false,
+          // Las variables de Supabase son obligatorias (D-025). Los tests no hablan
+          // con ninguna base de datos (usan un AuthService falso): basta con que
+          // tengan un valor válido.
+          env: {
+            VITE_SUPABASE_URL: 'http://127.0.0.1:54321',
+            VITE_SUPABASE_PUBLISHABLE_KEY: 'test-publishable-key',
+          },
         },
       },
       {

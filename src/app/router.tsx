@@ -1,6 +1,7 @@
 import { RouterProvider, createBrowserRouter } from 'react-router';
 import type { RouteObject } from 'react-router';
 
+import { RequireAuth, RequireGuest } from '@/core/auth';
 import { collectRoutes } from '@/core/modules';
 import type { ModuleManifest } from '@/core/modules';
 import type { Profile } from '@/core/tenancy';
@@ -11,6 +12,7 @@ import { ClientLayout } from './client/ClientLayout';
 import { CoachHomePage } from './coach/CoachHomePage';
 import { CoachLayout } from './coach/CoachLayout';
 import { JoinPage } from './public/JoinPage';
+import { LoginPage } from './public/LoginPage';
 import { NotFoundPage } from './public/NotFoundPage';
 import { PublicLayout } from './public/PublicLayout';
 import { WelcomePage } from './public/WelcomePage';
@@ -27,8 +29,8 @@ function moduleRoutes(modules: readonly ModuleManifest[], profile: Profile): Rou
 
 /**
  * Rutas de la app. Las de cada función NO se escriben aquí: las aporta su módulo
- * a través del manifest. Las guardas por sesión y rol llegan en la Fase 1; hasta
- * entonces separar las zonas es comodidad, no seguridad (ARQUITECTURA §7).
+ * a través del manifest. Las guardas son comodidad, no seguridad: los datos los
+ * protege el RLS de la base de datos (ARQUITECTURA §7).
  */
 export function buildRoutes(modules: readonly ModuleManifest[]): RouteObject[] {
   return [
@@ -40,24 +42,32 @@ export function buildRoutes(modules: readonly ModuleManifest[]): RouteObject[] {
       children: [
         { index: true, element: <RootRedirect /> },
         {
-          path: 'coach',
-          element: <CoachLayout />,
+          // Sin sesión, las zonas de coach y de cliente llevan a /login (D-056).
+          element: <RequireAuth />,
           children: [
-            { index: true, element: <CoachHomePage /> },
-            ...moduleRoutes(modules, 'coach'),
-          ],
-        },
-        {
-          path: 'client',
-          element: <ClientLayout />,
-          children: [
-            { index: true, element: <ClientHomePage /> },
-            ...moduleRoutes(modules, 'client'),
+            {
+              path: 'coach',
+              element: <CoachLayout />,
+              children: [
+                { index: true, element: <CoachHomePage /> },
+                ...moduleRoutes(modules, 'coach'),
+              ],
+            },
+            {
+              path: 'client',
+              element: <ClientLayout />,
+              children: [
+                { index: true, element: <ClientHomePage /> },
+                ...moduleRoutes(modules, 'client'),
+              ],
+            },
           ],
         },
         {
           element: <PublicLayout />,
           children: [
+            // Pantallas de entrar: con sesión llevan al inicio.
+            { element: <RequireGuest />, children: [{ path: 'login', element: <LoginPage /> }] },
             { path: 'welcome', element: <WelcomePage /> },
             { path: 'join', element: <JoinPage /> },
             { path: '*', element: <NotFoundPage /> },

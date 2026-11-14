@@ -289,6 +289,7 @@ INCLUYE:
    sesión al arrancar. Con test unitario.
 9. Test de extremo a extremo: entrar y cerrar sesión con un usuario
    del seed.
+10. La franja fija "Sin conexión" de D-061, en todas las pantallas.
 
 NO INCLUYE: registro, verificación ni recuperar contraseña; el tenant
 real (después de entrar, la app sigue enseñando el coach de ejemplo de

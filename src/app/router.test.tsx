@@ -67,14 +67,6 @@ describe('la app', () => {
     expect(router.state.location.pathname).toBe('/client');
   });
 
-  it('con dos espacios entra en el de coach hasta que llegue el selector (PR 1.14)', async () => {
-    const { router } = await renderAppAs('dual@example.test', '/');
-
-    expect(await screen.findByRole('heading', { name: 'Coach dashboard' })).toBeInTheDocument();
-    expect(router.state.location.pathname).toBe('/coach');
-    expect(brandPrimary()).toBe('#dc2626');
-  });
-
   it('sin sesión, "/" lleva a la primera pantalla, y la bienvenida pide entrar', async () => {
     const auth = createFakeAuthService({ signedInAs: null });
     const { router } = await renderApp('/', { auth });

@@ -10,6 +10,7 @@ import {
   useInvitePreview,
   useJoinWithCode,
   usePendingInvite,
+  useTenancyContext,
 } from '@/core/tenancy';
 import { Button, Card, Spinner, buttonClassName } from '@/core/ui';
 
@@ -34,6 +35,7 @@ export function JoinCodeView({ code, onOtherCode }: JoinCodeViewProps) {
   const navigate = useNavigate();
   const { status: authStatus } = useAuth();
   const pending = usePendingInvite();
+  const { selectTenant } = useTenancyContext();
   const { mutate: requestPreview, data: preview } = useInvitePreview();
   const { mutateAsync: joinWithCode, isPending: isJoining } = useJoinWithCode();
   const [joinFailure, setJoinFailure] = useState<JoinFailure | null>(null);
@@ -118,7 +120,13 @@ export function JoinCodeView({ code, onOtherCode }: JoinCodeViewProps) {
       {authStatus === 'signed-in' ? (
         <div className="flex flex-col gap-2">
           {ownTenant !== null ? (
-            <Button onClick={() => void navigate('/coach', { replace: true })}>
+            <Button
+              onClick={() => {
+                // Con varios espacios, hay que entrar en el propio (D-056).
+                selectTenant(ownTenant);
+                void navigate('/coach', { replace: true });
+              }}
+            >
               {t('app.join.goToBusiness')}
             </Button>
           ) : (

@@ -3,10 +3,11 @@ import { useTranslation } from 'react-i18next';
 import { Card } from '@/core/ui';
 
 import { AccountSection } from '../AccountSection';
+import { MySpacesSection } from '../MySpacesSection';
 
 /**
- * Ajustes del coach: "Mi cuenta" (PR 1.13). Aquí llegarán también "Mis
- * espacios" (PR 1.14) y la marca (PR 1.15 y 1.16).
+ * Ajustes del coach: "Mis espacios" (PR 1.14) y "Mi cuenta" (PR 1.13). Aquí
+ * llegará también la marca (PR 1.15 y 1.16).
  */
 export function CoachSettingsPage() {
   const { t } = useTranslation();
@@ -16,10 +17,11 @@ export function CoachSettingsPage() {
       <header>
         <h1 className="text-2xl font-bold">{t('app.coachSettings.title')}</h1>
       </header>
-      <AccountSection />
       <Card>
         <p className="text-muted">{t('app.coachSettings.soon')}</p>
       </Card>
+      <MySpacesSection />
+      <AccountSection />
     </section>
   );
 }

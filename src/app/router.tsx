@@ -24,6 +24,7 @@ import { NotFoundPage } from './public/NotFoundPage';
 import { PendingInviteBrand } from './public/PendingInviteBrand';
 import { PublicLayout } from './public/PublicLayout';
 import { ResetPasswordPage } from './public/ResetPasswordPage';
+import { SelectSpacePage } from './public/SelectSpacePage';
 import { SignupPage } from './public/SignupPage';
 import { StartPage } from './public/StartPage';
 import { VerifyEmailPage } from './public/VerifyEmailPage';
@@ -145,6 +146,15 @@ export function buildRoutes(modules: readonly ModuleManifest[]): RouteObject[] {
                   // La bienvenida es para quien tiene sesión y ningún espacio.
                   element: <RequireProfile profile={null} />,
                   children: [{ path: 'welcome', element: <WelcomePage /> }],
+                },
+                {
+                  // El selector, para quien tiene varios espacios (D-056).
+                  path: 'select',
+                  element: (
+                    <WhenTenancyReady>
+                      <SelectSpacePage />
+                    </WhenTenancyReady>
+                  ),
                 },
                 {
                   // Crear negocio: con sesión, y sabiendo ya si es dueño de uno (D-049).

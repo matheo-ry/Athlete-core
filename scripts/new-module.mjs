@@ -83,8 +83,8 @@ console.log(`✔ Creado src/modules/${name}
 
 Ahora te toca a ti (ARQUITECTURA §15):
   1. Añádelo al registro: importa "${name}Module" en src/modules/index.ts y ponlo en "productModules".
-  2. Activa su flag "${name}": hasta la Fase 1, añádelo a src/core/flags/sample-flags.ts.
-     Desde la Fase 1, con una migración que lo inserte en la tabla "features".
+  2. Activa su flag "${name}" con una migración que lo inserte en la tabla "features",
+     y añádelo a la lista de supabase/tests/04_rls_enabled.test.sql.
   3. Rellena src/modules/${name}/README.md y revisa manifest.ts (rutas, menú, icono).
   4. Si usa a otro módulo, añade la dependencia a ARQUITECTURA §6 y a docs/DECISIONES.md.
   5. Si necesita tablas, crea la migración con la plantilla y su test de aislamiento.

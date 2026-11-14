@@ -1,0 +1,47 @@
+{
+  "nav": {
+    "coach": "Clients"
+  },
+  "list": {
+    "title": "Clients",
+    "description": "Who has joined with your code.",
+    "tabsLabel": "Show",
+    "tabs": {
+      "active": "Active",
+      "archived": "Removed"
+    },
+    "search": "Search by name",
+    "empty": {
+      "title": "You don't have any clients yet",
+      "description": "Share your code so they can join."
+    },
+    "emptyArchived": {
+      "title": "No removed clients",
+      "description": "Clients you remove will appear here."
+    },
+    "noResults": "No client matches “{{query}}”.",
+    "joinedOn": "Joined {{date}}",
+    "new": "New"
+  },
+  "seats": {
+    "used": "{{used}} of {{max}} spots",
+    "unlimited": "{{used}} clients · no limit",
+    "full": "You've reached your plan's limit. Whoever uses your code won't be able to join."
+  },
+  "code": {
+    "title": "Your invite code",
+    "description": "Share it with your clients so they can join.",
+    "copy": "Copy code",
+    "copied": "Copied",
+    "copyFailed": "Couldn't copy. Select the code and copy it by hand.",
+    "share": "Share link",
+    "linkCopied": "Link copied",
+    "shareTitle": "Join {{name}} on ATHLETE CORE",
+    "regenerate": "Regenerate code",
+    "regenerateConfirm": "The current code and its links will stop working right away. Clients who already joined won't notice anything.",
+    "regenerateYes": "Yes, regenerate",
+    "cancel": "Cancel",
+    "regenerating": "Regenerating…",
+    "regenerated": "New code ready."
+  }
+}

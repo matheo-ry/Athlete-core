@@ -21,10 +21,10 @@
 
 ## Dónde estamos
 
-- **Fase actual:** 1 — Cuentas, negocio del coach y unirse con código.
-- **Última tarea terminada:** PR 1.16 — Marca: logo (2026-11-14), rama `feat/logo-del-coach`.
-- **En curso:** PR abiertos y apilados, esperando revisión del propietario (D-064). La lista, en `docs/ESTADO.md`.
-- **Siguiente tarea:** Fase 1, PR 1.17 — Staging y emails reales. Está preparado en borrador (rama `chore/staging`): falta seguir con el propietario la guía de `supabase/README.md`. Antes, él necesita el dominio (P-01) y las cuentas de Supabase y Resend. Los 16 PR de la fase (1.2 a 1.17) están en orden, con sus criterios de aceptación, en `docs/PROMPTS.md` §5.
+- **Fase actual:** 1 — Cuentas, negocio del coach y unirse con código. Todo hecho; falta fusionarlo en `main`.
+- **Última tarea terminada:** PR 1.17 — Staging y emails reales (2026-11-14), rama `chore/staging`.
+- **En curso:** 18 PR abiertos y apilados (del 4 al 21), esperando el visto bueno del propietario (D-064). La lista, en `docs/ESTADO.md`.
+- **Siguiente tarea:** fusionar los 18 PR en `main`, en orden: lo hace un agente cuando el propietario da el visto bueno (D-068), poniendo al día cada PR como explica D-064. Después, la Fase 2 (ejercicios y rutinas), en un chat nuevo.
 
 ## Cómo funcionará la Fase 1 (ya decidido)
 
@@ -46,32 +46,33 @@
 - **Marca** (PR 1.15 y 1.16): el dueño cambia en Ajustes el nombre, el logo, los colores (paleta de 12 o uno propio) y el modo, con vista previa. Se guarda con `update_brand`, que valida cada dato (D-067); el logo va en Storage, en la carpeta del negocio, y solo su dueño puede tocarlo.
 - **Base de datos local** (Supabase en Docker): 7 migraciones en `supabase/migrations/` (tablas, funciones de negocio, permisos, RLS y el espacio de logos); 150 tests pgTAP (`npm run db:test`); 2 coaches y 6 clientes inventados (`supabase/seed.sql`, contraseña `password123`); tipos generados en `core/supabase/database.types.ts`.
 - **Tests:** 374 unitarios (`npm run check`) y 43 de extremo a extremo contra Supabase local (`npm run test:e2e`).
+- **Staging** (PR 1.17): proyecto `athlete-core-staging` de Supabase (Fráncfort, plan gratuito) con las mismas tablas y datos inventados que en local. Los emails salen de verdad, por Resend, desde `no-reply@athlete-core.com`. Se prueba con `npm run dev:staging` (hace falta `.env.staging.local`; guía en `supabase/README.md`). Todavía no hay web publicada.
 - **Módulo `_template`** para copiar (`npm run new:module <nombre>`). Solo se registra en desarrollo.
 - **Reglas que se comprueban solas:** ESLint con las fronteras de ARQUITECTURA §6, hooks de Git (formato, mensaje de commit, no subir `main`), CI con `npm run check`, y tests que vigilan las fronteras, los textos en dos idiomas y la forma fija de los módulos.
 
 ## Qué falta (lo próximo)
 
-- **Staging y emails reales** (PR 1.17): la guía está escrita; se sigue con el propietario cuando tenga el dominio (P-01) y las cuentas de Supabase y Resend.
+- Fusionar la Fase 1 en `main` y empezar la Fase 2. Publicar la web (P-03) sigue pendiente.
 - Las guardas por sesión y por rol son comodidad, no seguridad: los datos los protege el RLS.
 
 ## Últimos cambios
 
 Los 5 más recientes, el más nuevo arriba. El historial completo está en `docs/ESTADO.md`.
 
+- 2026-11-14 — PR 1.17: staging en marcha con emails reales por Resend; los agentes fusionan con el visto bueno del propietario (D-068).
 - 2026-11-14 — PR 1.16: el logo del coach, en Storage, visible en toda la app.
 - 2026-11-14 — PR 1.15: la marca del coach (nombre, colores y modo, con vista previa); `update_brand` (D-067).
 - 2026-11-14 — PR 1.14: selector de espacio y "Mis espacios"; el último espacio se recuerda hasta cerrar sesión (D-066).
 - 2026-11-14 — PR 1.13: perfil y cuenta; "Cerrar sesión" pasa al perfil y a los ajustes.
-- 2026-11-14 — PR 1.12: crear negocio y primeros pasos del coach.
 
 ## A tener en cuenta ahora
 
 - El proyecto vive en `C:\dev\athlete-core`, **fuera de OneDrive** (sincronizar `node_modules` da errores).
 - Se usa **TypeScript 6**, no 7: el lint de TypeScript aún no admite la 7 (DECISIONES D-022).
 - `main` no está protegida en GitHub: hace falta GitHub Pro (GUIA-GIT §12).
-- La Fase 1 se lleva entera desde un mismo chat, con una rama y un PR por tarea (D-036).
-- Supabase en plan gratuito (D-063): la sesión de 30 días la controla la propia app, y no hay copias de seguridad recuperables.
-- Hace falta el dominio (P-01) antes del PR 1.17. Antes del primer usuario real hacen falta los textos legales definitivos (D-060) y revisar el plan de Supabase (D-063).
+- Un agente puede fusionar PR, pero solo con el visto bueno expreso del propietario para ese lote (D-068).
+- Supabase en plan gratuito (D-063): la sesión de 30 días la controla la propia app, no hay copias de seguridad recuperables y staging se pausa tras una semana sin uso. Resend gratuito: 100 emails al día.
+- El dominio es `athlete-core.com`, en Cloudflare. Antes del primer usuario real hacen falta los textos legales definitivos (D-060) y revisar el plan de Supabase (D-063).
 - El identificador de la app móvil (`app.athletecore.mobile`) es provisional: hay que fijarlo antes de publicar en las tiendas.
 
 ## Para saber más

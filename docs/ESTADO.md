@@ -1,13 +1,13 @@
 # ESTADO DEL PROYECTO
 
 **Última actualización:** 2026-11-14
-**Fase actual:** 1 — Cuentas, negocio del coach y unirse con código (la Fase 0 terminó y se fusionó el 2026-11-13)
+**Fase actual:** 1 — Cuentas, negocio del coach y unirse con código: **todo hecho, pendiente de fusionar** (la Fase 0 terminó y se fusionó el 2026-11-13)
 
 Este archivo lo actualiza quien termina una tarea, en el mismo Pull Request, junto con `CONTEXTO.md` (que resume este en una página).
 
 ## En curso
 
-PR abiertos, apilados y esperando revisión (D-064). Se fusionan en este orden:
+PR abiertos, apilados y esperando el visto bueno del propietario (D-064). Los fusiona un agente cuando él lo dé (D-068), en este orden:
 
 1. Diseño de la Fase 1 (rama `docs/diseno-fase-1`, PR 4).
 2. PR 1.2 — Base de datos: cuentas y emails (rama `db/cuentas-y-emails`, PR 5).
@@ -26,11 +26,12 @@ PR abiertos, apilados y esperando revisión (D-064). Se fusionan en este orden:
 15. PR 1.14 — Selector de espacio y "Mis espacios" (rama `feat/selector-de-espacio`, PR 18).
 16. PR 1.15 — Marca: nombre, colores y modo (rama `feat/marca-del-coach`, PR 19).
 17. PR 1.16 — Marca: logo (rama `feat/logo-del-coach`, PR 20).
-18. PR 1.17 — Staging y emails reales: **preparado, en borrador** (rama `chore/staging`, PR 21). Tiene la guía paso a paso, las variables de staging y `npm run dev:staging`. Se termina con el propietario siguiendo la guía.
+18. PR 1.17 — Staging y emails reales (rama `chore/staging`, PR 21). Staging está en marcha y probado con emails de verdad.
 
 ## Siguiente
 
-1. Fase 1, PR 1.17 — terminar staging con el propietario: **antes hacen falta** el dominio (P-01) y las cuentas de Supabase y Resend. La guía está en `supabase/README.md`, "Guía: poner en marcha staging". Al terminarla, la Fase 1 queda hecha.
+1. Fusionar los 18 PR de la Fase 1 en `main`, en orden, cuando el propietario dé el visto bueno (D-064 y D-068). Con eso la Fase 1 queda cerrada.
+2. Fase 2 — Ejercicios y rutinas, en un chat nuevo.
 
 ## Fases
 
@@ -76,7 +77,7 @@ El diseño está en DECISIONES D-036 a D-067, y el detalle de cada PR, en `docs/
 - [x] PR 1.14 — Selector de espacio y "Mis espacios"
 - [x] PR 1.15 — Marca: nombre, colores y modo
 - [x] PR 1.16 — Marca: logo
-- [ ] PR 1.17 — Staging y emails reales: preparado en borrador (guía, variables y `npm run dev:staging`). Falta seguir la guía con el propietario, que necesita el dominio (P-01) y las cuentas de Supabase y Resend
+- [x] PR 1.17 — Staging y emails reales
 
 ### Fase 2 — Ejercicios y rutinas (coach)
 
@@ -111,8 +112,8 @@ El diseño está en DECISIONES D-036 a D-067, y el detalle de cada PR, en `docs/
 
 ## Bloqueos y dudas abiertas
 
-- Falta el dominio de la web (DECISIONES, P-01). **Es lo único que bloquea terminar la Fase 1:** sin dominio no se pueden enviar emails reales, y el PR 1.17 no se puede acabar. Todo lo demás está hecho y se prueba en local.
-- En staging hay que comprobar que el tope de intentos cuenta bien la dirección IP de cada conexión (D-052). Está en el paso 5 de la guía de staging.
+- Resend en plan gratuito: 100 emails al día y 3.000 al mes (D-046). Hay que revisarlo antes de los pilotos.
+- Staging se pausa tras una semana sin uso (D-063): se reanuda desde el panel de Supabase (guía de staging, paso 6).
 - En local, repetir muchas veces seguidas los tests de extremo a extremo agota los topes de intentos y de emails por hora, y fallan con "Demasiados intentos". Se arregla con `npm run db:reset` (D-065).
 - Los textos legales de la Fase 1 son borradores: ningún usuario real puede registrarse hasta tener los definitivos (D-060).
 - Supabase en plan gratuito (D-063): sin copias de seguridad recuperables. Hay que revisar el plan antes del primer usuario real.
@@ -122,6 +123,8 @@ El diseño está en DECISIONES D-036 a D-067, y el detalle de cada PR, en `docs/
 
 Cosas que alguien ha visto y que no tocaban en su tarea. No se hacen sin convertirlas antes en tarea.
 
+- En la pantalla de un código de coach que no existe (`/join`), dejar a la vista "Ya tengo cuenta" y "Soy coach", como en la primera pantalla (lo echó en falta el propietario al probar staging).
+- Los tests pgTAP en staging necesitan la contraseña de la base de datos, porque el usuario temporal de la CLI no busca en el esquema `extensions`. Se evitaría fijando el `search_path` en la cabecera de cada test.
 - Que el coach pueda elegir un código de invitación propio y fácil de recordar (D-050).
 - Que el coach vea el email de sus clientes, si lo piden para distinguir nombres repetidos (D-059).
 - Avisar por email al cliente cuando su coach lo da de baja o lo reactiva (D-055).
@@ -146,6 +149,7 @@ Cosas que alguien ha visto y que no tocaban en su tarea. No se hacen sin convert
 
 Lo más nuevo, arriba.
 
+- 2026-11-14 — PR 1.17 (staging, terminado): proyecto `athlete-core-staging` en Fráncfort, plan gratuito, con las 7 migraciones, los datos inventados y los 150 tests pgTAP en verde. Emails por Resend desde `no-reply@athlete-core.com` (dominio en Cloudflare, con SPF, DKIM y DMARC). Probado por el propietario: registro y recuperar la contraseña con emails de verdad, en Gmail y en Outlook, sin caer en spam. El tope de intentos cuenta la IP real de cada conexión (D-052): no hizo falta ninguna migración. D-063 revisada: sin cambios. Guía corregida: Resend va antes que `config push`, y los tests en staging piden la contraseña de la base de datos. Cerrado P-01. Los agentes fusionan con el visto bueno del propietario (D-068).
 - 2026-11-14 — PR 1.17 (staging, preparado): guía paso a paso en `supabase/README.md` (crear el proyecto en la UE, aplicar migraciones y datos inventados, configurar las cuentas con `config push`, conectar Resend, probar y reanudar si se pausa); las variables de staging en `.env.example`; `npm run dev:staging`. Comprobado en la CLI de Supabase 3.1 que los comandos de la guía existen. Falta seguirla con el propietario: necesita el dominio y las cuentas.
 - 2026-11-14 — PR 1.16 (logo): en "Marca", subir, cambiar y quitar el logo (PNG, JPG o WebP de 2 MB como máximo), con vista previa antes de guardar. Se ve en la cabecera, el selector, "Mis espacios", la vista previa del código y el registro con marca; sin logo, o si no carga, las iniciales. Migración 7: espacio `logos` en Storage (público; solo el dueño escribe en la carpeta de su negocio; el propio Storage rechaza otros formatos y más de 2 MB), `set_logo` y `remove_logo`. 19 tests pgTAP nuevos (150 en total). El test de humo del idioma pasa a hacerse sin sesión: con sesión cambiaba el idioma de la cuenta de `coach.iron` y otro test que entraba a la vez la veía en español.
 - 2026-11-14 — PR 1.15 (marca): "Marca" en los ajustes del coach, solo para el dueño: nombre del negocio (cambia también el de la marca), color principal y de acento (12 de la paleta o uno propio, escrito o con la rueda de colores), modo claro u oscuro, una vista previa que cambia antes de guardar y "Volver a los colores de ATHLETE CORE". Migración 6 con `update_brand`, que valida cada dato; `name` y `branding` ya no se cambian a mano (D-067). 14 tests pgTAP nuevos (131 en total).

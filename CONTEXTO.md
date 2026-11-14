@@ -22,9 +22,9 @@
 ## Dónde estamos
 
 - **Fase actual:** 1 — Cuentas, negocio del coach y unirse con código.
-- **Última tarea terminada:** PR 1.6 — Recuperar la contraseña y entrar con un código por email (2026-11-14), rama `feat/recuperar-y-codigo`.
+- **Última tarea terminada:** PR 1.7 — Registro y verificación del email (2026-11-14), rama `feat/registro`.
 - **En curso:** PR abiertos y apilados, esperando revisión del propietario (D-064). La lista, en `docs/ESTADO.md`.
-- **Siguiente tarea:** Fase 1, PR 1.7 — Registro y verificación del email. Los 16 PR de la fase (1.2 a 1.17) están en orden, con sus criterios de aceptación, en `docs/PROMPTS.md` §5.
+- **Siguiente tarea:** Fase 1, PR 1.8 — Base de datos: invitaciones, bajas y negocio. Los 16 PR de la fase (1.2 a 1.17) están en orden, con sus criterios de aceptación, en `docs/PROMPTS.md` §5.
 
 ## Cómo funcionará la Fase 1 (ya decidido)
 
@@ -45,17 +45,17 @@
 
 ## Qué falta (lo próximo)
 
-- **Faltan** el registro con verificación del email (PR 1.7) y todo lo de unirse, crear negocio, clientes, perfil y marca: PR 1.8 a 1.16.
+- **Faltan** unirse con código, crear negocio, clientes, perfil, espacios y marca: PR 1.8 a 1.16.
 - Las guardas por sesión y por rol son comodidad, no seguridad: los datos los protege el RLS.
 
 ## Últimos cambios
 
 Los 5 más recientes, el más nuevo arriba. El historial completo está en `docs/ESTADO.md`.
 
+- 2026-11-14 — PR 1.7: registro y confirmar el email; vale siempre la última contraseña.
 - 2026-11-14 — PR 1.6: recuperar la contraseña y entrar con un código por email.
 - 2026-11-14 — PR 1.5: flags leídos de la base de datos; el router se crea una sola vez.
 - 2026-11-14 — PR 1.4: tenant, rol y marca reales; guardas por rol; adiós a los datos de ejemplo de tenancy y a la barra de desarrollo.
-- 2026-11-14 — PR 1.3: sesión y login con contraseña, guardas por sesión, cerrar sesión y franja "Sin conexión".
 - 2026-11-14 — Diseño de la Fase 1: decisiones D-036 a D-064, lista de los 16 PR en `docs/PROMPTS.md` §5 y ARQUITECTURA §7, §8 y §10 al día.
 
 ## A tener en cuenta ahora

@@ -6,6 +6,7 @@ import { readNextPath, useAuthAction } from '@/core/auth';
 
 import { readEmailState } from './auth-navigation';
 import { CodeStep } from './CodeStep';
+import { CreateAccountLink } from './CreateAccountLink';
 import { EmailStep } from './EmailStep';
 import { NewPasswordStep } from './NewPasswordStep';
 
@@ -43,6 +44,9 @@ export function ResetPasswordPage() {
         onSent={(email) => setStep({ name: 'code', email })}
         isSending={sendCode.isPending}
         backTo={`/login${location.search}`}
+        failureAction={(reason, email) =>
+          reason === 'no_account' ? <CreateAccountLink email={email} /> : null
+        }
       />
     );
   }

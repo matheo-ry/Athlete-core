@@ -33,7 +33,11 @@
         "codeRequired": "Escribe los 6 dígitos del código.",
         "passwordTooShort": "La contraseña tiene que tener al menos 8 caracteres.",
         "passwordTooLong": "La contraseña puede tener 72 caracteres como máximo.",
-        "samePassword": "La contraseña nueva tiene que ser distinta de la anterior."
+        "samePassword": "La contraseña nueva tiene que ser distinta de la anterior.",
+        "accountExists": "Ya existe una cuenta con este email.",
+        "nameTooShort": "Escribe al menos 2 caracteres.",
+        "nameTooLong": "El nombre puede tener 60 caracteres como máximo.",
+        "termsRequired": "Para crear la cuenta tienes que aceptar los términos."
       }
     }
   },
@@ -55,7 +59,10 @@
       "submitting": "Entrando…",
       "sessionExpired": "Tu sesión ha caducado. Vuelve a entrar.",
       "forgotPassword": "He olvidado mi contraseña",
-      "codeSignIn": "Entrar con un código por email"
+      "codeSignIn": "Entrar con un código por email",
+      "noAccountYet": "¿No tienes cuenta? Crea una",
+      "createAccount": "Crear cuenta",
+      "confirmEmail": "Confirmar mi email"
     },
     "coachHome": {
       "title": "Panel del coach",
@@ -120,6 +127,45 @@
       "newHint": "Al menos 8 caracteres.",
       "save": "Guardar contraseña",
       "saving": "Guardando…"
+    },
+    "signup": {
+      "title": "Crea tu cuenta",
+      "description": "Solo te llevará un minuto.",
+      "nameLabel": "Nombre",
+      "emailLabel": "Email",
+      "passwordLabel": "Contraseña",
+      "passwordHint": "Al menos 8 caracteres.",
+      "terms": "Tengo 16 años o más y acepto los <terms>Términos</terms> y la <privacy>Política de privacidad</privacy>.",
+      "submit": "Crear cuenta",
+      "submitting": "Creando…",
+      "haveAccount": "¿Ya tienes cuenta? Entrar",
+      "signIn": "Entrar"
+    },
+    "verify": {
+      "title": "Confirma tu email",
+      "description": "Escribe el email con el que te registraste y te enviaremos un código nuevo.",
+      "passwordTitle": "Elige tu contraseña",
+      "passwordDescription": "Por seguridad, elige la contraseña con la que vas a entrar.",
+      "finishing": "Terminando tu cuenta…"
+    },
+    "legal": {
+      "draft": "Borrador",
+      "draftNotice": "Este texto es un borrador. Se sustituirá por el definitivo, revisado por un profesional, antes de que se registre el primer usuario real.",
+      "back": "Volver",
+      "terms": {
+        "title": "Términos de uso",
+        "p1": "ATHLETE CORE es una app que une a coaches de fuerza con sus clientes. Para usarla necesitas una cuenta y, como cliente, el código que te da tu coach.",
+        "p2": "Eres responsable de guardar bien tu contraseña. No compartas tu cuenta con nadie.",
+        "p3": "Tu coach decide el entrenamiento que te da. ATHLETE CORE no es responsable de ese entrenamiento y no sustituye el consejo médico.",
+        "p4": "Tu coach puede dejar de darte acceso en cualquier momento. Tu cuenta sigue siendo tuya."
+      },
+      "privacy": {
+        "title": "Política de privacidad",
+        "p1": "Guardamos tu nombre, tu email, tus preferencias de idioma y de unidades, y los datos de entrenamiento que registras.",
+        "p2": "Tu coach ve tu nombre y los datos del espacio que compartís. Tu coach no ve tu email.",
+        "p3": "No usamos cookies de seguimiento ni te enviamos emails comerciales.",
+        "p4": "Puedes pedirnos que borremos tu cuenta escribiendo a la dirección de soporte. Borrarla desde dentro de la app llegará más adelante."
+      }
     }
   }
 }

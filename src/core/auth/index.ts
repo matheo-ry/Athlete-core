@@ -22,6 +22,15 @@ export {
 } from './credentials';
 export type { EmailError, NewPasswordError } from './credentials';
 export { loginPathFor, readNextPath, safeNextPath } from './next-path';
+export { clearPendingSignup, readPendingSignup, rememberPendingSignup } from './pending-signup';
+export type { PendingSignup } from './pending-signup';
+export {
+  checkDisplayName,
+  DISPLAY_NAME_MAX_LENGTH,
+  DISPLAY_NAME_MIN_LENGTH,
+  TERMS_VERSION,
+} from './signup';
+export type { DisplayNameError, SignupInput, SignupProfile } from './signup';
 export { RequireAuth } from './RequireAuth';
 export { RequireGuest } from './RequireGuest';
 export { useAuth } from './useAuth';

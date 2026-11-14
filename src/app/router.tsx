@@ -15,10 +15,13 @@ import { CoachLayout } from './coach/CoachLayout';
 import { ModuleGate } from './ModuleGate';
 import { CodeSignInPage } from './public/CodeSignInPage';
 import { JoinPage } from './public/JoinPage';
+import { LegalPage } from './public/LegalPage';
 import { LoginPage } from './public/LoginPage';
 import { NotFoundPage } from './public/NotFoundPage';
 import { PublicLayout } from './public/PublicLayout';
 import { ResetPasswordPage } from './public/ResetPasswordPage';
+import { SignupPage } from './public/SignupPage';
+import { VerifyEmailPage } from './public/VerifyEmailPage';
 import { WelcomePage } from './public/WelcomePage';
 import { RequireFlags } from './RequireFlags';
 import { RootLayout } from './RootLayout';
@@ -105,11 +108,16 @@ export function buildRoutes(modules: readonly ModuleManifest[]): RouteObject[] {
               children: [
                 { path: 'login', element: <LoginPage /> },
                 { path: 'login/code', element: <CodeSignInPage /> },
+                { path: 'signup', element: <SignupPage /> },
               ],
             },
-            // Recuperar la contraseña sigue con sesión: el último paso (guardar la
-            // contraseña nueva) ocurre después de confirmar el código.
+            // Recuperar la contraseña y confirmar el email siguen con sesión: el
+            // último paso ocurre después de confirmar el código.
             { path: 'reset-password', element: <ResetPasswordPage /> },
+            { path: 'verify', element: <VerifyEmailPage /> },
+            // Se pueden leer con sesión y sin ella (D-060).
+            { path: 'legal/terms', element: <LegalPage document="terms" /> },
+            { path: 'legal/privacy', element: <LegalPage document="privacy" /> },
             {
               // La bienvenida es para quien tiene sesión y ningún espacio.
               element: <RequireAuth />,

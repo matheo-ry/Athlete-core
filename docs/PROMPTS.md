@@ -435,7 +435,9 @@ INCLUYE:
    contraseña antes de seguir (D-043).
 4. En /login: el enlace "Crear cuenta", que además se resalta con el
    mensaje "No hay ninguna cuenta con este email". Quien entra con una
-   cuenta sin confirmar pasa a /verify con un código nuevo.
+   cuenta sin confirmar ve "Esta cuenta está pendiente de confirmar"
+   con "Confirmar mi email" resaltado, que manda un código nuevo y
+   lleva a /verify (la pantalla no cambia sola, D-043).
 5. Las páginas /legal/terms y /legal/privacy con un texto de borrador,
    marcado como "Borrador".
 6. Test de extremo a extremo: registrarse, leer el código de la

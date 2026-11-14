@@ -12,6 +12,7 @@ import type {
   AuthService,
   AuthUser,
 } from '../auth-types';
+import type { SignupProfile } from '../signup';
 
 // El AuthService real: el único sitio de la app que habla con Supabase Auth.
 
@@ -51,6 +52,16 @@ function failure(error: RawAuthError, action: string): { ok: false; reason: Auth
 }
 
 const OK: AuthResult = { ok: true };
+
+/** Los datos del registro, con los nombres que usan el trigger y las plantillas. */
+function toUserMetadata(profile: SignupProfile) {
+  return {
+    display_name: profile.displayName.trim(),
+    locale: profile.locale,
+    weight_unit: profile.weightUnit,
+    terms_version: profile.termsVersion,
+  };
+}
 
 function resultOf(error: RawAuthError | null, action: string): AuthResult {
   return error === null ? OK : failure(error, action);
@@ -159,6 +170,82 @@ export function createSupabaseAuthService(): AuthService {
         });
       }
       return OK;
+    },
+
+    async signUp(input) {
+      const status = await fetchEmailStatus(input.email);
+      if (!status.ok) {
+        return status;
+      }
+      if (status.status === 'confirmed') {
+        return { ok: false, reason: 'account_exists' };
+      }
+      if (status.status === 'unconfirmed') {
+        return { ok: false, reason: 'email_not_confirmed' };
+      }
+      // Los datos de la cuenta (user_metadata) los lee el trigger que crea el
+      // perfil, y las plantillas de email para elegir el idioma (D-044).
+      const { error } = await client.auth.signUp({
+        email: input.email,
+        password: input.password,
+        options: { data: toUserMetadata(input) },
+      });
+      return resultOf(error, 'sign up');
+    },
+
+    async resendSignupCode(email) {
+      const status = await fetchEmailStatus(email);
+      if (!status.ok) {
+        return status;
+      }
+      if (status.status === 'none') {
+        return { ok: false, reason: 'no_account' };
+      }
+      if (status.status === 'confirmed') {
+        return { ok: false, reason: 'account_exists' };
+      }
+      const { error } = await client.auth.resend({ type: 'signup', email });
+      return resultOf(error, 'resend signup code');
+    },
+
+    async verifySignupCode(email, code) {
+      const { error } = await client.auth.verifyOtp({ email, token: code, type: 'signup' });
+      return resultOf(error, 'verify signup code');
+    },
+
+    async completeSignup({ password, profile }) {
+      // Vale siempre la última contraseña escrita (D-043). Si es la misma que ya
+      // tenía la cuenta (lo normal), Supabase responde "same_password": no pasa nada.
+      if (password !== null) {
+        const { error } = await client.auth.updateUser({ password });
+        if (error !== null && classifyAuthError(error) !== 'same_password') {
+          return failure(error, 'complete signup (password)');
+        }
+      }
+      if (profile === null) {
+        return OK;
+      }
+      const { data, error: userError } = await client.auth.updateUser({
+        data: toUserMetadata(profile),
+      });
+      if (userError !== null) {
+        return failure(userError, 'complete signup (metadata)');
+      }
+      const { error: profileError } = await client
+        .from('profiles')
+        .update({
+          display_name: profile.displayName.trim(),
+          locale: profile.locale,
+          weight_unit: profile.weightUnit,
+        })
+        .eq('user_id', data.user.id);
+      if (profileError !== null) {
+        return failure(profileError, 'complete signup (profile)');
+      }
+      const { error: termsError } = await client.rpc('accept_terms', {
+        p_version: profile.termsVersion,
+      });
+      return resultOf(termsError, 'complete signup (terms)');
     },
 
     async signOut() {

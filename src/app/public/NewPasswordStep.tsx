@@ -12,10 +12,19 @@ interface NewPasswordStepProps {
   save: (password: string) => Promise<AuthResult>;
   onSaved: () => void;
   isSaving: boolean;
+  /** Por defecto, los textos de "Elige una contraseña nueva". */
+  title?: string;
+  description?: string;
 }
 
 /** Elegir una contraseña nueva: 8 caracteres como mínimo (D-041). */
-export function NewPasswordStep({ save, onSaved, isSaving }: NewPasswordStepProps) {
+export function NewPasswordStep({
+  save,
+  onSaved,
+  isSaving,
+  title,
+  description,
+}: NewPasswordStepProps) {
   const { t } = useTranslation();
   const [password, setPassword] = useState('');
   const [passwordError, setPasswordError] = useState<string | undefined>();
@@ -46,8 +55,8 @@ export function NewPasswordStep({ save, onSaved, isSaving }: NewPasswordStepProp
   return (
     <>
       <header>
-        <h1 className="text-2xl font-bold">{t('app.resetPassword.newTitle')}</h1>
-        <p className="text-muted">{t('app.resetPassword.newDescription')}</p>
+        <h1 className="text-2xl font-bold">{title ?? t('app.resetPassword.newTitle')}</h1>
+        <p className="text-muted">{description ?? t('app.resetPassword.newDescription')}</p>
       </header>
       <form onSubmit={handleSubmit} noValidate className="flex flex-col gap-4">
         <PasswordInput

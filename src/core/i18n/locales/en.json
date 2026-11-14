@@ -33,7 +33,11 @@
         "codeRequired": "Enter the 6 digits of the code.",
         "passwordTooShort": "The password must have at least 8 characters.",
         "passwordTooLong": "The password can have at most 72 characters.",
-        "samePassword": "The new password must be different from the old one."
+        "samePassword": "The new password must be different from the old one.",
+        "accountExists": "There's already an account with this email.",
+        "nameTooShort": "Write at least 2 characters.",
+        "nameTooLong": "The name can have at most 60 characters.",
+        "termsRequired": "To create the account you need to accept the terms."
       }
     }
   },
@@ -55,7 +59,10 @@
       "submitting": "Signing in…",
       "sessionExpired": "Your session has expired. Please sign in again.",
       "forgotPassword": "Forgot my password",
-      "codeSignIn": "Sign in with a code by email"
+      "codeSignIn": "Sign in with a code by email",
+      "noAccountYet": "Don't have an account? Create one",
+      "createAccount": "Create account",
+      "confirmEmail": "Confirm my email"
     },
     "coachHome": {
       "title": "Coach dashboard",
@@ -120,6 +127,45 @@
       "newHint": "At least 8 characters.",
       "save": "Save password",
       "saving": "Saving…"
+    },
+    "signup": {
+      "title": "Create your account",
+      "description": "It only takes a minute.",
+      "nameLabel": "Name",
+      "emailLabel": "Email",
+      "passwordLabel": "Password",
+      "passwordHint": "At least 8 characters.",
+      "terms": "I'm 16 or older and I accept the <terms>Terms</terms> and the <privacy>Privacy policy</privacy>.",
+      "submit": "Create account",
+      "submitting": "Creating…",
+      "haveAccount": "Already have an account? Sign in",
+      "signIn": "Sign in"
+    },
+    "verify": {
+      "title": "Confirm your email",
+      "description": "Write the email you signed up with and we'll send you a new code.",
+      "passwordTitle": "Choose your password",
+      "passwordDescription": "For your security, choose the password you'll use to sign in.",
+      "finishing": "Finishing your account…"
+    },
+    "legal": {
+      "draft": "Draft",
+      "draftNotice": "This text is a draft. It will be replaced by the final version, reviewed by a professional, before the first real user signs up.",
+      "back": "Back",
+      "terms": {
+        "title": "Terms of use",
+        "p1": "ATHLETE CORE is an app that connects strength coaches with their clients. To use it you need an account and, as a client, the code your coach gives you.",
+        "p2": "You are responsible for keeping your password safe. Don't share your account with anyone.",
+        "p3": "Your coach decides the training they give you. ATHLETE CORE is not responsible for that training and does not replace medical advice.",
+        "p4": "Your coach can stop giving you access at any time. Your account is still yours."
+      },
+      "privacy": {
+        "title": "Privacy policy",
+        "p1": "We store your name, your email, your language and unit preferences, and the training data you record.",
+        "p2": "Your coach sees your name and the data of the space you share. Your coach doesn't see your email.",
+        "p3": "We don't use tracking cookies and we don't send you marketing emails.",
+        "p4": "You can ask us to delete your account by writing to the support address. Deleting it from inside the app will come later."
+      }
     }
   }
 }

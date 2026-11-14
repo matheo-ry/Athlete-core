@@ -32,9 +32,11 @@ describe('unirse al crear la cuenta (PR 1.9b, D-037)', () => {
     await user.click(screen.getByRole('checkbox'));
     await user.click(screen.getByRole('button', { name: 'Create account' }));
 
-    // También al confirmar el email.
-    expect(await screen.findByText("You're joining Norte Strength.")).toBeVisible();
-    await user.type(screen.getByLabelText('Code'), FAKE_CODE);
+    // También al confirmar el email. (Primero se espera a esa pantalla: el
+    // mismo texto está en la de registro, que se está yendo.)
+    const code = await screen.findByLabelText('Code');
+    expect(screen.getByText("You're joining Norte Strength.")).toBeVisible();
+    await user.type(code, FAKE_CODE);
     await user.click(screen.getByRole('button', { name: 'Continue' }));
 
     expect(await screen.findByRole('heading', { name: 'Today' })).toBeInTheDocument();

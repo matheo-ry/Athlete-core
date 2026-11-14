@@ -22,7 +22,7 @@
 ## Dónde estamos
 
 - **Fase actual:** 1 — Cuentas, negocio del coach y unirse con código.
-- **Última tarea terminada:** diseño de la Fase 1 (2026-11-14), rama `docs/diseno-fase-1`: decisiones D-036 a D-062.
+- **Última tarea terminada:** diseño de la Fase 1 (2026-11-14), rama `docs/diseno-fase-1`: decisiones D-036 a D-063.
 - **En curso:** —
 - **Siguiente tarea:** Fase 1, PR 1.2 — Base de datos: cuentas y emails. Los 16 PR de la fase (1.2 a 1.17) están en orden, con sus criterios de aceptación, en `docs/PROMPTS.md` §5.
 
@@ -51,7 +51,7 @@
 
 Los 5 más recientes, el más nuevo arriba. El historial completo está en `docs/ESTADO.md`.
 
-- 2026-11-14 — Diseño de la Fase 1: decisiones D-036 a D-062 y lista de los 16 PR en `docs/PROMPTS.md` §5.
+- 2026-11-14 — Diseño de la Fase 1: decisiones D-036 a D-063, lista de los 16 PR en `docs/PROMPTS.md` §5 y ARQUITECTURA §7, §8 y §10 al día.
 - 2026-11-13 — PR 1.1: base de datos local, primera migración, tests de RLS en el CI, seed y tipos.
 - 2026-11-13 — Fase 0: esqueleto completo de la app (proyecto base, `core/` mínimo, carcasas, `_template`, calidad, tests, CI).
 - 2026-11-12 — Nombre decidido: ATHLETE CORE (DECISIONES D-021).
@@ -63,8 +63,8 @@ Los 5 más recientes, el más nuevo arriba. El historial completo está en `docs
 - Se usa **TypeScript 6**, no 7: el lint de TypeScript aún no admite la 7 (DECISIONES D-022).
 - `main` no está protegida en GitHub: hace falta GitHub Pro (GUIA-GIT §12).
 - La Fase 1 se lleva entera desde un mismo chat, con una rama y un PR por tarea (D-036).
-- `docs/ARQUITECTURA.md` §7, §8 y §10 aún describen el orden de entrada antiguo: manda D-037 hasta que el propietario apruebe el cambio propuesto en el PR del diseño.
-- Hace falta el dominio (P-01) antes del PR 1.17, y los textos legales definitivos antes del primer usuario real (D-060).
+- Supabase en plan gratuito (D-063): la sesión de 30 días la controla la propia app, y no hay copias de seguridad recuperables.
+- Hace falta el dominio (P-01) antes del PR 1.17. Antes del primer usuario real hacen falta los textos legales definitivos (D-060) y revisar el plan de Supabase (D-063).
 - El identificador de la app móvil (`app.athletecore.mobile`) es provisional: hay que fijarlo antes de publicar en las tiendas.
 
 ## Para saber más

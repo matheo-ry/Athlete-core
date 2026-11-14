@@ -23,7 +23,7 @@ export interface AuthService {
   /** Avisa de cada cambio. La primera llamada ('initial') dice si ya había sesión. */
   onChange(listener: AuthChangeListener): () => void;
   signInWithPassword(email: string, password: string): Promise<AuthResult>;
-  /** Cierra la sesión en este dispositivo. */
+  /** Cierra la sesión en este dispositivo. Funciona también sin conexión. */
   signOut(): Promise<void>;
 }
 

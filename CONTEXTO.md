@@ -71,7 +71,9 @@ Los 5 más recientes, el más nuevo arriba. El historial completo está en `docs
 - Se usa **TypeScript 6**, no 7: el lint de TypeScript aún no admite la 7 (DECISIONES D-022).
 - `main` no está protegida en GitHub: hace falta GitHub Pro (GUIA-GIT §12).
 - Un agente puede fusionar PR, pero solo con el visto bueno expreso del propietario para ese lote (D-068).
-- Supabase en plan gratuito (D-063): la sesión de 30 días la controla la propia app, no hay copias de seguridad recuperables y staging se pausa tras una semana sin uso. Resend gratuito: 100 emails al día.
+- Supabase en plan gratuito (D-063): la sesión de 30 días la controla la propia app, y no hay copias de seguridad recuperables. Resend gratuito: 100 emails al día.
+- **Si staging deja de responder** (la app contra staging no carga o no llegan emails), lo más probable es que Supabase lo haya pausado por pasar una semana sin uso: es normal en el plan gratuito. Se reanuda en el panel de Supabase con **Restore project**, tarda un par de minutos y no se pierde nada (`supabase/README.md`, paso 6).
+- El proyecto de staging de Supabase está conectado al repositorio de GitHub (comprobación "Supabase Preview", siempre omitida). No hace nada; se quita en el panel, Settings → Integrations.
 - El dominio es `athlete-core.com`, en Cloudflare. Antes del primer usuario real hacen falta los textos legales definitivos (D-060) y revisar el plan de Supabase (D-063).
 - El identificador de la app móvil (`app.athletecore.mobile`) es provisional: hay que fijarlo antes de publicar en las tiendas.
 

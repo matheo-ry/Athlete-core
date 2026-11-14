@@ -93,7 +93,8 @@ El diseño está en DECISIONES D-036 a D-067, y el detalle de cada PR, en `docs/
 ## Bloqueos y dudas abiertas
 
 - Resend en plan gratuito: 100 emails al día y 3.000 al mes (D-046). Hay que revisarlo antes de los pilotos.
-- Staging se pausa tras una semana sin uso (D-063): se reanuda desde el panel de Supabase (guía de staging, paso 6).
+- Staging se pausa tras una semana sin uso (D-063). Si deja de responder, es eso: se reanuda desde el panel de Supabase con **Restore project** (guía de staging, paso 6).
+- El proyecto de staging está conectado al repositorio de GitHub (comprobación "Supabase Preview", siempre omitida). No se sabe si fue a propósito; no hace nada. Se quita en el panel de Supabase, Settings → Integrations.
 - En local, repetir muchas veces seguidas los tests de extremo a extremo agota los topes de intentos y de emails por hora, y fallan con "Demasiados intentos". Se arregla con `npm run db:reset` (D-065).
 - Los textos legales de la Fase 1 son borradores: ningún usuario real puede registrarse hasta tener los definitivos (D-060).
 - Supabase en plan gratuito (D-063): sin copias de seguridad recuperables. Hay que revisar el plan antes del primer usuario real.

@@ -111,6 +111,13 @@ npx supabase config push
 
 2. Arranca la app contra staging con `npm run dev:staging` y ábrela en <http://localhost:5173>.
 3. Comprueba los criterios del PR 1.17: te registras con tu email de verdad y el código llega en menos de un minuto; el remitente es "ATHLETE CORE" con una dirección de tu dominio; no cae en spam en Gmail ni en Outlook; llega en español o en inglés según el idioma de la app; recuperar la contraseña funciona de principio a fin.
+4. Comprueba con el agente que el tope de intentos cuenta bien cada conexión (D-052). Sin sesión, escribe en la app un código de coach que no exista. Después, en el panel de Supabase, **SQL Editor**, ejecuta:
+
+   ```sql
+   select key, count(*) from private.rate_limit_hits group by key order by max(at) desc limit 5;
+   ```
+
+   En `key` tiene que salir la dirección IP pública de tu conexión. Si sale `unknown` o una dirección que no es la tuya, la app estaría contando a todo el mundo junto: el agente corrige `private.request_ip()` con una migración nueva, en este mismo PR.
 
 ### 6. Si staging se pausa
 

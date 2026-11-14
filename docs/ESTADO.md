@@ -26,7 +26,7 @@ PR abiertos, apilados y esperando revisión (D-064). Se fusionan en este orden:
 15. PR 1.14 — Selector de espacio y "Mis espacios" (rama `feat/selector-de-espacio`, PR 18).
 16. PR 1.15 — Marca: nombre, colores y modo (rama `feat/marca-del-coach`, PR 19).
 17. PR 1.16 — Marca: logo (rama `feat/logo-del-coach`, PR 20).
-18. PR 1.17 — Staging y emails reales: **preparado, en borrador** (rama `chore/staging`). Tiene la guía paso a paso, las variables de staging y `npm run dev:staging`. Se termina con el propietario siguiendo la guía.
+18. PR 1.17 — Staging y emails reales: **preparado, en borrador** (rama `chore/staging`, PR 21). Tiene la guía paso a paso, las variables de staging y `npm run dev:staging`. Se termina con el propietario siguiendo la guía.
 
 ## Siguiente
 
@@ -55,7 +55,7 @@ Además de lo previsto, a petición del propietario:
 
 ### Fase 1 — Cuentas, negocio del coach y unirse con código
 
-El diseño está en DECISIONES D-036 a D-064, y el detalle de cada PR, en `docs/PROMPTS.md` §5.
+El diseño está en DECISIONES D-036 a D-067, y el detalle de cada PR, en `docs/PROMPTS.md` §5.
 
 - [x] PR 1.1 — Supabase local, primera migración y tests de aislamiento en el CI (53 tests pgTAP; las tablas y funciones nuevas nacen sin permisos, D-032)
 - [x] Decidir cómo se entra y cómo funciona toda la fase (D-035 a D-064)
@@ -76,7 +76,7 @@ El diseño está en DECISIONES D-036 a D-064, y el detalle de cada PR, en `docs/
 - [x] PR 1.14 — Selector de espacio y "Mis espacios"
 - [x] PR 1.15 — Marca: nombre, colores y modo
 - [x] PR 1.16 — Marca: logo
-- [ ] PR 1.17 — Staging y emails reales (necesita el dominio, P-01)
+- [ ] PR 1.17 — Staging y emails reales: preparado en borrador (guía, variables y `npm run dev:staging`). Falta seguir la guía con el propietario, que necesita el dominio (P-01) y las cuentas de Supabase y Resend
 
 ### Fase 2 — Ejercicios y rutinas (coach)
 
@@ -111,7 +111,9 @@ El diseño está en DECISIONES D-036 a D-064, y el detalle de cada PR, en `docs/
 
 ## Bloqueos y dudas abiertas
 
-- Falta el dominio de la web (DECISIONES, P-01). No bloquea hasta el PR 1.17: sin dominio no se pueden enviar emails reales. Hasta entonces todo se prueba en local.
+- Falta el dominio de la web (DECISIONES, P-01). **Es lo único que bloquea terminar la Fase 1:** sin dominio no se pueden enviar emails reales, y el PR 1.17 no se puede acabar. Todo lo demás está hecho y se prueba en local.
+- En staging hay que comprobar que el tope de intentos cuenta bien la dirección IP de cada conexión (D-052). Está en el paso 5 de la guía de staging.
+- En local, repetir muchas veces seguidas los tests de extremo a extremo agota los topes de intentos y de emails por hora, y fallan con "Demasiados intentos". Se arregla con `npm run db:reset` (D-065).
 - Los textos legales de la Fase 1 son borradores: ningún usuario real puede registrarse hasta tener los definitivos (D-060).
 - Supabase en plan gratuito (D-063): sin copias de seguridad recuperables. Hay que revisar el plan antes del primer usuario real.
 - Proteger `main` (GUIA-GIT §12) no es posible todavía: en un repositorio privado GitHub lo exige de pago (GitHub Pro, gratis con el Student Developer Pack). Mientras tanto protege el hook local que bloquea subir a `main`. Ya está activo: solo "Squash merge" y borrar la rama al fusionar.

@@ -35,20 +35,18 @@
 
 ## Qué existe ya
 
-- **La app arranca** (`npm run db:start`, `npm run dev`; ver `README.md`) con los usuarios inventados del seed: entrar (`/login`), zona de coach (`/coach`), zona de cliente (`/client`), bienvenida (`/welcome`), unirse con código (`/join`, solo la pantalla) y 404. Inglés y español.
-- **`core/` mínimo:** variables de entorno validadas, i18n, componentes base, marca → variables de tema (con corrección de contraste), unidades kg/lb, fechas, logger, `defineModule`, flags y tenancy reales (PR 1.4 y 1.5) y el cliente de Supabase.
-- **Sesión real** (PR 1.3): `/login` con email y contraseña contra Supabase, sesión guardada en el dispositivo, guardas de `/coach` y `/client`, cerrar sesión y cierre a los 30 días sin uso. Hace falta `.env.local` (ver `.env.example`).
-- **Módulo `_template`** para copiar (`npm run new:module <nombre>`). Solo se registra en desarrollo.
-- **Base de datos local** (Supabase en Docker): tablas base, funciones de negocio, permisos y RLS en `supabase/migrations/`; 150 tests pgTAP (`npm run db:test`); 2 coaches y 6 clientes inventados (`supabase/seed.sql`, contraseña `password123`; ver `README.md`); tipos generados en `core/supabase/database.types.ts`.
-- **Invitaciones y bajas en la base de datos** (PR 1.8): vista previa sin sesión, unirse con un resultado por caso, tope de intentos, dar de baja y reactivar por función, `my_spaces`.
-- **Cuentas desde la app** (PR 1.6 y 1.7): registro con confirmación del email, entrar con un código por email y recuperar la contraseña.
-- **Unirse con código** (PR 1.9a y 1.9b): `/start`, `/join?code=…` con la vista previa del coach y "Unirme"; el código se recuerda mientras se crea la cuenta y el alta se hace sola al terminar.
+- **La app arranca** (`npm run db:start`, `npm run dev`; ver `README.md`) con los usuarios inventados del seed. Hace falta `.env.local` (ver `.env.example`). Inglés y español.
+- **`core/`:** variables de entorno validadas, i18n, componentes base, marca → variables de tema (con corrección de contraste), unidades kg/lb, fechas, logger, `defineModule`, sesión, tenancy y flags reales, y el cliente de Supabase.
+- **Cuentas** (PR 1.2, 1.3, 1.6 y 1.7): registro con el email confirmado por un código de 6 dígitos, entrar con contraseña o con un código, recuperar la contraseña, sesión guardada en el dispositivo y cierre a los 30 días sin uso. Los 4 emails van en dos idiomas (`supabase/templates/`; en local se ven en `http://127.0.0.1:54324`).
+- **Unirse con código** (PR 1.8 y 1.9): `/start`, `/join?code=…` con la vista previa del coach y "Unirme"; el código se recuerda mientras se crea la cuenta y el alta se hace sola al terminar. Con tope de intentos.
 - **Módulo `clients`** (PR 1.10 y 1.11): el primero del producto. Lista de clientes con las plazas del plan, el código de invitación y la ficha con dar de baja y reactivar.
 - **Crear negocio** (PR 1.12): desde "¿Eres coach?" o la bienvenida, con primeros pasos en el inicio del coach.
 - **Perfil y cuenta** (PR 1.13): "Perfil" del cliente y "Ajustes" del coach con nombre, idioma (guardado en la cuenta), kilos o libras, cambiar la contraseña, textos legales y cerrar sesión.
 - **Espacios** (PR 1.14): selector `/select` para quien tiene varios y "Mis espacios" en el perfil y en los ajustes (cambiar, añadir un coach con código, crear el negocio).
 - **Marca** (PR 1.15 y 1.16): el dueño cambia en Ajustes el nombre, el logo, los colores (paleta de 12 o uno propio) y el modo, con vista previa. Se guarda con `update_brand`, que valida cada dato (D-067); el logo va en Storage, en la carpeta del negocio, y solo su dueño puede tocarlo.
-- **Cuentas configuradas** (PR 1.2): confirmar el email con código de 6 dígitos, los 4 emails en dos idiomas (`supabase/templates/`, se ven en `http://127.0.0.1:54324`), `email_status` y tope de intentos.
+- **Base de datos local** (Supabase en Docker): 7 migraciones en `supabase/migrations/` (tablas, funciones de negocio, permisos, RLS y el espacio de logos); 150 tests pgTAP (`npm run db:test`); 2 coaches y 6 clientes inventados (`supabase/seed.sql`, contraseña `password123`); tipos generados en `core/supabase/database.types.ts`.
+- **Tests:** 374 unitarios (`npm run check`) y 43 de extremo a extremo contra Supabase local (`npm run test:e2e`).
+- **Módulo `_template`** para copiar (`npm run new:module <nombre>`). Solo se registra en desarrollo.
 - **Reglas que se comprueban solas:** ESLint con las fronteras de ARQUITECTURA §6, hooks de Git (formato, mensaje de commit, no subir `main`), CI con `npm run check`, y tests que vigilan las fronteras, los textos en dos idiomas y la forma fija de los módulos.
 
 ## Qué falta (lo próximo)

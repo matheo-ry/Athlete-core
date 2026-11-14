@@ -27,14 +27,18 @@ const RESTRICTED_IMPORT = 'no-restricted-imports';
 /** @type {ESLint} */
 let eslint;
 
-beforeAll(() => {
+beforeAll(async () => {
   eslint = new ESLint({
     cwd: rootDir,
     // Las reglas que necesitan los tipos de TypeScript solo funcionan con
     // archivos que existen en disco. Aquí se apagan: no son las que se prueban.
     overrideConfig: [tseslint.configs.disableTypeChecked],
   });
-});
+  // La primera pasada carga la configuración y los plugins, y con el resto de
+  // tests ejecutándose a la vez puede tardar más que el límite de un test. Se
+  // hace aquí, con más margen, para que ningún test falle solo por ser el primero.
+  await eslint.lintText('export {};\n', { filePath: path.join(rootDir, 'src/main.tsx') });
+}, 60_000);
 
 async function lintImport(filePath, importSource) {
   const code = `import { something } from '${importSource}';\nexport const fixture = something;\n`;

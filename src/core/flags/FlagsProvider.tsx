@@ -3,10 +3,10 @@ import { useMemo, useState } from 'react';
 import type { ReactNode } from 'react';
 
 import { useTenancy } from '../tenancy';
-import { ErrorState, Spinner } from '../ui';
 import { createSupabaseFlagsSource } from './api/supabase-flags-source';
 import { flagsFor } from './feature-flags';
 import { FlagsContext } from './flags-context';
+import type { FlagsStatus } from './flags-context';
 import type { FlagsSource } from './flags-source';
 
 interface FlagsProviderProps {
@@ -19,8 +19,9 @@ const NO_FEATURES: readonly string[] = [];
 
 /**
  * Qué funciones están activas para el tenant actual, leídas de la base de datos
- * (ARQUITECTURA §9). Sin tenant no hay ninguna. Recuerda: los flags son
- * empaquetado de producto, NO seguridad.
+ * (ARQUITECTURA §9). Sin tenant no hay ninguna. Nunca oculta las pantallas
+ * mientras carga: lo dice en `status`, y espera quien lo necesita (las zonas de
+ * coach y de cliente). Recuerda: los flags son empaquetado de producto, NO seguridad.
  */
 export function FlagsProvider({ children, source }: FlagsProviderProps) {
   const { tenant } = useTenancy();
@@ -33,14 +34,19 @@ export function FlagsProvider({ children, source }: FlagsProviderProps) {
     enabled: tenantId !== null,
   });
 
-  const keys = tenantId === null ? NO_FEATURES : (query.data ?? NO_FEATURES);
-  const value = useMemo(() => flagsFor(keys), [keys]);
-
+  let status: FlagsStatus = 'ready';
   if (tenantId !== null && query.isPending) {
-    return <Spinner className="min-h-dvh" />;
+    status = 'loading';
+  } else if (tenantId !== null && query.isError) {
+    status = 'error';
   }
-  if (tenantId !== null && query.isError) {
-    return <ErrorState className="min-h-dvh justify-center" onRetry={() => void query.refetch()} />;
-  }
+
+  const keys = tenantId === null ? NO_FEATURES : (query.data ?? NO_FEATURES);
+  const refetch = query.refetch;
+  const value = useMemo(
+    () => flagsFor(keys, status, () => void refetch()),
+    [keys, status, refetch],
+  );
+
   return <FlagsContext value={value}>{children}</FlagsContext>;
 }

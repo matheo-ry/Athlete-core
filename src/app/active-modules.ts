@@ -6,10 +6,10 @@ import type { ModuleManifest } from '@/core/modules';
  * (ARQUITECTURA §9) y, solo en desarrollo, los de ejemplo, que no tienen flag
  * en la base de datos.
  */
-export function filterActiveModules(
-  modules: readonly ModuleManifest[],
-  flags: FeatureFlags,
+export function filterActiveModules<T extends Pick<ModuleManifest, 'key'>>(
+  modules: readonly T[],
+  flags: Pick<FeatureFlags, 'isEnabled'>,
   developmentKeys: ReadonlySet<string>,
-): ModuleManifest[] {
+): T[] {
   return modules.filter((module) => developmentKeys.has(module.key) || flags.isEnabled(module.key));
 }

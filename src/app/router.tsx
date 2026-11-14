@@ -2,30 +2,38 @@ import { RouterProvider, createBrowserRouter } from 'react-router';
 import type { RouteObject } from 'react-router';
 
 import { RequireAuth, RequireGuest } from '@/core/auth';
-import { collectRoutes } from '@/core/modules';
 import type { ModuleManifest } from '@/core/modules';
 import { RequireProfile } from '@/core/tenancy';
 import type { Profile } from '@/core/tenancy';
 import { Spinner } from '@/core/ui';
+import { registeredModules } from '@/modules';
 
 import { ClientHomePage } from './client/ClientHomePage';
 import { ClientLayout } from './client/ClientLayout';
 import { CoachHomePage } from './coach/CoachHomePage';
 import { CoachLayout } from './coach/CoachLayout';
+import { ModuleGate } from './ModuleGate';
 import { JoinPage } from './public/JoinPage';
 import { LoginPage } from './public/LoginPage';
 import { NotFoundPage } from './public/NotFoundPage';
 import { PublicLayout } from './public/PublicLayout';
 import { WelcomePage } from './public/WelcomePage';
+import { RequireFlags } from './RequireFlags';
 import { RootLayout } from './RootLayout';
 import { RootRedirect } from './RootRedirect';
 import { RouteErrorPage } from './RouteErrorPage';
-import { useActiveModules } from './useActiveModules';
 
-type AppRouterInstance = ReturnType<typeof createBrowserRouter>;
-
+/**
+ * Las rutas de cada módulo, cada grupo detrás de su flag (`ModuleGate`). Se
+ * montan todas siempre y la guarda decide: así el router no depende de los flags.
+ */
 function moduleRoutes(modules: readonly ModuleManifest[], profile: Profile): RouteObject[] {
-  return collectRoutes(modules, profile).map(({ path, lazy }) => ({ path, lazy }));
+  return modules
+    .filter((module) => module.routes[profile].length > 0)
+    .map((module) => ({
+      element: <ModuleGate moduleKey={module.key} profile={profile} />,
+      children: module.routes[profile].map(({ path, lazy }) => ({ path, lazy })),
+    }));
 }
 
 /**
@@ -44,18 +52,24 @@ export function buildRoutes(modules: readonly ModuleManifest[]): RouteObject[] {
         { index: true, element: <RootRedirect /> },
         {
           // Sin sesión, las zonas de coach y de cliente llevan a /login. Con
-          // sesión, cada zona solo se abre con un espacio de su perfil (D-056).
+          // sesión, cada zona solo se abre con un espacio de su perfil (D-056)
+          // y espera a saber qué funciones tiene el negocio.
           element: <RequireAuth />,
           children: [
             {
               element: <RequireProfile profile="coach" />,
               children: [
                 {
-                  path: 'coach',
-                  element: <CoachLayout />,
+                  element: <RequireFlags />,
                   children: [
-                    { index: true, element: <CoachHomePage /> },
-                    ...moduleRoutes(modules, 'coach'),
+                    {
+                      path: 'coach',
+                      element: <CoachLayout />,
+                      children: [
+                        { index: true, element: <CoachHomePage /> },
+                        ...moduleRoutes(modules, 'coach'),
+                      ],
+                    },
                   ],
                 },
               ],
@@ -64,11 +78,16 @@ export function buildRoutes(modules: readonly ModuleManifest[]): RouteObject[] {
               element: <RequireProfile profile="client" />,
               children: [
                 {
-                  path: 'client',
-                  element: <ClientLayout />,
+                  element: <RequireFlags />,
                   children: [
-                    { index: true, element: <ClientHomePage /> },
-                    ...moduleRoutes(modules, 'client'),
+                    {
+                      path: 'client',
+                      element: <ClientLayout />,
+                      children: [
+                        { index: true, element: <ClientHomePage /> },
+                        ...moduleRoutes(modules, 'client'),
+                      ],
+                    },
                   ],
                 },
               ],
@@ -99,21 +118,11 @@ export function buildRoutes(modules: readonly ModuleManifest[]): RouteObject[] {
   ];
 }
 
-// Un router por cada lista de módulos activos. Crear un router lo deja escuchando
-// al navegador, así que no debe crearse dos veces para la misma lista (React
-// repite los cálculos en desarrollo). Con esta caché se crea una sola vez.
-const routers = new WeakMap<readonly ModuleManifest[], AppRouterInstance>();
-
-function getRouter(modules: readonly ModuleManifest[]): AppRouterInstance {
-  let router = routers.get(modules);
-  if (router === undefined) {
-    router = createBrowserRouter(buildRoutes(modules));
-    routers.set(modules, router);
-  }
-  return router;
-}
+// Crear un router lo deja escuchando al navegador, así que se crea UNA sola vez
+// (React repite los cálculos en desarrollo). Las rutas no dependen de los flags.
+let browserRouter: ReturnType<typeof createBrowserRouter> | null = null;
 
 export function AppRouter() {
-  const modules = useActiveModules();
-  return <RouterProvider router={getRouter(modules)} />;
+  browserRouter ??= createBrowserRouter(buildRoutes(registeredModules));
+  return <RouterProvider router={browserRouter} />;
 }

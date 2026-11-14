@@ -60,16 +60,16 @@ select is(public.email_status('  FULL@Example.TEST '), 'confirmed', 'no importan
 select is(public.email_status(''), 'none', 'un email vacío no tiene cuenta');
 select is(public.email_status(null), 'none', 'sin email, tampoco');
 
--- ----- Tope: 20 comprobaciones cada 10 minutos por conexión -----
--- Ya van 6 desde 203.0.113.10. Se hacen 14 más (20 en total)…
+-- ----- Tope: 60 comprobaciones cada 10 minutos por conexión (D-065) -----
+-- Ya van 6 desde 203.0.113.10. Se hacen 54 más (60 en total)…
 select is(
-  (select count(*)::int from generate_series(1, 14) g where public.email_status('x' || g || '@example.test') = 'none'),
-  14, 'hasta 20 comprobaciones por conexión funcionan'
+  (select count(*)::int from generate_series(1, 54) g where public.email_status('x' || g || '@example.test') = 'none'),
+  54, 'hasta 60 comprobaciones por conexión funcionan (el wifi de un gimnasio, D-065)'
 );
 -- …y la siguiente se bloquea.
 select throws_ok(
   $$ select public.email_status('full@example.test') $$,
-  'P0001', 'rate_limited', 'la comprobación 21 desde la misma conexión se bloquea'
+  'P0001', 'rate_limited', 'la comprobación 61 desde la misma conexión se bloquea'
 );
 reset role;
 

@@ -49,23 +49,23 @@ select is(
 -- ----- anon no puede nada -----
 set local role anon;
 select throws_ok('select 1 from public.tenants', '42501', null, '02: anon no puede leer tenants');
-select throws_ok($$ select public.create_tenant('X') $$, '42501', null, '03: anon no puede crear un negocio');
-select throws_ok($$ select public.preview_invite('ABCDEF12') $$, '42501', null, '04: anon no puede probar códigos');
+select throws_ok($$ select public.create_tenant('X', 'v1') $$, '42501', null, '03: anon no puede crear un negocio');
+select is(public.preview_invite('ABCDEFG2') ->> 'status', 'invalid_code', '04: anon puede pedir la vista previa de un código (D-051), y uno falso no vale');
 reset role;
 
 -- ----- A y B crean su negocio -----
 set local role authenticated;
 set local request.jwt.claims to '{"sub":"00000000-0000-4000-8000-00000000000a","role":"authenticated"}';
-select set_config('t.ta', public.create_tenant('Coach A')::text, true);
+select set_config('t.ta', public.create_tenant('Coach A', 'test-terms')::text, true);
 select set_config('t.code_a', (select code from public.tenant_invites where is_active), true);
 select throws_ok(
-  $$ select public.create_tenant('Otro') $$,
+  $$ select public.create_tenant('Otro', 'test-terms') $$,
   'P0001', 'already_owner',
   '05: un usuario no puede ser dueño de dos negocios'
 );
 
 set local request.jwt.claims to '{"sub":"00000000-0000-4000-8000-00000000000b","role":"authenticated"}';
-select set_config('t.tb', public.create_tenant('Coach B')::text, true);
+select set_config('t.tb', public.create_tenant('Coach B', 'test-terms')::text, true);
 
 -- ----- B no ve nada de A -----
 select is((select count(*)::int from public.tenants), 1, '06a: B solo ve su tenant');
@@ -95,20 +95,20 @@ select is(
   'Coach A',
   '08b: preview_invite muestra el coach del código (sin distinguir mayúsculas)'
 );
-select throws_ok(
-  $$ select public.join_tenant_with_code('ZZZZZZZZ') $$,
-  'P0001', 'invalid_code',
+select is(
+  public.join_tenant_with_code('ZZZZZZZZ') ->> 'status',
+  'invalid_code',
   '08c: un código falso no se acepta'
 );
 select is(
   public.join_tenant_with_code(current_setting('t.code_a')),
-  current_setting('t.ta')::uuid,
+  jsonb_build_object('status', 'joined', 'tenant_id', current_setting('t.ta')::uuid),
   '08d: unirse con el código devuelve el tenant del coach'
 );
 select is(
-  public.join_tenant_with_code(current_setting('t.code_a')),
-  current_setting('t.ta')::uuid,
-  '08e: repetir el código no da error'
+  public.join_tenant_with_code(current_setting('t.code_a')) ->> 'status',
+  'already_member',
+  '08e: repetir el código no da error: ya era cliente'
 );
 select is((select count(*)::int from public.tenants), 1, '08f: tras unirse, C ve el tenant de su coach');
 select is((select count(*)::int from public.tenant_members), 1, '08g: C solo ve su propia fila de miembro');
@@ -147,38 +147,40 @@ select public.join_tenant_with_code(current_setting('t.code_a'));
 set local request.jwt.claims to '{"sub":"00000000-0000-4000-8000-00000000000e","role":"authenticated"}';
 select public.join_tenant_with_code(current_setting('t.code_a'));
 set local request.jwt.claims to '{"sub":"00000000-0000-4000-8000-00000000000f","role":"authenticated"}';
-select throws_ok(
-  $$ select public.join_tenant_with_code(current_setting('t.code_a')) $$,
-  'P0001', 'plan_limit_reached',
+select is(
+  public.join_tenant_with_code(current_setting('t.code_a')) ->> 'status',
+  'plan_full',
   '14: se respeta el límite de clientes del plan'
 );
 
--- ----- Archivar a un cliente -----
+-- ----- Dar de baja a un cliente (D-055: solo con archive_client) -----
 set local request.jwt.claims to '{"sub":"00000000-0000-4000-8000-00000000000b","role":"authenticated"}';
-select is(
-  pg_temp.affected_rows($$ update public.tenant_members set status = 'archived' where user_id = '00000000-0000-4000-8000-00000000000c' $$),
-  0, '20a: un coach no puede archivar a un cliente de otro'
+select throws_ok(
+  $$ select public.archive_client(current_setting('t.ta')::uuid, '00000000-0000-4000-8000-00000000000c') $$,
+  'P0001', 'not_allowed',
+  '20a: un coach no puede dar de baja a un cliente de otro'
 );
 set local request.jwt.claims to '{"sub":"00000000-0000-4000-8000-00000000000a","role":"authenticated"}';
-select is(
-  pg_temp.affected_rows($$ update public.tenant_members set status = 'archived' where user_id = '00000000-0000-4000-8000-00000000000c' $$),
-  1, '20b: el coach archiva a su cliente'
+select lives_ok(
+  $$ select public.archive_client(current_setting('t.ta')::uuid, '00000000-0000-4000-8000-00000000000c') $$,
+  '20b: el coach da de baja a su cliente'
 );
-select is(
-  pg_temp.affected_rows($$ update public.tenant_members set status = 'archived' where user_id = auth.uid() $$),
-  0, '20c: el dueño no puede archivarse a sí mismo'
+select throws_ok(
+  $$ select public.archive_client(current_setting('t.ta')::uuid, auth.uid()) $$,
+  'P0001', 'not_found',
+  '20c: el dueño no puede darse de baja a sí mismo'
 );
 set local request.jwt.claims to '{"sub":"00000000-0000-4000-8000-00000000000c","role":"authenticated"}';
-select is((select count(*)::int from public.tenants), 0, '20d: un cliente archivado deja de ver el tenant');
+select is((select count(*)::int from public.tenants), 0, '20d: un cliente dado de baja deja de ver el tenant');
 
--- Con el hueco libre entra F; C ya no cabe al volver.
+-- Con el hueco libre entra F; C ya no vuelve a entrar solo con el código.
 set local request.jwt.claims to '{"sub":"00000000-0000-4000-8000-00000000000f","role":"authenticated"}';
 select public.join_tenant_with_code(current_setting('t.code_a'));
 set local request.jwt.claims to '{"sub":"00000000-0000-4000-8000-00000000000c","role":"authenticated"}';
-select throws_ok(
-  $$ select public.join_tenant_with_code(current_setting('t.code_a')) $$,
-  'P0001', 'plan_limit_reached',
-  '21: archivar libera un hueco y reactivar respeta el límite'
+select is(
+  public.join_tenant_with_code(current_setting('t.code_a')) ->> 'status',
+  'archived',
+  '21: dar de baja libera un hueco, y el cliente dado de baja no vuelve con el código (D-055)'
 );
 
 -- ----- Regenerar el código -----
@@ -186,8 +188,8 @@ set local request.jwt.claims to '{"sub":"00000000-0000-4000-8000-00000000000a","
 select set_config('t.code_a2', public.regenerate_invite_code(current_setting('t.ta')::uuid), true);
 set local request.jwt.claims to '{"sub":"00000000-0000-4000-8000-00000000000c","role":"authenticated"}';
 select ok(
-  public.preview_invite(current_setting('t.code_a')) is null
-    and public.preview_invite(current_setting('t.code_a2')) is not null,
+  public.preview_invite(current_setting('t.code_a')) ->> 'status' = 'invalid_code'
+    and public.preview_invite(current_setting('t.code_a2')) ->> 'status' = 'ok',
   '22: al regenerar, el código antiguo deja de valer y el nuevo vale'
 );
 

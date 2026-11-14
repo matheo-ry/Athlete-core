@@ -58,10 +58,13 @@ Abre <http://localhost:5173> y entra con uno de los usuarios inventados de `supa
 
 | Usuario | Qué es |
 |---|---|
-| `coach.iron@example.com` | Coach de Iron Lab (rojo, fondo oscuro) |
-| `coach.norte@example.com` | Coach de Norte Strength (verde azulado, fondo claro) |
+| `coach.iron@example.com` | Coach de Iron Lab (rojo, fondo oscuro, plan lleno: 3 de 3). Además, clienta de Norte Strength |
+| `coach.norte@example.com` | Coach de Norte Strength (verde azulado, fondo claro, plan de 10) |
 | `ana@`, `bruno@`, `carla@example.com` | Clientes de Iron Lab |
 | `diego@`, `elena@example.com` | Clientes de Norte Strength |
+| `fran@example.com` | Dado de baja de Norte Strength |
+
+Códigos de invitación: `IRONLAB1` (Iron Lab) y `NORTE001` (Norte Strength).
 
 Los emails que manda la app no salen de tu ordenador: se ven en <http://127.0.0.1:54324>. La base de datos se ve en <http://127.0.0.1:54323>.
 

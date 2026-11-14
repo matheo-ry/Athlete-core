@@ -2,17 +2,19 @@
 -- Datos inventados para desarrollo en local (ARQUITECTURA §4).
 -- Se cargan solos con "npm run db:reset". Nunca datos reales.
 --
--- 2 coaches y 5 clientes:
---   * Iron Lab (coach.iron@example.com), código IRONLAB1:
---     clientes ana, bruno y carla.
---   * Norte Strength (coach.norte@example.com), código NORTE001:
---     clientes diego y elena.
+-- 2 coaches y 6 clientes:
+--   * Iron Lab (coach.iron@example.com), código IRONLAB1, plan free (3):
+--     clientes ana, bruno y carla. El plan está LLENO.
+--   * Norte Strength (coach.norte@example.com), código NORTE001, plan starter (10):
+--     clientes diego, elena y la propia coach de Iron Lab (coach y clienta a
+--     la vez, D-048). fran está DADO DE BAJA (D-055).
 --
 -- Todos entran con la contraseña "password123". Solo existe en la base de
 -- datos local: no es un secreto.
 --
 -- Los negocios se crean con las mismas funciones que usará la app
--- (create_tenant, join_tenant_with_code): así el seed también las prueba.
+-- (create_tenant, join_tenant_with_code, archive_client): así el seed también
+-- las prueba.
 -- =====================================================================
 
 -- Usuarios. Supabase Auth necesita la fila de auth.users y su identidad de
@@ -42,7 +44,8 @@ from (values
   ('20000000-0000-4000-8000-000000000002'::uuid, 'bruno@example.com',       'Bruno Prueba',    'en', 'lb'),
   ('20000000-0000-4000-8000-000000000003'::uuid, 'carla@example.com',       'Carla Demo',      'es', 'kg'),
   ('20000000-0000-4000-8000-000000000004'::uuid, 'diego@example.com',       'Diego Ficticio',  'es', 'kg'),
-  ('20000000-0000-4000-8000-000000000005'::uuid, 'elena@example.com',       'Elena Inventada', 'en', 'kg')
+  ('20000000-0000-4000-8000-000000000005'::uuid, 'elena@example.com',       'Elena Inventada', 'en', 'kg'),
+  ('20000000-0000-4000-8000-000000000006'::uuid, 'fran@example.com',        'Fran Ejemplo',    'es', 'kg')
 ) as u (id, email, display_name, locale, weight_unit);
 
 insert into auth.identities (
@@ -63,11 +66,11 @@ declare
   v_user  uuid;
 begin
   perform set_config('request.jwt.claims', '{"sub":"10000000-0000-4000-8000-000000000001"}', true);
-  v_iron := public.create_tenant('Iron Lab');
+  v_iron := public.create_tenant('Iron Lab', 'draft-2026-11');
   perform set_config('request.jwt.claims', '{"sub":"10000000-0000-4000-8000-000000000002"}', true);
-  v_norte := public.create_tenant('Norte Strength');
+  v_norte := public.create_tenant('Norte Strength', 'draft-2026-11');
 
-  -- La misma marca que los datos de ejemplo de la Fase 0 (core/tenancy).
+  -- La misma marca que los datos de prueba de los tests de la app.
   update public.tenants set branding = jsonb_build_object(
     'appName', 'Iron Lab', 'logoPath', null,
     'colors', jsonb_build_object('primary', '#DC2626', 'accent', '#F59E0B'), 'mode', 'dark'
@@ -77,10 +80,15 @@ begin
     'colors', jsonb_build_object('primary', '#0F766E', 'accent', '#B45309'), 'mode', 'light'
   ) where id = v_norte;
 
+  -- Norte Strength tiene un plan con más plazas (el plan lo cambia el
+  -- propietario a mano hasta la Fase 5, D-020).
+  update public.tenants set plan = 'starter' where id = v_norte;
+
   -- Códigos fijos, para poder escribirlos a mano en local.
   update public.tenant_invites set code = 'IRONLAB1' where tenant_id = v_iron;
   update public.tenant_invites set code = 'NORTE001' where tenant_id = v_norte;
 
+  -- Iron Lab: 3 clientes, el plan free lleno.
   foreach v_user in array array[
     '20000000-0000-4000-8000-000000000001',
     '20000000-0000-4000-8000-000000000002',
@@ -90,13 +98,20 @@ begin
     perform public.join_tenant_with_code('IRONLAB1');
   end loop;
 
+  -- Norte Strength: diego, elena, la coach de Iron Lab y fran.
   foreach v_user in array array[
     '20000000-0000-4000-8000-000000000004',
-    '20000000-0000-4000-8000-000000000005'
+    '20000000-0000-4000-8000-000000000005',
+    '10000000-0000-4000-8000-000000000001',
+    '20000000-0000-4000-8000-000000000006'
   ]::uuid[] loop
     perform set_config('request.jwt.claims', jsonb_build_object('sub', v_user)::text, true);
     perform public.join_tenant_with_code('NORTE001');
   end loop;
+
+  -- La coach de Norte da de baja a fran.
+  perform set_config('request.jwt.claims', '{"sub":"10000000-0000-4000-8000-000000000002"}', true);
+  perform public.archive_client(v_norte, '20000000-0000-4000-8000-000000000006');
 
   perform set_config('request.jwt.claims', '', true);
 end

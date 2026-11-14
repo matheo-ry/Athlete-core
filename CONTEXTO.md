@@ -22,9 +22,9 @@
 ## Dónde estamos
 
 - **Fase actual:** 1 — Cuentas, negocio del coach y unirse con código.
-- **Última tarea terminada:** PR 1.7 — Registro y verificación del email (2026-11-14), rama `feat/registro`.
+- **Última tarea terminada:** PR 1.8 — Base de datos: invitaciones, bajas y negocio (2026-11-14), rama `db/invitaciones-y-bajas`.
 - **En curso:** PR abiertos y apilados, esperando revisión del propietario (D-064). La lista, en `docs/ESTADO.md`.
-- **Siguiente tarea:** Fase 1, PR 1.8 — Base de datos: invitaciones, bajas y negocio. Los 16 PR de la fase (1.2 a 1.17) están en orden, con sus criterios de aceptación, en `docs/PROMPTS.md` §5.
+- **Siguiente tarea:** Fase 1, PR 1.9 — Primera pantalla y unirse con código. Los 16 PR de la fase (1.2 a 1.17) están en orden, con sus criterios de aceptación, en `docs/PROMPTS.md` §5.
 
 ## Cómo funcionará la Fase 1 (ya decidido)
 
@@ -39,7 +39,8 @@
 - **`core/` mínimo:** variables de entorno validadas, i18n, componentes base, marca → variables de tema (con corrección de contraste), unidades kg/lb, fechas, logger, `defineModule`, flags y tenancy reales (PR 1.4 y 1.5) y el cliente de Supabase.
 - **Sesión real** (PR 1.3): `/login` con email y contraseña contra Supabase, sesión guardada en el dispositivo, guardas de `/coach` y `/client`, cerrar sesión y cierre a los 30 días sin uso. Hace falta `.env.local` (ver `.env.example`).
 - **Módulo `_template`** para copiar (`npm run new:module <nombre>`). Solo se registra en desarrollo.
-- **Base de datos local** (Supabase en Docker): tablas base, funciones de negocio, permisos y RLS en `supabase/migrations/`; 77 tests pgTAP (`npm run db:test`); 2 coaches y 5 clientes inventados (`supabase/seed.sql`, contraseña `password123`); tipos generados en `core/supabase/database.types.ts`.
+- **Base de datos local** (Supabase en Docker): tablas base, funciones de negocio, permisos y RLS en `supabase/migrations/`; 117 tests pgTAP (`npm run db:test`); 2 coaches y 6 clientes inventados (`supabase/seed.sql`, contraseña `password123`; ver `README.md`); tipos generados en `core/supabase/database.types.ts`.
+- **Invitaciones y bajas en la base de datos** (PR 1.8): vista previa sin sesión, unirse con un resultado por caso, tope de intentos, dar de baja y reactivar por función, `my_spaces`.
 - **Cuentas configuradas** (PR 1.2): confirmar el email con código de 6 dígitos, los 4 emails en dos idiomas (`supabase/templates/`, se ven en `http://127.0.0.1:54324`), `email_status` y tope de intentos.
 - **Reglas que se comprueban solas:** ESLint con las fronteras de ARQUITECTURA §6, hooks de Git (formato, mensaje de commit, no subir `main`), CI con `npm run check`, y tests que vigilan las fronteras, los textos en dos idiomas y la forma fija de los módulos.
 
@@ -52,10 +53,10 @@
 
 Los 5 más recientes, el más nuevo arriba. El historial completo está en `docs/ESTADO.md`.
 
+- 2026-11-14 — PR 1.8: invitaciones, bajas y crear negocio en la base de datos.
 - 2026-11-14 — PR 1.7: registro y confirmar el email; vale siempre la última contraseña.
 - 2026-11-14 — PR 1.6: recuperar la contraseña y entrar con un código por email.
 - 2026-11-14 — PR 1.5: flags leídos de la base de datos; el router se crea una sola vez.
-- 2026-11-14 — PR 1.4: tenant, rol y marca reales; guardas por rol; adiós a los datos de ejemplo de tenancy y a la barra de desarrollo.
 - 2026-11-14 — Diseño de la Fase 1: decisiones D-036 a D-064, lista de los 16 PR en `docs/PROMPTS.md` §5 y ARQUITECTURA §7, §8 y §10 al día.
 
 ## A tener en cuenta ahora

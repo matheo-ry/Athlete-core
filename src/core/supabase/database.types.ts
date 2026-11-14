@@ -162,6 +162,8 @@ export type Database = {
           created_at: string;
           display_name: string;
           locale: string;
+          terms_accepted_at: string | null;
+          terms_version: string | null;
           user_id: string;
           weight_unit: string;
         };
@@ -170,6 +172,8 @@ export type Database = {
           created_at?: string;
           display_name?: string;
           locale?: string;
+          terms_accepted_at?: string | null;
+          terms_version?: string | null;
           user_id: string;
           weight_unit?: string;
         };
@@ -177,6 +181,8 @@ export type Database = {
           created_at?: string;
           display_name?: string;
           locale?: string;
+          terms_accepted_at?: string | null;
+          terms_version?: string | null;
           user_id?: string;
           weight_unit?: string;
         };
@@ -375,7 +381,9 @@ export type Database = {
       };
     };
     Functions: {
+      accept_terms: { Args: { p_version: string }; Returns: undefined };
       create_tenant: { Args: { p_name: string }; Returns: string };
+      email_status: { Args: { p_email: string }; Returns: string };
       generate_invite_code: { Args: Record<PropertyKey, never>; Returns: string };
       is_member: { Args: { p_roles?: string[]; p_tenant: string }; Returns: boolean };
       join_tenant_with_code: { Args: { p_code: string }; Returns: string };

@@ -16,7 +16,10 @@
 -- =====================================================================
 
 -- Usuarios. Supabase Auth necesita la fila de auth.users y su identidad de
--- email para poder entrar con contraseña.
+-- email para poder entrar con contraseña. Los datos de la cuenta
+-- (raw_user_meta_data) son los mismos que envía la app al registrarse: el
+-- trigger on_auth_user_created crea el perfil con ellos, y los emails
+-- salen en el idioma de cada uno (D-044).
 insert into auth.users (
   instance_id, id, aud, role, email, encrypted_password, email_confirmed_at,
   raw_app_meta_data, raw_user_meta_data, created_at, updated_at,
@@ -25,17 +28,22 @@ insert into auth.users (
 select
   '00000000-0000-0000-0000-000000000000', u.id, 'authenticated', 'authenticated', u.email,
   extensions.crypt('password123', extensions.gen_salt('bf')), now(),
-  '{"provider":"email","providers":["email"]}', '{}', now(), now(),
+  '{"provider":"email","providers":["email"]}',
+  jsonb_build_object(
+    'display_name', u.display_name, 'locale', u.locale, 'weight_unit', u.weight_unit,
+    'terms_version', 'draft-2026-11'
+  ),
+  now(), now(),
   '', '', '', ''
 from (values
-  ('10000000-0000-4000-8000-000000000001'::uuid, 'coach.iron@example.com'),
-  ('10000000-0000-4000-8000-000000000002'::uuid, 'coach.norte@example.com'),
-  ('20000000-0000-4000-8000-000000000001'::uuid, 'ana@example.com'),
-  ('20000000-0000-4000-8000-000000000002'::uuid, 'bruno@example.com'),
-  ('20000000-0000-4000-8000-000000000003'::uuid, 'carla@example.com'),
-  ('20000000-0000-4000-8000-000000000004'::uuid, 'diego@example.com'),
-  ('20000000-0000-4000-8000-000000000005'::uuid, 'elena@example.com')
-) as u (id, email);
+  ('10000000-0000-4000-8000-000000000001'::uuid, 'coach.iron@example.com',  'Iris Hierro',     'en', 'lb'),
+  ('10000000-0000-4000-8000-000000000002'::uuid, 'coach.norte@example.com', 'Nora Norte',      'es', 'kg'),
+  ('20000000-0000-4000-8000-000000000001'::uuid, 'ana@example.com',         'Ana Ejemplo',     'es', 'kg'),
+  ('20000000-0000-4000-8000-000000000002'::uuid, 'bruno@example.com',       'Bruno Prueba',    'en', 'lb'),
+  ('20000000-0000-4000-8000-000000000003'::uuid, 'carla@example.com',       'Carla Demo',      'es', 'kg'),
+  ('20000000-0000-4000-8000-000000000004'::uuid, 'diego@example.com',       'Diego Ficticio',  'es', 'kg'),
+  ('20000000-0000-4000-8000-000000000005'::uuid, 'elena@example.com',       'Elena Inventada', 'en', 'kg')
+) as u (id, email, display_name, locale, weight_unit);
 
 insert into auth.identities (
   provider_id, user_id, identity_data, provider, last_sign_in_at, created_at, updated_at
@@ -46,20 +54,6 @@ select
   'email', now(), now(), now()
 from auth.users u
 where u.email like '%@example.com';
-
--- Perfiles: los crea el trigger al dar de alta el usuario; aquí se rellenan.
-update public.profiles p
-set display_name = v.display_name, locale = v.locale, weight_unit = v.weight_unit
-from (values
-  ('10000000-0000-4000-8000-000000000001'::uuid, 'Iris Hierro',     'en', 'lb'),
-  ('10000000-0000-4000-8000-000000000002'::uuid, 'Nora Norte',      'es', 'kg'),
-  ('20000000-0000-4000-8000-000000000001'::uuid, 'Ana Ejemplo',     'es', 'kg'),
-  ('20000000-0000-4000-8000-000000000002'::uuid, 'Bruno Prueba',    'en', 'lb'),
-  ('20000000-0000-4000-8000-000000000003'::uuid, 'Carla Demo',      'es', 'kg'),
-  ('20000000-0000-4000-8000-000000000004'::uuid, 'Diego Ficticio',  'es', 'kg'),
-  ('20000000-0000-4000-8000-000000000005'::uuid, 'Elena Inventada', 'en', 'kg')
-) as v (user_id, display_name, locale, weight_unit)
-where p.user_id = v.user_id;
 
 -- Negocios y clientes, actuando como cada usuario.
 do $$

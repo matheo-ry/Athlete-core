@@ -38,26 +38,34 @@ App para coaches de gimnasio y sus clientes. Una sola app (web, iOS y Android): 
 
 ### Primera vez
 
+Con **Docker Desktop abierto**:
+
 ```bash
 git clone https://github.com/TU-USUARIO/athlete-core.git
 cd athlete-core
 npm install        # instala las dependencias y las comprobaciones automáticas de Git
+npm run db:start   # arranca la base de datos local (la primera vez tarda unos minutos)
+npm run db:reset   # la rellena con los usuarios inventados
 npm run dev        # arranca la app
 ```
 
-Abre <http://localhost:5173>. No hace falta configurar nada más: en esta fase la app funciona con datos de ejemplo y sin base de datos.
-
-- **Variables de entorno (opcional por ahora):** copia `.env.example` como `.env.local` y rellénalo. `.env.local` nunca se sube a Git. Serán obligatorias a partir de la Fase 1.
+- **Variables de entorno (obligatorias):** copia `.env.example` como `.env.local` y pon los valores de `npx supabase status` (`API_URL` y `PUBLISHABLE_KEY`). `.env.local` nunca se sube a Git.
 - **Carpeta del proyecto:** no la pongas dentro de OneDrive, Dropbox o similares. Sincronizar `node_modules` da errores al instalar.
 
 ### Qué vas a ver
 
-Arriba aparece una barra de **herramientas de desarrollo** (solo existe en desarrollo, no en la app publicada):
+Abre <http://localhost:5173> y entra con uno de los usuarios inventados de `supabase/seed.sql`. Todos tienen la contraseña `password123`:
 
-- **Ver como:** cambia entre la zona del **coach** (`/coach`) y la del **cliente** (`/client`).
-- **Marca:** cambia entre dos coaches de ejemplo, cada uno con sus colores, o elige **Sin coach** para ver la bienvenida que verá un usuario nuevo, con la marca de ATHLETE CORE.
+| Usuario | Qué es |
+|---|---|
+| `coach.iron@example.com` | Coach de Iron Lab (rojo, fondo oscuro) |
+| `coach.norte@example.com` | Coach de Norte Strength (verde azulado, fondo claro) |
+| `ana@`, `bruno@`, `carla@example.com` | Clientes de Iron Lab |
+| `diego@`, `elena@example.com` | Clientes de Norte Strength |
 
-El idioma (inglés o español) se cambia con los botones **English / Español** de cada pantalla. La entrada de menú **Template** es el módulo de ejemplo: tampoco llega a la app publicada.
+Los emails que manda la app no salen de tu ordenador: se ven en <http://127.0.0.1:54324>. La base de datos se ve en <http://127.0.0.1:54323>.
+
+El idioma (inglés o español) se cambia con los botones **English / Español** de cada pantalla. La entrada de menú **Template** es el módulo de ejemplo: no llega a la app publicada.
 
 ### Comandos del día a día
 

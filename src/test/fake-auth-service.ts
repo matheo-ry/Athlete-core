@@ -5,6 +5,7 @@ import type {
   AuthService,
   AuthUser,
   SignupProfile,
+  UserProfile,
 } from '@/core/auth';
 
 // Un AuthService en memoria para los tests: sin Supabase ni red. Imita lo que
@@ -38,9 +39,14 @@ interface FakeAuthOptions {
   accounts?: readonly FakeAccount[];
   /** Email de la cuenta con la sesión ya abierta al arrancar, o `null`. */
   signedInAs?: string | null;
+  /** Cómo entró la sesión abierta al arrancar: con contraseña o con un código. */
+  signedInWith?: 'password' | 'code';
+  /** Perfiles de partida, por email. Sin perfil: el nombre del email, inglés y kg. */
+  profiles?: Readonly<Record<string, Partial<UserProfile>>>;
 }
 
 export interface FakeAuthService extends AuthService {
+  profileOf(email: string): UserProfile;
   /** Simula que la sesión se pierde sin que el usuario la cierre. */
   expireSession(): void;
   readonly currentUser: AuthUser | null;
@@ -66,13 +72,30 @@ function userFor(email: string): AuthUser {
 export function createFakeAuthService({
   accounts = FAKE_ACCOUNTS,
   signedInAs = 'coach@example.test',
+  signedInWith = 'password',
+  profiles: initialProfiles = {},
 }: FakeAuthOptions = {}): FakeAuthService {
   const store = new Map(accounts.map((account) => [account.email, { ...account }]));
   let current: AuthUser | null = signedInAs === null ? null : userFor(signedInAs);
+  let signInMethod: 'password' | 'code' = signedInWith;
   const listeners = new Set<AuthChangeListener>();
   const sentCodes: { email: string; kind: FakeCodeKind }[] = [];
   const completedProfiles = new Map<string, SignupProfile>();
+  const profiles = new Map<string, UserProfile>();
   let otherSessionsClosed = 0;
+
+  const profileOf = (email: string): UserProfile => {
+    const stored = profiles.get(email);
+    if (stored !== undefined) {
+      return stored;
+    }
+    return {
+      displayName: email.split('@')[0] ?? email,
+      locale: 'en',
+      weightUnit: 'kg',
+      ...initialProfiles[email],
+    };
+  };
 
   const notify = (event: AuthChangeEvent) => {
     for (const listener of listeners) {
@@ -99,6 +122,7 @@ export function createFakeAuthService({
     }
     // Confirmar el código confirma también el email, como en Supabase.
     account.confirmed = true;
+    signInMethod = 'code';
     signInAs(account.email);
     return Promise.resolve(OK);
   };
@@ -115,6 +139,26 @@ export function createFakeAuthService({
     },
     get completedProfiles() {
       return completedProfiles;
+    },
+    profileOf,
+
+    getProfile() {
+      if (current === null) {
+        return Promise.reject(new Error('not signed in'));
+      }
+      return Promise.resolve(profileOf(current.email));
+    },
+
+    updateProfile(patch) {
+      if (current === null) {
+        return fail('unknown');
+      }
+      profiles.set(current.email, { ...profileOf(current.email), ...patch });
+      return Promise.resolve(OK);
+    },
+
+    needsCurrentPassword() {
+      return Promise.resolve(signInMethod === 'password');
     },
     passwordOf(email) {
       return find(email)?.password;
@@ -138,6 +182,7 @@ export function createFakeAuthService({
       if (account.confirmed === false) {
         return fail('email_not_confirmed');
       }
+      signInMethod = 'password';
       signInAs(account.email);
       return Promise.resolve(OK);
     },

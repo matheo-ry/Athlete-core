@@ -1,3 +1,4 @@
+import type { ProfilePatch, UserProfile } from './profile';
 import type { SignupInput, SignupProfile } from './signup';
 
 // Tipos de la sesión. La app no conoce a Supabase: habla con un `AuthService`.
@@ -66,6 +67,18 @@ export interface AuthService {
     password: string | null;
     profile: SignupProfile | null;
   }): Promise<AuthResult>;
+  /** El perfil del usuario que ha entrado (D-058). */
+  getProfile(): Promise<UserProfile>;
+  /**
+   * Cambia el perfil. El idioma y el nombre se guardan también en los datos de
+   * la cuenta, que son los que leen los emails (D-044).
+   */
+  updateProfile(patch: ProfilePatch): Promise<AuthResult>;
+  /**
+   * ¿Hace falta la contraseña actual para cambiarla? No, si entró con un código
+   * por email: ya demostró que el email es suyo (D-042).
+   */
+  needsCurrentPassword(): Promise<boolean>;
   /** Cierra la sesión en este dispositivo. Funciona también sin conexión. */
   signOut(): Promise<void>;
 }

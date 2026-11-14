@@ -13,10 +13,12 @@ import { ClientLayout } from './client/ClientLayout';
 import { CoachHomePage } from './coach/CoachHomePage';
 import { CoachLayout } from './coach/CoachLayout';
 import { ModuleGate } from './ModuleGate';
+import { CodeSignInPage } from './public/CodeSignInPage';
 import { JoinPage } from './public/JoinPage';
 import { LoginPage } from './public/LoginPage';
 import { NotFoundPage } from './public/NotFoundPage';
 import { PublicLayout } from './public/PublicLayout';
+import { ResetPasswordPage } from './public/ResetPasswordPage';
 import { WelcomePage } from './public/WelcomePage';
 import { RequireFlags } from './RequireFlags';
 import { RootLayout } from './RootLayout';
@@ -98,7 +100,16 @@ export function buildRoutes(modules: readonly ModuleManifest[]): RouteObject[] {
           element: <PublicLayout />,
           children: [
             // Pantallas de entrar: con sesión llevan al inicio.
-            { element: <RequireGuest />, children: [{ path: 'login', element: <LoginPage /> }] },
+            {
+              element: <RequireGuest />,
+              children: [
+                { path: 'login', element: <LoginPage /> },
+                { path: 'login/code', element: <CodeSignInPage /> },
+              ],
+            },
+            // Recuperar la contraseña sigue con sesión: el último paso (guardar la
+            // contraseña nueva) ocurre después de confirmar el código.
+            { path: 'reset-password', element: <ResetPasswordPage /> },
             {
               // La bienvenida es para quien tiene sesión y ningún espacio.
               element: <RequireAuth />,

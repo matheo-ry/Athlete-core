@@ -1,10 +1,14 @@
 import { useState } from 'react';
 import type { FormEvent } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Link, useLocation } from 'react-router';
 
-import { checkEmail, failureMessageKey, useAuth, useSignIn } from '@/core/auth';
+import { checkEmail, useAuth, useSignIn } from '@/core/auth';
 import type { AuthFailureReason } from '@/core/auth';
-import { Button, Input, PasswordInput } from '@/core/ui';
+import { Button, Input, PasswordInput, buttonClassName } from '@/core/ui';
+
+import { readEmailState } from './auth-navigation';
+import { FailureMessage } from './FailureMessage';
 
 interface FieldErrors {
   email?: string;
@@ -20,7 +24,8 @@ export function LoginPage() {
   const { t } = useTranslation();
   const { signedOutReason } = useAuth();
   const signIn = useSignIn();
-  const [email, setEmail] = useState('');
+  const location = useLocation();
+  const [email, setEmail] = useState(() => readEmailState(location.state));
   const [password, setPassword] = useState('');
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
   const [failure, setFailure] = useState<AuthFailureReason | null>(null);
@@ -42,10 +47,6 @@ export function LoginPage() {
     }
     setFieldErrors(errors);
     if (!checkedEmail.ok || errors.password !== undefined) {
-      return;
-    }
-    if (!navigator.onLine) {
-      setFailure('offline');
       return;
     }
 
@@ -90,15 +91,44 @@ export function LoginPage() {
           onChange={(event) => setPassword(event.target.value)}
           error={fieldErrors.password}
         />
-        {failure !== null ? (
-          <p role="alert" className="text-danger text-sm font-medium">
-            {t(failureMessageKey(failure))}
-          </p>
-        ) : null}
-        <Button type="submit" disabled={signIn.isPending}>
+        <FailureMessage
+          reason={failure}
+          action={
+            failure === 'wrong_password' ? (
+              <Link
+                to={`/reset-password${location.search}`}
+                state={{ email }}
+                className={buttonClassName('primary')}
+              >
+                {t('app.login.forgotPassword')}
+              </Link>
+            ) : undefined
+          }
+        />
+        <Button
+          type="submit"
+          variant={failure === 'wrong_password' ? 'secondary' : 'primary'}
+          disabled={signIn.isPending}
+        >
           {signIn.isPending ? t('app.login.submitting') : t('app.login.submit')}
         </Button>
       </form>
+      <nav className="flex flex-col gap-1">
+        <Link
+          to={`/reset-password${location.search}`}
+          state={{ email }}
+          className={buttonClassName('ghost')}
+        >
+          {t('app.login.forgotPassword')}
+        </Link>
+        <Link
+          to={`/login/code${location.search}`}
+          state={{ email }}
+          className={buttonClassName('ghost')}
+        >
+          {t('app.login.codeSignIn')}
+        </Link>
+      </nav>
     </>
   );
 }

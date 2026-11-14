@@ -66,8 +66,7 @@
     },
     "welcome": {
       "title": "Te damos la bienvenida",
-      "description": "¿Cómo quieres usar la app?",
-      "coachOption": "Soy coach",
+      "description": "Todavía no perteneces a ningún coach. Escribe el código que te ha dado tu coach.",
       "clientOption": "Tengo un código"
     },
     "join": {
@@ -83,14 +82,6 @@
       "title": "Página no encontrada",
       "description": "La página que buscas no existe o se ha movido.",
       "action": "Ir al inicio"
-    },
-    "dev": {
-      "label": "Herramientas de desarrollo",
-      "profile": "Ver como",
-      "coach": "Coach",
-      "client": "Cliente",
-      "brand": "Marca",
-      "noTenant": "Sin coach"
     }
   }
 }

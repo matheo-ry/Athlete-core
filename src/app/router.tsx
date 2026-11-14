@@ -4,6 +4,7 @@ import type { RouteObject } from 'react-router';
 import { RequireAuth, RequireGuest } from '@/core/auth';
 import { collectRoutes } from '@/core/modules';
 import type { ModuleManifest } from '@/core/modules';
+import { RequireProfile } from '@/core/tenancy';
 import type { Profile } from '@/core/tenancy';
 import { Spinner } from '@/core/ui';
 
@@ -42,23 +43,34 @@ export function buildRoutes(modules: readonly ModuleManifest[]): RouteObject[] {
       children: [
         { index: true, element: <RootRedirect /> },
         {
-          // Sin sesión, las zonas de coach y de cliente llevan a /login (D-056).
+          // Sin sesión, las zonas de coach y de cliente llevan a /login. Con
+          // sesión, cada zona solo se abre con un espacio de su perfil (D-056).
           element: <RequireAuth />,
           children: [
             {
-              path: 'coach',
-              element: <CoachLayout />,
+              element: <RequireProfile profile="coach" />,
               children: [
-                { index: true, element: <CoachHomePage /> },
-                ...moduleRoutes(modules, 'coach'),
+                {
+                  path: 'coach',
+                  element: <CoachLayout />,
+                  children: [
+                    { index: true, element: <CoachHomePage /> },
+                    ...moduleRoutes(modules, 'coach'),
+                  ],
+                },
               ],
             },
             {
-              path: 'client',
-              element: <ClientLayout />,
+              element: <RequireProfile profile="client" />,
               children: [
-                { index: true, element: <ClientHomePage /> },
-                ...moduleRoutes(modules, 'client'),
+                {
+                  path: 'client',
+                  element: <ClientLayout />,
+                  children: [
+                    { index: true, element: <ClientHomePage /> },
+                    ...moduleRoutes(modules, 'client'),
+                  ],
+                },
               ],
             },
           ],
@@ -68,7 +80,16 @@ export function buildRoutes(modules: readonly ModuleManifest[]): RouteObject[] {
           children: [
             // Pantallas de entrar: con sesión llevan al inicio.
             { element: <RequireGuest />, children: [{ path: 'login', element: <LoginPage /> }] },
-            { path: 'welcome', element: <WelcomePage /> },
+            {
+              // La bienvenida es para quien tiene sesión y ningún espacio.
+              element: <RequireAuth />,
+              children: [
+                {
+                  element: <RequireProfile profile={null} />,
+                  children: [{ path: 'welcome', element: <WelcomePage /> }],
+                },
+              ],
+            },
             { path: 'join', element: <JoinPage /> },
             { path: '*', element: <NotFoundPage /> },
           ],

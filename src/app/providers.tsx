@@ -10,6 +10,7 @@ import { BrandProvider } from '@/core/branding';
 import { FlagsProvider } from '@/core/flags';
 import { i18n } from '@/core/i18n';
 import { TenancyProvider } from '@/core/tenancy';
+import type { TenancySource } from '@/core/tenancy';
 
 import { createQueryClient } from './query-client';
 
@@ -19,6 +20,8 @@ interface AppProvidersProps {
   queryClient?: QueryClient;
   /** Solo para tests: una sesión falsa, sin Supabase. */
   authService?: AuthService;
+  /** Solo para tests: espacios falsos, sin Supabase. */
+  tenancySource?: TenancySource;
 }
 
 /**
@@ -26,7 +29,12 @@ interface AppProvidersProps {
  * sesión, tenant, flags y marca. El orden importa: el tenant depende de la
  * sesión, y la marca y los flags dependen del tenant activo.
  */
-export function AppProviders({ children, queryClient, authService }: AppProvidersProps) {
+export function AppProviders({
+  children,
+  queryClient,
+  authService,
+  tenancySource,
+}: AppProvidersProps) {
   const [client] = useState(() => queryClient ?? createQueryClient());
   const [service] = useState(() => authService ?? createSupabaseAuthService());
 
@@ -34,7 +42,7 @@ export function AppProviders({ children, queryClient, authService }: AppProvider
     <QueryClientProvider client={client}>
       <I18nextProvider i18n={i18n}>
         <AuthProvider service={service}>
-          <TenancyProvider>
+          <TenancyProvider source={tenancySource}>
             <FlagsProvider>
               <BrandProvider>{children}</BrandProvider>
             </FlagsProvider>

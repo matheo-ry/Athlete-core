@@ -6,25 +6,30 @@ import { RouterProvider, createMemoryRouter } from 'react-router';
 import { AppProviders } from '@/app/providers';
 import { buildRoutes } from '@/app/router';
 import { loadModuleTranslations } from '@/core/i18n';
+import type { TenancySource } from '@/core/tenancy';
 import { registeredModules } from '@/modules';
 
 import { createFakeAuthService } from './fake-auth-service';
 import type { FakeAuthService } from './fake-auth-service';
+import { createFakeTenancySource } from './fake-tenancy-source';
 
 interface RenderAppOptions {
-  /** La sesión falsa. Por defecto, una cuenta de coach con la sesión abierta. */
+  /** La sesión falsa. Por defecto, la cuenta de coach de Iron Lab con la sesión abierta. */
   auth?: FakeAuthService;
+  /** Los espacios falsos. Por defecto, los de `fake-tenancy-source.ts`. */
+  tenancy?: TenancySource;
 }
 
 /**
  * Monta la app entera (proveedores + rutas + módulos registrados) en una ruta
  * dada, como la vería un usuario. Para tests de pantallas y de navegación.
- * No habla con Supabase: la sesión es falsa (`fake-auth-service.ts`).
+ * No habla con Supabase: la sesión y los espacios son falsos.
  */
 export async function renderApp(initialPath = '/', options: RenderAppOptions = {}) {
   await loadModuleTranslations(registeredModules);
 
   const auth = options.auth ?? createFakeAuthService();
+  const tenancy = options.tenancy ?? createFakeTenancySource();
   const router = createMemoryRouter(buildRoutes(registeredModules), {
     initialEntries: [initialPath],
   });
@@ -32,10 +37,15 @@ export async function renderApp(initialPath = '/', options: RenderAppOptions = {
   const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
 
   const view = render(
-    <AppProviders queryClient={queryClient} authService={auth}>
+    <AppProviders queryClient={queryClient} authService={auth} tenancySource={tenancy}>
       <RouterProvider router={router} />
     </AppProviders>,
   );
 
   return { ...view, router, auth, user: userEvent.setup() };
+}
+
+/** Atajo: la app con la sesión abierta de una cuenta de `fake-auth-service.ts`. */
+export function renderAppAs(email: string, initialPath = '/') {
+  return renderApp(initialPath, { auth: createFakeAuthService({ signedInAs: email }) });
 }

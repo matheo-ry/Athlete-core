@@ -22,9 +22,16 @@
 ## Dónde estamos
 
 - **Fase actual:** 1 — Cuentas, negocio del coach y unirse con código.
-- **Última tarea terminada:** PR 1.1 — Base de datos (2026-11-13), rama `db/esquema-base`.
+- **Última tarea terminada:** diseño de la Fase 1 (2026-11-14), rama `docs/diseno-fase-1`: decisiones D-036 a D-064.
 - **En curso:** —
-- **Siguiente tarea:** Fase 1, PR 1.2 — Registro y login (prompt en `docs/PROMPTS.md` §5). Se entra con contraseña o con enlace por email (DECISIONES D-035).
+- **Siguiente tarea:** Fase 1, PR 1.2 — Base de datos: cuentas y emails. Los 16 PR de la fase (1.2 a 1.17) están en orden, con sus criterios de aceptación, en `docs/PROMPTS.md` §5.
+
+## Cómo funcionará la Fase 1 (ya decidido)
+
+- **Primero el código, después la cuenta:** la primera pantalla (`/start`) pide el código del coach; debajo, "Ya tengo cuenta" y "Soy coach" (D-037).
+- **Cuentas:** nombre, email y contraseña. El email se confirma con un código de 6 dígitos; con ese mismo sistema se entra sin contraseña y se recupera la contraseña. Los emails no llevan enlaces (D-038 a D-044).
+- **Dar de baja:** el coach quita el acceso a un cliente y puede reactivarlo; nunca borra su cuenta (D-055).
+- **Espacios:** una cuenta puede ser coach y cliente a la vez, y cliente de varios coaches (D-048 y D-056).
 
 ## Qué existe ya
 
@@ -36,14 +43,15 @@
 
 ## Qué falta (lo próximo)
 
-- **No hay login ni pantallas con datos reales.** La app todavía usa los datos de ejemplo de la Fase 0; se conecta a la base de datos en el PR 1.2.
-- Al llegar los datos reales desaparecen `core/tenancy/sample-tenancy.ts` y `core/flags/sample-flags.ts`, y las variables de Supabase pasan a ser obligatorias.
+- **No hay login ni pantallas con datos reales.** La app todavía usa los datos de ejemplo de la Fase 0; se conecta a la base de datos en los PR 1.3 y 1.4.
+- Al llegar los datos reales desaparecen `core/tenancy/sample-tenancy.ts` (PR 1.4) y `core/flags/sample-flags.ts` (PR 1.5), y las variables de Supabase pasan a ser obligatorias (PR 1.3).
 - Sin guardas de ruta por rol todavía: separar `/coach` y `/client` es comodidad, no seguridad.
 
 ## Últimos cambios
 
 Los 5 más recientes, el más nuevo arriba. El historial completo está en `docs/ESTADO.md`.
 
+- 2026-11-14 — Diseño de la Fase 1: decisiones D-036 a D-064, lista de los 16 PR en `docs/PROMPTS.md` §5 y ARQUITECTURA §7, §8 y §10 al día.
 - 2026-11-13 — PR 1.1: base de datos local, primera migración, tests de RLS en el CI, seed y tipos.
 - 2026-11-13 — Fase 0: esqueleto completo de la app (proyecto base, `core/` mínimo, carcasas, `_template`, calidad, tests, CI).
 - 2026-11-12 — Nombre decidido: ATHLETE CORE (DECISIONES D-021).
@@ -54,7 +62,9 @@ Los 5 más recientes, el más nuevo arriba. El historial completo está en `docs
 - El proyecto vive en `C:\dev\athlete-core`, **fuera de OneDrive** (sincronizar `node_modules` da errores).
 - Se usa **TypeScript 6**, no 7: el lint de TypeScript aún no admite la 7 (DECISIONES D-022).
 - `main` no está protegida en GitHub: hace falta GitHub Pro (GUIA-GIT §12).
-- Antes del PR 1.2 hay que confirmar dos puntos de D-035 (verificar el email y lista pública de coaches).
+- La Fase 1 se lleva entera desde un mismo chat, con una rama y un PR por tarea (D-036).
+- Supabase en plan gratuito (D-063): la sesión de 30 días la controla la propia app, y no hay copias de seguridad recuperables.
+- Hace falta el dominio (P-01) antes del PR 1.17. Antes del primer usuario real hacen falta los textos legales definitivos (D-060) y revisar el plan de Supabase (D-063).
 - El identificador de la app móvil (`app.athletecore.mobile`) es provisional: hay que fijarlo antes de publicar en las tiendas.
 
 ## Para saber más

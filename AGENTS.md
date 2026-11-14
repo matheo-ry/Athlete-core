@@ -157,6 +157,7 @@ Los tests van junto al archivo que prueban: `units.ts` → `units.test.ts`.
 |---|---|
 | Tenant | El negocio de un coach. Todo dato pertenece a un tenant. |
 | Miembro | Un usuario dentro de un tenant, con un rol. |
+| Espacio | Cada pertenencia de un usuario a un tenant, con su rol. Es la palabra que ve el usuario en la app. |
 | Rol | `owner` (el coach dueño), `staff` (otro coach del mismo negocio; previsto, todavía sin alta) o `client`. |
 | Perfil coach | Lo que ven `owner` y `staff`: rutas `/coach/...`. |
 | Perfil cliente | Lo que ve `client`: rutas `/client/...`. |

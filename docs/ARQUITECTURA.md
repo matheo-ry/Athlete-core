@@ -225,30 +225,34 @@ Es **una app con dos zonas**, no dos apps. Motivo: un solo código que mantener,
 ### Cómo se entra
 
 ```
-Registro o login
+Abre la app
       │
       ▼
-¿Tiene algún tenant?
-      ├─ No ──► Pantalla de bienvenida
-      │           ├─ "Soy coach"          → crea su negocio → /coach
-      │           └─ "Tengo un código"    → escribe el código → /client
-      ├─ Sí, como owner o staff ──► /coach
-      └─ Sí, como client ─────────► /client
+¿Tiene sesión?
+      ├─ No ──► Primera pantalla (/start)
+      │           ├─ Escribe el código de su coach → vista previa → crea su cuenta o entra → /client
+      │           ├─ "Ya tengo cuenta"             → entra
+      │           └─ "Soy coach"                   → crea su cuenta → crea su negocio → /coach
+      └─ Sí ──► ¿Cuántos espacios activos tiene?
+                  ├─ Ninguno ──► /welcome (escribir un código o crear su negocio)
+                  ├─ Uno ─────► /coach (owner o staff) o /client (client)
+                  └─ Varios ──► el último usado en ese dispositivo o, si no hay, el selector (/select)
 ```
 
 - El coach, al crear su negocio, recibe un **código de invitación** que comparte con sus clientes. Puede regenerarlo.
-- El coach ve en `clients` quién ha entrado con su código y puede archivar a un cliente. Un cliente archivado deja de ver los datos de ese coach y libera su hueco en el plan.
+- El coach ve en `clients` quién ha entrado con su código y puede dar de baja a un cliente y reactivarlo. Un cliente dado de baja deja de ver los datos de ese coach, libera su plaza en el plan y no puede volver a entrar con el código: solo el coach puede reactivarlo.
 - Si un usuario pertenece a más de un tenant, elige con cuál entrar.
-- Para escribir el código hace falta tener sesión: primero se crea la cuenta y después se introduce el código.
-- El coach también puede compartir un enlace `/join?code=XXXX`. Si quien lo abre no tiene sesión, se le lleva a registrarse y después se retoma el código.
+- El código se puede escribir sin sesión: se ve la vista previa del coach (solo su nombre y su marca) y después se crea la cuenta o se entra. Unirse sí exige tener sesión.
+- El coach también puede compartir un enlace `/join?code=XXXX`. Quien lo abre ve la vista previa del coach. Si no tiene sesión, crea su cuenta o entra, y el código se retoma solo.
 - En la primera versión un usuario solo puede ser dueño de un negocio, y el rol `staff` existe en la base de datos pero aún no hay forma de darlo de alta.
 
 ### Rutas base
 
 | Zona | Rutas |
 |---|---|
-| Entrada, sin sesión | `/login`, `/signup`, `/reset-password` |
-| Entrada, con sesión | `/welcome` (si aún no tiene ningún tenant), `/join` |
+| Entrada, sin sesión | `/start`, `/login`, `/signup`, `/verify`, `/reset-password` |
+| Entrada, con sesión o sin ella | `/join`, `/legal/terms`, `/legal/privacy`, `/legal/coach-terms` |
+| Entrada, con sesión | `/welcome` (si no tiene ningún espacio activo), `/select` (si tiene varios) |
 | Coach | `/coach` (inicio), `/coach/clients`, `/coach/programs`, `/coach/exercises`, `/coach/settings` |
 | Cliente | `/client` (hoy), `/client/program`, `/client/progress`, `/client/profile` |
 
@@ -293,7 +297,7 @@ Una tabla de negocio es cualquiera que guarde datos de un coach o de sus cliente
 
 ### Operaciones sensibles
 
-Crear un negocio, ver a qué coach pertenece un código, unirse con código y regenerar el código se hacen con **funciones de la base de datos** (`create_tenant`, `preview_invite`, `join_tenant_with_code`, `regenerate_invite_code`), no con inserciones directas desde la app. Ahí se comprueban los límites del plan y se deja constancia en `audit_log`.
+Crear un negocio, ver a qué coach pertenece un código, unirse con código, regenerar el código, y dar de baja o reactivar a un cliente se hacen con **funciones de la base de datos** (`create_tenant`, `preview_invite`, `join_tenant_with_code`, `regenerate_invite_code` y las de dar de baja y reactivar), no con inserciones ni cambios directos desde la app. Ahí se comprueban los límites del plan y el tope de intentos, y se deja constancia en `audit_log`. La vista previa de un código y la comprobación de si un email tiene cuenta son las únicas que se pueden llamar sin sesión: la primera solo devuelve el nombre y la marca del coach, y la segunda solo si el email tiene cuenta y si está confirmada.
 
 El plan y el estado de un tenant no los puede cambiar el coach desde la app. Hasta que existan los pagos (Fase 5), los cambia el propietario a mano en la base de datos. Eso es una operación de administración sobre **datos**; la regla de "solo con migraciones" se refiere a la **estructura** (tablas, columnas, políticas, funciones).
 
@@ -301,12 +305,12 @@ El plan y el estado de un tenant no los puede cambiar el coach desde la app. Has
 
 ### Automatismos
 
-- Al registrarse un usuario se crea su fila en `profiles` (trigger `on_auth_user_created`).
+- Al registrarse un usuario se crea su fila en `profiles` (trigger `on_auth_user_created`), con el nombre, el idioma, la unidad de peso y la aceptación de los términos que envía el registro.
 - Las tablas con columna `updated_at` la mantienen al día con el trigger `set_updated_at` (ver la plantilla).
 
 ### Archivos (Storage)
 
-Cada archivo se guarda en una ruta que empieza por el `tenant_id`, con políticas equivalentes a las de las tablas. Se define en la fase de cada función.
+Cada archivo se guarda en una ruta que empieza por el `tenant_id`, con políticas equivalentes a las de las tablas. Se define en la fase de cada función. Excepción: los logos de los coaches se pueden leer sin sesión, porque se enseñan en la vista previa del código. Solo el dueño del negocio puede subirlos, cambiarlos o borrarlos.
 
 ## 9. Planes y feature flags
 
@@ -344,7 +348,7 @@ Cada archivo se guarda en una ruta que empieza por el `tenant_id`, con política
 
 - `core/branding` convierte esa marca en variables CSS (`--brand-primary`…). Todos los componentes pintan con esas variables.
 - Si un color no tiene contraste suficiente con el texto, se corrige automáticamente.
-- Antes de unirse a un coach, el usuario ve la marca por defecto de ATHLETE CORE.
+- Hasta que escribe un código válido, el usuario ve la marca por defecto de ATHLETE CORE. Desde la vista previa del coach, y durante el registro, ve ya la marca de ese coach.
 
 ## 11. Idiomas y unidades
 

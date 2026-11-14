@@ -2,6 +2,7 @@ import { z } from 'zod';
 
 import { parseBrand } from '../branding/parse-brand';
 import type { InvitePreview, JoinResult } from './invite';
+import type { PlanLimit, TenantMember } from './members';
 import { ROLES, profileForRole } from './tenancy-types';
 import type { Role, Tenancy, Tenant } from './tenancy-types';
 
@@ -26,6 +27,13 @@ export interface TenancySource {
   previewInvite(code: string): Promise<InvitePreview>;
   /** Unirse como cliente con el código (D-054). Necesita sesión. */
   joinWithCode(code: string): Promise<JoinResult>;
+  /** Los miembros de un negocio, con su nombre (solo lo ve su coach, D-059). */
+  listMembers(tenantId: string): Promise<TenantMember[]>;
+  /** El código de invitación activo del negocio (solo lo ve su coach). */
+  getInviteCode(tenantId: string): Promise<string | null>;
+  /** Crea un código nuevo; el anterior deja de valer al instante (D-050). Solo el dueño. */
+  regenerateInviteCode(tenantId: string): Promise<string>;
+  getPlanLimit(tenantId: string): Promise<PlanLimit>;
 }
 
 // Lo que devuelve la base de datos es un dato de fuera: se valida (AGENTS.md §4).

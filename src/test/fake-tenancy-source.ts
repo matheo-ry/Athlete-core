@@ -1,5 +1,7 @@
+import { DEFAULT_BRAND } from '@/core/branding';
 import { normalizeInviteCode } from '@/core/tenancy';
 import type {
+  CreateBusinessResult,
   InvitePreview,
   JoinResult,
   MemberActionResult,
@@ -127,6 +129,8 @@ export function createFakeTenancySource({
     ['IRONLAB1', TEST_TENANTS.iron],
     ['NORTE001', TEST_TENANTS.norte],
   ]);
+  const tenants = new Map(TENANTS_BY_ID);
+  const plans = new Map(Object.entries(FAKE_PLANS));
   let failedAttempts = 0;
 
   const findTenant = (code: string): Tenant | undefined => {
@@ -152,7 +156,7 @@ export function createFakeTenancySource({
     );
 
   const isFull = (tenantId: string) => {
-    const limit = FAKE_PLANS[tenantId]?.maxClients ?? null;
+    const limit = plans.get(tenantId)?.maxClients ?? null;
     const active = membersOf(tenantId).filter(
       (item) => item.role === 'client' && item.status === 'active',
     ).length;
@@ -244,11 +248,41 @@ export function createFakeTenancySource({
     },
 
     getPlanLimit(tenantId) {
-      return Promise.resolve(FAKE_PLANS[tenantId] ?? { plan: 'free', maxClients: 3 });
+      return Promise.resolve(plans.get(tenantId) ?? { plan: 'free', maxClients: 3 });
     },
 
     archiveClient: (tenantId, userId) => changeStatus(tenantId, userId, 'archived'),
     reactivateClient: (tenantId, userId) => changeStatus(tenantId, userId, 'active'),
+
+    // Como create_tenant: un negocio por dueño, nombre de 2 a 40, condiciones
+    // aceptadas; plan free (3 plazas) y la marca con el nombre (D-049).
+    createBusiness(name, coachTermsVersion): Promise<CreateBusinessResult> {
+      const email = currentEmail();
+      if (email === null) {
+        return Promise.resolve({ status: 'error' });
+      }
+      const trimmed = name.trim();
+      if (coachTermsVersion.trim() === '') {
+        return Promise.resolve({ status: 'terms_required' });
+      }
+      if (trimmed.length < 2 || trimmed.length > 40) {
+        return Promise.resolve({ status: 'invalid_name' });
+      }
+      const own = store.get(email) ?? [];
+      if (own.some((membership) => membership.role === 'owner')) {
+        return Promise.resolve({ status: 'already_owner' });
+      }
+      const tenant: Tenant = {
+        id: `tenant-${trimmed.toLowerCase().replace(/\s+/g, '-')}`,
+        name: trimmed,
+        branding: { ...DEFAULT_BRAND, appName: trimmed },
+      };
+      tenants.set(tenant.id, tenant);
+      plans.set(tenant.id, { plan: 'free', maxClients: 3 });
+      codes.set(randomCode(), tenant);
+      store.set(email, [...own, member(tenant, 'owner', { joinedAt: new Date().toISOString() })]);
+      return Promise.resolve({ status: 'created', tenantId: tenant.id });
+    },
   };
 
   // Como archive_client y reactivate_client: solo el dueño, solo a clientes, y
@@ -283,7 +317,7 @@ export function createFakeTenancySource({
           ? {
               ...membership,
               status: next,
-              tenant: next === 'active' ? (TENANTS_BY_ID.get(tenantId) ?? null) : null,
+              tenant: next === 'active' ? (tenants.get(tenantId) ?? null) : null,
             }
           : membership,
       ),

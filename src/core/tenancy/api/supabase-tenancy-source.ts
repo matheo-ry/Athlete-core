@@ -118,6 +118,24 @@ export function createSupabaseTenancySource(): TenancySource {
       return error === null ? 'ok' : memberActionFailure(error, 'archive client');
     },
 
+    async createBusiness(name, coachTermsVersion) {
+      const { data, error } = await getSupabaseClient().rpc('create_tenant', {
+        p_name: name,
+        p_coach_terms_version: coachTermsVersion,
+      });
+      if (error === null) {
+        return { status: 'created', tenantId: z.string().parse(data) };
+      }
+      if (
+        error.message === 'already_owner' ||
+        error.message === 'invalid_name' ||
+        error.message === 'terms_required'
+      ) {
+        return { status: error.message };
+      }
+      return failureStatus(error, 'create business');
+    },
+
     async reactivateClient(tenantId, userId) {
       const { error } = await getSupabaseClient().rpc('reactivate_client', {
         p_tenant: tenantId,

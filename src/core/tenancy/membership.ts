@@ -44,7 +44,13 @@ export interface TenancySource {
   archiveClient(tenantId: string, userId: string): Promise<MemberActionResult>;
   /** Reactivar a un cliente, si hay plaza en el plan (D-055). Solo el dueño. */
   reactivateClient(tenantId: string, userId: string): Promise<MemberActionResult>;
+  /** Crear el negocio del usuario, que pasa a ser su dueño (D-049 y D-060). */
+  createBusiness(name: string, coachTermsVersion: string): Promise<CreateBusinessResult>;
 }
+
+export type CreateBusinessResult =
+  | { status: 'created'; tenantId: string }
+  | { status: 'already_owner' | 'invalid_name' | 'terms_required' | 'offline' | 'error' };
 
 // Las filas de la función my_spaces. Son un dato de fuera: se validan (AGENTS.md §4).
 const spaceRowSchema = z.object({

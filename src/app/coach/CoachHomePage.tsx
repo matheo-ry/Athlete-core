@@ -3,7 +3,9 @@ import { useTranslation } from 'react-i18next';
 import { useTenancy } from '@/core/tenancy';
 import { Card, EmptyState } from '@/core/ui';
 
-/** Inicio de ejemplo del coach (Fase 0). El contenido real llega con cada módulo. */
+import { FirstStepsCard } from './FirstStepsCard';
+
+/** Inicio del coach: su negocio y, al empezar, los primeros pasos (D-049). */
 export function CoachHomePage() {
   const { t } = useTranslation();
   const { tenant } = useTenancy();
@@ -20,6 +22,7 @@ export function CoachHomePage() {
           <p className="text-lg font-semibold">{tenant.name}</p>
         </Card>
       ) : null}
+      <FirstStepsCard />
       <Card>
         <EmptyState
           title={t('app.coachHome.emptyTitle')}

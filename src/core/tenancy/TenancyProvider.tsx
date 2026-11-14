@@ -5,6 +5,7 @@ import type { ReactNode } from 'react';
 import { useAuth } from '../auth';
 import { createSupabaseTenancySource } from './api/supabase-tenancy-source';
 import { pickActiveMembership, tenancyFor } from './membership';
+import { clearCoachIntent } from './coach-intent';
 import { clearPendingInvite } from './pending-invite';
 import type { Membership, TenancySource } from './membership';
 import { TenancyContext } from './tenancy-context';
@@ -50,6 +51,7 @@ export function TenancyProvider({ children, source }: TenancyProviderProps) {
     }
     if (status === 'signed-out' && signedOutReason === 'explicit') {
       clearPendingInvite();
+      clearCoachIntent();
     }
   }, [status, signedOutReason, queryClient]);
 

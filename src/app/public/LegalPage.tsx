@@ -4,13 +4,13 @@ import { useNavigate } from 'react-router';
 import { Button } from '@/core/ui';
 
 interface LegalPageProps {
-  document: 'terms' | 'privacy';
+  document: 'terms' | 'privacy' | 'coachTerms';
 }
 
 const PARAGRAPHS = ['p1', 'p2', 'p3', 'p4'] as const;
 
 /**
- * Términos y política de privacidad (D-060). Hoy son BORRADORES: ningún usuario
+ * Términos, política de privacidad y condiciones para coaches (D-060). Hoy son BORRADORES: ningún usuario
  * real puede registrarse hasta tener los textos definitivos (Fase 4).
  */
 export function LegalPage({ document }: LegalPageProps) {

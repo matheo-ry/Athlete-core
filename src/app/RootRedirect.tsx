@@ -1,20 +1,26 @@
 import { Navigate } from 'react-router';
 
 import { useAuth } from '@/core/auth';
-import { WhenTenancyReady, homePathFor, usePendingInvite, useTenancy } from '@/core/tenancy';
+import {
+  WhenTenancyReady,
+  hasCoachIntent,
+  homePathFor,
+  usePendingInvite,
+  useTenancyContext,
+} from '@/core/tenancy';
 import { Spinner } from '@/core/ui';
 
 /**
  * "/" lleva a cada uno a su sitio (ARQUITECTURA §7, DECISIONES D-037 y D-056):
  * - sin sesión, a la primera pantalla (el código del coach);
- * - con sesión y un código recordado (se cerró la app a mitad de crear la
- *   cuenta), a terminar el alta con ese coach;
+ * - con sesión y algo a medias de antes de crear la cuenta (se cerró la app):
+ *   un código recordado lleva a terminar el alta; "Soy coach", a crear el negocio;
  * - si no, a su zona de coach o de cliente, o a la bienvenida si todavía no
  *   tiene ningún espacio.
  */
 export function RootRedirect() {
   const { status } = useAuth();
-  const tenancy = useTenancy();
+  const { tenancy, memberships } = useTenancyContext();
   const pending = usePendingInvite();
 
   if (status === 'loading') {
@@ -26,9 +32,11 @@ export function RootRedirect() {
   if (pending !== null) {
     return <Navigate to={`/join?code=${pending.code}`} replace />;
   }
+  const wantsBusiness =
+    hasCoachIntent() && !memberships.some((membership) => membership.role === 'owner');
   return (
     <WhenTenancyReady>
-      <Navigate to={homePathFor(tenancy)} replace />
+      <Navigate to={wantsBusiness ? '/create-business' : homePathFor(tenancy)} replace />
     </WhenTenancyReady>
   );
 }

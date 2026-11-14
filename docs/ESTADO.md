@@ -15,11 +15,12 @@ PR abiertos, apilados y esperando revisión (D-064). Se fusionan en este orden:
 4. PR 1.4 — Tenant y rol reales, y guardas de ruta (rama `feat/tenancy-real`, PR 7).
 5. PR 1.5 — Flags reales (rama `feat/flags-reales`, PR 8).
 6. PR 1.6 — Recuperar la contraseña y entrar con un código por email (rama `feat/recuperar-y-codigo`, PR 9).
-7. PR 1.7 — Registro y verificación del email (rama `feat/registro`).
+7. PR 1.7 — Registro y verificación del email (rama `feat/registro`, PR 10).
+8. PR 1.8 — Base de datos: invitaciones, bajas y negocio (rama `db/invitaciones-y-bajas`).
 
 ## Siguiente
 
-1. Fase 1, PR 1.8 — Base de datos: invitaciones, bajas y negocio. El prompt está en `docs/PROMPTS.md` §5, con los 16 PR de la fase en orden.
+1. Fase 1, PR 1.9 — Primera pantalla y unirse con código. El prompt está en `docs/PROMPTS.md` §5, con los 16 PR de la fase en orden.
 
 ## Fases
 
@@ -54,7 +55,7 @@ El diseño está en DECISIONES D-036 a D-064, y el detalle de cada PR, en `docs/
 - [x] PR 1.5 — Flags reales
 - [x] PR 1.6 — Recuperar la contraseña y entrar con un código por email
 - [x] PR 1.7 — Registro y verificación del email
-- [ ] PR 1.8 — Base de datos: invitaciones, bajas y negocio
+- [x] PR 1.8 — Base de datos: invitaciones, bajas y negocio
 - [ ] PR 1.9 — Primera pantalla y unirse con código
 - [ ] PR 1.10 — Módulo `clients`: lista y código de invitación
 - [ ] PR 1.11 — Dar de baja y reactivar a un cliente
@@ -121,13 +122,14 @@ Cosas que alguien ha visto y que no tocaban en su tarea. No se hacen sin convert
 - Añadir reglas de accesibilidad al lint (etiquetas, botones de verdad). Haría falta una librería nueva.
 - Test de fronteras: añadir el caso permitido de la tabla de dependencias entre módulos cuando existan dos módulos reales (`programs` → `exercises`).
 - Zod ocupa buena parte del peso de la app. Si el tamaño llega a importar, valorar su variante ligera.
-- Un test pgTAP que pruebe cada política de UPDATE por separado. Hoy, si se afloja `members_update`, la política de lectura sigue bloqueando (Postgres la aplica en los UPDATE con WHERE) y los tests no lo notan. No es un agujero, pero la segunda capa no está vigilada.
+- Un test pgTAP que pruebe cada política de UPDATE por separado (`tenants_update` y `profiles_update`). Hoy, si se afloja una, la política de lectura sigue bloqueando (Postgres la aplica en los UPDATE con WHERE) y los tests no lo notan. No es un agujero, pero la segunda capa no está vigilada. (`members_update` ya no existe: desde el PR 1.8, dar de baja y reactivar van por función.)
 - Los casos 15 a 19 y 28 de `docs/referencia/pruebas-aislamiento.sql` se escriben con la primera tabla de negocio (`programs`, Fase 2).
 
 ## Registro de cambios
 
 Lo más nuevo, arriba.
 
+- 2026-11-14 — PR 1.8 (base de datos): códigos de 8 caracteres sin los que se confunden; vista previa sin sesión; unirse con un resultado por caso y sin reactivar a los dados de baja; tope de 10 códigos equivocados; dar de baja y reactivar solo por función (comprueba el plan); `my_spaces`; `create_tenant` con condiciones para coaches y marca inicial. Seed con plan lleno, una coach que es también clienta y un cliente dado de baja. 117 tests pgTAP.
 - 2026-11-14 — PR 1.7 (registro): `/signup` con nombre, email, contraseña y la casilla de los términos; `/verify` con el código; al confirmar vale siempre la última contraseña (D-043, con test de extremo a extremo); avisos de cuenta que ya existe o pendiente; textos legales en borrador; unidad de peso inicial según el dispositivo (D-058).
 - 2026-11-14 — PR 1.6 (códigos por email): `/reset-password` (email, código y contraseña nueva; cierra las demás sesiones) y `/login/code` (entrar sin contraseña). Piezas comunes `EmailStep`, `CodeStep` y `NewPasswordStep`; "Enviar otro código" a los 60 segundos; tests de extremo a extremo que leen el código real de la bandeja local.
 - 2026-11-14 — PR 1.5 (flags reales): `core/flags` lee `tenant_effective_features` del espacio activo; el módulo de ejemplo se monta en desarrollo sin flag. El router se crea una sola vez con todas las rutas y cada módulo va detrás de su flag (`ModuleGate`); la tenancy y los flags ya no ocultan las pantallas mientras cargan, esperan las guardas (`RequireProfile`, `RequireFlags`). Así una pantalla a medias no pierde lo escrito al cambiar la sesión o el espacio. Cerrar sesión ya no da error si falla el aviso al servidor: la sesión del dispositivo se borra antes.

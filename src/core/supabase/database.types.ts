@@ -402,6 +402,16 @@ export type Database = {
       preview_invite: { Args: { p_code: string }; Returns: Json };
       reactivate_client: { Args: { p_tenant: string; p_user: string }; Returns: undefined };
       regenerate_invite_code: { Args: { p_tenant: string }; Returns: string };
+      update_brand: {
+        Args: {
+          p_accent: string;
+          p_mode: string;
+          p_name: string;
+          p_primary: string;
+          p_tenant: string;
+        };
+        Returns: undefined;
+      };
     };
     Enums: {
       [_ in never]: never;

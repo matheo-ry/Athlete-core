@@ -273,7 +273,8 @@ Cómo añadir una: copia el formato, usa el siguiente número y no borres las an
   - **Remitente:** nombre "ATHLETE CORE" y dirección `no-reply@<dominio>`. Los textos de privacidad indican una dirección de soporte para responder.
 - **Por qué:** el envío que trae Supabase por defecto solo sirve para pruebas: tiene un tope de muy pocos emails por hora. Resend tiene plan gratuito suficiente para staging y los pilotos (comprobar sus límites al contratarlo).
 - **Consecuencias:** hace falta el dominio (P-01) antes de enviar el primer email real. Lo configura el propietario en el PR 1.17. Con el envío propio conectado, Supabase sigue poniendo un tope de emails por hora a todo el proyecto: hay que subirlo en el panel (el valor queda en el PR 1.17).
-- **Revisar si:** el volumen de emails supera el plan gratuito.
+- **Comprobado en el PR 1.17 (2026-11-14):** dominio `athlete-core.com` verificado en Resend (región de Irlanda), con SPF, DKIM y DMARC (`p=none`). El tope de Supabase queda en 100 emails por hora. El plan gratuito de Resend permite 100 emails al día y 3.000 al mes: ese es el tope real mientras no se pague.
+- **Revisar si:** el volumen de emails supera el plan gratuito de Resend (100 al día): antes de los pilotos.
 
 ### D-047 · Google y Apple, en la Fase 4
 - **Fecha:** 2026-11-14
@@ -419,11 +420,12 @@ Cómo añadir una: copia el formato, usa el siguiente número y no borres las an
 - **Fecha:** 2026-11-14
 - **Decisión:** staging y producción usan el plan gratuito de Supabase. Cierra P-11.
 - **Por qué:** decisión del propietario. En la Fase 1 solo hay datos inventados.
-- **Consecuencias** (según la documentación de Supabase; se comprueban al crear los proyectos en el PR 1.17):
+- **Consecuencias** (comprobadas el 2026-11-14 en el panel y en la página de precios de Supabase, al crear staging en el PR 1.17; no ha cambiado nada):
   - El plan gratuito permite dos proyectos activos: uno para staging y otro para producción. No queda sitio para un tercero.
-  - Un proyecto que pasa una semana sin uso se pausa. A staging le pasará a menudo: se reanuda desde el panel en un par de minutos y no pierde nada.
-  - No hay copias de seguridad automáticas que se puedan recuperar.
+  - Un proyecto que pasa una semana sin uso se pausa. A staging le pasará a menudo: se reanuda desde el panel en un par de minutos y no pierde nada. Un proyecto pausado se puede reanudar durante un año; pasado ese plazo, ya no.
+  - No hay copias de seguridad automáticas que se puedan recuperar (el panel dice "Free Plan does not include project backups"). El plan Pro, desde 25 dólares al mes, guarda 7 días de copias diarias.
   - El cierre de sesión por inactividad de Supabase es de pago: lo hace la propia app (D-045).
+  - En el plan gratuito no se pueden cambiar las plantillas de email mientras se use el envío de emails de Supabase: hay que conectar antes el envío propio (D-046). Por eso, en la guía de staging, Resend va antes que `config push`.
 - **Revisar:** antes del primer usuario real. Con datos reales sin copias de seguridad, un fallo o un borrado por error no se puede deshacer: se recomienda el plan de pago en producción para entonces.
 
 ### D-064 · Los PR de la Fase 1 se abren apilados
@@ -475,7 +477,7 @@ Cómo añadir una: copia el formato, usa el siguiente número y no borres las an
 
 | Nº | Qué | Cuándo hay que decidirlo |
 |---|---|---|
-| P-01 | Dominio de la web. El nombre ya está decidido: ATHLETE CORE (D-021) | Antes del PR 1.17: sin dominio no se pueden enviar emails reales (D-046) |
+| P-01 | **Cerrado el 2026-11-14.** El dominio es `athlete-core.com`, gestionado en Cloudflare. Los emails salen de `no-reply@athlete-core.com` (D-046) | — |
 | P-02 | Nicho definitivo tras hablar con coaches | Antes de la Fase 2 |
 | P-03 | Hosting de la web: Vercel o Cloudflare Pages. Comprobar en ambos el coste con dos personas subiendo código y las condiciones de uso comercial | Antes de enseñar la app a coaches |
 | P-04 | Biblioteca global de ejercicios: cómo conviven los ejercicios de la plataforma con los propios de cada coach | Fase 2 |

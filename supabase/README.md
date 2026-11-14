@@ -122,7 +122,9 @@ npx supabase config push
    VITE_SUPABASE_PUBLISHABLE_KEY=<publishable key de staging>
    ```
 
-2. Arranca la app contra staging con `npm run dev:staging` y ábrela en <http://localhost:5173>.
+   La Project URL va sin nada detrás de `.supabase.co` (el panel a veces la enseña acabada en `/rest/v1/`: eso se quita).
+
+2. Arranca la app contra staging con `npm run dev:staging` y ábrela en la dirección que enseñe la terminal: <http://localhost:5173>, o `5174` si ya tienes abierta la app en local.
 3. Comprueba los criterios del PR 1.17: te registras con tu email de verdad y el código llega en menos de un minuto; el remitente es "ATHLETE CORE" con una dirección de tu dominio; no cae en spam en Gmail ni en Outlook; llega en español o en inglés según el idioma de la app; recuperar la contraseña funciona de principio a fin.
 4. Comprueba con el agente que el tope de intentos cuenta bien cada conexión (D-052). Sin sesión, escribe en la app un código de coach que no exista. Después, en el panel de Supabase, **SQL Editor**, ejecuta:
 
@@ -134,4 +136,4 @@ npx supabase config push
 
 ### 6. Si staging se pausa
 
-Con el plan gratuito, un proyecto que pasa una semana sin uso se pausa (D-063). En el panel de Supabase, abre el proyecto y pulsa **Restore project**: tarda un par de minutos y no se pierde nada.
+Con el plan gratuito, un proyecto que pasa una semana sin uso se pausa (D-063). En el panel de Supabase, abre el proyecto y pulsa **Restore project**: tarda un par de minutos y no se pierde nada. Se puede reanudar durante un año desde que se pausó.

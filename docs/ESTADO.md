@@ -22,11 +22,12 @@ PR abiertos, apilados y esperando revisión (D-064). Se fusionan en este orden:
 11. PR 1.10 — Módulo `clients`: lista y código de invitación (rama `feat/modulo-clients`, PR 14).
 12. PR 1.11 — Dar de baja y reactivar a un cliente (rama `feat/baja-de-clientes`, PR 15).
 13. PR 1.12 — Crear negocio y primeros pasos del coach (rama `feat/crear-negocio`, PR 16).
-14. PR 1.13 — Perfil y cuenta (rama `feat/perfil`).
+14. PR 1.13 — Perfil y cuenta (rama `feat/perfil`, PR 17).
+15. PR 1.14 — Selector de espacio y "Mis espacios" (rama `feat/selector-de-espacio`).
 
 ## Siguiente
 
-1. Fase 1, PR 1.14 — Selector de espacio y "Mis espacios". El prompt está en `docs/PROMPTS.md` §5, con los 16 PR de la fase en orden.
+1. Fase 1, PR 1.15 — Marca: nombre, colores y modo. El prompt está en `docs/PROMPTS.md` §5, con los 16 PR de la fase en orden.
 
 ## Fases
 
@@ -69,7 +70,7 @@ El diseño está en DECISIONES D-036 a D-064, y el detalle de cada PR, en `docs/
 - [x] PR 1.11 — Dar de baja y reactivar a un cliente
 - [x] PR 1.12 — Crear negocio y primeros pasos del coach
 - [x] PR 1.13 — Perfil y cuenta
-- [ ] PR 1.14 — Selector de espacio y "Mis espacios"
+- [x] PR 1.14 — Selector de espacio y "Mis espacios"
 - [ ] PR 1.15 — Marca: nombre, colores y modo
 - [ ] PR 1.16 — Marca: logo
 - [ ] PR 1.17 — Staging y emails reales (necesita el dominio, P-01)
@@ -137,6 +138,7 @@ Cosas que alguien ha visto y que no tocaban en su tarea. No se hacen sin convert
 
 Lo más nuevo, arriba.
 
+- 2026-11-14 — PR 1.14 (espacios): con varios espacios y ninguno elegido en el dispositivo, el selector `/select` (primero el negocio propio, cada uno con su distintivo y "Coach" o "Cliente"); el elegido se recuerda en el dispositivo y se olvida al cerrar sesión (D-066). "Mis espacios" en el perfil y en los ajustes: cambiar de espacio, "Añadir un coach con código" y "Crear mi negocio". Al unirse a un coach o crear el negocio se entra en el espacio nuevo sin pasar un momento por la bienvenida (antes pasaba, y un test fallaba de vez en cuando por eso). `coach.iron@example.com` ve ahora el selector al entrar.
 - 2026-11-14 — PR 1.13 (perfil y cuenta): "Perfil" en el menú del cliente y "Mi cuenta" en los Ajustes del coach, con nombre (lo ve el coach en su lista), idioma (se guarda en la cuenta: al entrar en otro dispositivo, la app se pone en ese idioma, y los emails llegan en él), kilos o libras, el email (solo se ve), cambiar la contraseña (pide la actual salvo a quien entró con un código; cierra los demás dispositivos y llega un aviso por email), los textos legales y "Cerrar sesión", que sale de la cabecera. El cliente ve "Powered by ATHLETE CORE". En el seed, todos los usuarios tienen la cuenta en inglés (lo esperan los tests) salvo carla, en español.
 - 2026-11-14 — PR 1.12 (crear negocio): "¿Eres coach?" lleva al registro y, al confirmar, a crear el negocio (nombre y condiciones para coaches, en borrador); el coach llega a su zona con la marca de ATHLETE CORE y su nombre, y una tarjeta de primeros pasos que desaparece con su primer cliente. "Ajustes" en el menú del coach (de momento, vacío). Los tests unitarios esperan 3 segundos en vez de 1 (fallaban por lentitud con todos a la vez).
 - 2026-11-14 — PR 1.11 (bajas): ficha del cliente con "Dar de baja" (con confirmación) y "Reactivar" (avisa si el plan está lleno); el cliente dado de baja ve "Ya no tienes acceso a …" con la marca de la plataforma y tres salidas; los espacios salen de `my_spaces` y se piden otra vez cada vez que se vuelve a la app, así una baja se nota con la app abierta.

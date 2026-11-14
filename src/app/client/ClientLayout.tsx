@@ -5,7 +5,6 @@ import { LanguageSwitcher } from '@/core/i18n';
 
 import { BrandMark } from '../BrandMark';
 import { ShellNavLink } from '../ShellNavLink';
-import { SignOutButton } from '../SignOutButton';
 import { useShellNav } from '../useShellNav';
 
 /**
@@ -20,10 +19,7 @@ export function ClientLayout() {
     <div className="flex flex-1 flex-col">
       <header className="border-border bg-surface flex items-center justify-between gap-2 border-b px-4 py-2">
         <BrandMark />
-        <div className="flex items-center gap-2">
-          <LanguageSwitcher />
-          <SignOutButton />
-        </div>
+        <LanguageSwitcher />
       </header>
       {/* pb-20: deja sitio a la barra inferior fija. */}
       <main className="mx-auto w-full max-w-xl flex-1 p-4 pb-20">

@@ -1,6 +1,7 @@
 import { expect, test } from '@playwright/test';
 import type { Page } from '@playwright/test';
 
+import { signOut } from './helpers';
 import {
   E2E_PASSWORD,
   createJoinedClient,
@@ -18,13 +19,6 @@ async function signInAs(page: Page, email: string) {
   await page.getByLabel('Password', { exact: true }).fill(E2E_PASSWORD);
   await page.getByRole('button', { name: 'Sign in' }).click();
   await expect(page).not.toHaveURL(/\/login/);
-}
-
-/** Desde el inicio que le toque (zona de coach, de cliente o bienvenida), que tienen el botón. */
-async function signOut(page: Page) {
-  await page.goto('/');
-  await page.getByRole('button', { name: 'Sign out' }).first().click();
-  await expect(page).toHaveURL(/\/login$/);
 }
 
 test('la coach da de baja a un cliente, que pierde el acceso, y lo reactiva', async ({ page }) => {

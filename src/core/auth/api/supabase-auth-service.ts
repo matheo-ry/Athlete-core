@@ -12,6 +12,7 @@ import type {
   AuthService,
   AuthUser,
 } from '../auth-types';
+import { parseProfile } from '../profile';
 import type { SignupProfile } from '../signup';
 
 // El AuthService real: el único sitio de la app que habla con Supabase Auth.
@@ -246,6 +247,68 @@ export function createSupabaseAuthService(): AuthService {
         p_version: profile.termsVersion,
       });
       return resultOf(termsError, 'complete signup (terms)');
+    },
+
+    async getProfile() {
+      const { data: userData, error: userError } = await client.auth.getUser();
+      if (userError !== null) {
+        throw new Error(`Could not load the user: ${userError.code ?? 'unknown'}`);
+      }
+      const { data, error } = await client
+        .from('profiles')
+        .select('display_name, locale, weight_unit')
+        .eq('user_id', userData.user.id)
+        .single();
+      if (error !== null) {
+        throw new Error(`Could not load the profile: ${error.code}`);
+      }
+      return parseProfile(data);
+    },
+
+    async updateProfile(patch) {
+      const { data: userData, error: userError } = await client.auth.getUser();
+      if (userError !== null) {
+        return failure(userError, 'update profile (user)');
+      }
+      const { error } = await client
+        .from('profiles')
+        .update({
+          ...(patch.displayName === undefined ? {} : { display_name: patch.displayName.trim() }),
+          ...(patch.locale === undefined ? {} : { locale: patch.locale }),
+          ...(patch.weightUnit === undefined ? {} : { weight_unit: patch.weightUnit }),
+        })
+        .eq('user_id', userData.user.id);
+      if (error !== null) {
+        return failure(error, 'update profile');
+      }
+      // Los emails los manda Supabase Auth, que no lee `profiles`: el idioma y el
+      // nombre van también en los datos de la cuenta (D-044).
+      if (patch.locale !== undefined || patch.displayName !== undefined) {
+        const { error: metadataError } = await client.auth.updateUser({
+          data: {
+            ...(patch.locale === undefined ? {} : { locale: patch.locale }),
+            ...(patch.displayName === undefined ? {} : { display_name: patch.displayName.trim() }),
+          },
+        });
+        if (metadataError !== null) {
+          return failure(metadataError, 'update profile (metadata)');
+        }
+      }
+      return OK;
+    },
+
+    async needsCurrentPassword() {
+      // El método con el que se entró en esta sesión: 'password', 'otp',
+      // 'recovery'… Solo con contraseña hace falta escribir la actual (D-042).
+      const { data, error } = await client.auth.mfa.getAuthenticatorAssuranceLevel();
+      if (error !== null) {
+        return true;
+      }
+      // Cada entrada puede llegar como texto ('password') o como objeto con su hora.
+      const latest = data.currentAuthenticationMethods
+        .map((entry) => (typeof entry === 'string' ? { method: entry, timestamp: 0 } : entry))
+        .sort((a, b) => b.timestamp - a.timestamp)[0];
+      return latest === undefined || latest.method === 'password';
     },
 
     async signOut() {

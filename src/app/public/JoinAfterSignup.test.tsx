@@ -32,9 +32,11 @@ describe('unirse al crear la cuenta (PR 1.9b, D-037)', () => {
     await user.click(screen.getByRole('checkbox'));
     await user.click(screen.getByRole('button', { name: 'Create account' }));
 
-    // También al confirmar el email.
-    expect(await screen.findByText("You're joining Norte Strength.")).toBeVisible();
-    await user.type(screen.getByLabelText('Code'), FAKE_CODE);
+    // También al confirmar el email. (Primero se espera a esa pantalla: el
+    // mismo texto está en la de registro, que se está yendo.)
+    const code = await screen.findByLabelText('Code');
+    expect(screen.getByText("You're joining Norte Strength.")).toBeVisible();
+    await user.type(code, FAKE_CODE);
     await user.click(screen.getByRole('button', { name: 'Continue' }));
 
     expect(await screen.findByRole('heading', { name: 'Today' })).toBeInTheDocument();
@@ -81,8 +83,8 @@ describe('unirse al crear la cuenta (PR 1.9b, D-037)', () => {
   it('cerrar sesión olvida el código pendiente (en un dispositivo compartido)', async () => {
     rememberPendingInvite({ code: 'NORTE001', name: 'Norte', branding: DEFAULT_BRAND });
     const auth = createFakeAuthService({ signedInAs: 'client@example.test' });
-    const { user, router } = await renderApp('/client', { auth });
-    await screen.findByRole('heading', { name: 'Today' });
+    const { user, router } = await renderApp('/client/profile', { auth });
+    await screen.findByRole('heading', { name: 'Profile' });
 
     await user.click(screen.getByRole('button', { name: 'Sign out' }));
 

@@ -17,6 +17,9 @@ test('entrar con contraseña, recargar sin perder la sesión y cerrarla', async 
   await page.reload();
   await expect(page.getByRole('heading', { name: 'Today' })).toBeVisible();
 
+  // "Cerrar sesión" está en el perfil (PR 1.13), no en la cabecera.
+  await expect(page.getByRole('button', { name: 'Sign out' })).toHaveCount(0);
+  await page.getByRole('link', { name: 'Profile' }).first().click();
   await page.getByRole('button', { name: 'Sign out' }).click();
   await expect(page).toHaveURL(/\/login$/);
 

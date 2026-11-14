@@ -113,8 +113,9 @@ describe('entrar y cerrar sesión (PR 1.3)', () => {
 
   it('cerrar sesión lleva a /login y la zona de cliente deja de abrirse', async () => {
     const auth = createFakeAuthService({ signedInAs: 'client@example.test' });
-    const { user, router } = await renderApp('/client', { auth });
-    expect(await screen.findByRole('heading', { name: 'Today' })).toBeInTheDocument();
+    // "Cerrar sesión" está en el perfil (PR 1.13).
+    const { user, router } = await renderApp('/client/profile', { auth });
+    expect(await screen.findByRole('heading', { name: 'Profile' })).toBeInTheDocument();
 
     await user.click(screen.getByRole('button', { name: 'Sign out' }));
 

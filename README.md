@@ -60,7 +60,7 @@ Abre <http://localhost:5173> y entra con uno de los usuarios inventados de `supa
 |---|---|
 | `coach.iron@example.com` | Coach de Iron Lab (rojo, fondo oscuro, plan lleno: 3 de 3). Además, clienta de Norte Strength |
 | `coach.norte@example.com` | Coach de Norte Strength (verde azulado, fondo claro, plan de 10) |
-| `ana@`, `bruno@`, `carla@example.com` | Clientes de Iron Lab |
+| `ana@`, `bruno@`, `carla@example.com` | Clientes de Iron Lab. Carla tiene la cuenta en español: al entrar, la app se pone en español |
 | `diego@`, `elena@example.com` | Clientes de Norte Strength |
 | `fran@example.com` | Dado de baja de Norte Strength |
 
@@ -68,7 +68,7 @@ Códigos de invitación: `IRONLAB1` (Iron Lab) y `NORTE001` (Norte Strength).
 
 Los emails que manda la app no salen de tu ordenador: se ven en <http://127.0.0.1:54324>. La base de datos se ve en <http://127.0.0.1:54323>.
 
-El idioma (inglés o español) se cambia con los botones **English / Español** de cada pantalla. La entrada de menú **Template** es el módulo de ejemplo: no llega a la app publicada.
+El idioma (inglés o español) se cambia con los botones **English / Español** de cada pantalla. Con la sesión abierta, el idioma se guarda en la cuenta (Perfil o Ajustes) y vale en todos los dispositivos. La entrada de menú **Template** es el módulo de ejemplo: no llega a la app publicada.
 
 ### Comandos del día a día
 

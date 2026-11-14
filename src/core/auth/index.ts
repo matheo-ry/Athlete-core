@@ -31,9 +31,13 @@ export {
   TERMS_VERSION,
 } from './signup';
 export type { DisplayNameError, SignupInput, SignupProfile } from './signup';
+export { parseProfile } from './profile';
+export type { ProfilePatch, UserProfile } from './profile';
+export { ProfileLanguageSync } from './ProfileLanguageSync';
 export { RequireAuth } from './RequireAuth';
 export { RequireGuest } from './RequireGuest';
 export { useAuth } from './useAuth';
 export { useAuthAction } from './useAuthAction';
+export { useNeedsCurrentPassword, useProfile, useUpdateProfile } from './useProfile';
 export { RESEND_WAIT_SECONDS, useResendTimer } from './useResendTimer';
 export { useSignIn } from './useSignIn';

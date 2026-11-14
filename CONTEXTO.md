@@ -22,9 +22,9 @@
 ## Dónde estamos
 
 - **Fase actual:** 1 — Cuentas, negocio del coach y unirse con código.
-- **Última tarea terminada:** PR 1.12 — Crear negocio y primeros pasos del coach (2026-11-14), rama `feat/crear-negocio`.
+- **Última tarea terminada:** PR 1.13 — Perfil y cuenta (2026-11-14), rama `feat/perfil`.
 - **En curso:** PR abiertos y apilados, esperando revisión del propietario (D-064). La lista, en `docs/ESTADO.md`.
-- **Siguiente tarea:** Fase 1, PR 1.13 — Perfil y cuenta. Los 16 PR de la fase (1.2 a 1.17) están en orden, con sus criterios de aceptación, en `docs/PROMPTS.md` §5.
+- **Siguiente tarea:** Fase 1, PR 1.14 — Selector de espacio y "Mis espacios". Los 16 PR de la fase (1.2 a 1.17) están en orden, con sus criterios de aceptación, en `docs/PROMPTS.md` §5.
 
 ## Cómo funcionará la Fase 1 (ya decidido)
 
@@ -41,26 +41,30 @@
 - **Módulo `_template`** para copiar (`npm run new:module <nombre>`). Solo se registra en desarrollo.
 - **Base de datos local** (Supabase en Docker): tablas base, funciones de negocio, permisos y RLS en `supabase/migrations/`; 117 tests pgTAP (`npm run db:test`); 2 coaches y 6 clientes inventados (`supabase/seed.sql`, contraseña `password123`; ver `README.md`); tipos generados en `core/supabase/database.types.ts`.
 - **Invitaciones y bajas en la base de datos** (PR 1.8): vista previa sin sesión, unirse con un resultado por caso, tope de intentos, dar de baja y reactivar por función, `my_spaces`.
+- **Cuentas desde la app** (PR 1.6 y 1.7): registro con confirmación del email, entrar con un código por email y recuperar la contraseña.
+- **Unirse con código** (PR 1.9a y 1.9b): `/start`, `/join?code=…` con la vista previa del coach y "Unirme"; el código se recuerda mientras se crea la cuenta y el alta se hace sola al terminar.
+- **Módulo `clients`** (PR 1.10 y 1.11): el primero del producto. Lista de clientes con las plazas del plan, el código de invitación y la ficha con dar de baja y reactivar.
+- **Crear negocio** (PR 1.12): desde "¿Eres coach?" o la bienvenida, con primeros pasos en el inicio del coach.
+- **Perfil y cuenta** (PR 1.13): "Perfil" del cliente y "Ajustes" del coach con nombre, idioma (guardado en la cuenta), kilos o libras, cambiar la contraseña, textos legales y cerrar sesión.
 - **Cuentas configuradas** (PR 1.2): confirmar el email con código de 6 dígitos, los 4 emails en dos idiomas (`supabase/templates/`, se ven en `http://127.0.0.1:54324`), `email_status` y tope de intentos.
 - **Reglas que se comprueban solas:** ESLint con las fronteras de ARQUITECTURA §6, hooks de Git (formato, mensaje de commit, no subir `main`), CI con `npm run check`, y tests que vigilan las fronteras, los textos en dos idiomas y la forma fija de los módulos.
 
 ## Qué falta (lo próximo)
 
-- **Unirse con código** (PR 1.9): `/start`, `/join?code=…` con la vista previa del coach y "Unirme"; el código se recuerda mientras se crea la cuenta y el alta se hace sola al terminar.
-- **Módulo `clients`** (PR 1.10 y 1.11): el primero del producto. Lista de clientes con plazas del plan, la tarjeta del código de invitación y la ficha con dar de baja y reactivar.
-- **Crear negocio** (PR 1.12): desde "¿Eres coach?" o la bienvenida, con primeros pasos en el inicio del coach.
-- **Faltan** perfil, espacios y marca: PR 1.13 a 1.16.
+- **Espacios** (PR 1.14): elegir con qué coach o negocio entrar, si hay más de uno, y "Mis espacios" en el perfil y en los ajustes.
+- **Marca** (PR 1.15 y 1.16): el coach cambia el nombre, los colores, el modo claro u oscuro y el logo.
+- **Staging y emails reales** (PR 1.17): necesita el dominio (P-01) y las cuentas del propietario.
 - Las guardas por sesión y por rol son comodidad, no seguridad: los datos los protege el RLS.
 
 ## Últimos cambios
 
 Los 5 más recientes, el más nuevo arriba. El historial completo está en `docs/ESTADO.md`.
 
+- 2026-11-14 — PR 1.13: perfil y cuenta; "Cerrar sesión" pasa al perfil y a los ajustes.
 - 2026-11-14 — PR 1.12: crear negocio y primeros pasos del coach.
 - 2026-11-14 — PR 1.11: dar de baja y reactivar a un cliente; "Ya no tienes acceso a …".
 - 2026-11-14 — PR 1.10: módulo `clients` con la lista de clientes y el código de invitación.
-- 2026-11-14 — PR 1.9a: primera pantalla y unirse con código, con la vista previa del coach.
-- 2026-11-14 — Diseño de la Fase 1: decisiones D-036 a D-064, lista de los 16 PR en `docs/PROMPTS.md` §5 y ARQUITECTURA §7, §8 y §10 al día.
+- 2026-11-14 — PR 1.9b: unirse al crear la cuenta, con la marca del coach.
 
 ## A tener en cuenta ahora
 

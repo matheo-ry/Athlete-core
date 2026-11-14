@@ -4,7 +4,7 @@ import { useState } from 'react';
 import type { ReactNode } from 'react';
 import { I18nextProvider } from 'react-i18next';
 
-import { AuthProvider, createSupabaseAuthService } from '@/core/auth';
+import { AuthProvider, ProfileLanguageSync, createSupabaseAuthService } from '@/core/auth';
 import type { AuthService } from '@/core/auth';
 import { BrandProvider } from '@/core/branding';
 import { FlagsProvider } from '@/core/flags';
@@ -46,6 +46,8 @@ export function AppProviders({
     <QueryClientProvider client={client}>
       <I18nextProvider i18n={i18n}>
         <AuthProvider service={service}>
+          {/* El idioma de la app y el del perfil, a la par (D-058). */}
+          <ProfileLanguageSync />
           <TenancyProvider source={tenancySource}>
             <FlagsProvider source={flagsSource}>
               <BrandProvider>{children}</BrandProvider>

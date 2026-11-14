@@ -18,12 +18,12 @@ const HOME_ITEMS: Record<Profile, ShellNavItem> = {
   client: { to: '/client', labelKey: 'app.nav.clientHome', icon: 'calendar', order: 0, end: true },
 };
 
-// Las entradas fijas del final del menú: los ajustes, que no son un módulo.
+// Las entradas fijas del final del menú: los ajustes y el perfil, que no son un módulo.
 const END_ITEMS: Record<Profile, readonly ShellNavItem[]> = {
   coach: [
     { to: '/coach/settings', labelKey: 'app.nav.coachSettings', icon: 'settings', order: 1000 },
   ],
-  client: [],
+  client: [{ to: '/client/profile', labelKey: 'app.nav.clientProfile', icon: 'user', order: 1000 }],
 };
 
 export function useShellNav(profile: Profile): ShellNavItem[] {

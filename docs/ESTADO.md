@@ -7,7 +7,7 @@ Este archivo lo actualiza quien termina una tarea, en el mismo Pull Request, jun
 
 ## En curso
 
-- Diseño de la Fase 1 (rama `docs/diseno-fase-1`, PR 4): decisiones D-036 a D-063, la lista de PR y los cambios aprobados en ARQUITECTURA §7, §8 y §10.
+- Diseño de la Fase 1 (rama `docs/diseno-fase-1`, PR 4): decisiones D-036 a D-064, la lista de PR y los cambios aprobados en ARQUITECTURA §7, §8 y §10.
 
 ## Siguiente
 
@@ -36,10 +36,10 @@ Además de lo previsto, a petición del propietario:
 
 ### Fase 1 — Cuentas, negocio del coach y unirse con código
 
-El diseño está en DECISIONES D-036 a D-063, y el detalle de cada PR, en `docs/PROMPTS.md` §5.
+El diseño está en DECISIONES D-036 a D-064, y el detalle de cada PR, en `docs/PROMPTS.md` §5.
 
 - [x] PR 1.1 — Supabase local, primera migración y tests de aislamiento en el CI (53 tests pgTAP; las tablas y funciones nuevas nacen sin permisos, D-032)
-- [x] Decidir cómo se entra y cómo funciona toda la fase (D-035 a D-063)
+- [x] Decidir cómo se entra y cómo funciona toda la fase (D-035 a D-064)
 - [ ] PR 1.2 — Base de datos: cuentas y emails
 - [ ] PR 1.3 — Sesión y login con contraseña
 - [ ] PR 1.4 — Tenant y rol reales, y guardas de ruta
@@ -121,7 +121,7 @@ Cosas que alguien ha visto y que no tocaban en su tarea. No se hacen sin convert
 
 Lo más nuevo, arriba.
 
-- 2026-11-14 — Diseño de la Fase 1: decisiones D-036 a D-063 (primero el código del coach y después la cuenta, email verificado con código de 6 dígitos, dar de baja a un cliente, marca, perfil, protección de datos mínima y plan gratuito de Supabase), la lista de los 16 PR en `docs/PROMPTS.md` §5, P-09 y P-11 cerrados, D-035 completada, y ARQUITECTURA §7, §8 y §10 y el glosario de AGENTS.md actualizados con la aprobación del propietario.
+- 2026-11-14 — Diseño de la Fase 1: decisiones D-036 a D-064 (primero el código del coach y después la cuenta, email verificado con código de 6 dígitos, dar de baja a un cliente, marca, perfil, protección de datos mínima y plan gratuito de Supabase), la lista de los 16 PR en `docs/PROMPTS.md` §5, P-09 y P-11 cerrados, D-035 completada, y ARQUITECTURA §7, §8 y §10 y el glosario de AGENTS.md actualizados con la aprobación del propietario.
 - 2026-11-13 — PR 1.1 (base de datos): Supabase local con los comandos `db:*`, primera migración desde `esquema-base.sql` con privilegios por defecto cerrados (D-032), 53 tests pgTAP, seed con 2 coaches y 5 clientes, tipos generados y job "Base de datos" en el CI.
 - 2026-11-13 — Fase 0 terminada: proyecto base, estructura de carpetas, calidad (ESLint con fronteras, Prettier, hooks de Git), `core/` mínimo con datos de ejemplo, carcasas de coach y de cliente, módulo `_template`, tests (Vitest y Playwright), `supabase init`, Capacitor y CI. Versiones y decisiones en `docs/DECISIONES.md` (D-021 a D-031).
 - 2026-11-12 — Nombre de la app decidido: ATHLETE CORE (DECISIONES D-021).

@@ -165,7 +165,7 @@ No crees pantallas en este PR.
 
 ### Los PR de la Fase 1, del 1.2 al 1.17
 
-El diseño está decidido en `docs/DECISIONES.md` (D-036 a D-063). Se piden **en este orden y de uno en uno**: cada PR sale de `main` con el anterior ya fusionado.
+El diseño está decidido en `docs/DECISIONES.md` (D-036 a D-064). Se piden **en este orden y de uno en uno**: cada PR sale de `main` con el anterior ya fusionado o, si el anterior aún no se ha fusionado, de su rama, con el PR apilado encima (D-064).
 
 | PR | Qué hace | Rama |
 |---|---|---|
@@ -673,7 +673,7 @@ INCLUYE:
 1. "¿Eres coach? Crea tu negocio" en /start lleva al registro. La
    intención se recuerda en el dispositivo y, al confirmar la cuenta,
    se llega a la pantalla de crear negocio.
-2. La pantalla de crear negocio: el nombre (de 2 a 60 caracteres) y la
+2. La pantalla de crear negocio: el nombre (de 2 a 40 caracteres) y la
    casilla "Acepto las condiciones para coaches", con enlace a
    /legal/coach-terms (texto de borrador).
 3. Al crearlo se llega a /coach. La marca inicial es el nombre del

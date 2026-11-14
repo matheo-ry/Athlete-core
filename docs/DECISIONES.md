@@ -206,7 +206,7 @@ Cómo añadir una: copia el formato, usa el siguiente número y no borres las an
 
 ### D-036 · La Fase 1 se diseña entera antes de programar
 - **Fecha:** 2026-11-14
-- **Decisión:** antes de escribir código de la Fase 1 se decide cómo funciona todo (D-037 a D-063) y se escribe la lista de PR en `docs/PROMPTS.md` §5. Por decisión del propietario, el diseño y los PR de la Fase 1 se llevan desde un mismo chat. Sigue valiendo "una tarea = una rama = un PR", y `CONTEXTO.md` y `docs/ESTADO.md` se actualizan en cada PR para que otro chat pueda continuar.
+- **Decisión:** antes de escribir código de la Fase 1 se decide cómo funciona todo (D-037 a D-064) y se escribe la lista de PR en `docs/PROMPTS.md` §5. Por decisión del propietario, el diseño y los PR de la Fase 1 se llevan desde un mismo chat. Sigue valiendo "una tarea = una rama = un PR", y `CONTEXTO.md` y `docs/ESTADO.md` se actualizan en cada PR para que otro chat pueda continuar.
 - **Por qué:** que ningún chat de ejecución tenga que inventarse una decisión de producto. Es una excepción a "un chat por tarea" (GUIA-GIT §8) solo para esta fase.
 
 ### D-037 · Primero el código del coach, después la cuenta
@@ -287,7 +287,7 @@ Cómo añadir una: copia el formato, usa el siguiente número y no borres las an
 
 ### D-049 · Crear negocio
 - **Fecha:** 2026-11-14
-- **Decisión:** solo se pide el **nombre del negocio** (entre 2 y 60 caracteres) y aceptar las condiciones para coaches (D-060). El plan inicial es `free` (3 clientes, D-017). La marca empieza con ese nombre y los colores por defecto de ATHLETE CORE. Justo después el coach llega a su inicio (`/coach`), donde ve una tarjeta de **primeros pasos** con dos enlaces: "Comparte tu código" (a Clientes) y "Personaliza tu marca" (a Ajustes). La tarjeta desaparece cuando tiene su primer cliente activo.
+- **Decisión:** solo se pide el **nombre del negocio** (entre 2 y 40 caracteres, el mismo límite que el nombre de la marca, D-057) y aceptar las condiciones para coaches (D-060). El plan inicial es `free` (3 clientes, D-017). La marca empieza con ese nombre y los colores por defecto de ATHLETE CORE. Justo después el coach llega a su inicio (`/coach`), donde ve una tarjeta de **primeros pasos** con dos enlaces: "Comparte tu código" (a Clientes) y "Personaliza tu marca" (a Ajustes). La tarjeta desaparece cuando tiene su primer cliente activo.
 - **Por qué:** cuanto menos se pregunte antes de ver la app, más coaches terminan el alta. Todo lo demás se puede cambiar después en Ajustes.
 
 ### D-050 · Código de invitación: formato, vigencia y regenerar
@@ -425,6 +425,21 @@ Cómo añadir una: copia el formato, usa el siguiente número y no borres las an
   - No hay copias de seguridad automáticas que se puedan recuperar.
   - El cierre de sesión por inactividad de Supabase es de pago: lo hace la propia app (D-045).
 - **Revisar:** antes del primer usuario real. Con datos reales sin copias de seguridad, un fallo o un borrado por error no se puede deshacer: se recomienda el plan de pago en producción para entonces.
+
+### D-064 · Los PR de la Fase 1 se abren apilados
+- **Fecha:** 2026-11-14
+- **Decisión:** el propietario pidió dejar hecha de una vez, de forma autónoma, toda la Fase 1 que no dependa de él. Como cada PR necesita el anterior y solo él fusiona, cada rama sale de la del PR anterior y su PR apunta a esa rama, como en D-033. El primero de la pila apunta a `docs/diseno-fase-1` (PR 4).
+- **Cómo se revisa:** mientras un PR apunta a la rama anterior, GitHub muestra solo sus propios cambios. Se pueden revisar todos antes de fusionar ninguno.
+- **Cómo se fusiona:** en orden, de uno en uno y con "Squash and merge". Al fusionar uno se borra su rama y GitHub cambia solo el destino del siguiente a `main`. Antes de fusionar el siguiente, un agente lo pone al día. Basta con decir "pon al día el siguiente PR".
+- **Cómo lo pone al día el agente**, sin `push --force`:
+  1. `git fetch origin`.
+  2. Comprueba que `main` tiene exactamente el contenido de la rama recién fusionada: `git diff origin/main <commit final de esa rama>` no muestra nada.
+  3. En la rama siguiente: `git merge -s ours origin/main -m "chore: integrar main tras fusionar el PR anterior"`. Así se apunta que `main` ya está integrado, sin cambiar el contenido de la rama: ese contenido ya incluye todo lo de `main`.
+  4. `git push`. Ahora el PR vuelve a mostrar solo sus propios cambios.
+  
+  Si el paso 2 muestra diferencias (alguien cambió `main` por otro lado), se usa un merge normal y se resuelven los conflictos a mano.
+- **Por qué:** con "squash", el commit que entra en `main` es nuevo, y un merge normal daría conflictos en cada archivo que tocan dos PR seguidos. Con el paso 2, el merge `-s ours` es seguro.
+- **Caduca:** al fusionar el último PR de la Fase 1.
 
 ---
 

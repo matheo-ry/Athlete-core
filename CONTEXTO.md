@@ -22,7 +22,7 @@
 ## Dónde estamos
 
 - **Fase actual:** 1 — Cuentas, negocio del coach y unirse con código.
-- **Última tarea terminada:** diseño de la Fase 1 (2026-11-14), rama `docs/diseno-fase-1`: decisiones D-036 a D-063.
+- **Última tarea terminada:** diseño de la Fase 1 (2026-11-14), rama `docs/diseno-fase-1`: decisiones D-036 a D-064.
 - **En curso:** —
 - **Siguiente tarea:** Fase 1, PR 1.2 — Base de datos: cuentas y emails. Los 16 PR de la fase (1.2 a 1.17) están en orden, con sus criterios de aceptación, en `docs/PROMPTS.md` §5.
 
@@ -51,7 +51,7 @@
 
 Los 5 más recientes, el más nuevo arriba. El historial completo está en `docs/ESTADO.md`.
 
-- 2026-11-14 — Diseño de la Fase 1: decisiones D-036 a D-063, lista de los 16 PR en `docs/PROMPTS.md` §5 y ARQUITECTURA §7, §8 y §10 al día.
+- 2026-11-14 — Diseño de la Fase 1: decisiones D-036 a D-064, lista de los 16 PR en `docs/PROMPTS.md` §5 y ARQUITECTURA §7, §8 y §10 al día.
 - 2026-11-13 — PR 1.1: base de datos local, primera migración, tests de RLS en el CI, seed y tipos.
 - 2026-11-13 — Fase 0: esqueleto completo de la app (proyecto base, `core/` mínimo, carcasas, `_template`, calidad, tests, CI).
 - 2026-11-12 — Nombre decidido: ATHLETE CORE (DECISIONES D-021).

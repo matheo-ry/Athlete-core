@@ -566,8 +566,9 @@ Cómo añadir una: copia el formato, usa el siguiente número y no borres las an
   - **Los descansos cuentan como día del ciclo** y los coloca el coach.
   - **Cada día de entreno** tiene nombre, subtítulo ("Tirón + pierna") y una etiqueta de lugar ("Casa", "Gym"), los tres opcionales.
   - **La duración de un bloque se mide en vueltas completas del ciclo** (de 1 a 52). La app muestra los días que son: 4 vueltas de un ciclo de 8 días son 32 días.
-  - **Una rutina fija** es un solo bloque. **Cambios semanales** son bloques de una vuelta semanal; **mensuales**, bloques de 4 vueltas. El coach elige lo que le convenga para cada cliente.
-  - **Cuando se acaba el último bloque, se sigue repitiendo** hasta que el coach lo cambie, y el coach ve un aviso (D-085).
+  - **El último bloque puede no tener fin** ("Sin fecha de fin"): se repite hasta que el coach lo cambie.
+  - **Una rutina fija** es un solo bloque sin fin. **Cambios semanales** son bloques de una vuelta semanal; **mensuales**, bloques de 4 vueltas. El coach elige lo que le convenga para cada cliente.
+  - **Si el último bloque tenía duración y se acaba, se sigue repitiendo** hasta que el coach lo cambie, y el coach ve un aviso (D-085). El cliente nunca abre la app vacía.
   - **Un bloque semanal va de lunes a domingo.** Si la rutina empieza un miércoles, el cliente hace primero esa semana a medias (miércoles a domingo) y después las vueltas completas.
 - **Por qué:** el propietario usó un ciclo de 8 días, y lo normal es repetir el mismo ciclo muchas semanas subiendo cargas. Un solo modelo cubre la rutina fija, la que cambia cada semana y la que cambia cada mes.
 - **Consecuencias:** no existe un nivel "semana": una semana es una vuelta de un ciclo de 7 días. La base de datos tiene los cinco niveles desde el primer PR, aunque las pantallas de varios bloques llegan en el PR 2.16.
@@ -676,7 +677,7 @@ Cómo añadir una: copia el formato, usa el siguiente número y no borres las an
   - Menú del coach: Clientes, **Rutinas**, **Ejercicios** y Ajustes.
   - **Rutinas** tiene dos pestañas. **"Plantillas"**: sus plantillas. **"Asignadas"**: cada cliente activo con su rutina vigente, el bloque en el que va y cuándo termina; o "Sin rutina".
   - **La ficha del cliente** gana la pestaña **"Rutina"**: la vigente, la próxima y las anteriores, y las acciones de D-078, D-081 y D-083.
-  - **El inicio del coach** muestra una tarjeta de avisos: clientes cuyo último bloque termina en los próximos 7 días o ya se está repitiendo, y clientes sin rutina. Sin emails ni notificaciones (P-07).
+  - **El inicio del coach** muestra una tarjeta de avisos: clientes cuyo último bloque termina en los próximos 7 días o ya se está repitiendo, y clientes sin rutina. Una rutina sin fecha de fin (D-075) no da aviso. Sin emails ni notificaciones (P-07).
   - **Todo se puede hacer igual en el móvil y en el ordenador.** En el móvil el editor enseña un día cada vez; en el ordenador, los días a la izquierda y el contenido del día a la derecha.
 - **Por qué:** con 15 clientes, el coach tiene que ver de un vistazo quién se queda sin rutina. El propietario quiere las mismas funciones en los dos tamaños: unos coaches trabajan en el ordenador y otros en el móvil.
 - **Consecuencias:** las pestañas de la ficha estaban previstas en el manifest (ARQUITECTURA §5) pero nadie las pinta todavía: se construye en el PR 2.14. Para que un módulo aporte una tarjeta al inicio hace falta algo parecido: se construye en el PR 2.18. Los dos tocan `src/core/modules`.

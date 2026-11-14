@@ -59,6 +59,61 @@ export async function latestCode(email: string, count = 1): Promise<string> {
 
 export const E2E_PASSWORD = 'e2e-password-123';
 
+interface ApiSession {
+  token: string;
+  userId: string;
+}
+
+/** Entra por la API (sin navegador) y devuelve la sesión. */
+export async function signInApi(email: string, password: string): Promise<ApiSession> {
+  const { url, key } = localEnv();
+  const response = await fetch(`${url}/auth/v1/token?grant_type=password`, {
+    method: 'POST',
+    headers: { apikey: key, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email, password }),
+  });
+  expect(response.ok).toBe(true);
+  const body = (await response.json()) as { access_token: string; user: { id: string } };
+  return { token: body.access_token, userId: body.user.id };
+}
+
+/** Llama a una función de la base de datos con la sesión de un usuario (respeta el RLS). */
+export async function rpc(session: ApiSession, fn: string, args: Record<string, unknown>) {
+  const { url, key } = localEnv();
+  const response = await fetch(`${url}/rest/v1/rpc/${fn}`, {
+    method: 'POST',
+    headers: {
+      apikey: key,
+      Authorization: `Bearer ${session.token}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(args),
+  });
+  // Las funciones que no devuelven nada responden sin cuerpo.
+  const text = await response.text();
+  return text === '' ? null : (JSON.parse(text) as unknown);
+}
+
+/** Lee una tabla con la sesión de un usuario (respeta el RLS). */
+export async function select(session: ApiSession, path: string): Promise<unknown[]> {
+  const { url, key } = localEnv();
+  const response = await fetch(`${url}/rest/v1/${path}`, {
+    headers: { apikey: key, Authorization: `Bearer ${session.token}` },
+  });
+  return (await response.json()) as unknown[];
+}
+
+/**
+ * Limpieza: la coach de Norte Strength da de baja a un cliente que se unió en un
+ * test. Así su plan no se llena aunque los tests se repitan sin `db:reset`.
+ */
+export async function archiveFromNorte(email: string): Promise<void> {
+  const coach = await signInApi('coach.norte@example.com', 'password123');
+  const [tenant] = (await select(coach, 'tenants?select=id')) as { id: string }[];
+  const client = await signInApi(email, E2E_PASSWORD);
+  await rpc(coach, 'archive_client', { p_tenant: tenant?.id, p_user: client.userId });
+}
+
 /** Crea una cuenta nueva ya confirmada, como si se hubiera registrado desde la app. */
 export async function createConfirmedUser(
   prefix: string,

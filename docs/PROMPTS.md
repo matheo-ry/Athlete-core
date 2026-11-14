@@ -732,9 +732,10 @@ NO INCLUYE: foto de perfil; cambiar el email; borrar la cuenta
 CRITERIOS DE ACEPTACIÓN:
 1. ana@example.com cambia su nombre en Perfil. coach.iron@example.com
    ve el nombre nuevo en su lista de clientes.
-2. Ana pone el idioma en inglés: la app cambia al momento. Cierra
-   sesión, vuelve a entrar y sigue en inglés. Si pide un código por
-   email, llega en inglés.
+2. Ana pone el idioma en español: la app cambia al momento. Cierra
+   sesión, vuelve a entrar (también desde otro navegador) y sigue en
+   español. Si pide un código por email, llega en español. (En el
+   seed, Ana tiene la cuenta en inglés desde el PR 1.13.)
 3. Ana cambia la unidad a lb y, al recargar, sigue en lb.
 4. Al cambiar la contraseña con la actual equivocada ve "La contraseña
    no es correcta". Con la correcta se cambia y llega el email de

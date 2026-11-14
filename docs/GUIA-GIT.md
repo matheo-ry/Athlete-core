@@ -86,7 +86,7 @@ Al subir la rama se ejecuta sola otra comprobación (`npm run check`). Si falla,
 ### Paso 7. Fusionar
 
 - Se fusiona con **Squash and merge**: todos los commits del PR quedan como uno solo en `main`, con un mensaje limpio.
-- Solo fusiona el propietario.
+- Fusiona el propietario, o un agente cuando el propietario le da el visto bueno expreso para ese PR o ese lote de PR (D-068). El colaborador junior no fusiona.
 - La rama se borra al fusionar.
 
 ### Paso 8. Vuelve a `main`
@@ -178,7 +178,8 @@ Si un secreto se sube por error: **cámbialo de inmediato** en el servicio (dalo
 - Un agente trabaja **en una rama y en una tarea**. Nunca en `main`.
 - **Un chat por tarea.** Cuando la tarea se fusiona, ese chat se cierra y la siguiente empieza en un chat nuevo, que se pone al día leyendo `CONTEXTO.md`.
 - Hace commit después de cada paso que funcione, con el formato de §5.
-- No fusiona PR, no borra ramas de otros y no reescribe historial (`push --force`, `rebase` sobre ramas ya subidas).
+- Fusiona un PR solo con el visto bueno expreso del propietario (D-068): junta varios cambios, le dice qué mirar en la app y espera su "adelante". Un visto bueno vale para los PR que nombra, no para los siguientes. Siempre con "Squash and merge" y con el CI en verde.
+- No borra ramas de otros y no reescribe historial (`push --force`, `rebase` sobre ramas ya subidas).
 - Al terminar: `npm run check` en verde, `git status` limpio, rama subida y PR abierto. Si no puede abrir el PR, sube la rama y deja el enlace.
 - Para abrir el PR desde la terminal, el agente escribe la plantilla rellena en un archivo temporal fuera del repositorio y usa `gh pr create --title "…" --body-file <archivo>`. No usa `--fill`, porque se salta la plantilla.
 - **Dos agentes a la vez = dos ramas y dos carpetas.** Nunca dos agentes sobre la misma rama. Para tener una segunda carpeta de trabajo del mismo repositorio:

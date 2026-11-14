@@ -462,6 +462,13 @@ Cómo añadir una: copia el formato, usa el siguiente número y no borres las an
 - **Por qué:** la marca la ven todos los clientes del coach. Si se guardara rota, la app la cambiaría por la de ATHLETE CORE sin avisar; y con dos caminos para guardar, el nombre del negocio y el de la marca podrían quedar distintos.
 - **Consecuencias:** el logo (PR 1.16) también tendrá su función. Los tests de aislamiento que editaban el nombre a mano ahora editan `settings`, que sigue protegido por la misma regla de acceso.
 
+### D-068 · Los agentes fusionan con el visto bueno del propietario
+- **Fecha:** 2026-11-14
+- **Decisión:** un agente puede fusionar Pull Requests en `main`, pero solo cuando el propietario le da el visto bueno expreso para ese PR o ese lote. Cambia la regla anterior ("los agentes no fusionan", AGENTS.md §7 y GUIA-GIT §3 y §8).
+- **Cómo se hace:** el agente no pregunta en cada cambio. Junta varios, le dice al propietario qué mirar en la app ("entra en tal pantalla y dime si te gusta") y fusiona cuando él responde que adelante, o cuando ya no queda nada por cambiar y él lo confirma. Siempre con "Squash and merge", con el CI en verde y, en una pila de PR, en orden y poniendo al día el siguiente como explica D-064.
+- **Lo que no cambia:** un visto bueno vale para los PR que nombra, no para los siguientes. Nada de `push --force`. Producción sigue siendo solo del propietario (regla 12). El colaborador junior no fusiona.
+- **Por qué:** decisión del propietario, que no es programador: prefiere revisar el resultado en la app y no manejar GitHub en cada PR.
+
 ---
 
 ## Pendientes de decidir

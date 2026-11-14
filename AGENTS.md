@@ -128,7 +128,7 @@ Los tests van junto al archivo que prueban: `units.ts` → `units.test.ts`.
 - Commit después de cada paso que funcione. Push al terminar la sesión.
 - El título del Pull Request sigue el mismo formato que un commit: es el mensaje que quedará en `main`.
 - Antes de pedir revisión: `npm run check` en verde.
-- Los agentes **no fusionan** Pull Requests ni hacen `push --force`.
+- Los agentes fusionan un Pull Request **solo con el visto bueno expreso del propietario** para ese PR o ese lote (D-068). Nunca hacen `push --force`.
 
 ## 8. Cómo trabaja un agente en una tarea
 

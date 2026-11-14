@@ -2,15 +2,19 @@
 
 La base de datos del proyecto (ARQUITECTURA §8). Supabase en local necesita Docker Desktop abierto.
 
-- `config.toml`: configuración de Supabase en local (creada con `supabase init`).
+- `config.toml`: configuración de Supabase en local (creada con `supabase init`). Las cuentas siguen DECISIONES D-038 a D-046: hay que confirmar el email; el código es de 6 dígitos y caduca a los 15 minutos; pasan 60 segundos entre un código y el siguiente; la contraseña tiene 8 caracteres como mínimo y, para cambiarla, se pide la actual.
+- `templates/`: los 4 emails de cuenta (confirmar, entrar con código, cambiar la contraseña y aviso de contraseña cambiada). Cada uno lleva el texto en inglés y en español, y elige según `user_metadata.locale`. Solo llevan el código, sin enlaces (D-039). Si cambias una plantilla o `config.toml`, reinicia Supabase local (`npm run db:stop` y `npm run db:start`).
 - `migrations/`: cambios de estructura, en orden. Una migración ya fusionada en `main` no se edita: se crea otra (AGENTS.md, regla 6).
   - `20261113210000_base_schema.sql`: tablas base, funciones, permisos y RLS. Sale de `docs/referencia/esquema-base.sql`.
+  - `20261114100000_accounts_and_emails.sql`: el perfil nace con los datos del registro; `accept_terms`; `email_status` (dice si un email tiene cuenta, sin sesión); el tope de intentos en el esquema `private`, que la API no expone.
 - `tests/`: tests pgTAP de seguridad. Cada archivo va en una transacción que se deshace, con usuarios inventados.
   - `01_tenant_isolation`: un tenant no ve ni toca nada de otro; permisos de cada rol; código de invitación; límite del plan.
   - `02_default_privileges`: una tabla o función nueva sin `grant` nace cerrada (DECISIONES D-032).
   - `03_feature_flags`: cómo se calcula `tenant_effective_features`.
   - `04_rls_enabled`: falla si alguna tabla pública no tiene RLS o alguna vista se lo salta.
-- `seed.sql`: 2 coaches y 5 clientes inventados. La contraseña de todos es `password123` (solo en local).
+  - `05_accounts`: el perfil del registro, aceptar los términos, `email_status` y su tope de intentos.
+- `seed.sql`: 2 coaches y 5 clientes inventados. La contraseña de todos es `password123` (solo en local). Sus datos van en la cuenta, como si se hubieran registrado desde la app.
+- **Emails en local:** no salen de tu ordenador. Se ven en la bandeja de pruebas, `http://127.0.0.1:54324`.
 - `functions/`: Edge Functions (código de servidor). Vacía por ahora.
 - **Qué no va aquí:** datos reales, copias de la base de datos ni claves.
 - La estructura solo cambia con migraciones, nunca a mano desde el panel de Supabase.

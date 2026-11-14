@@ -22,9 +22,9 @@
 ## Dónde estamos
 
 - **Fase actual:** 1 — Cuentas, negocio del coach y unirse con código.
-- **Última tarea terminada:** diseño de la Fase 1 (2026-11-14), rama `docs/diseno-fase-1`: decisiones D-036 a D-064.
-- **En curso:** —
-- **Siguiente tarea:** Fase 1, PR 1.2 — Base de datos: cuentas y emails. Los 16 PR de la fase (1.2 a 1.17) están en orden, con sus criterios de aceptación, en `docs/PROMPTS.md` §5.
+- **Última tarea terminada:** PR 1.2 — Base de datos: cuentas y emails (2026-11-14), rama `db/cuentas-y-emails`.
+- **En curso:** PR abiertos y apilados, esperando revisión del propietario (D-064). La lista, en `docs/ESTADO.md`.
+- **Siguiente tarea:** Fase 1, PR 1.3 — Sesión y login con contraseña. Los 16 PR de la fase (1.2 a 1.17) están en orden, con sus criterios de aceptación, en `docs/PROMPTS.md` §5.
 
 ## Cómo funcionará la Fase 1 (ya decidido)
 
@@ -38,7 +38,8 @@
 - **La app arranca** (`npm install`, `npm run dev`) con datos de ejemplo: zona de coach (`/coach`), zona de cliente (`/client`), bienvenida (`/welcome`), unirse con código (`/join`, solo la pantalla) y 404. Inglés y español.
 - **`core/` mínimo:** variables de entorno validadas, i18n, componentes base, marca → variables de tema (con corrección de contraste), unidades kg/lb, fechas, logger, `defineModule`, flags y tenancy **con datos de ejemplo**, y el cliente de Supabase (sin usar todavía).
 - **Módulo `_template`** para copiar (`npm run new:module <nombre>`). Solo se registra en desarrollo.
-- **Base de datos local** (Supabase en Docker): tablas base, funciones de negocio, permisos y RLS en `supabase/migrations/`; 53 tests pgTAP (`npm run db:test`); 2 coaches y 5 clientes inventados (`supabase/seed.sql`, contraseña `password123`); tipos generados en `core/supabase/database.types.ts`.
+- **Base de datos local** (Supabase en Docker): tablas base, funciones de negocio, permisos y RLS en `supabase/migrations/`; 77 tests pgTAP (`npm run db:test`); 2 coaches y 5 clientes inventados (`supabase/seed.sql`, contraseña `password123`); tipos generados en `core/supabase/database.types.ts`.
+- **Cuentas configuradas** (PR 1.2): confirmar el email con código de 6 dígitos, los 4 emails en dos idiomas (`supabase/templates/`, se ven en `http://127.0.0.1:54324`), `email_status` y tope de intentos.
 - **Reglas que se comprueban solas:** ESLint con las fronteras de ARQUITECTURA §6, hooks de Git (formato, mensaje de commit, no subir `main`), CI con `npm run check`, y tests que vigilan las fronteras, los textos en dos idiomas y la forma fija de los módulos.
 
 ## Qué falta (lo próximo)
@@ -51,11 +52,11 @@
 
 Los 5 más recientes, el más nuevo arriba. El historial completo está en `docs/ESTADO.md`.
 
+- 2026-11-14 — PR 1.2: cuentas y emails en la base de datos (confirmar el email, plantillas, `email_status`, tope de intentos).
 - 2026-11-14 — Diseño de la Fase 1: decisiones D-036 a D-064, lista de los 16 PR en `docs/PROMPTS.md` §5 y ARQUITECTURA §7, §8 y §10 al día.
 - 2026-11-13 — PR 1.1: base de datos local, primera migración, tests de RLS en el CI, seed y tipos.
 - 2026-11-13 — Fase 0: esqueleto completo de la app (proyecto base, `core/` mínimo, carcasas, `_template`, calidad, tests, CI).
 - 2026-11-12 — Nombre decidido: ATHLETE CORE (DECISIONES D-021).
-- 2026-11-12 — Kit inicial: reglas, arquitectura, guía de Git, esquema base de la base de datos y este archivo.
 
 ## A tener en cuenta ahora
 

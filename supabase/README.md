@@ -65,10 +65,19 @@ npx supabase db push --remote --include-seed
 npx supabase test db --remote
 ```
 
-- `login` abre el navegador para entrar en tu cuenta de Supabase. `link` pide la contraseña de la base de datos.
+- `login` abre el navegador para entrar en tu cuenta de Supabase. `link` ya no pide la contraseña de la base de datos: la CLI entra con un usuario temporal.
+- En la línea `Target: … · production`, "production" es el nombre que Supabase da a la rama principal de cualquier proyecto. Lo que cuenta es el nombre del proyecto: `athlete-core-staging`.
 - `--dry-run` solo enseña las migraciones que se aplicarán (todas las de `migrations/`, en orden). Revisadlas juntos antes del siguiente paso.
 - `--include-seed` carga `seed.sql`: los mismos coaches y clientes inventados que en local, con la contraseña `password123`. Solo en staging, nunca en producción.
-- `test db --remote` pasa los tests de seguridad en staging. No deja nada: cada test se deshace al terminar.
+- `test db --remote` pasa los tests de seguridad en staging. No deja nada: cada test se deshace al terminar. Tiene que acabar con `Result: PASS`.
+- **Los tests necesitan la contraseña de la base de datos.** Con el usuario temporal de la CLI fallan todos con `function plan(integer) does not exist`: ese usuario no busca en el esquema `extensions`, donde está pgTAP. Antes de `test db --remote`, en la misma terminal de PowerShell (así la contraseña no queda escrita en el historial):
+
+  ```
+  $p = Read-Host "Contraseña de la base de datos" -AsSecureString
+  $env:SUPABASE_DB_PASSWORD = [System.Net.NetworkCredential]::new("", $p).Password
+  ```
+
+- Si un comando falla con `Connection terminated unexpectedly`, es un corte puntual: repítelo.
 
 ### 3. Configurar las cuentas igual que en local (tú confirmas, el agente revisa)
 

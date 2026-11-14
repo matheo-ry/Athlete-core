@@ -101,9 +101,9 @@ export function activeMemberships(memberships: readonly Membership[]): Membershi
 }
 
 /**
- * En qué espacio se entra (D-056): el elegido, si sigue activo; si solo hay uno,
- * ese. Con varios y sin elección (hasta que llegue el selector, PR 1.14): el de
- * coach si existe y, si no, el más antiguo.
+ * En qué espacio se entra (D-056): el elegido (o el último usado en este
+ * dispositivo), si sigue activo; si solo hay uno, ese. Con varios y sin
+ * elección, ninguno: hay que elegir en el selector (`needsSpaceChoice`).
  */
 export function pickActiveMembership(
   memberships: readonly Membership[],
@@ -114,11 +114,30 @@ export function pickActiveMembership(
   if (preferred !== undefined) {
     return preferred;
   }
-  const coach = active.find((membership) => membership.role !== 'client');
-  if (coach !== undefined) {
-    return coach;
-  }
-  return [...active].sort((a, b) => a.joinedAt.localeCompare(b.joinedAt))[0] ?? null;
+  return active.length === 1 ? (active[0] ?? null) : null;
+}
+
+/** ¿Tiene varios espacios y ninguno elegido? Entonces va al selector (D-056). */
+export function needsSpaceChoice(
+  memberships: readonly Membership[],
+  preferredTenantId: string | null = null,
+): boolean {
+  return (
+    activeMemberships(memberships).length > 1 &&
+    pickActiveMembership(memberships, preferredTenantId) === null
+  );
+}
+
+/**
+ * Los espacios activos en el orden en que se enseñan: primero el negocio propio
+ * y después los coaches, del más antiguo al más nuevo.
+ */
+export function sortedSpaces(memberships: readonly Membership[]): Membership[] {
+  return activeMemberships(memberships).sort((a, b) => {
+    const ownA = a.role === 'client' ? 1 : 0;
+    const ownB = b.role === 'client' ? 1 : 0;
+    return ownA - ownB || a.joinedAt.localeCompare(b.joinedAt);
+  });
 }
 
 export function tenancyFor(membership: Membership | null): Tenancy {
@@ -132,10 +151,20 @@ export function tenancyFor(membership: Membership | null): Tenancy {
   };
 }
 
-/** La pantalla de inicio que le toca a cada uno (D-056). */
-export function homePathFor(tenancy: Tenancy): '/coach' | '/client' | '/welcome' {
-  if (tenancy.profile === null) {
-    return '/welcome';
+export type HomePath = '/coach' | '/client' | '/welcome' | '/select';
+
+/**
+ * La pantalla de inicio que le toca a cada uno (D-056): su zona; el selector
+ * si tiene varios espacios y ninguno elegido; la bienvenida si no tiene ninguno.
+ */
+export function homePathFor(tenancy: Tenancy, mustChoose = false): HomePath {
+  if (tenancy.profile !== null) {
+    return tenancy.profile === 'coach' ? '/coach' : '/client';
   }
-  return tenancy.profile === 'coach' ? '/coach' : '/client';
+  return mustChoose ? '/select' : '/welcome';
+}
+
+/** La zona de un espacio: la de coach para el dueño o el staff; la de cliente, si no. */
+export function homePathOf(membership: Membership): '/coach' | '/client' {
+  return profileForRole(membership.role) === 'coach' ? '/coach' : '/client';
 }

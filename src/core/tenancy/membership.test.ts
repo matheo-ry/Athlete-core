@@ -4,9 +4,12 @@ import { DEFAULT_BRAND } from '../branding/default-brand';
 import {
   activeMemberships,
   homePathFor,
+  homePathOf,
   lostAccessTo,
+  needsSpaceChoice,
   parseMemberships,
   pickActiveMembership,
+  sortedSpaces,
   tenancyFor,
 } from './membership';
 import type { Membership } from './membership';
@@ -75,29 +78,48 @@ describe('pickActiveMembership (D-056)', () => {
     expect(pickActiveMembership([membership({ tenantId: 'a' })])?.tenantId).toBe('a');
   });
 
-  it('con varios, el de coach antes que los de cliente', () => {
+  it('con varios y ninguno elegido, ninguno: toca elegir en el selector', () => {
     const list = [
       membership({ tenantId: 'client-of' }),
       membership({ tenantId: 'mine', role: 'owner' }),
     ];
-    expect(pickActiveMembership(list)?.tenantId).toBe('mine');
+    expect(pickActiveMembership(list)).toBeNull();
+    expect(needsSpaceChoice(list)).toBe(true);
   });
 
-  it('con varios de cliente, el más antiguo', () => {
-    const list = [
-      membership({ tenantId: 'new', joinedAt: '2026-11-10T00:00:00Z' }),
-      membership({ tenantId: 'old', joinedAt: '2026-10-01T00:00:00Z' }),
-    ];
-    expect(pickActiveMembership(list)?.tenantId).toBe('old');
-  });
-
-  it('respeta el elegido si sigue activo, y lo ignora si no', () => {
+  it('respeta el elegido si sigue activo; si no, vuelve a tocar elegir', () => {
     const list = [
       membership({ tenantId: 'mine', role: 'owner' }),
       membership({ tenantId: 'other' }),
     ];
     expect(pickActiveMembership(list, 'other')?.tenantId).toBe('other');
-    expect(pickActiveMembership(list, 'gone')?.tenantId).toBe('mine');
+    expect(needsSpaceChoice(list, 'other')).toBe(false);
+    expect(pickActiveMembership(list, 'gone')).toBeNull();
+    expect(needsSpaceChoice(list, 'gone')).toBe(true);
+  });
+
+  it('si el elegido ya no está activo y queda uno, entra en ese', () => {
+    const list = [
+      membership({ tenantId: 'gone', status: 'archived', tenant: null }),
+      membership({ tenantId: 'left' }),
+    ];
+    expect(pickActiveMembership(list, 'gone')?.tenantId).toBe('left');
+    expect(needsSpaceChoice(list, 'gone')).toBe(false);
+  });
+
+  it('con uno o ninguno no hay que elegir', () => {
+    expect(needsSpaceChoice([membership({ tenantId: 'a' })])).toBe(false);
+    expect(needsSpaceChoice([])).toBe(false);
+  });
+
+  it('sortedSpaces: primero el negocio propio, después los coaches del más antiguo al más nuevo', () => {
+    const list = [
+      membership({ tenantId: 'new', joinedAt: '2026-11-10T00:00:00Z' }),
+      membership({ tenantId: 'old', joinedAt: '2026-10-01T00:00:00Z' }),
+      membership({ tenantId: 'mine', role: 'owner', joinedAt: '2026-11-12T00:00:00Z' }),
+      membership({ tenantId: 'gone', status: 'archived', tenant: null }),
+    ];
+    expect(sortedSpaces(list).map((item) => item.tenantId)).toEqual(['mine', 'old', 'new']);
   });
 
   it('activeMemberships deja fuera los dados de baja', () => {
@@ -140,10 +162,16 @@ describe('lostAccessTo (D-055)', () => {
 });
 
 describe('homePathFor', () => {
-  it('lleva a cada uno a su zona, o a la bienvenida si no tiene espacio', () => {
+  it('lleva a cada uno a su zona, al selector o a la bienvenida', () => {
     expect(homePathFor(tenancyFor(membership({ tenantId: 'a', role: 'owner' })))).toBe('/coach');
     expect(homePathFor(tenancyFor(membership({ tenantId: 'a', role: 'staff' })))).toBe('/coach');
     expect(homePathFor(tenancyFor(membership({ tenantId: 'a', role: 'client' })))).toBe('/client');
     expect(homePathFor(tenancyFor(null))).toBe('/welcome');
+    expect(homePathFor(tenancyFor(null), true)).toBe('/select');
+  });
+
+  it('homePathOf: la zona de cada espacio', () => {
+    expect(homePathOf(membership({ tenantId: 'a', role: 'owner' }))).toBe('/coach');
+    expect(homePathOf(membership({ tenantId: 'a', role: 'client' }))).toBe('/client');
   });
 });

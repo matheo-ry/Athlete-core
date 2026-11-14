@@ -50,6 +50,12 @@ function failure(error: RawAuthError, action: string): { ok: false; reason: Auth
   return { ok: false, reason };
 }
 
+const OK: AuthResult = { ok: true };
+
+function resultOf(error: RawAuthError | null, action: string): AuthResult {
+  return error === null ? OK : failure(error, action);
+}
+
 /** ¿Tiene cuenta este email? Lo usa la app para dar el mensaje correcto (D-043). */
 export async function fetchEmailStatus(email: string): Promise<EmailStatusResult> {
   const { data, error } = await getSupabaseClient().rpc('email_status', { p_email: email });
@@ -62,6 +68,18 @@ export async function fetchEmailStatus(email: string): Promise<EmailStatusResult
     return { ok: false, reason: 'unknown' };
   }
   return { ok: true, status: parsed.data };
+}
+
+/**
+ * Antes de mandar un código se comprueba que el email tiene cuenta: si no la
+ * tiene, no se envía nada y la app lo dice (D-043).
+ */
+async function requireAccount(email: string): Promise<AuthResult> {
+  const status = await fetchEmailStatus(email);
+  if (!status.ok) {
+    return status;
+  }
+  return status.status === 'none' ? { ok: false, reason: 'no_account' } : OK;
 }
 
 export function createSupabaseAuthService(): AuthService {
@@ -88,6 +106,59 @@ export function createSupabaseAuthService(): AuthService {
       // Supabase no distingue "no existe" de "contraseña mala": se pregunta aparte.
       const status = await fetchEmailStatus(email);
       return status.ok ? { ok: false, reason: reasonForInvalidCredentials(status.status) } : status;
+    },
+
+    async sendSignInCode(email) {
+      const account = await requireAccount(email);
+      if (!account.ok) {
+        return account;
+      }
+      // shouldCreateUser: false. Con un código solo se entra; no se crean cuentas (D-039).
+      const { error } = await client.auth.signInWithOtp({
+        email,
+        options: { shouldCreateUser: false },
+      });
+      return resultOf(error, 'send sign-in code');
+    },
+
+    async verifySignInCode(email, code) {
+      const { error } = await client.auth.verifyOtp({ email, token: code, type: 'email' });
+      return resultOf(error, 'verify sign-in code');
+    },
+
+    async sendPasswordResetCode(email) {
+      const account = await requireAccount(email);
+      if (!account.ok) {
+        return account;
+      }
+      const { error } = await client.auth.resetPasswordForEmail(email);
+      return resultOf(error, 'send password reset code');
+    },
+
+    async verifyPasswordResetCode(email, code) {
+      const { error } = await client.auth.verifyOtp({ email, token: code, type: 'recovery' });
+      return resultOf(error, 'verify password reset code');
+    },
+
+    async updatePassword(newPassword, currentPassword) {
+      const { error } = await client.auth.updateUser(
+        currentPassword === undefined
+          ? { password: newPassword }
+          : { password: newPassword, current_password: currentPassword },
+      );
+      if (error !== null) {
+        return failure(error, 'update password');
+      }
+      // D-042: con la contraseña nueva se cierran las sesiones de los demás
+      // dispositivos. Si falla, la contraseña ya está cambiada: solo se registra.
+      const { error: othersError } = await client.auth.signOut({ scope: 'others' });
+      if (othersError !== null) {
+        logger.warn('Auth: could not close the other sessions', {
+          code: othersError.code,
+          status: othersError.status,
+        });
+      }
+      return OK;
     },
 
     async signOut() {

@@ -28,6 +28,19 @@ describe('classifyAuthError', () => {
     expect(classifyAuthError({ message: 'TypeError: Failed to fetch' })).toBe('offline');
   });
 
+  it('reconoce los errores de los códigos por email y de la contraseña nueva', () => {
+    expect(classifyAuthError({ code: 'otp_expired', status: 403 })).toBe('invalid_code');
+    expect(classifyAuthError({ code: 'otp_disabled', status: 422 })).toBe('no_account');
+    expect(classifyAuthError({ code: 'weak_password', status: 422 })).toBe('weak_password');
+    expect(classifyAuthError({ code: 'same_password', status: 422 })).toBe('same_password');
+    expect(classifyAuthError({ code: 'current_password_invalid', status: 400 })).toBe(
+      'wrong_password',
+    );
+    expect(classifyAuthError({ code: 'over_email_send_rate_limit', status: 429 })).toBe(
+      'rate_limited',
+    );
+  });
+
   it('cualquier otra cosa es un error inesperado', () => {
     expect(classifyAuthError({ code: 'unexpected_failure', status: 500 })).toBe('unknown');
     expect(classifyAuthError({})).toBe('unknown');

@@ -13,11 +13,12 @@ PR abiertos, apilados y esperando revisión (D-064). Se fusionan en este orden:
 2. PR 1.2 — Base de datos: cuentas y emails (rama `db/cuentas-y-emails`, PR 5).
 3. PR 1.3 — Sesión y login con contraseña (rama `feat/sesion-y-login`, PR 6).
 4. PR 1.4 — Tenant y rol reales, y guardas de ruta (rama `feat/tenancy-real`, PR 7).
-5. PR 1.5 — Flags reales (rama `feat/flags-reales`).
+5. PR 1.5 — Flags reales (rama `feat/flags-reales`, PR 8).
+6. PR 1.6 — Recuperar la contraseña y entrar con un código por email (rama `feat/recuperar-y-codigo`).
 
 ## Siguiente
 
-1. Fase 1, PR 1.6 — Recuperar la contraseña y entrar con un código por email. El prompt está en `docs/PROMPTS.md` §5, con los 16 PR de la fase en orden.
+1. Fase 1, PR 1.7 — Registro y verificación del email. El prompt está en `docs/PROMPTS.md` §5, con los 16 PR de la fase en orden.
 
 ## Fases
 
@@ -50,7 +51,7 @@ El diseño está en DECISIONES D-036 a D-064, y el detalle de cada PR, en `docs/
 - [x] PR 1.3 — Sesión y login con contraseña
 - [x] PR 1.4 — Tenant y rol reales, y guardas de ruta
 - [x] PR 1.5 — Flags reales
-- [ ] PR 1.6 — Recuperar la contraseña y entrar con un código por email
+- [x] PR 1.6 — Recuperar la contraseña y entrar con un código por email
 - [ ] PR 1.7 — Registro y verificación del email
 - [ ] PR 1.8 — Base de datos: invitaciones, bajas y negocio
 - [ ] PR 1.9 — Primera pantalla y unirse con código
@@ -126,6 +127,7 @@ Cosas que alguien ha visto y que no tocaban en su tarea. No se hacen sin convert
 
 Lo más nuevo, arriba.
 
+- 2026-11-14 — PR 1.6 (códigos por email): `/reset-password` (email, código y contraseña nueva; cierra las demás sesiones) y `/login/code` (entrar sin contraseña). Piezas comunes `EmailStep`, `CodeStep` y `NewPasswordStep`; "Enviar otro código" a los 60 segundos; tests de extremo a extremo que leen el código real de la bandeja local.
 - 2026-11-14 — PR 1.5 (flags reales): `core/flags` lee `tenant_effective_features` del espacio activo; el módulo de ejemplo se monta en desarrollo sin flag. El router se crea una sola vez con todas las rutas y cada módulo va detrás de su flag (`ModuleGate`); la tenancy y los flags ya no ocultan las pantallas mientras cargan, esperan las guardas (`RequireProfile`, `RequireFlags`). Así una pantalla a medias no pierde lo escrito al cambiar la sesión o el espacio. Cerrar sesión ya no da error si falla el aviso al servidor: la sesión del dispositivo se borra antes.
 - 2026-11-14 — PR 1.4 (tenancy real): `core/tenancy` lee los espacios del usuario de la base de datos, la marca del negocio se aplica al tema, guardas por rol (`RequireProfile`) en `/coach`, `/client` y `/welcome`, "/" lleva a cada uno a su sitio. Desaparecen los datos de ejemplo de tenancy y la barra de desarrollo.
 - 2026-11-14 — PR 1.3 (sesión y login): `core/auth` con la sesión guardada en el dispositivo, `/login` con los mensajes de D-043, guardas `RequireAuth` y `RequireGuest`, cerrar sesión, aviso de sesión caducada, cierre a los 30 días sin uso, franja "Sin conexión", variables de Supabase obligatorias y tests de extremo a extremo contra Supabase local.

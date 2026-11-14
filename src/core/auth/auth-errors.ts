@@ -14,11 +14,23 @@ export interface RawAuthError {
 /** 'invalid_credentials' necesita una segunda consulta: ¿el email tiene cuenta? (D-043) */
 export type AuthErrorKind = AuthFailureReason | 'invalid_credentials';
 
-const RATE_LIMIT_CODES = new Set([
-  'over_request_rate_limit',
-  'over_email_send_rate_limit',
-  'over_sms_send_rate_limit',
-]);
+// Códigos de error de Supabase Auth y el motivo que ve la app.
+const CODE_KINDS: Readonly<Record<string, AuthErrorKind>> = {
+  invalid_credentials: 'invalid_credentials',
+  email_not_confirmed: 'email_not_confirmed',
+  over_request_rate_limit: 'rate_limited',
+  over_email_send_rate_limit: 'rate_limited',
+  over_sms_send_rate_limit: 'rate_limited',
+  // Supabase usa "otp_expired" tanto para un código caducado como para uno equivocado.
+  otp_expired: 'invalid_code',
+  // Pedir un código para entrar con un email sin cuenta (no se crean cuentas así, D-039).
+  otp_disabled: 'no_account',
+  user_not_found: 'no_account',
+  weak_password: 'weak_password',
+  same_password: 'same_password',
+  current_password_required: 'wrong_password',
+  current_password_invalid: 'wrong_password',
+};
 
 /** ¿El error es que no hay conexión? */
 export function isNetworkError(error: RawAuthError): boolean {
@@ -33,13 +45,11 @@ export function classifyAuthError(error: RawAuthError): AuthErrorKind {
   if (isNetworkError(error)) {
     return 'offline';
   }
-  if (error.code === 'invalid_credentials') {
-    return 'invalid_credentials';
+  const byCode = error.code === undefined ? undefined : CODE_KINDS[error.code];
+  if (byCode !== undefined) {
+    return byCode;
   }
-  if (error.code === 'email_not_confirmed') {
-    return 'email_not_confirmed';
-  }
-  if ((error.code !== undefined && RATE_LIMIT_CODES.has(error.code)) || error.status === 429) {
+  if (error.status === 429) {
     return 'rate_limited';
   }
   if (error.message === 'rate_limited') {

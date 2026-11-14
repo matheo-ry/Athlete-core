@@ -7,8 +7,8 @@ import { MySpacesSection } from '../MySpacesSection';
 import { BrandSection } from './BrandSection';
 
 /**
- * Ajustes del coach: "Marca" (solo el dueño, PR 1.15), "Mis espacios" (PR 1.14)
- * y "Mi cuenta" (PR 1.13). El logo llega en el PR 1.16, dentro de "Marca".
+ * Ajustes del coach: "Marca" (solo el dueño, PR 1.15 y 1.16, con el logo),
+ * "Mis espacios" (PR 1.14) y "Mi cuenta" (PR 1.13).
  */
 export function CoachSettingsPage() {
   const { t } = useTranslation();

@@ -3,8 +3,8 @@ import { useBrand } from '@/core/branding';
 import { BrandBadge } from './BrandBadge';
 
 /**
- * Nombre de la marca que se está mostrando (la del coach o la de la plataforma),
- * con sus iniciales. El logo llega en el PR 1.16.
+ * La marca que se está mostrando (la del coach o la de la plataforma) en la
+ * cabecera: su logo, o sus iniciales si no tiene, y su nombre.
  */
 export function BrandMark() {
   const brand = useBrand();

@@ -267,7 +267,7 @@
     },
     "brand": {
       "title": "Brand",
-      "description": "How your clients see the app: your business name, your colors and light or dark mode.",
+      "description": "How your clients see the app: your business name, your logo, your colors and light or dark mode.",
       "nameLabel": "Business name",
       "nameHint": "Your clients see it. Between 2 and 40 characters.",
       "nameTooShort": "Write at least 2 characters.",
@@ -306,7 +306,14 @@
         "purple": "Purple",
         "indigo": "Indigo",
         "slate": "Slate gray"
-      }
+      },
+      "logoLabel": "Logo",
+      "logoHint": "PNG, JPG or WebP, up to 2 MB. It looks best square and at least 256 px.",
+      "logoUpload": "Upload logo",
+      "logoChange": "Change logo",
+      "logoRemove": "Remove logo",
+      "logoTooLarge": "The logo can't be larger than 2 MB.",
+      "logoInvalidType": "Format not supported. Use PNG, JPG or WebP."
     }
   }
 }

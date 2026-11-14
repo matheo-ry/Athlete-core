@@ -17,11 +17,12 @@ PR abiertos, apilados y esperando revisión (D-064). Se fusionan en este orden:
 6. PR 1.6 — Recuperar la contraseña y entrar con un código por email (rama `feat/recuperar-y-codigo`, PR 9).
 7. PR 1.7 — Registro y verificación del email (rama `feat/registro`, PR 10).
 8. PR 1.8 — Base de datos: invitaciones, bajas y negocio (rama `db/invitaciones-y-bajas`, PR 11).
-9. PR 1.9a — Primera pantalla y unirse con código (rama `feat/unirse-con-codigo`).
+9. PR 1.9a — Primera pantalla y unirse con código (rama `feat/unirse-con-codigo`, PR 12).
+10. PR 1.9b — Unirse al crear la cuenta (rama `feat/unirse-tras-registro`).
 
 ## Siguiente
 
-1. Fase 1, PR 1.9b — Recordar el código mientras se crea la cuenta, la marca del coach en las pantallas de cuenta y el alta automática. El prompt está en `docs/PROMPTS.md` §5, con los 16 PR de la fase en orden.
+1. Fase 1, PR 1.10 — Módulo `clients`: lista y código de invitación. El prompt está en `docs/PROMPTS.md` §5, con los 16 PR de la fase en orden.
 
 ## Fases
 
@@ -57,9 +58,9 @@ El diseño está en DECISIONES D-036 a D-064, y el detalle de cada PR, en `docs/
 - [x] PR 1.6 — Recuperar la contraseña y entrar con un código por email
 - [x] PR 1.7 — Registro y verificación del email
 - [x] PR 1.8 — Base de datos: invitaciones, bajas y negocio
-- [ ] PR 1.9 — Primera pantalla y unirse con código (partido en dos, como preveía `docs/PROMPTS.md` §5)
+- [x] PR 1.9 — Primera pantalla y unirse con código (partido en dos, como preveía `docs/PROMPTS.md` §5)
   - [x] 1.9a — `/start`, vista previa del coach, unirse con sesión, todos los mensajes de D-054 y el tope de intentos
-  - [ ] 1.9b — recordar el código al crear la cuenta, marca del coach en las pantallas de cuenta y alta automática
+  - [x] 1.9b — recordar el código al crear la cuenta, marca del coach en las pantallas de cuenta y alta automática
 - [ ] PR 1.10 — Módulo `clients`: lista y código de invitación
 - [ ] PR 1.11 — Dar de baja y reactivar a un cliente
 - [ ] PR 1.12 — Crear negocio y primeros pasos del coach
@@ -132,6 +133,7 @@ Cosas que alguien ha visto y que no tocaban en su tarea. No se hacen sin convert
 
 Lo más nuevo, arriba.
 
+- 2026-11-14 — PR 1.9b (unirse al crear la cuenta): el código se recuerda 7 días mientras se crea y se confirma la cuenta; esas pantallas se ven con la marca del coach; al terminar, el alta se hace sola; "/" retoma un alta a medias; cerrar sesión olvida el código.
 - 2026-11-14 — PR 1.9a (unirse con código): primera pantalla `/start`; `/join?code=…` con la vista previa del coach pintada con su marca, con sesión y sin ella; "Unirme" con un mensaje para cada caso de D-054; `/welcome` con el código y "Crear mi negocio" (aviso "Disponible pronto" hasta el PR 1.12). En el PR 1.8, topes más altos por conexión para el wifi de un gimnasio (D-065).
 - 2026-11-14 — PR 1.8 (base de datos): códigos de 8 caracteres sin los que se confunden; vista previa sin sesión; unirse con un resultado por caso y sin reactivar a los dados de baja; tope de 10 códigos equivocados; dar de baja y reactivar solo por función (comprueba el plan); `my_spaces`; `create_tenant` con condiciones para coaches y marca inicial. Seed con plan lleno, una coach que es también clienta y un cliente dado de baja. 117 tests pgTAP.
 - 2026-11-14 — PR 1.7 (registro): `/signup` con nombre, email, contraseña y la casilla de los términos; `/verify` con el código; al confirmar vale siempre la última contraseña (D-043, con test de extremo a extremo); avisos de cuenta que ya existe o pendiente; textos legales en borrador; unidad de peso inicial según el dispositivo (D-058).

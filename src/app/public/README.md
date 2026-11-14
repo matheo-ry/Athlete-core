@@ -7,5 +7,6 @@ Pantallas de entrada, fuera de las zonas de coach y de cliente: la primera panta
 - **Qué va aquí:** pantallas que se ven antes de pertenecer a un tenant.
 - **Piezas comunes de las pantallas de cuenta:** `EmailStep` (escribir el email y mandar el código), `CodeStep` (escribir el código de 6 dígitos, con "Enviar otro código" a los 60 segundos), `NewPasswordStep` y `FailureMessage` (el mensaje de un fallo, con la salida que toca resaltada, D-043). El email escrito pasa de una pantalla a otra en el estado de la navegación (`auth-navigation.ts`), no en la dirección.
 - **Unirse** (D-051 y D-054): `JoinCodeView` pide la vista previa una sola vez por código (un código equivocado pedido dos veces contaría dos intentos) y da un mensaje para cada caso (`join-messages.ts`).
-- **Qué falta (Fase 1):** recordar el código mientras se crea la cuenta (PR 1.9b) y crear negocio (PR 1.12). Ver `docs/PROMPTS.md` §5.
+- **Unirse al crear la cuenta** (D-037): "Crear cuenta" y "Ya tengo cuenta" recuerdan el código y vuelven a `/join` al terminar, donde el alta se hace sola. `PendingInviteBrand` pinta las pantallas de cuenta con la marca de ese coach.
+- **Qué falta (Fase 1):** crear negocio (PR 1.12). Ver `docs/PROMPTS.md` §5.
 - **Qué no va aquí:** nada que necesite datos de un tenant, ni llamadas a Supabase (eso va en `core/auth/api/`).

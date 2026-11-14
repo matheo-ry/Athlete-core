@@ -191,6 +191,9 @@
       "title": "Coming soon",
       "createBusiness": "Creating your business will be available very soon.",
       "back": "Back"
+    },
+    "pendingInvite": {
+      "joining": "You're joining {{name}}."
     }
   }
 }

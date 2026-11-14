@@ -8,6 +8,7 @@ import { AuthProvider, createSupabaseAuthService } from '@/core/auth';
 import type { AuthService } from '@/core/auth';
 import { BrandProvider } from '@/core/branding';
 import { FlagsProvider } from '@/core/flags';
+import type { FlagsSource } from '@/core/flags';
 import { i18n } from '@/core/i18n';
 import { TenancyProvider } from '@/core/tenancy';
 import type { TenancySource } from '@/core/tenancy';
@@ -22,6 +23,8 @@ interface AppProvidersProps {
   authService?: AuthService;
   /** Solo para tests: espacios falsos, sin Supabase. */
   tenancySource?: TenancySource;
+  /** Solo para tests: flags falsos, sin Supabase. */
+  flagsSource?: FlagsSource;
 }
 
 /**
@@ -34,6 +37,7 @@ export function AppProviders({
   queryClient,
   authService,
   tenancySource,
+  flagsSource,
 }: AppProvidersProps) {
   const [client] = useState(() => queryClient ?? createQueryClient());
   const [service] = useState(() => authService ?? createSupabaseAuthService());
@@ -43,7 +47,7 @@ export function AppProviders({
       <I18nextProvider i18n={i18n}>
         <AuthProvider service={service}>
           <TenancyProvider source={tenancySource}>
-            <FlagsProvider>
+            <FlagsProvider source={flagsSource}>
               <BrandProvider>{children}</BrandProvider>
             </FlagsProvider>
           </TenancyProvider>

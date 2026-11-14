@@ -17,3 +17,11 @@ export const registeredModules: readonly ModuleManifest[] = [
   ...productModules,
   ...developmentModules,
 ];
+
+/**
+ * Claves de los módulos de ejemplo. Se montan siempre en desarrollo, sin flag en
+ * la base de datos: el catálogo de flags solo tiene funciones del producto.
+ */
+export const developmentModuleKeys: ReadonlySet<string> = new Set(
+  developmentModules.map((module) => module.key),
+);

@@ -91,18 +91,18 @@ select is(
 reset role;
 update public.tenants set status = 'active' where id = current_setting('t.ta')::uuid;
 
--- ----- Tope de intentos (D-052): 10 equivocados en 10 minutos -----
--- Desde esta conexión ya van 2 fallos. Con 8 más se llega a 10…
+-- ----- Tope de intentos sin sesión (D-052 y D-065): 30 equivocados por conexión -----
+-- Desde esta conexión ya van 2 fallos. Con 28 más se llega a 30…
 set local role anon;
 select is(
-  (select count(*)::int from generate_series(1, 8) g
+  (select count(*)::int from generate_series(1, 28) g
    where public.preview_invite('WRONG' || g) ->> 'status' = 'invalid_code'),
-  8, 'D-052: hasta 10 códigos equivocados se pueden probar'
+  28, 'D-065: sin sesión, hasta 30 códigos equivocados por conexión (el wifi de un gimnasio)'
 );
 -- …y ya no se puede probar ni siquiera el bueno.
 select is(
   public.preview_invite(current_setting('t.code')) ->> 'status',
-  'rate_limited', 'D-052: tras 10 equivocados, hay que esperar (también con el código bueno)'
+  'rate_limited', 'D-052: tras el tope, hay que esperar (también con el código bueno)'
 );
 reset role;
 set local request.headers to '{"x-forwarded-for":"198.51.100.9"}';

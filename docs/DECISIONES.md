@@ -441,6 +441,13 @@ Cómo añadir una: copia el formato, usa el siguiente número y no borres las an
 - **Por qué:** con "squash", el commit que entra en `main` es nuevo, y un merge normal daría conflictos en cada archivo que tocan dos PR seguidos. Con el paso 2, el merge `-s ours` es seguro.
 - **Caduca:** al fusionar el último PR de la Fase 1.
 
+### D-065 · Topes de intentos para redes compartidas
+- **Fecha:** 2026-11-14
+- **Decisión:** ajusta D-052. Lo que se cuenta por conexión (sin sesión) tiene un tope más alto: comprobar si un email tiene cuenta, 60 veces cada 10 minutos (antes 20); códigos de invitación equivocados, 30 cada 10 minutos (antes 10). Con sesión, los códigos siguen contando por usuario: 10 equivocados en 10 minutos y 15 de espera.
+- **Por qué:** todos los móviles del wifi de un gimnasio salen por la misma dirección IP. Con los topes de D-052, un coach que da de alta a 15 clientes en una clase los habría bloqueado entre ellos. Se vio al probar en local, donde todas las peticiones llegan desde la misma dirección.
+- **Consecuencias:** quien quiera averiguar qué emails tienen cuenta puede probar más por hora desde una misma conexión. El dato que se filtra vale poco (que alguien usa una app de entrenamiento) y bloquear a clientes de verdad es peor. Si se ven abusos, se añade un captcha (ya apuntado en "Ideas y deuda").
+- **En local:** si al repetir muchas veces los tests de extremo a extremo aparece "Demasiados intentos", espera 10 minutos o ejecuta `npm run db:reset`.
+
 ---
 
 ## Pendientes de decidir

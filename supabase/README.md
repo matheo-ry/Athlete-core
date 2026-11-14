@@ -79,23 +79,14 @@ npx supabase test db --remote
 
 - Si un comando falla con `Connection terminated unexpectedly`, es un corte puntual: repítelo.
 
-### 3. Configurar las cuentas igual que en local (tú confirmas, el agente revisa)
+### 3. Conectar Resend para enviar los emails (tú, con el agente)
 
-```
-npx supabase config diff
-npx supabase config push
-```
+Va antes de configurar las cuentas: en el plan gratuito, Supabase no deja cambiar las plantillas de email hasta que hay un envío propio conectado (`config push` falla con `entitlement_required`).
 
-- `config diff` enseña qué cambiaría en staging sin tocar nada. `config push` lo aplica después de preguntarte (por defecto, "no").
-- Sube lo que dice `config.toml`: confirmar el email, contraseña de 8 caracteres como mínimo y pedir la actual para cambiarla, códigos de 6 dígitos que caducan a los 15 minutos y 60 segundos entre uno y otro, las 4 plantillas de email en dos idiomas, el aviso de contraseña cambiada y el tope de 100 emails por hora (D-038 a D-046).
-- `site_url` es la dirección local (`http://localhost:5173`). No importa por ahora: los emails no llevan enlaces (D-039). Cuando haya web publicada (P-03), el agente añade la dirección de staging.
-- Si `config diff` no enseña las plantillas, se pegan a mano en Authentication → Emails, desde `templates/`.
-
-### 4. Conectar Resend para enviar los emails (tú, con el agente)
-
-1. En Resend, **Domains → Add domain** con tu dominio. Resend te da unos registros DNS: añádelos donde compraste el dominio y espera a que el dominio salga como **Verified**. Añade también el registro DMARC que te recomiende el agente: ayuda a que los emails no caigan en spam.
-2. En Resend, **API Keys → Create API key**, con permiso solo para enviar y solo desde tu dominio. Se ve una sola vez: pégala directamente en el paso siguiente.
-3. En Supabase, **Authentication → Emails → SMTP Settings**, activa el envío propio:
+1. En Resend, **Domains → Add domain** con tu dominio y la región **Ireland (eu-west-1)**. Si el dominio está en Cloudflare, el botón **Auto configure** crea solos los registros DNS; si no, se copian a mano donde compraste el dominio. Espera a que salga como **Verified**.
+2. Añade a mano el registro DMARC, que Resend no crea y ayuda a que los emails no caigan en spam: tipo `TXT`, nombre `_dmarc`, contenido `v=DMARC1; p=none;`.
+3. En Resend, **API keys → Create API key**, con permiso **Sending access** y solo para tu dominio. Se ve una sola vez: pégala directamente en el paso siguiente.
+4. En Supabase, **Authentication → Emails → SMTP Settings**, activa el envío propio:
 
    | Campo | Valor |
    |---|---|
@@ -106,7 +97,20 @@ npx supabase config push
    | Username | `resend` |
    | Password | la API key de Resend |
 
-4. En Supabase, **Authentication → Rate Limits**, comprueba que el tope de emails por hora es **100** (D-046). Supabase solo deja subirlo con el envío propio activado.
+5. En Supabase, **Authentication → Rate Limits**, pon el tope de emails por hora en **100** (D-046). Supabase solo deja subirlo con el envío propio activado, y `config push` no lo cambia.
+
+### 4. Configurar las cuentas igual que en local (tú confirmas, el agente revisa)
+
+```
+npx supabase config diff
+npx supabase config push
+```
+
+- `config diff` enseña qué cambiaría en staging sin tocar nada. `config push` lo aplica después de preguntarte (por defecto, "no").
+- Sube lo que dice `config.toml`: contraseña de 8 caracteres como mínimo y pedir la actual para cambiarla, códigos de 6 dígitos que caducan a los 15 minutos, las 4 plantillas de email en dos idiomas (asunto y cuerpo) y el aviso de contraseña cambiada (D-038 a D-046).
+- No toca el envío propio del paso 3: lo que `config.toml` no declara se queda como está.
+- Después, `config diff` sigue enseñando unas pocas diferencias que no importan: el envío propio (solo está en staging), el tamaño de la cola de conexiones (`db.pooler`, no se puede subir con este comando) y `storage.vector` (no se usa).
+- `site_url` es la dirección local (`http://localhost:5173`). No importa por ahora: los emails no llevan enlaces (D-039). Cuando haya web publicada (P-03), el agente añade la dirección de staging.
 
 ### 5. Probar desde tu ordenador contra staging (tú)
 

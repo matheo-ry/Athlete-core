@@ -382,12 +382,25 @@ export type Database = {
     };
     Functions: {
       accept_terms: { Args: { p_version: string }; Returns: undefined };
-      create_tenant: { Args: { p_name: string }; Returns: string };
+      archive_client: { Args: { p_tenant: string; p_user: string }; Returns: undefined };
+      create_tenant: { Args: { p_coach_terms_version: string; p_name: string }; Returns: string };
       email_status: { Args: { p_email: string }; Returns: string };
       generate_invite_code: { Args: Record<PropertyKey, never>; Returns: string };
       is_member: { Args: { p_roles?: string[]; p_tenant: string }; Returns: boolean };
-      join_tenant_with_code: { Args: { p_code: string }; Returns: string };
+      join_tenant_with_code: { Args: { p_code: string }; Returns: Json };
+      my_spaces: {
+        Args: Record<PropertyKey, never>;
+        Returns: {
+          branding: Json;
+          joined_at: string;
+          role: string;
+          status: string;
+          tenant_id: string;
+          tenant_name: string;
+        }[];
+      };
       preview_invite: { Args: { p_code: string }; Returns: Json };
+      reactivate_client: { Args: { p_tenant: string; p_user: string }; Returns: undefined };
       regenerate_invite_code: { Args: { p_tenant: string }; Returns: string };
     };
     Enums: {

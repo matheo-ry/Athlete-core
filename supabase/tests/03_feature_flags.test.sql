@@ -21,9 +21,9 @@ insert into public.plan_features (plan, feature_key) values ('pro', 'macros_calc
 
 set local role authenticated;
 set local request.jwt.claims to '{"sub":"00000000-0000-4000-8000-00000000000b","role":"authenticated"}';
-select public.create_tenant('Coach B');
+select public.create_tenant('Coach B', 'test-terms');
 set local request.jwt.claims to '{"sub":"00000000-0000-4000-8000-00000000000a","role":"authenticated"}';
-select set_config('t.ta', public.create_tenant('Coach A')::text, true);
+select set_config('t.ta', public.create_tenant('Coach A', 'test-terms')::text, true);
 
 select is((select count(*)::int from public.tenant_effective_features), 4,
   '23a: el coach solo ve los flags de su tenant');

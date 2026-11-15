@@ -38,8 +38,11 @@
     "notices": {
       "renamed": "Ahora se llama «{{name}}».",
       "archived": "«{{name}}» archivada. La tienes en Archivadas.",
-      "unarchived": "«{{name}}» vuelve a estar activa."
-    }
+      "unarchived": "«{{name}}» vuelve a estar activa.",
+      "duplicated": "«{{name}}» creada."
+    },
+    "duplicate": "Duplicar",
+    "copyName": "Copia de {{name}}"
   },
   "form": {
     "newTitle": "Nueva plantilla",
@@ -53,7 +56,8 @@
     "nameTooLong": "El nombre puede tener hasta 80 caracteres.",
     "cycleDaysInvalid": "Escribe un número del 1 al 28.",
     "limitReached": "Ya tienes 300 plantillas activas. Archiva una para añadir otra.",
-    "conflict": "Esta rutina se ha cambiado desde otro dispositivo. Recarga la página y vuelve a intentarlo."
+    "conflict": "Esta rutina se ha cambiado desde otro dispositivo. Recarga la página y vuelve a intentarlo.",
+    "archivedExercise": "Hay un ejercicio archivado que esta rutina no tenía. Recupéralo en Ejercicios o quítalo de la rutina."
   },
   "editor": {
     "description": "Los días del ciclo. Los cambios se quedan en esta pantalla hasta que los guardes.",
@@ -138,5 +142,21 @@
     },
     "load": "Carga ({{unit}})",
     "extraLoad": "Lastre ({{unit}})"
+  },
+  "copy": {
+    "duplicate": "Duplicar",
+    "copy": "Copiar",
+    "duplicateExercise": "Duplicar: {{name}}",
+    "copyExercise": "Copiar: {{name}}",
+    "pasteExercise": "Pegar ejercicio",
+    "duplicateDayTo": "Duplicar este día en",
+    "duplicateDay": "Duplicar día",
+    "copyDay": "Copiar día",
+    "pasteDay": "Pegar aquí el día copiado",
+    "dayCopied": "Día copiado. Abre otro día u otra rutina para pegarlo.",
+    "dayReplaced": "{{day}} es ahora una copia.",
+    "replaceConfirm_one": "{{day}} ya tiene {{count}} ejercicio. Se sustituirá.",
+    "replaceConfirm_other": "{{day}} ya tiene {{count}} ejercicios. Se sustituirán.",
+    "replaceYes": "Sí, sustituir"
   }
 }

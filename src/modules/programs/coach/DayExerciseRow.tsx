@@ -29,6 +29,10 @@ interface DayExerciseRowProps {
   onNote: (note: string) => void;
   /** Cambia lo prescrito: las series y el descanso (PR 2.10). */
   onPrescription: (item: ProgramDayExercise) => void;
+  /** Otro igual justo debajo (PR 2.11). */
+  onDuplicate: () => void;
+  /** Se copia para pegarlo en otro día o en otra rutina. */
+  onCopy: () => void;
 }
 
 /**
@@ -46,6 +50,8 @@ export function DayExerciseRow({
   onReplace,
   onNote,
   onPrescription,
+  onDuplicate,
+  onCopy,
 }: DayExerciseRowProps) {
   const { t } = useTranslation();
   const noteId = useId();
@@ -130,6 +136,23 @@ export function DayExerciseRow({
           </div>
         </div>
       ) : null}
+
+      <div className="flex flex-wrap gap-1">
+        <Button
+          variant="ghost"
+          aria-label={t('programs.copy.duplicateExercise', { name })}
+          onClick={onDuplicate}
+        >
+          {t('programs.copy.duplicate')}
+        </Button>
+        <Button
+          variant="ghost"
+          aria-label={t('programs.copy.copyExercise', { name })}
+          onClick={onCopy}
+        >
+          {t('programs.copy.copy')}
+        </Button>
+      </div>
 
       {/* Hasta saber cómo se mide el ejercicio no se sabe qué pedir. */}
       {exercise === undefined ? null : (

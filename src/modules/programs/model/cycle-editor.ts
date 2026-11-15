@@ -1,5 +1,6 @@
 import type { Language } from '@/core/i18n';
 
+import { copyDayOnto, duplicateExercise, pasteExercise } from './copy';
 import {
   addExercise,
   moveExercise,
@@ -35,7 +36,12 @@ export type CycleEditorAction =
   | { type: 'replaceExercise'; dayNumber: number; index: number; exerciseId: string }
   | { type: 'setExerciseNote'; dayNumber: number; index: number; note: string }
   /** Lo prescrito en un ejercicio: sus series y su descanso (PR 2.10). */
-  | { type: 'setExercise'; dayNumber: number; index: number; item: ProgramDayExercise };
+  | { type: 'setExercise'; dayNumber: number; index: number; item: ProgramDayExercise }
+  // Copiar y duplicar (PR 2.11).
+  | { type: 'duplicateExercise'; dayNumber: number; index: number }
+  | { type: 'pasteExercise'; dayNumber: number; item: ProgramDayExercise }
+  /** Deja el día igual que `source`: duplicar un día en otro, o pegar uno copiado. */
+  | { type: 'replaceDay'; dayNumber: number; source: ProgramDay };
 
 function updateFirstBlock(
   document: ProgramDocument,
@@ -115,6 +121,18 @@ export function editCycle(document: ProgramDocument, action: CycleEditorAction):
         updateDay(block, action.dayNumber, (day) =>
           setExerciseNote(day, action.index, action.note),
         ),
+      );
+    case 'duplicateExercise':
+      return updateFirstBlock(document, (block) =>
+        updateDay(block, action.dayNumber, (day) => duplicateExercise(day, action.index)),
+      );
+    case 'pasteExercise':
+      return updateFirstBlock(document, (block) =>
+        updateDay(block, action.dayNumber, (day) => pasteExercise(day, action.item)),
+      );
+    case 'replaceDay':
+      return updateFirstBlock(document, (block) =>
+        updateDay(block, action.dayNumber, (day) => copyDayOnto(day, action.source)),
       );
     case 'setExercise':
       return updateFirstBlock(document, (block) =>

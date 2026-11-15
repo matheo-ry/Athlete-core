@@ -2,6 +2,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 import { useTenancy } from '@/core/tenancy';
 
+import { copyOfProgram } from '../model/copy';
 import { newTemplate } from '../model/program-document';
 import { fetchProgram, fetchTemplates, saveProgram, setTemplateArchived } from './programs-api';
 
@@ -24,10 +25,13 @@ export function useTemplates() {
 type TemplateAction =
   | { kind: 'create'; name: string; cycleDays: number }
   | { kind: 'rename'; id: string; name: string }
+  /** Una plantilla nueva igual que esta, con ese nombre (PR 2.11). */
+  | { kind: 'duplicate'; id: string; name: string }
   | { kind: 'archive'; id: string; archived: boolean };
 
 export type TemplateActionResult =
-  { status: 'saved'; id: string } | { status: 'offline' | 'conflict' | 'limit_reached' | 'error' };
+  | { status: 'saved'; id: string }
+  | { status: 'offline' | 'conflict' | 'limit_reached' | 'archived_exercise' | 'error' };
 
 /**
  * Crear, renombrar, archivar o recuperar una plantilla (D-061: sin conexión
@@ -55,7 +59,9 @@ export function useTemplateAction() {
       const document =
         action.kind === 'create'
           ? newTemplate(action.name, action.cycleDays)
-          : { ...(await fetchProgram(tenantId, action.id)), name: action.name };
+          : action.kind === 'duplicate'
+            ? copyOfProgram(await fetchProgram(tenantId, action.id), action.name)
+            : { ...(await fetchProgram(tenantId, action.id)), name: action.name };
       const result = await saveProgram(tenantId, document);
       return result.status === 'saved'
         ? { status: 'saved', id: result.id }

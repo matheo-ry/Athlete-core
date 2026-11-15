@@ -36,7 +36,6 @@
       "description": "Prueba con otro nombre."
     },
     "notices": {
-      "created": "«{{name}}» creada.",
       "renamed": "Ahora se llama «{{name}}».",
       "archived": "«{{name}}» archivada. La tienes en Archivadas.",
       "unarchived": "«{{name}}» vuelve a estar activa."
@@ -55,5 +54,41 @@
     "cycleDaysInvalid": "Escribe un número del 1 al 28.",
     "limitReached": "Ya tienes 300 plantillas activas. Archiva una para añadir otra.",
     "conflict": "Esta rutina se ha cambiado desde otro dispositivo. Recarga la página y vuelve a intentarlo."
+  },
+  "editor": {
+    "description": "Los días del ciclo. Los cambios se quedan en esta pantalla hasta que los guardes.",
+    "backToList": "← Rutinas",
+    "save": "Guardar cambios",
+    "saved": "Cambios guardados.",
+    "unsaved": "Tienes cambios sin guardar.",
+    "conflict": "Esta rutina se ha cambiado desde otro dispositivo. Vuelve a cargarla para ver la última versión: se perderán tus cambios de aquí.",
+    "reload": "Volver a cargar",
+    "changeCycle": "Cambiar",
+    "weeklyDescription": "Semanal: de lunes a domingo.",
+    "shortenConfirm_one": "{{days}} tiene contenido. Si acortas el ciclo, se quitará.",
+    "shortenConfirm_other": "{{days}} tienen contenido. Si acortas el ciclo, se quitarán.",
+    "shortenYes": "Sí, acortar",
+    "daysLabel": "Días del ciclo",
+    "day": "Día {{number}}",
+    "backToDays": "← Días",
+    "kindLabel": "Tipo de día",
+    "kinds": {
+      "training": "Entreno",
+      "rest": "Descanso"
+    },
+    "rest": "Descanso",
+    "restDescription": "Un día de descanso. Márcalo como entreno para ponerle nombre y ejercicios.",
+    "restConfirm_one": "Este día tiene {{count}} ejercicio. Si lo marcas como descanso, se quitará.",
+    "restConfirm_other": "Este día tiene {{count}} ejercicios. Si lo marcas como descanso, se quitarán.",
+    "restYes": "Sí, marcar como descanso",
+    "dayName": "Nombre (opcional)",
+    "subtitle": "Subtítulo (opcional)",
+    "subtitleHint": "Por ejemplo, «Tirón + pierna».",
+    "place": "Lugar (opcional)",
+    "placeHint": "Por ejemplo, «Casa» o «Gym».",
+    "exercises_one": "{{count}} ejercicio",
+    "exercises_other": "{{count}} ejercicios",
+    "sets_one": "{{count}} serie",
+    "sets_other": "{{count}} series"
   }
 }

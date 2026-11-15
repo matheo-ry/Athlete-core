@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router';
 
 import { useLanguage } from '@/core/i18n';
 import { cn } from '@/core/lib';
@@ -23,6 +24,7 @@ export function TemplateListPage() {
   const { t } = useTranslation();
   const language = useLanguage();
   const templates = useTemplates();
+  const navigate = useNavigate();
   const [tab, setTab] = useState<TemplateTab>('active');
   const [query, setQuery] = useState('');
   const [isCreating, setIsCreating] = useState(false);
@@ -54,12 +56,8 @@ export function TemplateListPage() {
 
       {isCreating ? (
         <NewTemplateForm
-          onCreated={(_id, name) => {
-            // El editor llega en el PR 2.8: hasta entonces, se vuelve a la lista.
-            setIsCreating(false);
-            setTab('active');
-            showNotice('created', name);
-          }}
+          // La plantilla nueva se abre en el editor, para ponerle sus días.
+          onCreated={(id) => void navigate(`/coach/programs/${id}`)}
           onCancel={() => setIsCreating(false)}
         />
       ) : null}

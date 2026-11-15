@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import type { FormEvent } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Link } from 'react-router';
 
 import { useLanguage } from '@/core/i18n';
 import { formatDate, logger } from '@/core/lib';
@@ -12,7 +13,7 @@ import { describeCycle } from '../model/template-list';
 import type { TemplateSummary } from '../model/template-list';
 import { TEMPLATE_ACTION_ERRORS } from './template-action-errors';
 
-export type TemplateNotice = 'created' | 'renamed' | 'archived' | 'unarchived';
+export type TemplateNotice = 'renamed' | 'archived' | 'unarchived';
 
 interface TemplateRowProps {
   template: TemplateSummary;
@@ -107,7 +108,13 @@ export function TemplateRow({ template, onDone }: TemplateRowProps) {
       ) : (
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="flex min-w-0 flex-col">
-            <span className="font-medium break-words">{template.name}</span>
+            {/* Pulsar el nombre abre el editor (PR 2.8). */}
+            <Link
+              to={`/coach/programs/${template.id}`}
+              className="text-foreground focus-visible:outline-primary-readable rounded font-medium break-words underline-offset-4 hover:underline focus-visible:outline-2"
+            >
+              {template.name}
+            </Link>
             <span className="text-muted text-sm">{details.join(' · ')}</span>
           </div>
           <div className="flex flex-wrap gap-2">

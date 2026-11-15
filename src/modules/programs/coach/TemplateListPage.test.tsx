@@ -82,7 +82,12 @@ describe('módulo programs: lista de plantillas (PR 2.7)', () => {
     expect(screen.getByText('Create the first one.')).toBeVisible();
   });
 
-  it('"Nueva plantilla": la crea con un bloque sin fin y todos sus días de descanso', async () => {
+  it('"Nueva plantilla": la crea con un bloque sin fin y todos sus días de descanso, y abre el editor', async () => {
+    api.fetchProgram.mockResolvedValue({
+      ...newTemplate('Prueba', 10),
+      id: uuid(9),
+      updatedAt: 'v1',
+    });
     const { user } = await renderAppAs('coach@example.test', '/coach/programs');
     await user.click(await screen.findByRole('button', { name: 'New template' }));
     await user.type(screen.getByLabelText('Name'), 'Prueba');
@@ -91,8 +96,8 @@ describe('módulo programs: lista de plantillas (PR 2.7)', () => {
     await user.click(screen.getByRole('button', { name: 'Create' }));
 
     expect(api.saveProgram).toHaveBeenCalledWith(expect.any(String), newTemplate('Prueba', 10));
-    expect(await screen.findByRole('status')).toHaveTextContent('“Prueba” created.');
-    expect(screen.queryByRole('heading', { name: 'New template' })).toBeNull();
+    expect(await screen.findByRole('heading', { name: 'Prueba', level: 1 })).toBeVisible();
+    expect(api.fetchProgram).toHaveBeenCalledWith(expect.any(String), uuid(9));
   });
 
   it('no crea una plantilla sin nombre ni con un ciclo de más de 28 días', async () => {

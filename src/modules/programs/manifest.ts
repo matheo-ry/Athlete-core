@@ -14,6 +14,13 @@ export const programsModule = defineModule({
             Component: page.TemplateListPage,
           })),
       },
+      {
+        path: 'programs/:programId',
+        lazy: () =>
+          import('./coach/ProgramEditorPage').then((page) => ({
+            Component: page.ProgramEditorPage,
+          })),
+      },
     ],
     client: [],
   },

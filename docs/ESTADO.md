@@ -7,11 +7,11 @@ Este archivo lo actualiza quien termina una tarea, en el mismo Pull Request, jun
 
 ## En curso
 
-Nada. Los PR 2.1 (rama `db/ejercicios`), 2.2 (rama `db/biblioteca-de-ejercicios`) y 2.3 (rama `feat/modulo-exercises`) están abiertos, apilados en ese orden, a la espera de revisión.
+Nada. Los PR 2.1 (rama `db/ejercicios`), 2.2 (rama `db/biblioteca-de-ejercicios`), 2.3 (rama `feat/modulo-exercises`) y 2.4a (rama `feat/editar-ejercicios`) están abiertos, apilados en ese orden, a la espera de revisión.
 
 ## Siguiente
 
-1. **PR 2.4 — Crear, editar, archivar y recuperar ejercicios** (`docs/PROMPTS.md` §6), en un chat nuevo, apilado sobre el PR 2.3. Cierra el lote 1.
+1. **PR 2.4b — Archivar, recuperar, duplicar y "Restaurar original"** (`docs/PROMPTS.md` §6, puntos 3, 4 y 5 del PR 2.4; criterios 5 a 7), apilado sobre el 2.4a. Cierra el lote 1.
 2. **Al fusionar cada PR del lote,** poner al día el siguiente como explica D-064 antes de fusionarlo. Después, el propietario aplica las migraciones 8, 9 y 10 en staging (GUIA-GIT §9).
 3. El propietario dio por buenas, por ahora, la lista de `docs/referencia/biblioteca-ejercicios.md` y las rutinas de ejemplo. Se pueden retocar más adelante.
 
@@ -72,7 +72,9 @@ El diseño está en DECISIONES D-069 a D-088, y el detalle de cada PR, en `docs/
 - [x] PR 2.1 — Base de datos: ejercicios (sin el flag `exercises`, que llega con el módulo en el PR 2.3)
 - [x] PR 2.2 — Los 120 ejercicios de la plataforma
 - [x] PR 2.3 — Ejercicios: lista, buscador y filtros (con el flag `exercises`)
-- [ ] PR 2.4 — Crear, editar, archivar y recuperar ejercicios
+- [ ] PR 2.4 — Crear, editar, archivar y recuperar ejercicios (partido en dos, como preveía su bloque)
+  - [x] 2.4a — crear y editar
+  - [ ] 2.4b — archivar, recuperar, duplicar y restaurar
 
 **Lote 2 — Plantilla**
 
@@ -178,12 +180,16 @@ Cosas que alguien ha visto y que no tocaban en su tarea. No se hacen sin convert
 - Que la semana pueda empezar en domingo, si lo piden los coaches de EE. UU. (D-075).
 - La lista de ejercicios pide como mucho 1.000 filas (`max_rows` de la API). Primero van los activos, que nunca pasan de 1.000; con más de 1.000 entre activos y archivados, faltarían archivados. Se arreglaría pidiendo los archivados aparte o por páginas (D-091).
 - Quitar tildes y mayúsculas para buscar está escrito dos veces, en `clients/model` y en `exercises/model`. Si lo necesita un tercer módulo, subirlo a `core/lib`.
-- El desplegable `FilterSelect` vive en el módulo `exercises`. Si otro módulo o el formulario del PR 2.4 lo necesitan, subirlo a `core/ui` (D-091).
+- El desplegable `FilterSelect` y el campo de varias líneas `TextArea` viven en el módulo `exercises` (D-091 y D-092). Cuando otro módulo los necesite (el editor de rutinas, seguramente), subirlos a `core/ui`, con el visto bueno del propietario.
+- Comprobar en la Fase 4 que "Ver vídeo" abre el navegador del sistema dentro de la app móvil (hoy abre una pestaña nueva, D-074).
+- Crear varios ejercicios seguidos sin que el formulario se cierre ("Guardar y crear otro"), si los coaches lo piden (D-092).
 - Buscar un ejercicio del catálogo también por su nombre en el otro idioma, si los coaches lo piden (hoy solo cuenta el que se ve, D-091).
 
 ## Registro de cambios
 
 Lo más nuevo, arriba.
+
+- 2026-11-15 — PR 2.4a (crear y editar ejercicios): "Nuevo ejercicio", editar cualquier ejercicio pulsando su fila y "Crear «lo escrito»" cuando una búsqueda no encuentra nada. Formulario con nombre y forma de medir obligatorios, unilateral, grupo, material, instrucciones y enlace de vídeo (solo `https://`, D-074), validado con Zod con los límites de la migración 8. En el móvil sustituye a la lista; en escritorio, panel a su lado. Un ejercicio del catálogo editado sin tocar el nombre se sigue viendo en el idioma de cada uno. Detalles en D-092. Sin migraciones. 19 tests unitarios nuevos (419 en total) y 2 de extremo a extremo (47). El PR 2.4 se partió en dos, como preveía su bloque.
 
 - 2026-11-15 — PR 2.3 (lista de ejercicios): módulo `exercises` con "Ejercicios" en el menú del coach (orden 30). `/coach/exercises` muestra los ejercicios del negocio por orden alfabético, con grupo, material y las etiquetas "Unilateral" y "Propio"; los del catálogo sin cambiar, en el idioma de la app (D-071). Pestañas "Activos" y "Archivados" con su número, buscador sin tildes ni mayúsculas y filtros de grupo, material y origen, combinables y hechos en la app (D-073); los 4 estados. Migración 10 con el flag `exercises` (D-089). Detalles en D-091. 26 tests unitarios nuevos (400 en total) y 2 de extremo a extremo (45). Solo lectura: crear, editar y archivar llegan en el PR 2.4.
 - 2026-11-15 — PR 2.2 (los 120 ejercicios de la plataforma): migración 9 con las 120 filas de `docs/referencia/biblioteca-ejercicios.md` en `exercise_library`, tal cual (las filas salen del documento con un script), y la copia para los negocios que ya existen con `copy_exercise_library_to_all_tenants()`, que se puede repetir sin duplicar nada y no toca lo que el coach haya cambiado (D-090). Sin instrucciones ni vídeos (D-074). 11 tests pgTAP nuevos (202 en total); el test 09 usa ahora un catálogo propio de una fila. En local, Iron Lab y Norte Strength tienen 120 ejercicios cada uno.

@@ -10,7 +10,8 @@ import type { Exercise } from '../model/exercise-schema';
 // filtro por negocio elige el espacio activo entre ellos.
 const COLUMNS =
   'id, name, library_key, muscle_group, equipment, measurement, is_unilateral, instructions, ' +
-  'video_url, archived_at, exercise_library(name_en, name_es)';
+  'video_url, archived_at, ' +
+  'exercise_library(name_en, name_es, measurement, is_unilateral, muscle_group, equipment)';
 
 /** Todos los ejercicios del negocio, activos y archivados (la búsqueda va en la app, D-073). */
 export async function fetchExercises(tenantId: string): Promise<Exercise[]> {
@@ -85,4 +86,21 @@ export async function updateExercise(
     .select(COLUMNS)
     .single();
   return toResult(data, error, 'update');
+}
+
+/**
+ * Archivar o recuperar (D-073). Nunca se borra. Recuperar pasa por el tope de
+ * 1.000 sin archivar (D-086).
+ */
+export async function setExerciseArchived(
+  id: string,
+  archived: boolean,
+): Promise<SaveExerciseResult> {
+  const { data, error } = await getSupabaseClient()
+    .from('exercises')
+    .update({ archived_at: archived ? new Date().toISOString() : null })
+    .eq('id', id)
+    .select(COLUMNS)
+    .single();
+  return toResult(data, error, archived ? 'archive' : 'unarchive');
 }

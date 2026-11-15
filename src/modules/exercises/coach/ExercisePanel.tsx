@@ -6,6 +6,8 @@ import { Card } from '@/core/ui';
 import { emptyFormValues, formValuesOf } from '../model/exercise-form';
 import type { ExerciseListItem } from '../model/exercise-list';
 import type { Exercise } from '../model/exercise-schema';
+import { ExerciseActions } from './ExerciseActions';
+import type { ExerciseNotice } from './ExerciseActions';
 import { ExerciseForm } from './ExerciseForm';
 
 export type PanelTarget =
@@ -13,7 +15,10 @@ export type PanelTarget =
 
 interface ExercisePanelProps {
   target: PanelTarget;
-  onSaved: (exercise: Exercise) => void;
+  /** Guardado, archivado, recuperado o restaurado: el panel se cierra. */
+  onDone: (exercise: Exercise, notice: ExerciseNotice) => void;
+  /** La copia de "Duplicar": se abre su formulario. */
+  onDuplicated: (copy: Exercise) => void;
   onClose: () => void;
 }
 
@@ -21,7 +26,7 @@ interface ExercisePanelProps {
  * "Nuevo ejercicio" o "Editar ejercicio". En el móvil ocupa la pantalla (la
  * lista se oculta); en escritorio es un panel junto a la lista.
  */
-export function ExercisePanel({ target, onSaved, onClose }: ExercisePanelProps) {
+export function ExercisePanel({ target, onDone, onDuplicated, onClose }: ExercisePanelProps) {
   const { t } = useTranslation();
   const titleId = useId();
   const heading = useRef<HTMLHeadingElement>(null);
@@ -51,9 +56,12 @@ export function ExercisePanel({ target, onSaved, onClose }: ExercisePanelProps) 
             ? emptyFormValues(target.kind === 'new' ? target.name : '')
             : formValuesOf(exercise, exercise.displayName)
         }
-        onSaved={onSaved}
+        onSaved={(saved) => onDone(saved, 'saved')}
         onCancel={onClose}
       />
+      {exercise !== null ? (
+        <ExerciseActions exercise={exercise} onDone={onDone} onDuplicated={onDuplicated} />
+      ) : null}
     </Card>
   );
 }

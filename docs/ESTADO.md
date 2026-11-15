@@ -7,11 +7,11 @@ Este archivo lo actualiza quien termina una tarea, en el mismo Pull Request, jun
 
 ## En curso
 
-Nada. Los PR 2.1 (rama `db/ejercicios`), 2.2 (rama `db/biblioteca-de-ejercicios`), 2.3 (rama `feat/modulo-exercises`) y 2.4a (rama `feat/editar-ejercicios`) están abiertos, apilados en ese orden, a la espera de revisión.
+Nada. Los PR 2.1 (rama `db/ejercicios`), 2.2 (rama `db/biblioteca-de-ejercicios`), 2.3 (rama `feat/modulo-exercises`), 2.4a (rama `feat/editar-ejercicios`) y 2.4b (rama `feat/archivar-ejercicios`) están abiertos, apilados en ese orden, a la espera de revisión.
 
 ## Siguiente
 
-1. **PR 2.4b — Archivar, recuperar, duplicar y "Restaurar original"** (`docs/PROMPTS.md` §6, puntos 3, 4 y 5 del PR 2.4; criterios 5 a 7), apilado sobre el 2.4a. Cierra el lote 1.
+1. **El lote 1 está completo.** El propietario lo prueba en la app ("Al terminar el lote", `docs/PROMPTS.md` §6) y da el visto bueno para fusionar los PR 2.1, 2.2, 2.3, 2.4a y 2.4b, en ese orden.
 2. **Al fusionar cada PR del lote,** poner al día el siguiente como explica D-064 antes de fusionarlo. Después, el propietario aplica las migraciones 8, 9 y 10 en staging (GUIA-GIT §9).
 3. El propietario dio por buenas, por ahora, la lista de `docs/referencia/biblioteca-ejercicios.md` y las rutinas de ejemplo. Se pueden retocar más adelante.
 
@@ -72,9 +72,9 @@ El diseño está en DECISIONES D-069 a D-088, y el detalle de cada PR, en `docs/
 - [x] PR 2.1 — Base de datos: ejercicios (sin el flag `exercises`, que llega con el módulo en el PR 2.3)
 - [x] PR 2.2 — Los 120 ejercicios de la plataforma
 - [x] PR 2.3 — Ejercicios: lista, buscador y filtros (con el flag `exercises`)
-- [ ] PR 2.4 — Crear, editar, archivar y recuperar ejercicios (partido en dos, como preveía su bloque)
+- [x] PR 2.4 — Crear, editar, archivar y recuperar ejercicios (partido en dos, como preveía su bloque)
   - [x] 2.4a — crear y editar
-  - [ ] 2.4b — archivar, recuperar, duplicar y restaurar
+  - [x] 2.4b — archivar, recuperar, duplicar y restaurar
 
 **Lote 2 — Plantilla**
 
@@ -189,6 +189,7 @@ Cosas que alguien ha visto y que no tocaban en su tarea. No se hacen sin convert
 
 Lo más nuevo, arriba.
 
+- 2026-11-15 — PR 2.4b (archivar, recuperar, duplicar y restaurar): en el panel del ejercicio, "Duplicar" (copia propia con todo, "… (copia)", y abre su formulario), "Restaurar original" (solo en los del catálogo que han cambiado; con confirmación, porque quita las instrucciones y el vídeo) y "Archivar" o "Recuperar" (nunca se borra). La lista carga los datos del catálogo de cada ejercicio para saber si ha cambiado. Detalles en D-093. Sin migraciones. 17 tests unitarios nuevos (436 en total) y 1 de extremo a extremo (48). Cierra el lote 1.
 - 2026-11-15 — PR 2.4a (crear y editar ejercicios): "Nuevo ejercicio", editar cualquier ejercicio pulsando su fila y "Crear «lo escrito»" cuando una búsqueda no encuentra nada. Formulario con nombre y forma de medir obligatorios, unilateral, grupo, material, instrucciones y enlace de vídeo (solo `https://`, D-074), validado con Zod con los límites de la migración 8. En el móvil sustituye a la lista; en escritorio, panel a su lado. Un ejercicio del catálogo editado sin tocar el nombre se sigue viendo en el idioma de cada uno. Detalles en D-092. Sin migraciones. 19 tests unitarios nuevos (419 en total) y 2 de extremo a extremo (47). El PR 2.4 se partió en dos, como preveía su bloque.
 
 - 2026-11-15 — PR 2.3 (lista de ejercicios): módulo `exercises` con "Ejercicios" en el menú del coach (orden 30). `/coach/exercises` muestra los ejercicios del negocio por orden alfabético, con grupo, material y las etiquetas "Unilateral" y "Propio"; los del catálogo sin cambiar, en el idioma de la app (D-071). Pestañas "Activos" y "Archivados" con su número, buscador sin tildes ni mayúsculas y filtros de grupo, material y origen, combinables y hechos en la app (D-073); los 4 estados. Migración 10 con el flag `exercises` (D-089). Detalles en D-091. 26 tests unitarios nuevos (400 en total) y 2 de extremo a extremo (45). Solo lectura: crear, editar y archivar llegan en el PR 2.4.

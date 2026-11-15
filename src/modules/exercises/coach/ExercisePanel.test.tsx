@@ -1,4 +1,4 @@
-import { screen, within } from '@testing-library/react';
+import { screen, waitFor, within } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { renderAppAs } from '@/test/render-app';
@@ -31,6 +31,12 @@ const LAT_PULLDOWN: Exercise = {
   instructions: null,
   videoUrl: null,
   archivedAt: null,
+  original: {
+    measurement: 'weight_reps',
+    isUnilateral: false,
+    muscleGroup: 'back',
+    equipment: 'cable',
+  },
 };
 
 function saved(exercise: Exercise, input: ExerciseInput): SaveExerciseResult {
@@ -55,6 +61,7 @@ describe('módulo exercises: crear y editar (PR 2.4a)', () => {
             id: '00000000-0000-4000-8000-000000000099',
             libraryKey: null,
             libraryName: null,
+            original: null,
           },
           input,
         ),
@@ -110,7 +117,10 @@ describe('módulo exercises: crear y editar (PR 2.4a)', () => {
     await user.type(await screen.findByLabelText('Search by name'), 'sentadilla lateral');
     await user.click(screen.getByRole('button', { name: 'Create “sentadilla lateral”' }));
 
-    expect(screen.getByRole('heading', { name: 'New exercise' })).toHaveFocus();
+    // El foco se pone en un efecto, justo después de pintar el panel.
+    await waitFor(() =>
+      expect(screen.getByRole('heading', { name: 'New exercise' })).toHaveFocus(),
+    );
     expect(screen.getByLabelText('Name')).toHaveValue('sentadilla lateral');
   });
 

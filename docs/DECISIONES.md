@@ -775,6 +775,17 @@ Cómo añadir una: copia el formato, usa el siguiente número y no borres las an
 - **Por qué:** son las opciones más sencillas que cumplen el bloque del PR. La dirección es la forma más barata de que "Atrás" funcione en el móvil sin una ruta nueva en el manifest.
 - **Revisar si:** los coaches piden crear varios ejercicios seguidos sin que el formulario se cierre.
 
+### D-093 · Archivar, recuperar, duplicar y "Restaurar original"
+- **Fecha:** 2026-11-15
+- **Decisión:** detalles del PR 2.4b que D-071 y D-073 no fijaban.
+  - **Las tres acciones van en el panel del ejercicio,** debajo del formulario: "Duplicar", "Restaurar original" y "Archivar" (o "Recuperar", si está archivado). Un ejercicio archivado también se puede editar.
+  - **Archivar no pide confirmación:** se deshace con "Recuperar". Archivar, recuperar y restaurar cierran el panel y la lista lo dice ("«Burpee» archivado. Lo tienes en Archivados").
+  - **"Restaurar original" sale solo si algo ha cambiado:** el nombre, la forma de medir, unilateral, el grupo, el material, o si tiene instrucciones o vídeo (el catálogo no trae ninguno, D-074). **Lo deja como el catálogo**, sin instrucciones ni vídeo, y por eso **pide confirmación** diciendo que se quitarán.
+  - **"Duplicar" copia todo,** también las instrucciones y el vídeo, con el nombre "… (copia)" ("… (copy)" en inglés) y como ejercicio propio y activo. Se abre su formulario para cambiarle el nombre.
+  - **La app carga los datos del catálogo junto a cada ejercicio** para saber si ha cambiado y para restaurarlo, sin pedir nada más. Restaurar es un cambio normal del ejercicio: no hace falta ninguna función nueva en la base de datos.
+- **Por qué:** "Restaurar original" quiere decir volver a lo que trae la plataforma. Quitar instrucciones o un vídeo que escribió el coach no se puede deshacer, así que se avisa antes.
+- **Revisar si:** los coaches piden que restaurar conserve sus instrucciones y su vídeo.
+
 ---
 
 ## Pendientes de decidir

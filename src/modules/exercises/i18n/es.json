@@ -37,7 +37,12 @@
     },
     "newExercise": "Nuevo ejercicio",
     "createFromSearch": "Crear «{{name}}»",
-    "saved": "«{{name}}» guardado."
+    "notices": {
+      "saved": "«{{name}}» guardado.",
+      "archived": "«{{name}}» archivado. Lo tienes en Archivados.",
+      "unarchived": "«{{name}}» vuelve a estar activo.",
+      "restored": "«{{name}}» vuelve a ser el original."
+    }
   },
   "muscleGroups": {
     "chest": "Pecho",
@@ -100,5 +105,14 @@
       "videoUrlNotHttps": "El enlace tiene que empezar por https:// y no llevar espacios.",
       "videoUrlTooLong": "El enlace puede tener como mucho 500 caracteres."
     }
+  },
+  "actions": {
+    "duplicate": "Duplicar",
+    "copyName": "{{name}} (copia)",
+    "archive": "Archivar",
+    "unarchive": "Recuperar",
+    "restore": "Restaurar original",
+    "restoreConfirm": "Volverá a ser «{{name}}», con los datos de la plataforma. Se quitarán tus instrucciones y tu enlace de vídeo.",
+    "restoreYes": "Sí, restaurar"
   }
 }

@@ -125,3 +125,40 @@ test('el coach cambia el nombre de uno del catálogo y se queda así al recargar
   );
   await expect(page.getByRole('listitem').filter({ hasText: 'Jalón al pecho' })).toHaveCount(0);
 });
+
+test('el coach restaura el original, archiva y recupera, y duplica', async ({ page }) => {
+  const business = await createTestBusiness(`E2E Archivar ${suffix()}`);
+  await signIn(page, business.coachEmail, '/login', E2E_PASSWORD);
+  await expect(page).toHaveURL(/\/coach$/);
+  await page.goto('/coach/exercises');
+
+  // "Restaurar original" devuelve el nombre del catálogo.
+  await page.getByRole('button', { name: /^Lat pulldown/ }).click();
+  await expect(page.getByRole('button', { name: 'Restore original' })).toHaveCount(0);
+  await page.getByLabel('Name', { exact: true }).fill('Jalón agarre amplio');
+  await page.getByRole('button', { name: 'Save' }).click();
+  await page.getByRole('button', { name: /^Jalón agarre amplio/ }).click();
+  await page.getByRole('button', { name: 'Restore original' }).click();
+  await page.getByRole('button', { name: 'Yes, restore' }).click();
+  await expect(page.getByRole('status')).toHaveText('“Lat pulldown” is back to the original.');
+  await expect(page.getByRole('button', { name: /^Lat pulldown/ })).toBeVisible();
+
+  // Archivar y recuperar.
+  await page.getByRole('button', { name: /^Burpee/ }).click();
+  await page.getByRole('button', { name: 'Archive', exact: true }).click();
+  await expect(page.getByRole('button', { name: 'Active 119' })).toBeVisible();
+  await expect(page.getByRole('button', { name: /^Burpee/ })).toHaveCount(0);
+  await page.getByRole('button', { name: 'Archived 1' }).click();
+  await page.getByRole('button', { name: /^Burpee/ }).click();
+  await page.getByRole('button', { name: 'Recover' }).click();
+  await expect(page.getByRole('button', { name: 'Active 120' })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Archived 0' })).toBeVisible();
+
+  // Duplicar abre el formulario de la copia, que es propia.
+  await page.getByRole('button', { name: 'Active 120' }).click();
+  await page.getByRole('button', { name: /^Push-up/ }).click();
+  await page.getByRole('button', { name: 'Duplicate' }).click();
+  await expect(page.getByLabel('Name', { exact: true })).toHaveValue('Push-up (copy)');
+  await expect(page.getByRole('button', { name: 'Active 121' })).toBeVisible();
+  await expect(page.getByRole('button', { name: /^Push-up \(copy\)/ })).toContainText('Custom');
+});

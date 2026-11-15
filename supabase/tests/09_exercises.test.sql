@@ -5,8 +5,9 @@
 -- docs/referencia/pruebas-aislamiento.sql.
 --
 -- Usuarios inventados: A y B son coaches; C es cliente de A.
--- El catálogo real está vacío en este PR: la fila de catálogo la pone el
--- propio test, antes de crear los negocios.
+-- Este test usa un catálogo propio, de una sola fila, para que sus cuentas
+-- no dependan de los 120 ejercicios reales (esos los comprueba el test 10):
+-- vacía el catálogo y pone su fila antes de crear los negocios.
 -- =====================================================================
 begin;
 create extension if not exists pgtap with schema extensions;
@@ -31,6 +32,9 @@ insert into auth.users (id, email) values
   ('00000000-0000-4000-8000-00000000000b', 'coach-b@example.test'),
   ('00000000-0000-4000-8000-00000000000c', 'client-c@example.test');
 
+-- Dentro de la transacción del test: al terminar se deshace.
+delete from public.exercises;
+delete from public.exercise_library;
 insert into public.exercise_library
   (key, name_en, name_es, muscle_group, equipment, measurement, is_unilateral)
 values

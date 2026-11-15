@@ -7,14 +7,13 @@ Este archivo lo actualiza quien termina una tarea, en el mismo Pull Request, jun
 
 ## En curso
 
-Nada. Los PR 2.1 (rama `db/ejercicios`) y 2.2 (rama `db/biblioteca-de-ejercicios`, apilado sobre el anterior) están abiertos, a la espera de revisión.
+Nada. Los PR 2.1 (rama `db/ejercicios`), 2.2 (rama `db/biblioteca-de-ejercicios`) y 2.3 (rama `feat/modulo-exercises`) están abiertos, apilados en ese orden, a la espera de revisión.
 
 ## Siguiente
 
-1. **PR 2.3 — Ejercicios: lista, buscador y filtros** (`docs/PROMPTS.md` §6), en un chat nuevo.
-2. **El flag `exercises` va en ese PR 2.3:** el test `04_rls_enabled` exige un flag por módulo del producto, y el módulo se crea en ese PR.
-3. **Al fusionar el PR 2.1,** poner al día el PR 2.2 como explica D-064 antes de fusionarlo. Después, el propietario aplica las migraciones 8 y 9 en staging (GUIA-GIT §9).
-4. El propietario dio por buenas, por ahora, la lista de `docs/referencia/biblioteca-ejercicios.md` y las rutinas de ejemplo. Se pueden retocar más adelante.
+1. **PR 2.4 — Crear, editar, archivar y recuperar ejercicios** (`docs/PROMPTS.md` §6), en un chat nuevo, apilado sobre el PR 2.3. Cierra el lote 1.
+2. **Al fusionar cada PR del lote,** poner al día el siguiente como explica D-064 antes de fusionarlo. Después, el propietario aplica las migraciones 8, 9 y 10 en staging (GUIA-GIT §9).
+3. El propietario dio por buenas, por ahora, la lista de `docs/referencia/biblioteca-ejercicios.md` y las rutinas de ejemplo. Se pueden retocar más adelante.
 
 ## Fases
 
@@ -72,7 +71,7 @@ El diseño está en DECISIONES D-069 a D-088, y el detalle de cada PR, en `docs/
 
 - [x] PR 2.1 — Base de datos: ejercicios (sin el flag `exercises`, que llega con el módulo en el PR 2.3)
 - [x] PR 2.2 — Los 120 ejercicios de la plataforma
-- [ ] PR 2.3 — Ejercicios: lista, buscador y filtros
+- [x] PR 2.3 — Ejercicios: lista, buscador y filtros (con el flag `exercises`)
 - [ ] PR 2.4 — Crear, editar, archivar y recuperar ejercicios
 
 **Lote 2 — Plantilla**
@@ -177,11 +176,16 @@ Cosas que alguien ha visto y que no tocaban en su tarea. No se hacen sin convert
 - Notas privadas del coach sobre un cliente. Dependen de P-12, porque acabarían guardando lesiones (D-087).
 - Imprimir una rutina o exportarla a PDF, y compartir plantillas entre coaches (D-088).
 - Que la semana pueda empezar en domingo, si lo piden los coaches de EE. UU. (D-075).
+- La lista de ejercicios pide como mucho 1.000 filas (`max_rows` de la API). Primero van los activos, que nunca pasan de 1.000; con más de 1.000 entre activos y archivados, faltarían archivados. Se arreglaría pidiendo los archivados aparte o por páginas (D-091).
+- Quitar tildes y mayúsculas para buscar está escrito dos veces, en `clients/model` y en `exercises/model`. Si lo necesita un tercer módulo, subirlo a `core/lib`.
+- El desplegable `FilterSelect` vive en el módulo `exercises`. Si otro módulo o el formulario del PR 2.4 lo necesitan, subirlo a `core/ui` (D-091).
+- Buscar un ejercicio del catálogo también por su nombre en el otro idioma, si los coaches lo piden (hoy solo cuenta el que se ve, D-091).
 
 ## Registro de cambios
 
 Lo más nuevo, arriba.
 
+- 2026-11-15 — PR 2.3 (lista de ejercicios): módulo `exercises` con "Ejercicios" en el menú del coach (orden 30). `/coach/exercises` muestra los ejercicios del negocio por orden alfabético, con grupo, material y las etiquetas "Unilateral" y "Propio"; los del catálogo sin cambiar, en el idioma de la app (D-071). Pestañas "Activos" y "Archivados" con su número, buscador sin tildes ni mayúsculas y filtros de grupo, material y origen, combinables y hechos en la app (D-073); los 4 estados. Migración 10 con el flag `exercises` (D-089). Detalles en D-091. 26 tests unitarios nuevos (400 en total) y 2 de extremo a extremo (45). Solo lectura: crear, editar y archivar llegan en el PR 2.4.
 - 2026-11-15 — PR 2.2 (los 120 ejercicios de la plataforma): migración 9 con las 120 filas de `docs/referencia/biblioteca-ejercicios.md` en `exercise_library`, tal cual (las filas salen del documento con un script), y la copia para los negocios que ya existen con `copy_exercise_library_to_all_tenants()`, que se puede repetir sin duplicar nada y no toca lo que el coach haya cambiado (D-090). Sin instrucciones ni vídeos (D-074). 11 tests pgTAP nuevos (202 en total); el test 09 usa ahora un catálogo propio de una fila. En local, Iron Lab y Norte Strength tienen 120 ejercicios cada uno.
 - 2026-11-15 — PR 2.1 (base de datos: ejercicios): migración 8 con `exercise_library` (el catálogo de la plataforma, solo lectura, vacío hasta el PR 2.2) y `exercises` (los de cada negocio). Listas cerradas de D-072; el coach lee, crea y edita, nadie borra (D-073) y el cliente todavía no lee nada; cada negocio nuevo recibe la copia del catálogo con un trigger propio; tope de 1.000 sin archivar (D-086). 41 tests pgTAP nuevos (191 en total), con los casos 15, 18 (crear) y 28. Los detalles, en D-089. El flag `exercises` se deja para el PR 2.3.
 

@@ -22,9 +22,9 @@
 ## Dónde estamos
 
 - **Fase actual:** 2 — Ejercicios y rutinas: lote 1 en marcha. La Fase 1 (cuentas, negocio del coach y unirse con código) está terminada y fusionada en `main` (2026-11-14).
-- **Última tarea terminada:** PR 2.2 — Los 120 ejercicios de la plataforma (2026-11-15), rama `db/biblioteca-de-ejercicios`. PR abierto, apilado sobre el del PR 2.1 (`db/ejercicios`), que también sigue sin fusionar.
+- **Última tarea terminada:** PR 2.3 — Ejercicios: lista, buscador y filtros (2026-11-15), rama `feat/modulo-exercises`. PR abierto, apilado sobre los de los PR 2.2 (`db/biblioteca-de-ejercicios`) y 2.1 (`db/ejercicios`), que también siguen sin fusionar.
 - **En curso:** nada.
-- **Siguiente tarea:** PR 2.3 — Ejercicios: lista, buscador y filtros (`docs/PROMPTS.md` §6). Añade también el flag `exercises`, con el módulo (D-089).
+- **Siguiente tarea:** PR 2.4 — Crear, editar, archivar y recuperar ejercicios (`docs/PROMPTS.md` §6), apilado sobre el PR 2.3. Cierra el lote 1.
 
 ## Cómo será la Fase 2 (diseñada, D-069 a D-088)
 
@@ -53,26 +53,27 @@
 - **Marca** (PR 1.15 y 1.16): el dueño cambia en Ajustes el nombre, el logo, los colores (paleta de 12 o uno propio) y el modo, con vista previa. Se guarda con `update_brand`, que valida cada dato (D-067); el logo va en Storage, en la carpeta del negocio, y solo su dueño puede tocarlo.
 - **Ejercicios, solo en la base de datos** (PR 2.1): `exercise_library` (catálogo de la plataforma) y `exercises` (los de cada negocio; el coach lee, crea y edita, nadie borra, tope de 1.000 sin archivar). Cada negocio nuevo recibe la copia del catálogo. Valores de las listas, en D-089.
 - **Los 120 ejercicios de la plataforma** (PR 2.2): cargados en el catálogo desde `docs/referencia/biblioteca-ejercicios.md`, sin instrucciones ni vídeos. Iron Lab y Norte Strength tienen ya sus 120. Para repartir ampliaciones futuras, `copy_exercise_library_to_all_tenants()` (D-090).
-- **Base de datos local** (Supabase en Docker): 9 migraciones en `supabase/migrations/` (tablas, funciones de negocio, permisos, RLS, el espacio de logos y los ejercicios); 202 tests pgTAP (`npm run db:test`); 2 coaches y 6 clientes inventados (`supabase/seed.sql`, contraseña `password123`); tipos generados en `core/supabase/database.types.ts`.
-- **Tests:** 374 unitarios (`npm run check`) y 43 de extremo a extremo contra Supabase local (`npm run test:e2e`).
+- **Módulo `exercises`** (PR 2.3): "Ejercicios" en el menú del coach. Lista por orden alfabético (los del catálogo, en el idioma de la app), pestañas "Activos" y "Archivados" con su número, buscador sin tildes y filtros de grupo, material y origen, todo en la app (D-091). De momento solo se ve: crear, editar y archivar llegan en el PR 2.4.
+- **Base de datos local** (Supabase en Docker): 10 migraciones en `supabase/migrations/` (tablas, funciones de negocio, permisos, RLS, el espacio de logos, los ejercicios y los flags de cada módulo); 202 tests pgTAP (`npm run db:test`); 2 coaches y 6 clientes inventados (`supabase/seed.sql`, contraseña `password123`); tipos generados en `core/supabase/database.types.ts`.
+- **Tests:** 400 unitarios (`npm run check`) y 45 de extremo a extremo contra Supabase local (`npm run test:e2e`).
 - **Staging** (PR 1.17): proyecto `athlete-core-staging` de Supabase (Fráncfort, plan gratuito) con las mismas tablas y datos inventados que en local. Los emails salen de verdad, por Resend, desde `no-reply@athlete-core.com`. Se prueba con `npm run dev:staging` (hace falta `.env.staging.local`; guía en `supabase/README.md`). Todavía no hay web publicada.
 - **Módulo `_template`** para copiar (`npm run new:module <nombre>`). Solo se registra en desarrollo.
 - **Reglas que se comprueban solas:** ESLint con las fronteras de ARQUITECTURA §6, hooks de Git (formato, mensaje de commit, no subir `main`), CI con `npm run check`, y tests que vigilan las fronteras, los textos en dos idiomas y la forma fija de los módulos.
 
 ## Qué falta (lo próximo)
 
-- Casi toda la Fase 2: están las tablas de ejercicios y los 120 de la plataforma, pero todavía no hay ninguna pantalla de ejercicios, ni tablas ni pantallas de rutinas. Publicar la web (P-03) sigue pendiente.
+- Casi toda la Fase 2: están las tablas de ejercicios, los 120 de la plataforma y su lista, pero todavía no se pueden crear ni cambiar, y no hay tablas ni pantallas de rutinas. Publicar la web (P-03) sigue pendiente.
 - Las guardas por sesión y por rol son comodidad, no seguridad: los datos los protege el RLS.
 
 ## Últimos cambios
 
 Los 5 más recientes, el más nuevo arriba. El historial completo está en `docs/ESTADO.md`.
 
+- 2026-11-15 — PR 2.3: módulo `exercises` con la lista, el buscador, los filtros y el flag `exercises` (D-091). 26 tests unitarios y 2 de extremo a extremo nuevos.
 - 2026-11-15 — PR 2.2: los 120 ejercicios de la plataforma en el catálogo y repartidos a los negocios que ya existen (D-090). 11 tests pgTAP nuevos.
 - 2026-11-15 — PR 2.1: tablas `exercise_library` y `exercises`, con RLS, la copia para cada negocio nuevo y el tope de 1.000 (D-089). 41 tests pgTAP nuevos.
 - 2026-11-15 — Diseño de la Fase 2: D-069 a D-088, los 18 PR en `docs/PROMPTS.md` §6 y la biblioteca de 120 ejercicios en `docs/referencia/`. P-04 cerrado; P-02, provisional.
 - 2026-11-14 — PR 1.17: staging en marcha con emails reales por Resend; los agentes fusionan con el visto bueno del propietario (D-068).
-- 2026-11-14 — PR 1.16: el logo del coach, en Storage, visible en toda la app.
 
 ## A tener en cuenta ahora
 

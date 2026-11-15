@@ -1,4 +1,4 @@
-import { screen, within } from '@testing-library/react';
+import { screen, waitFor, within } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { renderAppAs } from '@/test/render-app';
@@ -119,7 +119,10 @@ describe('módulo exercises: archivar, recuperar, duplicar y restaurar (PR 2.4b)
       videoUrl: null,
     });
     expect(await screen.findByDisplayValue('Push-up (copy)')).toBeVisible();
-    expect(screen.getByRole('heading', { name: 'Edit exercise' })).toHaveFocus();
+    // El foco se pone en un efecto, justo después de pintar el panel.
+    await waitFor(() =>
+      expect(screen.getByRole('heading', { name: 'Edit exercise' })).toHaveFocus(),
+    );
     const copyRow = screen.getByRole('button', { name: /^Push-up \(copy\)/ });
     expect(copyRow).toHaveTextContent('Custom');
   });

@@ -1,0 +1,65 @@
+{
+  "nav": {
+    "coach": "Ejercicios"
+  },
+  "list": {
+    "title": "Ejercicios",
+    "description": "Tu biblioteca de ejercicios, lista para usar en tus rutinas.",
+    "tabsLabel": "Mostrar",
+    "tabs": {
+      "active": "Activos",
+      "archived": "Archivados"
+    },
+    "search": "Buscar por nombre",
+    "muscleGroup": "Grupo muscular",
+    "allMuscleGroups": "Todos los grupos",
+    "equipment": "Material",
+    "allEquipment": "Todo el material",
+    "origin": "Origen",
+    "origins": {
+      "all": "Todos",
+      "own": "Míos",
+      "platform": "De la plataforma"
+    },
+    "unilateral": "Unilateral",
+    "own": "Propio",
+    "empty": {
+      "title": "Aún no tienes ejercicios",
+      "description": "Aquí verás los ejercicios que uses en tus rutinas."
+    },
+    "emptyArchived": {
+      "title": "No hay ejercicios archivados",
+      "description": "Aquí verás los ejercicios que archives."
+    },
+    "noResults": {
+      "title": "Ningún ejercicio coincide",
+      "description": "Prueba con otro nombre o quita algún filtro."
+    }
+  },
+  "muscleGroups": {
+    "chest": "Pecho",
+    "back": "Espalda",
+    "shoulders": "Hombro",
+    "biceps": "Bíceps",
+    "triceps": "Tríceps",
+    "forearms": "Antebrazo",
+    "abs": "Abdomen",
+    "quads": "Cuádriceps",
+    "hamstrings": "Femoral",
+    "glutes": "Glúteo",
+    "adductors": "Aductores",
+    "calves": "Gemelo",
+    "full_body": "Cuerpo completo",
+    "cardio": "Cardio"
+  },
+  "equipment": {
+    "barbell": "Barra",
+    "dumbbells": "Mancuernas",
+    "machine": "Máquina",
+    "cable": "Polea",
+    "bodyweight": "Peso corporal",
+    "band": "Banda",
+    "kettlebell": "Kettlebell",
+    "other": "Otro"
+  }
+}

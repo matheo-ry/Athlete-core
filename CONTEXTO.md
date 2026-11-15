@@ -55,7 +55,7 @@
 - **Los 120 ejercicios de la plataforma** (PR 2.2): cargados en el catálogo desde `docs/referencia/biblioteca-ejercicios.md`, sin instrucciones ni vídeos. Iron Lab y Norte Strength tienen ya sus 120. Para repartir ampliaciones futuras, `copy_exercise_library_to_all_tenants()` (D-090).
 - **Módulo `exercises`** (PR 2.3): "Ejercicios" en el menú del coach. Lista por orden alfabético (los del catálogo, en el idioma de la app), pestañas "Activos" y "Archivados" con su número, buscador sin tildes y filtros de grupo, material y origen, todo en la app (D-091). Crear y editar (PR 2.4a): "Nuevo ejercicio", pulsar una fila o "Crear «lo escrito»" desde el buscador; panel en escritorio, pantalla entera en el móvil (D-092). Archivar, recuperar, duplicar y "Restaurar original" (PR 2.4b) en el panel del ejercicio; nunca se borra (D-093).
 - **Base de datos local** (Supabase en Docker): 10 migraciones en `supabase/migrations/` (tablas, funciones de negocio, permisos, RLS, el espacio de logos, los ejercicios y los flags de cada módulo); 202 tests pgTAP (`npm run db:test`); 2 coaches y 6 clientes inventados (`supabase/seed.sql`, contraseña `password123`); tipos generados en `core/supabase/database.types.ts`.
-- **Tests:** 440 unitarios (`npm run check`) y 48 de extremo a extremo contra Supabase local (`npm run test:e2e`).
+- **Tests:** 436 unitarios (`npm run check`) y 48 de extremo a extremo contra Supabase local (`npm run test:e2e`).
 - **Staging** (PR 1.17): proyecto `athlete-core-staging` de Supabase (Fráncfort, plan gratuito) con las mismas tablas y datos inventados que en local. Los emails salen de verdad, por Resend, desde `no-reply@athlete-core.com`. Se prueba con `npm run dev:staging` (hace falta `.env.staging.local`; guía en `supabase/README.md`). Todavía no hay web publicada.
 - **Módulo `_template`** para copiar (`npm run new:module <nombre>`). Solo se registra en desarrollo.
 - **Reglas que se comprueban solas:** ESLint con las fronteras de ARQUITECTURA §6, hooks de Git (formato, mensaje de commit, no subir `main`), CI con `npm run check`, y tests que vigilan las fronteras, los textos en dos idiomas y la forma fija de los módulos.
@@ -69,7 +69,7 @@
 
 Los 5 más recientes, el más nuevo arriba. El historial completo está en `docs/ESTADO.md`.
 
-- 2026-11-15 — PR 2.4b: archivar, recuperar, duplicar y "Restaurar original" (D-093). Cierra el lote 1. 21 tests unitarios y 1 de extremo a extremo nuevos.
+- 2026-11-15 — PR 2.4b: archivar, recuperar, duplicar y "Restaurar original" (D-093). Cierra el lote 1. 17 tests unitarios y 1 de extremo a extremo nuevos.
 - 2026-11-15 — PR 2.4a: crear y editar ejercicios, con "Crear «lo escrito»" desde el buscador (D-092). 19 tests unitarios y 2 de extremo a extremo nuevos.
 - 2026-11-15 — PR 2.3: módulo `exercises` con la lista, el buscador, los filtros y el flag `exercises` (D-091). 26 tests unitarios y 2 de extremo a extremo nuevos.
 - 2026-11-15 — PR 2.2: los 120 ejercicios de la plataforma en el catálogo y repartidos a los negocios que ya existen (D-090). 11 tests pgTAP nuevos.

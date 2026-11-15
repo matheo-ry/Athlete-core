@@ -923,6 +923,20 @@ Cómo añadir una: copia el formato, usa el siguiente número y no borres las an
   - **Si lo pegado lleva un ejercicio archivado** que la rutina de destino no tenía, la base de datos no lo admite (D-073) y la app lo explica: "Recupéralo en Ejercicios o quítalo de la rutina".
 - **Por qué:** el propietario pidió copiar a toda escala. Con el editor guardando un documento entero (D-079), copiar es mover piezas del documento sin tocar la base de datos hasta "Guardar cambios".
 
+### D-105 · Cómo asigna la base de datos una rutina
+- **Fecha:** 2026-11-16
+- **Decisión:** detalles del PR 2.12a que D-081 no fijaba.
+  - **"Hoy" lo dice el dispositivo del coach** (D-082), no el servidor: las funciones reciben esa fecha y solo la aceptan si está a un día, como mucho, de la fecha del servidor.
+  - **La fecha de inicio** puede ser pasada o futura, hasta un año en cada sentido.
+  - **Con fecha de hoy o pasada,** todas las rutinas ya empezadas y sin terminar del cliente quedan terminadas. No se borran.
+  - **Con fecha futura, la próxima que hubiera se borra.** Nunca llegó a empezar: no tiene historia que guardar.
+  - **Al asignar a varios, o todos o ninguno:** si un cliente no vale (dado de baja o de otro negocio), no se asigna a nadie. Como mucho, 100 clientes de una vez.
+  - **Solo se asignan plantillas sin archivar.** La copia lleva el nombre de la plantilla y apunta de cuál salió.
+  - **Una rutina vacía** para un cliente nace como una plantilla nueva: un bloque sin fecha de fin con todos sus días de descanso.
+  - **En `audit_log`** quedan `program.assigned` y `program.created_for_client`, solo con identificadores.
+- **Por qué:** con la fecha del servidor, un coach que asigna "para mañana" de noche podía dejar al cliente sin rutina unas horas por la diferencia horaria. Borrar la próxima sustituida evita acumular rutinas que nadie llegó a usar.
+- **Revisar si:** los coaches echan de menos recuperar una "próxima" que sustituyeron por error.
+
 ---
 
 ## Pendientes de decidir

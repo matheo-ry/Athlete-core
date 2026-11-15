@@ -21,10 +21,10 @@
 
 ## Dónde estamos
 
-- **Fase actual:** 2 — Ejercicios y rutinas: lote 1 en marcha. La Fase 1 (cuentas, negocio del coach y unirse con código) está terminada y fusionada en `main` (2026-11-14).
-- **Última tarea terminada:** PR 2.4b — Archivar, recuperar, duplicar y restaurar ejercicios (2026-11-15), rama `feat/archivar-ejercicios`. PR abierto, apilado sobre los de los PR 2.4a, 2.3, 2.2 y 2.1, que también siguen sin fusionar. Con él, el lote 1 está completo.
+- **Fase actual:** 2 — Ejercicios y rutinas: lote 1 (ejercicios) fusionado en `main` el 2026-11-15; toca el lote 2. La Fase 1 (cuentas, negocio del coach y unirse con código) está terminada y fusionada en `main` (2026-11-14).
+- **Última tarea terminada:** el lote 1 de la Fase 2 (PR 2.1 a 2.4b, #24 a #28), probado por el propietario y fusionado en `main` (2026-11-15).
 - **En curso:** nada.
-- **Siguiente tarea:** que el propietario pruebe el lote 1 y dé el visto bueno para fusionarlo (D-068). Después, el lote 2: PR 2.5 — Base de datos: rutinas (`docs/PROMPTS.md` §6).
+- **Siguiente tarea:** PR 2.5 — Base de datos: rutinas (`docs/PROMPTS.md` §6), el primero del lote 2. Aparte, el propietario aplica en staging las migraciones 8, 9 y 10.
 
 ## Cómo será la Fase 2 (diseñada, D-069 a D-088)
 

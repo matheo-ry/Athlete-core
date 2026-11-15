@@ -1,18 +1,18 @@
 # ESTADO DEL PROYECTO
 
 **Última actualización:** 2026-11-15
-**Fase actual:** 2 — Ejercicios y rutinas: lote 1 en marcha (la Fase 1 terminó y se fusionó el 2026-11-14)
+**Fase actual:** 2 — Ejercicios y rutinas: lote 1 (ejercicios) fusionado en `main`; toca el lote 2 (la Fase 1 terminó y se fusionó el 2026-11-14)
 
 Este archivo lo actualiza quien termina una tarea, en el mismo Pull Request, junto con `CONTEXTO.md` (que resume este en una página).
 
 ## En curso
 
-Nada. Los PR 2.1 (rama `db/ejercicios`), 2.2 (rama `db/biblioteca-de-ejercicios`), 2.3 (rama `feat/modulo-exercises`), 2.4a (rama `feat/editar-ejercicios`) y 2.4b (rama `feat/archivar-ejercicios`) están abiertos, apilados en ese orden, a la espera de revisión.
+Nada. El lote 1 (PR 2.1, 2.2, 2.3, 2.4a y 2.4b; #24 a #28) está fusionado en `main` desde el 2026-11-15, probado por el propietario.
 
 ## Siguiente
 
-1. **El lote 1 está completo.** El propietario lo prueba en la app ("Al terminar el lote", `docs/PROMPTS.md` §6) y da el visto bueno para fusionar los PR 2.1, 2.2, 2.3, 2.4a y 2.4b, en ese orden.
-2. **Al fusionar cada PR del lote,** poner al día el siguiente como explica D-064 antes de fusionarlo. Después, el propietario aplica las migraciones 8, 9 y 10 en staging (GUIA-GIT §9).
+1. **PR 2.5 — Base de datos: rutinas** (`docs/PROMPTS.md` §6), en un chat nuevo. Es el primero del lote 2.
+2. El propietario aplica las migraciones 8, 9 y 10 (ejercicios) en staging (GUIA-GIT §9). No bloquea el PR 2.5.
 3. El propietario dio por buenas, por ahora, la lista de `docs/referencia/biblioteca-ejercicios.md` y las rutinas de ejemplo. Se pueden retocar más adelante.
 
 ## Fases
@@ -189,6 +189,7 @@ Cosas que alguien ha visto y que no tocaban en su tarea. No se hacen sin convert
 
 Lo más nuevo, arriba.
 
+- 2026-11-15 — Lote 1 de la Fase 2 fusionado en `main` (#24 a #28) con el visto bueno del propietario, que lo probó en la app. Antes se revisó entero desde cero y se arregló un test del panel de ejercicios que fallaba a ratos (esperar al foco).
 - 2026-11-15 — PR 2.4b (archivar, recuperar, duplicar y restaurar): en el panel del ejercicio, "Duplicar" (copia propia con todo, "… (copia)", y abre su formulario), "Restaurar original" (solo en los del catálogo que han cambiado; con confirmación, porque quita las instrucciones y el vídeo) y "Archivar" o "Recuperar" (nunca se borra). La lista carga los datos del catálogo de cada ejercicio para saber si ha cambiado. Detalles en D-093. Sin migraciones. 17 tests unitarios nuevos (436 en total) y 1 de extremo a extremo (48). Cierra el lote 1.
 - 2026-11-15 — PR 2.4a (crear y editar ejercicios): "Nuevo ejercicio", editar cualquier ejercicio pulsando su fila y "Crear «lo escrito»" cuando una búsqueda no encuentra nada. Formulario con nombre y forma de medir obligatorios, unilateral, grupo, material, instrucciones y enlace de vídeo (solo `https://`, D-074), validado con Zod con los límites de la migración 8. En el móvil sustituye a la lista; en escritorio, panel a su lado. Un ejercicio del catálogo editado sin tocar el nombre se sigue viendo en el idioma de cada uno. Detalles en D-092. Sin migraciones. 19 tests unitarios nuevos (419 en total) y 2 de extremo a extremo (47). El PR 2.4 se partió en dos, como preveía su bloque.
 

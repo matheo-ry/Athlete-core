@@ -346,6 +346,72 @@ export type Database = {
           },
         ];
       };
+      program_day_exercises: {
+        Row: {
+          day_id: string;
+          exercise_id: string;
+          id: string;
+          note: string | null;
+          position: number;
+          program_id: string;
+          rest_seconds: number | null;
+          superset_group: number | null;
+          tenant_id: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          day_id: string;
+          exercise_id: string;
+          id?: string;
+          note?: string | null;
+          position: number;
+          program_id: string;
+          rest_seconds?: number | null;
+          superset_group?: number | null;
+          tenant_id: string;
+        };
+        Update: {
+          day_id?: string;
+          exercise_id?: string;
+          id?: string;
+          note?: string | null;
+          position?: number;
+          program_id?: string;
+          rest_seconds?: number | null;
+          superset_group?: number | null;
+          tenant_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'program_day_exercises_tenant_id_exercise_id_fkey';
+            columns: ['tenant_id', 'exercise_id'];
+            isOneToOne: false;
+            referencedRelation: 'exercises';
+            referencedColumns: ['tenant_id', 'id'];
+          },
+          {
+            foreignKeyName: 'program_day_exercises_tenant_id_fkey';
+            columns: ['tenant_id'];
+            isOneToOne: false;
+            referencedRelation: 'tenant_effective_features';
+            referencedColumns: ['tenant_id'];
+          },
+          {
+            foreignKeyName: 'program_day_exercises_tenant_id_fkey';
+            columns: ['tenant_id'];
+            isOneToOne: false;
+            referencedRelation: 'tenants';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'program_day_exercises_tenant_id_program_id_day_id_fkey';
+            columns: ['tenant_id', 'program_id', 'day_id'];
+            isOneToOne: false;
+            referencedRelation: 'program_days';
+            referencedColumns: ['tenant_id', 'program_id', 'id'];
+          },
+        ];
+      };
       program_days: {
         Row: {
           block_id: string;
@@ -401,6 +467,74 @@ export type Database = {
             columns: ['tenant_id', 'program_id', 'block_id'];
             isOneToOne: false;
             referencedRelation: 'program_blocks';
+            referencedColumns: ['tenant_id', 'program_id', 'id'];
+          },
+        ];
+      };
+      program_sets: {
+        Row: {
+          day_exercise_id: string;
+          distance_meters: number | null;
+          duration_seconds: number | null;
+          id: string;
+          intensity_type: string | null;
+          intensity_value: number | null;
+          position: number;
+          program_id: string;
+          reps_max: number | null;
+          reps_min: number | null;
+          target_load_kg: number | null;
+          tenant_id: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          day_exercise_id: string;
+          distance_meters?: number | null;
+          duration_seconds?: number | null;
+          id?: string;
+          intensity_type?: string | null;
+          intensity_value?: number | null;
+          position: number;
+          program_id: string;
+          reps_max?: number | null;
+          reps_min?: number | null;
+          target_load_kg?: number | null;
+          tenant_id: string;
+        };
+        Update: {
+          day_exercise_id?: string;
+          distance_meters?: number | null;
+          duration_seconds?: number | null;
+          id?: string;
+          intensity_type?: string | null;
+          intensity_value?: number | null;
+          position?: number;
+          program_id?: string;
+          reps_max?: number | null;
+          reps_min?: number | null;
+          target_load_kg?: number | null;
+          tenant_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'program_sets_tenant_id_fkey';
+            columns: ['tenant_id'];
+            isOneToOne: false;
+            referencedRelation: 'tenant_effective_features';
+            referencedColumns: ['tenant_id'];
+          },
+          {
+            foreignKeyName: 'program_sets_tenant_id_fkey';
+            columns: ['tenant_id'];
+            isOneToOne: false;
+            referencedRelation: 'tenants';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'program_sets_tenant_id_program_id_day_exercise_id_fkey';
+            columns: ['tenant_id', 'program_id', 'day_exercise_id'];
+            isOneToOne: false;
+            referencedRelation: 'program_day_exercises';
             referencedColumns: ['tenant_id', 'program_id', 'id'];
           },
         ];
@@ -686,6 +820,10 @@ export type Database = {
       create_tenant: { Args: { p_coach_terms_version: string; p_name: string }; Returns: string };
       email_status: { Args: { p_email: string }; Returns: string };
       generate_invite_code: { Args: Record<PropertyKey, never>; Returns: string };
+      is_exercise_in_my_programs: {
+        Args: { p_exercise: string; p_tenant: string };
+        Returns: boolean;
+      };
       is_member: { Args: { p_roles?: string[]; p_tenant: string }; Returns: boolean };
       is_program_client: { Args: { p_program: string; p_tenant: string }; Returns: boolean };
       join_tenant_with_code: { Args: { p_code: string }; Returns: Json };

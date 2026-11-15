@@ -801,6 +801,20 @@ Cómo añadir una: copia el formato, usa el siguiente número y no borres las an
 - **Por qué:** con una sola puerta de escritura, las reglas viven en un sitio y la Fase 3 puede fiarse de los identificadores (D-087).
 - **A tener en cuenta:** "una sola rutina vigente por cliente" (D-081) depende de fechas y la comprueban las funciones del PR 2.12, no la tabla.
 
+### D-095 · Cómo se guardan los ejercicios de un día, las series y las rutinas de ejemplo
+- **Fecha:** 2026-11-15
+- **Decisión:** detalles del PR 2.5b que D-072, D-076 y D-077 no fijaban.
+  - **Tablas:** `program_day_exercises` (los ejercicios de cada día) y `program_sets` (una fila por serie). Solo lectura desde la app, como las de D-094.
+  - **Repeticiones fijas** se guardan con mínima y máxima iguales. Una serie lleva repeticiones, tiempo (segundos, hasta 24 horas) o distancia (metros, hasta 1.000 km): solo una de las tres. Que coincida con la forma de medir del ejercicio lo comprueba la función que guarda (PR 2.6).
+  - **Intensidad:** `rir` (0 a 10, sin medios), `rpe` (1 a 10, con medios) o `failure` (sin número).
+  - **Superseries:** un número de grupo (`superset_group`, de 1 a 15) en los ejercicios seguidos de un día.
+  - **El cliente lee los ejercicios del negocio que aparecen en alguna de sus rutinas,** también en las anteriores y en la próxima, y ningún otro.
+  - **La regla de D-072** da el error `exercise_in_use` al cambiar la forma de medir o "unilateral" de un ejercicio que está en cualquier rutina, también en plantillas archivadas y en rutinas terminadas.
+  - **Un ejercicio que está en una rutina no se puede borrar** ni saltándose el RLS: lo impide la clave foránea.
+  - **Seed:** en un bloque semanal el nombre del día se deja vacío, porque la app ya pone "Lunes", "Martes"…; el subtítulo ("Tirón + pierna") y el lugar sí se guardan. Los 20 ejercicios de las rutinas del propietario que no están en el catálogo con ese mismo nombre se crean como propios de Iron Lab.
+- **Por qué:** son las opciones más sencillas que cumplen el diseño. Guardar la repetición fija como un rango de un solo número evita tener dos formas de decir lo mismo.
+- **A tener en cuenta:** con las rutinas de ejemplo, "Restaurar original" de un ejercicio del catálogo que esté en una rutina falla si el coach le había cambiado la forma de medir. La pantalla lo explicará en el PR 2.9, como preveía el bloque del PR 2.4.
+
 ---
 
 ## Pendientes de decidir

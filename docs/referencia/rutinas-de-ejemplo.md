@@ -22,14 +22,16 @@ Dos rutinas reales del propietario, sin ningún dato personal. Sirven para dos c
 
 Un bloque con un ciclo de 7 días, que se repite hasta que el coach lo cambie.
 
+En un bloque semanal la app ya pone "Lunes", "Martes"…, así que el nombre del día se deja vacío (D-095).
+
 | Día | Tipo | Nombre | Subtítulo | Lugar |
 |---|---|---|---|---|
-| Lunes | Entreno | Lunes | Empuje + dorsal + bíceps | Casa |
+| Lunes | Entreno | | Empuje + dorsal + bíceps | Casa |
 | Martes | Descanso | | | |
-| Miércoles | Entreno | Miércoles | Tirón + pierna | Gym |
+| Miércoles | Entreno | | Tirón + pierna | Gym |
 | Jueves | Descanso | | | |
-| Viernes | Entreno | Viernes | Empuje | Casa |
-| Sábado | Entreno | Sábado | Tirón + pierna | Gym |
+| Viernes | Entreno | | Empuje | Casa |
+| Sábado | Entreno | | Tirón + pierna | Gym |
 | Domingo | Descanso | | | |
 
 ### Lunes — Casa (7 ejercicios, 20 series)
@@ -96,7 +98,7 @@ El propietario no indicó dónde iban los descansos. Se colocan así, y el coach
 | Día 7 | Descanso | | |
 | Día 8 | Descanso | | |
 
-### Día 1 — Pecho / Espalda (9 ejercicios, 20 series)
+### Día 1 — Pecho / Espalda (9 ejercicios, 21 series)
 
 | Orden | Ejercicio | Series | Medida |
 |---|---|---|---|

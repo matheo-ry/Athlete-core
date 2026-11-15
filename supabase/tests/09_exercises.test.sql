@@ -33,6 +33,9 @@ insert into auth.users (id, email) values
   ('00000000-0000-4000-8000-00000000000c', 'client-c@example.test');
 
 -- Dentro de la transacción del test: al terminar se deshace.
+-- Primero las rutinas del seed: un ejercicio que está en una rutina no se
+-- puede borrar (PR 2.5b).
+delete from public.programs;
 delete from public.exercises;
 delete from public.exercise_library;
 insert into public.exercise_library

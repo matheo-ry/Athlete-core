@@ -31,6 +31,12 @@ const LAT_PULLDOWN: Exercise = {
   instructions: null,
   videoUrl: null,
   archivedAt: null,
+  original: {
+    measurement: 'weight_reps',
+    isUnilateral: false,
+    muscleGroup: 'back',
+    equipment: 'cable',
+  },
 };
 
 function saved(exercise: Exercise, input: ExerciseInput): SaveExerciseResult {
@@ -55,6 +61,7 @@ describe('módulo exercises: crear y editar (PR 2.4a)', () => {
             id: '00000000-0000-4000-8000-000000000099',
             libraryKey: null,
             libraryName: null,
+            original: null,
           },
           input,
         ),

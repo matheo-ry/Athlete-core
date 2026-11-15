@@ -16,6 +16,12 @@ const LAT_PULLDOWN: Exercise = {
   instructions: null,
   videoUrl: null,
   archivedAt: null,
+  original: {
+    measurement: 'weight_reps',
+    isUnilateral: false,
+    muscleGroup: 'back',
+    equipment: 'cable',
+  },
 };
 
 function filled(overrides: Partial<ExerciseFormValues> = {}): ExerciseFormValues {

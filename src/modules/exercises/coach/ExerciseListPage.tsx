@@ -17,6 +17,7 @@ import {
 import type { ExerciseFilters, ExerciseTab } from '../model/exercise-list';
 import type { Exercise } from '../model/exercise-schema';
 import { ExerciseFilterBar } from './ExerciseFilterBar';
+import type { ExerciseNotice } from './ExerciseActions';
 import { ExercisePanel } from './ExercisePanel';
 import type { PanelTarget } from './ExercisePanel';
 import { ExerciseRow } from './ExerciseRow';
@@ -36,7 +37,7 @@ export function ExerciseListPage() {
   const [searchParams, setSearchParams] = useSearchParams();
   const [tab, setTab] = useState<ExerciseTab>('active');
   const [filters, setFilters] = useState<ExerciseFilters>(NO_FILTERS);
-  const [savedName, setSavedName] = useState<string | null>(null);
+  const [notice, setNotice] = useState<{ kind: ExerciseNotice; name: string } | null>(null);
 
   const all = exercises.data ?? [];
   const counts = countByTab(all);
@@ -52,13 +53,13 @@ export function ExerciseListPage() {
         : { kind: 'edit', exercise: toListItem(openedExercise, language) };
 
   const open = (params: Record<string, string>) => {
-    setSavedName(null);
+    setNotice(null);
     setSearchParams(params);
   };
   const close = () => setSearchParams({});
-  const handleSaved = (exercise: Exercise) => {
+  const handleDone = (exercise: Exercise, kind: ExerciseNotice) => {
     close();
-    setSavedName(exerciseName(exercise, language));
+    setNotice({ kind, name: exerciseName(exercise, language) });
   };
   const query = filters.query.trim();
 
@@ -80,9 +81,9 @@ export function ExerciseListPage() {
           </Button>
         </header>
 
-        {savedName !== null ? (
+        {notice !== null ? (
           <p role="status" className="text-sm font-medium">
-            {t('exercises.list.saved', { name: savedName })}
+            {t(`exercises.list.notices.${notice.kind}`, { name: notice.name })}
           </p>
         ) : null}
 
@@ -151,7 +152,12 @@ export function ExerciseListPage() {
       </div>
 
       {target !== null ? (
-        <ExercisePanel target={target} onSaved={handleSaved} onClose={close} />
+        <ExercisePanel
+          target={target}
+          onDone={handleDone}
+          onDuplicated={(copy) => open({ exercise: copy.id })}
+          onClose={close}
+        />
       ) : null}
     </section>
   );

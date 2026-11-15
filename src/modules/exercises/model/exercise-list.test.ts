@@ -20,12 +20,24 @@ function fromLibrary(en: string, es: string, overrides: Partial<Exercise> = {}):
     instructions: null,
     videoUrl: null,
     archivedAt: null,
+    original: {
+      measurement: 'weight_reps',
+      isUnilateral: false,
+      muscleGroup: 'back',
+      equipment: 'cable',
+    },
     ...overrides,
   };
 }
 
 function own(name: string, overrides: Partial<Exercise> = {}): Exercise {
-  return fromLibrary('', '', { name, libraryKey: null, libraryName: null, ...overrides });
+  return fromLibrary('', '', {
+    name,
+    libraryKey: null,
+    libraryName: null,
+    original: null,
+    ...overrides,
+  });
 }
 
 const PULLDOWN = fromLibrary('Lat pulldown', 'Jalón al pecho');

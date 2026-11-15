@@ -38,8 +38,9 @@ export type MuscleGroup = (typeof MUSCLE_GROUPS)[number];
 export type Equipment = (typeof EQUIPMENT)[number];
 export type Measurement = (typeof MEASUREMENTS)[number];
 
-// La fila de `exercises` con el nombre del catálogo en los dos idiomas. Se
-// cargan los dos para que cambiar de idioma no tenga que volver a pedir nada.
+// La fila de `exercises` con su original del catálogo: el nombre en los dos
+// idiomas (cambiar de idioma no vuelve a pedir nada) y los datos que recupera
+// "Restaurar original".
 const exerciseRowSchema = z
   .object({
     id: z.uuid(),
@@ -52,7 +53,16 @@ const exerciseRowSchema = z
     instructions: z.string().nullable(),
     video_url: z.string().nullable(),
     archived_at: z.string().nullable(),
-    exercise_library: z.object({ name_en: z.string(), name_es: z.string() }).nullable(),
+    exercise_library: z
+      .object({
+        name_en: z.string(),
+        name_es: z.string(),
+        measurement: z.enum(MEASUREMENTS),
+        is_unilateral: z.boolean(),
+        muscle_group: z.enum(MUSCLE_GROUPS),
+        equipment: z.enum(EQUIPMENT),
+      })
+      .nullable(),
   })
   .transform((row) => ({
     id: row.id,
@@ -70,6 +80,16 @@ const exerciseRowSchema = z
     instructions: row.instructions,
     videoUrl: row.video_url,
     archivedAt: row.archived_at,
+    // Los datos del catálogo, sin el nombre (ese va en libraryName).
+    original:
+      row.exercise_library === null
+        ? null
+        : {
+            measurement: row.exercise_library.measurement,
+            isUnilateral: row.exercise_library.is_unilateral,
+            muscleGroup: row.exercise_library.muscle_group,
+            equipment: row.exercise_library.equipment,
+          },
   }));
 
 export type Exercise = z.output<typeof exerciseRowSchema>;

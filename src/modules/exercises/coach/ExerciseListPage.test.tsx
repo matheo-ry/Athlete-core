@@ -24,6 +24,12 @@ function exercise(id: number, en: string, es: string, overrides: Partial<Exercis
     instructions: null,
     videoUrl: null,
     archivedAt: null,
+    original: {
+      measurement: 'weight_reps',
+      isUnilateral: false,
+      muscleGroup: 'back',
+      equipment: 'cable',
+    },
     ...overrides,
   };
 }
@@ -35,7 +41,12 @@ const EXERCISES = [
     equipment: 'machine',
   }),
   exercise(3, 'Dumbbell row', 'Remo con mancuerna', { equipment: 'dumbbells', isUnilateral: true }),
-  exercise(4, '', '', { name: 'Remo Gironda agarre amplio', libraryKey: null, libraryName: null }),
+  exercise(4, '', '', {
+    name: 'Remo Gironda agarre amplio',
+    libraryKey: null,
+    libraryName: null,
+    original: null,
+  }),
   exercise(5, 'Burpee', 'Burpees', { archivedAt: '2026-11-15T10:00:00Z' }),
 ];
 

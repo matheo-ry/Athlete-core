@@ -13,7 +13,14 @@ const ROW = {
   instructions: null,
   video_url: null,
   archived_at: null,
-  exercise_library: { name_en: 'Lat pulldown', name_es: 'Jalón al pecho' },
+  exercise_library: {
+    name_en: 'Lat pulldown',
+    name_es: 'Jalón al pecho',
+    measurement: 'weight_reps',
+    is_unilateral: false,
+    muscle_group: 'back',
+    equipment: 'cable',
+  },
 };
 
 describe('parseExercises', () => {
@@ -31,6 +38,12 @@ describe('parseExercises', () => {
         instructions: null,
         videoUrl: null,
         archivedAt: null,
+        original: {
+          measurement: 'weight_reps',
+          isUnilateral: false,
+          muscleGroup: 'back',
+          equipment: 'cable',
+        },
       },
     ]);
   });

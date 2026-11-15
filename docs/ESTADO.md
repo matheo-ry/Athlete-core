@@ -1,20 +1,20 @@
 # ESTADO DEL PROYECTO
 
 **Última actualización:** 2026-11-15
-**Fase actual:** 2 — Ejercicios y rutinas: lote 1 (ejercicios) fusionado en `main`; toca el lote 2 (la Fase 1 terminó y se fusionó el 2026-11-14)
+**Fase actual:** 2 — Ejercicios y rutinas: lotes 1 (ejercicios) y 2 (plantillas y editor de días) fusionados en `main`; lote 3 en marcha (la Fase 1 terminó y se fusionó el 2026-11-14)
 
 Este archivo lo actualiza quien termina una tarea, en el mismo Pull Request, junto con `CONTEXTO.md` (que resume este en una página).
 
 ## En curso
 
-Nada. **El lote 2 está completo:** los PR 2.5a (rama `db/rutinas`, #30), 2.5b (`db/rutinas-ejercicios`, #31), 2.6 (`db/guardar-rutina`, #32), 2.7 (`feat/modulo-programs`, #33), 2.8a (`feat/editor-dias`, #34) y 2.8b (`feat/editor-recuperar`) están abiertos, apilados en ese orden. El lote 1 (PR 2.1 a 2.4b; #24 a #28) está fusionado en `main` desde el 2026-11-15.
+El lote 3. El PR 2.9a (rama `feat/editor-ejercicios`) está abierto. Los lotes 1 (PR 2.1 a 2.4b, #24 a #28) y 2 (PR 2.5a a 2.8b, #30 a #35) están fusionados en `main` desde el 2026-11-15; el propietario pidió hacer y fusionar el lote 2 en el mismo chat, y todavía no lo ha probado en la app.
 
 ## Siguiente
 
-1. **El propietario prueba el lote 2** ("Al terminar el lote", `docs/PROMPTS.md` §6: crear una plantilla, poner los días del ciclo con sus descansos y guardarla) y da el visto bueno para fusionar los PR 2.5a a 2.8b, en orden y poniendo al día cada uno como explica D-064. Antes, que revise el cambio en `src/core/` del PR 2.8b (D-099).
-2. Después, el lote 3: PR 2.9 — Editor: los ejercicios de cada día.
+1. **PR 2.9b — Editor: sustituir, nota, archivados y bloquear la forma de medir** (`docs/PROMPTS.md` §6), apilado sobre el 2.9a. Después, los PR 2.10 y 2.11.
+2. El propietario prueba el lote 2 en la app y revisa el cambio en `src/core/` del PR 2.8b (D-099). Si algo no le gusta, se arregla en un PR nuevo.
 3. El propietario aplica en staging las migraciones 8 a 14 (GUIA-GIT §9). No bloquea seguir.
-3. El propietario dio por buenas, por ahora, la lista de `docs/referencia/biblioteca-ejercicios.md` y las rutinas de ejemplo. Se pueden retocar más adelante.
+4. El propietario dio por buenas, por ahora, la lista de `docs/referencia/biblioteca-ejercicios.md` y las rutinas de ejemplo. Se pueden retocar más adelante.
 
 ## Fases
 
@@ -90,7 +90,9 @@ El diseño está en DECISIONES D-069 a D-088, y el detalle de cada PR, en `docs/
 
 **Lote 3 — Rellenar la rutina**
 
-- [ ] PR 2.9 — Editor: los ejercicios de cada día
+- [ ] PR 2.9 — Editor: los ejercicios de cada día (partido en dos, como preveía `docs/PROMPTS.md` §6)
+  - [x] 2.9a — lista, añadir con el buscador, crear sin salir, ordenar y quitar
+  - [ ] 2.9b — sustituir, nota, archivados y bloquear la forma de medir
 - [ ] PR 2.10 — Editor: series y prescripción
 - [ ] PR 2.11 — Copiar y duplicar
 
@@ -168,7 +170,6 @@ Cosas que alguien ha visto y que no tocaban en su tarea. No se hacen sin convert
 - Pasar a TypeScript 7 cuando el lint de TypeScript lo admita (DECISIONES D-022).
 - Detectar con lint los textos escritos directamente en un componente (AGENTS.md, regla 7). Hoy se revisa a mano. Haría falta una librería nueva.
 - Añadir reglas de accesibilidad al lint (etiquetas, botones de verdad). Haría falta una librería nueva.
-- Test de fronteras: añadir el caso permitido de la tabla de dependencias entre módulos cuando existan dos módulos reales (`programs` → `exercises`).
 - Zod ocupa buena parte del peso de la app. Si el tamaño llega a importar, valorar su variante ligera.
 - Un test pgTAP que pruebe cada política de UPDATE por separado (`tenants_update` y `profiles_update`). Hoy, si se afloja una, la política de lectura sigue bloqueando (Postgres la aplica en los UPDATE con WHERE) y los tests no lo notan. No es un agujero, pero la segunda capa no está vigilada. (`members_update` ya no existe: desde el PR 1.8, dar de baja y reactivar van por función.)
 - Los casos 15 a 19 y 28 de `docs/referencia/pruebas-aislamiento.sql` se escriben en los PR 2.1 (hecho: 15, 18 a medias y 28, para `exercises`), 2.5, 2.6 y 2.12: cada bloque de `docs/PROMPTS.md` §6 dice cuáles.
@@ -194,6 +195,8 @@ Cosas que alguien ha visto y que no tocaban en su tarea. No se hacen sin convert
 
 Lo más nuevo, arriba.
 
+- 2026-11-15 — PR 2.9a (editor: los ejercicios de cada día): dentro de un día de entreno, sus ejercicios en orden con el total arriba; "Añadir ejercicio" con el buscador y los filtros de "Ejercicios" sin salir de la rutina (el módulo exercises lo ofrece por su `index.ts`: `ExercisePicker` y `useExerciseOptions`); "Crear «lo escrito»" sin salir; cada ejercicio nuevo entra con 3 series vacías; "Subir", "Bajar" y "Quitar" (con confirmación si tiene algo escrito). El test de fronteras ya prueba `programs` → `exercises`. 10 tests unitarios, 2 de fronteras y 3 de extremo a extremo nuevos. Detalles en D-100.
+- 2026-11-15 — Lote 2 de la Fase 2 fusionado en `main` (#30 a #35), a petición del propietario, que pidió hacerlo y fusionarlo en el mismo chat.
 - 2026-11-15 — PR 2.8b (editor: que no se pierdan los cambios): con cambios sin guardar, salir a otra pantalla pide confirmación y cerrar la pestaña muestra el aviso del navegador; los cambios se quedan en el dispositivo y, al volver a abrir la rutina, se ofrece "Recuperar" o "Descartar"; se borran al cerrar sesión con `clearDeviceDrafts()` (toca `src/core/lib` y `src/core/tenancy`, D-099). Arregla además dos fallos del 2.8a: "Cambios guardados" se quedaba a la vista tras volver a cambiar algo, y salir mientras se guardaba dejaba la navegación a medias. 10 tests unitarios y 1 de extremo a extremo nuevos. Cierra el lote 2.
 - 2026-11-15 — PR 2.8a (editor: los días del ciclo): `/coach/programs/<id>` con el ciclo (1 a 28 días; con 7, de lunes a domingo), cada día de entreno o de descanso con su nombre, subtítulo y lugar, y cuántos ejercicios y series tiene; "Guardar cambios" de una vez, sin perder los ejercicios ni las series; confirmación al acortar el ciclo o al marcar como descanso un día con ejercicios; aviso si se guardó desde otro dispositivo. En el móvil, la lista de días y, al tocar uno, ese día. "Nueva plantilla" abre el editor. 14 tests unitarios y 2 de extremo a extremo nuevos. Detalles en D-098.
 - 2026-11-15 — PR 2.7 (rutinas: lista de plantillas): módulo `programs` con "Rutinas" en el menú del coach (entre Clientes y Ejercicios), la lista de plantillas con su ciclo y sus días de entreno, buscador, "Nueva plantilla", renombrar, archivar y recuperar; el esquema Zod del documento de una rutina en `model/`; y el flag `programs`. 18 tests unitarios y 4 de extremo a extremo nuevos. Detalles en D-097.

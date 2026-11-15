@@ -8,9 +8,6 @@
 //
 // Los archivos de ejemplo no existen en disco: se le da a ESLint el texto y la
 // ruta que tendrían. Los imports sí apuntan a archivos reales del proyecto.
-//
-// Pendiente para cuando existan dos módulos reales (Fase 2): añadir el caso
-// permitido de la tabla de dependencias (programs → index.ts de exercises).
 
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -111,6 +108,16 @@ describe('imports prohibidos', () => {
       'src/modules/programs/coach/zz.ts',
       '@/modules/_template/model/template-volume',
     ],
+    [
+      'programs importa una carpeta interna de exercises',
+      'src/modules/programs/coach/zz.ts',
+      '@/modules/exercises/model/exercise-list',
+    ],
+    [
+      'exercises importa de programs (la dependencia va en un solo sentido)',
+      'src/modules/exercises/coach/zz.ts',
+      '@/modules/programs',
+    ],
 
     // El cliente de Supabase solo se importa desde carpetas api/.
     ['una carcasa importa el cliente de Supabase', 'src/app/coach/zz.ts', '@/core/supabase'],
@@ -193,6 +200,11 @@ describe('imports permitidos', () => {
       './coach/TemplateCoachPage',
     ],
     ['el registro importa el index.ts de un módulo', 'src/modules/zz.ts', './_template'],
+    [
+      'programs importa el index.ts de exercises (ARQUITECTURA §6)',
+      'src/modules/programs/coach/zz.tsx',
+      '@/modules/exercises',
+    ],
     [
       'api/ de un módulo importa el cliente de Supabase',
       'src/modules/_template/api/zz.ts',

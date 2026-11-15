@@ -21,10 +21,10 @@
 
 ## Dónde estamos
 
-- **Fase actual:** 2 — Ejercicios y rutinas: lote 1 (ejercicios) fusionado en `main` el 2026-11-15; el lote 2 (plantillas y editor de días) está completo, a la espera de que el propietario lo pruebe. La Fase 1 (cuentas, negocio del coach y unirse con código) está terminada y fusionada en `main` (2026-11-14).
-- **Última tarea terminada:** PR 2.8b — Editor: aviso al salir y recuperación en el dispositivo (2026-11-15), rama `feat/editor-recuperar`. Cierra el lote 2: los PR 2.5a a 2.8b (#30 en adelante) están abiertos y apilados. El lote 1 (PR 2.1 a 2.4b) está fusionado en `main`.
+- **Fase actual:** 2 — Ejercicios y rutinas: lotes 1 (ejercicios) y 2 (plantillas y editor de días) fusionados en `main` el 2026-11-15; lote 3 (rellenar la rutina) en marcha. La Fase 1 (cuentas, negocio del coach y unirse con código) está terminada y fusionada en `main` (2026-11-14).
+- **Última tarea terminada:** PR 2.9a — Editor: los ejercicios de cada día (2026-11-15), rama `feat/editor-ejercicios`. PR abierto.
 - **En curso:** nada.
-- **Siguiente tarea:** que el propietario pruebe el lote 2 y dé el visto bueno para fusionarlo (D-068). Después, el lote 3: PR 2.9 — Editor: los ejercicios de cada día (`docs/PROMPTS.md` §6). Aparte, el propietario aplica en staging las migraciones 8 a 14.
+- **Siguiente tarea:** PR 2.9b — Editor: sustituir, nota, archivados y bloquear la forma de medir (`docs/PROMPTS.md` §6). Aparte, el propietario prueba el lote 2 (lo pidió fusionado sin probar) y aplica en staging las migraciones 8 a 14.
 
 ## Cómo será la Fase 2 (diseñada, D-069 a D-088)
 
@@ -54,10 +54,10 @@
 - **Ejercicios, solo en la base de datos** (PR 2.1): `exercise_library` (catálogo de la plataforma) y `exercises` (los de cada negocio; el coach lee, crea y edita, nadie borra, tope de 1.000 sin archivar). Cada negocio nuevo recibe la copia del catálogo. Valores de las listas, en D-089.
 - **Los 120 ejercicios de la plataforma** (PR 2.2): cargados en el catálogo desde `docs/referencia/biblioteca-ejercicios.md`, sin instrucciones ni vídeos. Iron Lab y Norte Strength tienen ya sus 120. Para repartir ampliaciones futuras, `copy_exercise_library_to_all_tenants()` (D-090).
 - **Módulo `exercises`** (PR 2.3): "Ejercicios" en el menú del coach. Lista por orden alfabético (los del catálogo, en el idioma de la app), pestañas "Activos" y "Archivados" con su número, buscador sin tildes y filtros de grupo, material y origen, todo en la app (D-091). Crear y editar (PR 2.4a): "Nuevo ejercicio", pulsar una fila o "Crear «lo escrito»" desde el buscador; panel en escritorio, pantalla entera en el móvil (D-092). Archivar, recuperar, duplicar y "Restaurar original" (PR 2.4b) en el panel del ejercicio; nunca se borra (D-093).
-- **Módulo `programs`** (PR 2.7): "Rutinas" en el menú del coach. Lista de plantillas con "Semanal" o "Ciclo de N días" y sus días de entreno, pestañas "Activas" y "Archivadas", buscador, "Nueva plantilla" (nombre y días del ciclo), renombrar, archivar y recuperar (D-097). El documento de una rutina (esquema Zod del editor) está en `model/program-document.ts`. El editor (PR 2.8a, `/coach/programs/<id>`): los días del ciclo del primer bloque, de entreno o de descanso, con nombre, subtítulo y lugar, y "Guardar cambios" de una vez (D-098). Con cambios sin guardar, avisa al salir y los guarda en el dispositivo para "Recuperar" al volver; se borran al cerrar sesión (PR 2.8b, D-099).
+- **Módulo `programs`** (PR 2.7): "Rutinas" en el menú del coach. Lista de plantillas con "Semanal" o "Ciclo de N días" y sus días de entreno, pestañas "Activas" y "Archivadas", buscador, "Nueva plantilla" (nombre y días del ciclo), renombrar, archivar y recuperar (D-097). El documento de una rutina (esquema Zod del editor) está en `model/program-document.ts`. El editor (PR 2.8a, `/coach/programs/<id>`): los días del ciclo del primer bloque, de entreno o de descanso, con nombre, subtítulo y lugar, y "Guardar cambios" de una vez (D-098). Con cambios sin guardar, avisa al salir y los guarda en el dispositivo para "Recuperar" al volver; se borran al cerrar sesión (PR 2.8b, D-099). Cada día de entreno tiene sus ejercicios en orden: añadir con el buscador de "Ejercicios" sin salir, crear uno nuevo, subir, bajar y quitar (PR 2.9a, D-100).
 - **Rutinas en la base de datos** (PR 2.5a y 2.5b): `programs` (sin cliente = plantilla), `program_blocks`, `program_days`, `program_day_exercises` y `program_sets`. Desde la app solo se leen: el coach, las de su negocio; el cliente, las suyas y los ejercicios que llevan. Se escriben con funciones: `save_program` guarda una rutina entera o nada (PR 2.6, D-096) y `set_program_archived` archiva y recupera plantillas. El seed trae tres plantillas: "Casa + Gym" y "Pecho / Espalda y Brazo / Pierna" en Iron Lab, y "Fuerza básica" en Norte Strength.
 - **Base de datos local** (Supabase en Docker): 14 migraciones en `supabase/migrations/` (tablas, funciones de negocio, permisos, RLS, el espacio de logos, los ejercicios, las rutinas y los flags de cada módulo); 340 tests pgTAP (`npm run db:test`); 2 coaches y 6 clientes inventados (`supabase/seed.sql`, contraseña `password123`); tipos generados en `core/supabase/database.types.ts`.
-- **Tests:** 485 unitarios (`npm run check`) y 55 de extremo a extremo contra Supabase local (`npm run test:e2e`).
+- **Tests:** 497 unitarios (`npm run check`) y 58 de extremo a extremo contra Supabase local (`npm run test:e2e`).
 - **Staging** (PR 1.17): proyecto `athlete-core-staging` de Supabase (Fráncfort, plan gratuito) con las mismas tablas y datos inventados que en local. Los emails salen de verdad, por Resend, desde `no-reply@athlete-core.com`. Se prueba con `npm run dev:staging` (hace falta `.env.staging.local`; guía en `supabase/README.md`). Todavía no hay web publicada.
 - **Módulo `_template`** para copiar (`npm run new:module <nombre>`). Solo se registra en desarrollo.
 - **Reglas que se comprueban solas:** ESLint con las fronteras de ARQUITECTURA §6, hooks de Git (formato, mensaje de commit, no subir `main`), CI con `npm run check`, y tests que vigilan las fronteras, los textos en dos idiomas y la forma fija de los módulos.
@@ -71,11 +71,11 @@
 
 Los 5 más recientes, el más nuevo arriba. El historial completo está en `docs/ESTADO.md`.
 
+- 2026-11-15 — PR 2.9a: los ejercicios de cada día, con el buscador de "Ejercicios" sin salir de la rutina (D-100). Antes, el lote 2 se fusionó en `main` (#30 a #35).
 - 2026-11-15 — PR 2.8b: aviso al salir sin guardar y recuperación de los cambios en el dispositivo; se borran al cerrar sesión (D-099, toca `src/core`). Cierra el lote 2.
 - 2026-11-15 — PR 2.8a: el editor de los días del ciclo, con "Guardar cambios" y el aviso de guardado desde otro dispositivo (D-098). 14 tests unitarios y 2 de extremo a extremo nuevos.
 - 2026-11-15 — PR 2.7: módulo `programs` con la lista de plantillas, crearlas, renombrarlas y archivarlas, y el flag `programs` (D-097). 18 tests unitarios y 4 de extremo a extremo nuevos.
 - 2026-11-15 — PR 2.6: `save_program` (guardar una rutina entera o nada, con los topes y el conflicto entre dispositivos) y `set_program_archived` (D-096). 47 tests pgTAP nuevos.
-- 2026-11-15 — PR 2.5b: tablas `program_day_exercises` y `program_sets`, el cliente lee los ejercicios de sus rutinas, la regla de D-072 y el seed de rutinas (D-095). 46 tests pgTAP nuevos.
 
 ## A tener en cuenta ahora
 

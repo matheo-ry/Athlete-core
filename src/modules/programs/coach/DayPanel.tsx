@@ -7,6 +7,7 @@ import { Button, Input } from '@/core/ui';
 import { dayCounts } from '../model/cycle-editor';
 import type { CycleEditorAction } from '../model/cycle-editor';
 import type { ProgramDay } from '../model/program-document';
+import { DayExercises } from './DayExercises';
 
 const KINDS: readonly ProgramDay['kind'][] = ['training', 'rest'];
 
@@ -18,7 +19,7 @@ interface DayPanelProps {
 
 /**
  * Un día del ciclo: de entreno o de descanso y, si es de entreno, su nombre,
- * subtítulo y lugar (D-075). Sus ejercicios llegan en el PR 2.9.
+ * subtítulo y lugar (D-075), y sus ejercicios (PR 2.9).
  */
 export function DayPanel({ day, label, onChange }: DayPanelProps) {
   const { t } = useTranslation();
@@ -101,10 +102,7 @@ export function DayPanel({ day, label, onChange }: DayPanelProps) {
             value={day.place ?? ''}
             onChange={(event) => text('place', event.target.value)}
           />
-          <p className="text-muted text-sm">
-            {t('programs.editor.exercises', { count: counts.exercises })} ·{' '}
-            {t('programs.editor.sets', { count: counts.sets })}
-          </p>
+          <DayExercises day={day} onChange={onChange} />
         </>
       ) : (
         <p className="text-muted text-sm">{t('programs.editor.restDescription')}</p>

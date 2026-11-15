@@ -1,0 +1,65 @@
+{
+  "nav": {
+    "coach": "Exercises"
+  },
+  "list": {
+    "title": "Exercises",
+    "description": "Your exercise library, ready to use in your programs.",
+    "tabsLabel": "Show",
+    "tabs": {
+      "active": "Active",
+      "archived": "Archived"
+    },
+    "search": "Search by name",
+    "muscleGroup": "Muscle group",
+    "allMuscleGroups": "All muscle groups",
+    "equipment": "Equipment",
+    "allEquipment": "All equipment",
+    "origin": "Origin",
+    "origins": {
+      "all": "All",
+      "own": "Mine",
+      "platform": "Platform"
+    },
+    "unilateral": "Unilateral",
+    "own": "Custom",
+    "empty": {
+      "title": "You don't have any exercises yet",
+      "description": "The exercises you use in your programs will appear here."
+    },
+    "emptyArchived": {
+      "title": "No archived exercises",
+      "description": "Exercises you archive will appear here."
+    },
+    "noResults": {
+      "title": "No exercise matches",
+      "description": "Try another name or remove a filter."
+    }
+  },
+  "muscleGroups": {
+    "chest": "Chest",
+    "back": "Back",
+    "shoulders": "Shoulders",
+    "biceps": "Biceps",
+    "triceps": "Triceps",
+    "forearms": "Forearms",
+    "abs": "Abs",
+    "quads": "Quads",
+    "hamstrings": "Hamstrings",
+    "glutes": "Glutes",
+    "adductors": "Adductors",
+    "calves": "Calves",
+    "full_body": "Full body",
+    "cardio": "Cardio"
+  },
+  "equipment": {
+    "barbell": "Barbell",
+    "dumbbells": "Dumbbells",
+    "machine": "Machine",
+    "cable": "Cable",
+    "bodyweight": "Bodyweight",
+    "band": "Band",
+    "kettlebell": "Kettlebell",
+    "other": "Other"
+  }
+}

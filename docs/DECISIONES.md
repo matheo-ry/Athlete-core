@@ -750,6 +750,17 @@ Cómo añadir una: copia el formato, usa el siguiente número y no borres las an
 - **Por qué:** hacía falta poder repetir la copia para probar que no duplica, y la misma pieza sirve para las ampliaciones futuras del catálogo. El trigger del PR 2.1 (un negocio nuevo) no se toca.
 - **A tener en cuenta:** la copia pasa por el tope de 1.000 (D-086). Si algún día un negocio tiene casi 1.000 ejercicios sin archivar y el catálogo crece, la migración fallaría: habrá que decidir entonces si esas copias se saltan el tope.
 
+### D-091 · Cómo funciona la lista de ejercicios
+- **Fecha:** 2026-11-15
+- **Decisión:** detalles del PR 2.3 que D-073 no fijaba.
+  - **El número de cada pestaña es el total** de activos o de archivados, sin contar la búsqueda ni los filtros: así no cambia mientras se escribe.
+  - **Se busca en el nombre que se ve.** En español, "pulldown" no encuentra "Jalón al pecho".
+  - **Los filtros son desplegables del propio sistema**, con "Todos" como primera opción. El desplegable vive en el módulo (`coach/FilterSelect.tsx`) porque `core/ui` no tiene uno y es zona protegida.
+  - **La app carga los dos nombres del catálogo** (inglés y español). Cambiar de idioma no vuelve a pedir nada.
+  - **Primero se piden los activos.** La API de Supabase devuelve 1.000 filas como mucho (`max_rows`), y el tope de activos es también 1.000 (D-086): la pestaña "Activos" sale siempre entera.
+- **Por qué:** son las opciones más sencillas que cumplen D-073. Un desplegable nativo abre en el móvil la lista del propio sistema, que es la más cómoda con el dedo.
+- **A tener en cuenta:** un negocio con más de 1.000 ejercicios entre activos y archivados vería incompletos los archivados (apuntado en "Ideas y deuda"). Si el PR 2.4 necesita un desplegable en el formulario, es el momento de subir `FilterSelect` a `core/ui`, con el visto bueno del propietario.
+
 ---
 
 ## Pendientes de decidir

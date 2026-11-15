@@ -21,10 +21,10 @@
 
 ## Dónde estamos
 
-- **Fase actual:** 2 — Ejercicios y rutinas: diseñada, sin empezar a programar. La Fase 1 (cuentas, negocio del coach y unirse con código) está terminada y fusionada en `main` (2026-11-14).
-- **Última tarea terminada:** el diseño de la Fase 2 (2026-11-15), rama `docs/diseno-fase-2`. Solo documentación.
+- **Fase actual:** 2 — Ejercicios y rutinas: lote 1 en marcha. La Fase 1 (cuentas, negocio del coach y unirse con código) está terminada y fusionada en `main` (2026-11-14).
+- **Última tarea terminada:** PR 2.1 — Base de datos: ejercicios (2026-11-15), rama `db/ejercicios`. PR abierto, sin fusionar.
 - **En curso:** nada.
-- **Siguiente tarea:** PR 2.1 — Base de datos: ejercicios (`docs/PROMPTS.md` §6). ARQUITECTURA §8 ya recoge la excepción del catálogo de ejercicios (D-071), aprobada por el propietario.
+- **Siguiente tarea:** PR 2.2 — Los 120 ejercicios de la plataforma (`docs/PROMPTS.md` §6). El flag `exercises` se añade en el PR 2.3, con el módulo (D-089).
 
 ## Cómo será la Fase 2 (diseñada, D-069 a D-088)
 
@@ -51,7 +51,8 @@
 - **Perfil y cuenta** (PR 1.13): "Perfil" del cliente y "Ajustes" del coach con nombre, idioma (guardado en la cuenta), kilos o libras, cambiar la contraseña, textos legales y cerrar sesión.
 - **Espacios** (PR 1.14): selector `/select` para quien tiene varios y "Mis espacios" en el perfil y en los ajustes (cambiar, añadir un coach con código, crear el negocio).
 - **Marca** (PR 1.15 y 1.16): el dueño cambia en Ajustes el nombre, el logo, los colores (paleta de 12 o uno propio) y el modo, con vista previa. Se guarda con `update_brand`, que valida cada dato (D-067); el logo va en Storage, en la carpeta del negocio, y solo su dueño puede tocarlo.
-- **Base de datos local** (Supabase en Docker): 7 migraciones en `supabase/migrations/` (tablas, funciones de negocio, permisos, RLS y el espacio de logos); 150 tests pgTAP (`npm run db:test`); 2 coaches y 6 clientes inventados (`supabase/seed.sql`, contraseña `password123`); tipos generados en `core/supabase/database.types.ts`.
+- **Ejercicios, solo en la base de datos** (PR 2.1): `exercise_library` (catálogo de la plataforma, vacío hasta el PR 2.2) y `exercises` (los de cada negocio; el coach lee, crea y edita, nadie borra, tope de 1.000 sin archivar). Cada negocio nuevo recibe la copia del catálogo. Valores de las listas, en D-089.
+- **Base de datos local** (Supabase en Docker): 8 migraciones en `supabase/migrations/` (tablas, funciones de negocio, permisos, RLS, el espacio de logos y los ejercicios); 191 tests pgTAP (`npm run db:test`); 2 coaches y 6 clientes inventados (`supabase/seed.sql`, contraseña `password123`); tipos generados en `core/supabase/database.types.ts`.
 - **Tests:** 374 unitarios (`npm run check`) y 43 de extremo a extremo contra Supabase local (`npm run test:e2e`).
 - **Staging** (PR 1.17): proyecto `athlete-core-staging` de Supabase (Fráncfort, plan gratuito) con las mismas tablas y datos inventados que en local. Los emails salen de verdad, por Resend, desde `no-reply@athlete-core.com`. Se prueba con `npm run dev:staging` (hace falta `.env.staging.local`; guía en `supabase/README.md`). Todavía no hay web publicada.
 - **Módulo `_template`** para copiar (`npm run new:module <nombre>`). Solo se registra en desarrollo.
@@ -59,18 +60,18 @@
 
 ## Qué falta (lo próximo)
 
-- La Fase 2 entera: todavía no hay ninguna tabla ni pantalla de ejercicios o de rutinas. Publicar la web (P-03) sigue pendiente.
+- Casi toda la Fase 2: están las tablas de ejercicios, pero todavía no hay ninguna pantalla de ejercicios, ni tablas ni pantallas de rutinas. Publicar la web (P-03) sigue pendiente.
 - Las guardas por sesión y por rol son comodidad, no seguridad: los datos los protege el RLS.
 
 ## Últimos cambios
 
 Los 5 más recientes, el más nuevo arriba. El historial completo está en `docs/ESTADO.md`.
 
+- 2026-11-15 — PR 2.1: tablas `exercise_library` y `exercises`, con RLS, la copia para cada negocio nuevo y el tope de 1.000 (D-089). 41 tests pgTAP nuevos.
 - 2026-11-15 — Diseño de la Fase 2: D-069 a D-088, los 18 PR en `docs/PROMPTS.md` §6 y la biblioteca de 120 ejercicios en `docs/referencia/`. P-04 cerrado; P-02, provisional.
 - 2026-11-14 — PR 1.17: staging en marcha con emails reales por Resend; los agentes fusionan con el visto bueno del propietario (D-068).
 - 2026-11-14 — PR 1.16: el logo del coach, en Storage, visible en toda la app.
 - 2026-11-14 — PR 1.15: la marca del coach (nombre, colores y modo, con vista previa); `update_brand` (D-067).
-- 2026-11-14 — PR 1.14: selector de espacio y "Mis espacios"; el último espacio se recuerda hasta cerrar sesión (D-066).
 
 ## A tener en cuenta ahora
 

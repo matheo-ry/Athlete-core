@@ -69,6 +69,111 @@ export type Database = {
           },
         ];
       };
+      exercise_library: {
+        Row: {
+          equipment: string;
+          is_unilateral: boolean;
+          key: string;
+          measurement: string;
+          muscle_group: string;
+          name_en: string;
+          name_es: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          equipment: string;
+          is_unilateral?: boolean;
+          key: string;
+          measurement: string;
+          muscle_group: string;
+          name_en: string;
+          name_es: string;
+        };
+        Update: {
+          equipment?: string;
+          is_unilateral?: boolean;
+          key?: string;
+          measurement?: string;
+          muscle_group?: string;
+          name_en?: string;
+          name_es?: string;
+        };
+        Relationships: [];
+      };
+      exercises: {
+        Row: {
+          archived_at: string | null;
+          created_at: string;
+          created_by: string | null;
+          equipment: string | null;
+          id: string;
+          instructions: string | null;
+          is_unilateral: boolean;
+          library_key: string | null;
+          measurement: string;
+          muscle_group: string | null;
+          name: string | null;
+          tenant_id: string;
+          updated_at: string;
+          video_url: string | null;
+        };
+        ComputedFields: never;
+        Insert: {
+          archived_at?: string | null;
+          created_at?: string;
+          created_by?: string | null;
+          equipment?: string | null;
+          id?: string;
+          instructions?: string | null;
+          is_unilateral?: boolean;
+          library_key?: string | null;
+          measurement: string;
+          muscle_group?: string | null;
+          name?: string | null;
+          tenant_id: string;
+          updated_at?: string;
+          video_url?: string | null;
+        };
+        Update: {
+          archived_at?: string | null;
+          created_at?: string;
+          created_by?: string | null;
+          equipment?: string | null;
+          id?: string;
+          instructions?: string | null;
+          is_unilateral?: boolean;
+          library_key?: string | null;
+          measurement?: string;
+          muscle_group?: string | null;
+          name?: string | null;
+          tenant_id?: string;
+          updated_at?: string;
+          video_url?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'exercises_library_key_fkey';
+            columns: ['library_key'];
+            isOneToOne: false;
+            referencedRelation: 'exercise_library';
+            referencedColumns: ['key'];
+          },
+          {
+            foreignKeyName: 'exercises_tenant_id_fkey';
+            columns: ['tenant_id'];
+            isOneToOne: false;
+            referencedRelation: 'tenant_effective_features';
+            referencedColumns: ['tenant_id'];
+          },
+          {
+            foreignKeyName: 'exercises_tenant_id_fkey';
+            columns: ['tenant_id'];
+            isOneToOne: false;
+            referencedRelation: 'tenants';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
       features: {
         Row: {
           config_schema: Json | null;

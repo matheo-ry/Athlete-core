@@ -13,7 +13,9 @@ export type DayTextField = 'name' | 'subtitle' | 'place';
 export type CycleEditorAction =
   | { type: 'setCycleDays'; cycleDays: number }
   | { type: 'setDayKind'; dayNumber: number; kind: ProgramDay['kind'] }
-  | { type: 'setDayText'; dayNumber: number; field: DayTextField; value: string };
+  | { type: 'setDayText'; dayNumber: number; field: DayTextField; value: string }
+  /** "Recuperar" los cambios que quedaron en el dispositivo (PR 2.8b). */
+  | { type: 'replace'; document: ProgramDocument };
 
 function updateFirstBlock(
   document: ProgramDocument,
@@ -66,6 +68,8 @@ export function editCycle(document: ProgramDocument, action: CycleEditorAction):
           [action.field]: action.value.trim() === '' ? null : action.value,
         })),
       );
+    case 'replace':
+      return action.document;
   }
 }
 

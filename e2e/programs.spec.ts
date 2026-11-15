@@ -162,3 +162,55 @@ test('en el móvil el editor enseña la lista de días y, al tocar uno, ese día
   await page.getByRole('button', { name: '← Days' }).click();
   await expect(days).toBeVisible();
 });
+
+test('el editor avisa al salir sin guardar, recupera los cambios al volver y no pisa lo guardado desde otra ventana', async ({
+  page,
+  context,
+}) => {
+  const business = await createTestBusiness(`E2E Borrador ${suffix()}`);
+  await signIn(page, business.coachEmail, '/login', E2E_PASSWORD);
+  await expect(page).toHaveURL(/\/coach$/);
+  await page.goto('/coach/programs');
+  await page.getByRole('button', { name: 'New template' }).click();
+  await page.getByLabel('Name', { exact: true }).fill('Borrador');
+  await page.getByRole('button', { name: 'Create' }).click();
+  await expect(page.getByRole('heading', { name: 'Borrador', level: 1 })).toBeVisible();
+  const editorUrl = page.url();
+  const days = page.getByRole('list', { name: 'Days of the cycle' }).getByRole('button');
+
+  // Criterio 5: con cambios, ir a "Programs" avisa y se puede quedar.
+  await days.nth(1).click();
+  await expect(page.getByRole('heading', { name: 'Tuesday', level: 2 })).toBeVisible();
+  await page.getByRole('button', { name: 'Training', exact: true }).click();
+  await page.getByRole('navigation').first().getByRole('link', { name: 'Programs' }).click();
+  await expect(page.getByRole('alertdialog', { name: 'Leave without saving?' })).toBeVisible();
+  await page.getByRole('button', { name: 'Stay' }).click();
+  await expect(page).toHaveURL(new RegExp(`^${editorUrl}`));
+
+  // Criterio 6: se cierra la pestaña y, al volver, se ofrece recuperar.
+  await page.close({ runBeforeUnload: false });
+  const again = await context.newPage();
+  await again.goto(editorUrl);
+  await expect(again.getByRole('region', { name: 'You have unsaved changes' })).toBeVisible();
+  await again.getByRole('button', { name: 'Recover' }).click();
+  const againDays = again.getByRole('list', { name: 'Days of the cycle' }).getByRole('button');
+  await expect(againDays.nth(1)).toContainText('Tuesday0 exercises · 0 sets');
+
+  // Criterio 7: la misma rutina en dos ventanas. Se guarda en una y después en la otra.
+  const other = await context.newPage();
+  await other.goto(editorUrl);
+  const otherDays = other.getByRole('list', { name: 'Days of the cycle' }).getByRole('button');
+  await other.getByRole('button', { name: 'Recover' }).click();
+  await otherDays.nth(3).click();
+  await expect(other.getByRole('heading', { name: 'Thursday', level: 2 })).toBeVisible();
+  await other.getByRole('button', { name: 'Training', exact: true }).click();
+  await other.getByRole('button', { name: 'Save changes' }).click();
+  await expect(other.getByRole('status')).toHaveText('Changes saved.');
+
+  await again.getByRole('button', { name: 'Save changes' }).click();
+  await expect(again.getByRole('alert')).toContainText(
+    'This program was changed from another device',
+  );
+  await again.getByRole('button', { name: 'Reload' }).click();
+  await expect(againDays.nth(3)).toContainText('Thursday0 exercises');
+});

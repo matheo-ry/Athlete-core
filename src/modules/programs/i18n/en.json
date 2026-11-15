@@ -89,6 +89,14 @@
     "exercises_one": "{{count}} exercise",
     "exercises_other": "{{count}} exercises",
     "sets_one": "{{count}} set",
-    "sets_other": "{{count}} sets"
+    "sets_other": "{{count}} sets",
+    "recoverTitle": "You have unsaved changes",
+    "recoverDescription": "They stayed on this device the last time you edited this program. Do you want to recover them?",
+    "recover": "Recover",
+    "discard": "Discard",
+    "leaveTitle": "Leave without saving?",
+    "leaveDescription": "Your changes stay on this device: you can recover them when you open this program again.",
+    "stay": "Stay",
+    "leave": "Leave"
   }
 }

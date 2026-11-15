@@ -11,7 +11,10 @@ import type { ProgramDocument } from '../model/program-document';
 import { CycleControl } from './CycleControl';
 import { DayList } from './DayList';
 import { DayPanel } from './DayPanel';
+import { LeaveWarning } from './LeaveWarning';
+import { RecoverDraft } from './RecoverDraft';
 import { useDayLabel } from './useDayText';
+import { useUnsavedChanges } from './useUnsavedChanges';
 
 const FAILURES = {
   offline: 'core.errors.offline',
@@ -22,6 +25,8 @@ const FAILURES = {
 interface ProgramEditorProps {
   /** La rutina tal como está guardada. */
   saved: ProgramDocument;
+  /** Lo que se ve es lo que se acaba de guardar desde aquí. */
+  justSaved: boolean;
   /** Con el `updated_at` de lo recién guardado. */
   onSaved: (updatedAt: string) => void;
   onReload: () => void;
@@ -33,7 +38,7 @@ interface ProgramEditorProps {
  * todo de una vez (D-079). El día abierto va en la dirección (`?day=3`): en
  * el móvil, "Atrás" vuelve a la lista de días.
  */
-export function ProgramEditor({ saved, onSaved, onReload }: ProgramEditorProps) {
+export function ProgramEditor({ saved, justSaved, onSaved, onReload }: ProgramEditorProps) {
   const { t } = useTranslation();
   const [draft, dispatch] = useReducer(editCycle, saved);
   const save = useSaveProgram(saved.id ?? '');
@@ -43,6 +48,7 @@ export function ProgramEditor({ saved, onSaved, onReload }: ProgramEditorProps) 
   const block = firstBlock(draft);
   const label = useDayLabel(block ?? { id: null, name: null, cycleDays: 1, laps: null, days: [] });
   const dirty = isDirty(saved, draft);
+  const unsaved = useUnsavedChanges(saved, draft, dirty, save.isPending);
 
   if (block === undefined) {
     return null;
@@ -58,6 +64,7 @@ export function ProgramEditor({ saved, onSaved, onReload }: ProgramEditorProps) 
       .mutateAsync(draft)
       .then((result) => {
         if (result.status === 'saved') {
+          unsaved.forget();
           onSaved(result.updatedAt);
         } else if (result.status === 'conflict') {
           setIsConflict(true);
@@ -75,11 +82,34 @@ export function ProgramEditor({ saved, onSaved, onReload }: ProgramEditorProps) 
 
   return (
     <div className="flex flex-col gap-4">
+      {unsaved.recovered !== null ? (
+        <RecoverDraft
+          onRecover={() => {
+            if (unsaved.recovered !== null) {
+              dispatch({ type: 'replace', document: unsaved.recovered });
+            }
+            unsaved.resolveRecovery(false);
+          }}
+          onDiscard={() => unsaved.resolveRecovery(true)}
+        />
+      ) : null}
+      {unsaved.blocker.state === 'blocked' ? (
+        <LeaveWarning
+          onStay={() => unsaved.blocker.reset?.()}
+          onLeave={() => unsaved.blocker.proceed?.()}
+        />
+      ) : null}
       <div className="flex flex-wrap items-center gap-3">
         <Button onClick={submit} disabled={!dirty || save.isPending}>
           {t('programs.editor.save')}
         </Button>
         {dirty ? <p className="text-muted text-sm">{t('programs.editor.unsaved')}</p> : null}
+        {/* "Guardados" solo mientras no se vuelve a cambiar nada. */}
+        {justSaved && !dirty ? (
+          <p role="status" className="text-sm font-medium">
+            {t('programs.editor.saved')}
+          </p>
+        ) : null}
       </div>
       {failure !== null ? (
         <p role="alert" className="text-danger text-sm font-medium">

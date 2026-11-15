@@ -853,6 +853,17 @@ Cómo añadir una: copia el formato, usa el siguiente número y no borres las an
   - **El nombre de la rutina se cambia en la lista** ("Renombrar", D-097), no en el editor.
 - **Por qué:** son las opciones más sencillas que cumplen el bloque del PR.
 
+### D-099 · Aviso al salir y recuperación de los cambios en el dispositivo
+- **Fecha:** 2026-11-15
+- **Decisión:** detalles del PR 2.8b que D-079 no fijaba.
+  - **Mientras hay cambios sin guardar, se guardan en el dispositivo** (`localStorage`), uno por usuario y rutina. Al volver a abrir esa rutina se ofrece "Recuperar" o "Descartar"; hasta que el coach elige, no se toca lo guardado.
+  - **Un borrador solo vale si parte de la versión que hay ahora.** Si la rutina se guardó después desde otro sitio, el borrador se olvida sin preguntar: recuperarlo acabaría en "se ha cambiado desde otro dispositivo".
+  - **Se olvidan todos al cerrar sesión.** Los módulos guardan sus borradores con un prefijo común (`athlete-core.draft.`) y `clearDeviceDrafts()` (`core/lib`) los borra donde ya se borraban el último espacio y el código a medias (`core/tenancy/TenancyProvider`). **Toca `src/core/`**, zona protegida: el bloque del PR pedía que se olvidaran al cerrar sesión y no hay otra forma. Servirá también a los entrenos de la Fase 3. Como con el último espacio (D-066), solo al cerrar sesión el propio usuario, no cuando caduca.
+  - **Salir a otra pantalla de la app con cambios pide confirmación** ("¿Salir sin guardar?", con "Quedarme" y "Salir"). Cambiar de día no sale del editor y no pregunta. Mientras se está guardando tampoco: el guardado sigue aunque se salga.
+  - **Cerrar la pestaña o recargar** con cambios muestra el aviso del propio navegador; su texto no se puede cambiar.
+  - **"Cambios guardados" desaparece en cuanto se vuelve a cambiar algo,** para que no parezca que lo nuevo ya está guardado.
+- **Por qué:** cumple D-079 con el menor número de piezas, y los borradores no se quedan en un dispositivo compartido.
+
 ---
 
 ## Pendientes de decidir

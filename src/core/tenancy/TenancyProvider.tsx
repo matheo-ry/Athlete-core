@@ -3,6 +3,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import type { ReactNode } from 'react';
 
 import { useAuth } from '../auth';
+import { clearDeviceDrafts } from '../lib';
 import { createSupabaseTenancySource } from './api/supabase-tenancy-source';
 import {
   activeMemberships,
@@ -54,7 +55,8 @@ export function TenancyProvider({ children, source }: TenancyProviderProps) {
   // Al cerrar sesión no se queda en memoria nada del usuario anterior. Si la
   // cerró él mismo, tampoco el código que estaba a medias (en un dispositivo
   // compartido, otra persona no debe acabar unida a ese coach, D-037) ni el
-  // último espacio: al volver a entrar se elige otra vez (D-066).
+  // último espacio: al volver a entrar se elige otra vez (D-066). Ni lo que
+  // dejó a medias en el editor de rutinas (D-079 y D-099).
   useEffect(() => {
     if (status === 'signed-out') {
       queryClient.clear();
@@ -63,6 +65,7 @@ export function TenancyProvider({ children, source }: TenancyProviderProps) {
       clearPendingInvite();
       clearCoachIntent();
       clearLastSpace();
+      clearDeviceDrafts();
     }
   }, [status, signedOutReason, queryClient]);
 

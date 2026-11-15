@@ -31,14 +31,12 @@ export function ProgramEditorPage() {
             <h1 className="text-2xl font-bold break-words">{program.data.name}</h1>
             <p className="text-muted">{t('programs.editor.description')}</p>
           </header>
-          {savedAt !== null && Date.parse(savedAt) === Date.parse(program.data.updatedAt ?? '') ? (
-            <p role="status" className="text-sm font-medium">
-              {t('programs.editor.saved')}
-            </p>
-          ) : null}
           <ProgramEditor
             key={program.data.updatedAt}
             saved={program.data}
+            justSaved={
+              savedAt !== null && Date.parse(savedAt) === Date.parse(program.data.updatedAt ?? '')
+            }
             // Al guardar, useSaveProgram ya vuelve a pedir la rutina.
             onSaved={setSavedAt}
             onReload={() => void program.refetch()}

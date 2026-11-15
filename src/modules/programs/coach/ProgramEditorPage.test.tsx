@@ -1,4 +1,4 @@
-import { screen, within } from '@testing-library/react';
+import { screen, waitFor, within } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { renderAppAs } from '@/test/render-app';
@@ -161,5 +161,78 @@ describe('módulo programs: editor de los días del ciclo (PR 2.8)', () => {
     expect(await screen.findByRole('alert')).toHaveTextContent('changed from another device');
     await user.click(screen.getByRole('button', { name: 'Reload' }));
     expect(api.fetchProgram).toHaveBeenCalledTimes(2);
+  });
+});
+
+describe('módulo programs: que no se pierdan los cambios sin guardar (PR 2.8b)', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    localStorage.clear();
+    api.fetchProgram.mockResolvedValue(casaGym());
+    api.fetchTemplates.mockResolvedValue([]);
+    api.saveProgram.mockResolvedValue({
+      status: 'saved',
+      id: ID,
+      updatedAt: '2026-11-15T11:00:00Z',
+    });
+  });
+
+  it('salir a otra pantalla con cambios sin guardar avisa, y se puede quedar', async () => {
+    const { user, router } = await renderAppAs('coach@example.test', `/coach/programs/${ID}`);
+    await user.click(await screen.findByRole('button', { name: /^Tuesday/ }));
+    await user.click(screen.getByRole('button', { name: 'Training' }));
+    // Cambiar de día no sale del editor: no pregunta.
+    await user.click(screen.getByRole('button', { name: /^Wednesday/ }));
+    expect(screen.queryByRole('alertdialog')).toBeNull();
+
+    await user.click(screen.getAllByRole('link', { name: 'Programs' })[0] as HTMLElement);
+    const dialog = await screen.findByRole('alertdialog', { name: 'Leave without saving?' });
+    expect(within(dialog).getByRole('button', { name: 'Stay' })).toHaveFocus();
+    await user.click(within(dialog).getByRole('button', { name: 'Stay' }));
+    expect(router.state.location.pathname).toBe(`/coach/programs/${ID}`);
+    expect(days()[1]).toHaveTextContent('0 exercises');
+
+    await user.click(screen.getAllByRole('link', { name: 'Programs' })[0] as HTMLElement);
+    await user.click(await screen.findByRole('button', { name: 'Leave' }));
+    await waitFor(() => expect(router.state.location.pathname).toBe('/coach/programs'));
+  });
+
+  it('sin cambios, sale sin preguntar', async () => {
+    const { user, router } = await renderAppAs('coach@example.test', `/coach/programs/${ID}`);
+    await screen.findByRole('heading', { name: 'Casa + Gym', level: 1 });
+    await user.click(screen.getAllByRole('link', { name: 'Programs' })[0] as HTMLElement);
+
+    expect(router.state.location.pathname).toBe('/coach/programs');
+  });
+
+  it('si se cierra con cambios, al volver se ofrece "Recuperar" o "Descartar"', async () => {
+    const first = await renderAppAs('coach@example.test', `/coach/programs/${ID}`);
+    await first.user.click(await screen.findByRole('button', { name: /^Tuesday/ }));
+    await first.user.click(screen.getByRole('button', { name: 'Training' }));
+    first.unmount();
+
+    const { user } = await renderAppAs('coach@example.test', `/coach/programs/${ID}`);
+    expect(await screen.findByRole('region', { name: 'You have unsaved changes' })).toBeVisible();
+    expect(days()[1]).toHaveTextContent('Rest');
+    await user.click(screen.getByRole('button', { name: 'Recover' }));
+
+    expect(days()[1]).toHaveTextContent('Tuesday0 exercises · 0 sets');
+    expect(screen.getByRole('button', { name: 'Save changes' })).toBeEnabled();
+  });
+
+  it('"Descartar" lo olvida, y guardar también', async () => {
+    const first = await renderAppAs('coach@example.test', `/coach/programs/${ID}`);
+    await first.user.click(await screen.findByRole('button', { name: /^Tuesday/ }));
+    await first.user.click(screen.getByRole('button', { name: 'Training' }));
+    first.unmount();
+
+    const second = await renderAppAs('coach@example.test', `/coach/programs/${ID}`);
+    await second.user.click(await screen.findByRole('button', { name: 'Discard' }));
+    expect(days()[1]).toHaveTextContent('Rest');
+    second.unmount();
+
+    await renderAppAs('coach@example.test', `/coach/programs/${ID}`);
+    await screen.findByRole('heading', { name: 'Casa + Gym', level: 1 });
+    expect(screen.queryByRole('region', { name: 'You have unsaved changes' })).toBeNull();
   });
 });

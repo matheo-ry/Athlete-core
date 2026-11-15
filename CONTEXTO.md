@@ -24,7 +24,7 @@
 - **Fase actual:** 2 — Ejercicios y rutinas: diseñada, sin empezar a programar. La Fase 1 (cuentas, negocio del coach y unirse con código) está terminada y fusionada en `main` (2026-11-14).
 - **Última tarea terminada:** el diseño de la Fase 2 (2026-11-15), rama `docs/diseno-fase-2`. Solo documentación.
 - **En curso:** nada.
-- **Siguiente tarea:** PR 2.1 — Base de datos: ejercicios (`docs/PROMPTS.md` §6). Antes, el propietario aprueba el cambio de ARQUITECTURA §8 (D-071) y revisa `docs/referencia/biblioteca-ejercicios.md`.
+- **Siguiente tarea:** PR 2.1 — Base de datos: ejercicios (`docs/PROMPTS.md` §6). ARQUITECTURA §8 ya recoge la excepción del catálogo de ejercicios (D-071), aprobada por el propietario.
 
 ## Cómo será la Fase 2 (diseñada, D-069 a D-088)
 

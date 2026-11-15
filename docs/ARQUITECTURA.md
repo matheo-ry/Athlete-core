@@ -293,7 +293,7 @@ Una tabla de negocio es cualquiera que guarde datos de un coach o de sus cliente
 
 - `profiles`: es del usuario, no de un tenant.
 - Catálogos de la plataforma: `plans`, `features`, `plan_features`. Solo lectura.
-- Pendiente de decidir: una biblioteca global de ejercicios (DECISIONES, P-04).
+- `exercise_library`: el catálogo de ejercicios de la plataforma, con el nombre en inglés y en español. Solo lectura. Cada negocio recibe su propia copia en `exercises`, que sí lleva `tenant_id` (DECISIONES, D-071).
 
 ### Operaciones sensibles
 

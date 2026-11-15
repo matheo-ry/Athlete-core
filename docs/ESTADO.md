@@ -12,9 +12,7 @@ Nada. El diseño de la Fase 2 está hecho (DECISIONES D-069 a D-088) y su plan, 
 ## Siguiente
 
 1. **PR 2.1 — Base de datos: ejercicios** (`docs/PROMPTS.md` §6), en un chat nuevo. Es el primero del lote 1.
-2. Antes de pedirlo, el propietario:
-   - aprueba el cambio de `docs/ARQUITECTURA.md` §8 (la excepción del catálogo de ejercicios, D-071). Hasta entonces, §8 sigue diciendo "Pendiente de decidir" y el PR 2.1 no empieza;
-   - revisa la lista de `docs/referencia/biblioteca-ejercicios.md` (hace falta para el PR 2.2).
+2. El propietario aprobó el 2026-11-15 el cambio de `docs/ARQUITECTURA.md` §8 (la excepción del catálogo de ejercicios, D-071) y dio por buenas, por ahora, la lista de `docs/referencia/biblioteca-ejercicios.md` y las rutinas de ejemplo. Se pueden retocar más adelante.
 
 ## Fases
 
@@ -132,7 +130,6 @@ La referencia es la app de apuntes del propietario (D-087). Antes de empezar se 
 
 ## Bloqueos y dudas abiertas
 
-- **ARQUITECTURA §8 espera la aprobación del propietario:** la excepción del catálogo de ejercicios (D-071). El PR 2.1 no empieza sin ella.
 - **El nicho es provisional** (D-070, P-02): el propietario hablará con 3–5 coaches cuando tenga la demo. Las preguntas están en D-070.
 - Resend en plan gratuito: 100 emails al día y 3.000 al mes (D-046). Hay que revisarlo antes de los pilotos.
 - Staging se pausa tras una semana sin uso (D-063). Si deja de responder, es eso: se reanuda desde el panel de Supabase con **Restore project** (guía de staging, paso 6).

@@ -815,6 +815,19 @@ Cómo añadir una: copia el formato, usa el siguiente número y no borres las an
 - **Por qué:** son las opciones más sencillas que cumplen el diseño. Guardar la repetición fija como un rango de un solo número evita tener dos formas de decir lo mismo.
 - **A tener en cuenta:** con las rutinas de ejemplo, "Restaurar original" de un ejercicio del catálogo que esté en una rutina falla si el coach le había cambiado la forma de medir. La pantalla lo explicará en el PR 2.9, como preveía el bloque del PR 2.4.
 
+### D-096 · Cómo se guarda una rutina de una vez
+- **Fecha:** 2026-11-15
+- **Decisión:** detalles del PR 2.6 que D-079 y D-086 no fijaban.
+  - **Una sola función, `save_program(negocio, rutina)`,** recibe la rutina entera en JSON (sus bloques, días, ejercicios y series, en orden) y devuelve `{ id, updated_at }`. Sin `id`, crea una plantilla; con `id`, actualiza esa rutina, sea plantilla o de un cliente, sin cambiarle el cliente ni la fecha.
+  - **Lo que trae `id` conserva su identificador**, lo que no lo trae se crea y lo que ya no viene se borra. Un `id` que no es de esa rutina da `invalid_reference`.
+  - **El orden es el de la lista:** la posición no se envía.
+  - **Conflicto entre dispositivos:** la app envía el `updated_at` que cargó (`expected_updated_at`). Si no coincide, `program_conflict` y no se guarda nada.
+  - **Errores, uno por regla:** `not_allowed`, `invalid_name`, `program_not_found`, `program_conflict`, `program_needs_block`, `too_many_blocks`, `invalid_cycle`, `invalid_laps` (fuera de 1 a 52, o sin fin en un bloque que no es el último), `invalid_days` (no hay exactamente un día por cada día del ciclo), `rest_day_with_exercises`, `too_many_exercises`, `exercise_needs_sets`, `too_many_sets`, `exercise_not_found` (no existe o es de otro negocio), `exercise_archived`, `invalid_set_target` (repeticiones, tiempo o distancia que no casan con la forma de medir) y `template_limit_reached`.
+  - **Un ejercicio archivado** se puede conservar en cualquier día de una rutina que ya lo tenía, aunque se mueva de sitio.
+  - **Archivar y recuperar** van en `set_program_archived(negocio, rutina, archivada)`. Solo plantillas (`not_a_template` si es de un cliente). Recuperar pasa por el tope de 300.
+  - **No se deja constancia en `audit_log`:** guardar es una edición normal, como cambiar un ejercicio. Sí la dejarán asignar, terminar y reiniciar (D-081, PR 2.12).
+- **Por qué:** con un documento entero el editor puede trabajar sin conexión con la base de datos hasta "Guardar cambios", y la base de datos sigue siendo la única que decide qué vale.
+
 ---
 
 ## Pendientes de decidir

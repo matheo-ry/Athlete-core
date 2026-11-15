@@ -7,11 +7,11 @@ Este archivo lo actualiza quien termina una tarea, en el mismo Pull Request, jun
 
 ## En curso
 
-El lote 2. Los PR 2.5a (rama `db/rutinas`) y 2.5b (rama `db/rutinas-ejercicios`) están abiertos, apilados. El lote 1 (PR 2.1 a 2.4b; #24 a #28) está fusionado en `main` desde el 2026-11-15.
+El lote 2. Los PR 2.5a (rama `db/rutinas`), 2.5b (rama `db/rutinas-ejercicios`) y 2.6 (rama `db/guardar-rutina`) están abiertos, apilados en ese orden. El lote 1 (PR 2.1 a 2.4b; #24 a #28) está fusionado en `main` desde el 2026-11-15.
 
 ## Siguiente
 
-1. **PR 2.6 — Base de datos: guardar una rutina de una vez** (`docs/PROMPTS.md` §6), apilado sobre el 2.5b. Después, los PR 2.7 y 2.8.
+1. **PR 2.7 — Rutinas: lista de plantillas** (`docs/PROMPTS.md` §6), apilado sobre el 2.6. Después, el PR 2.8.
 2. El propietario aplica las migraciones 8, 9 y 10 (ejercicios) en staging (GUIA-GIT §9). No bloquea el PR 2.5.
 3. El propietario dio por buenas, por ahora, la lista de `docs/referencia/biblioteca-ejercicios.md` y las rutinas de ejemplo. Se pueden retocar más adelante.
 
@@ -81,7 +81,7 @@ El diseño está en DECISIONES D-069 a D-088, y el detalle de cada PR, en `docs/
 - [x] PR 2.5 — Base de datos: rutinas (partido en dos, como preveía `docs/PROMPTS.md` §6)
   - [x] 2.5a — rutinas, bloques y días, con su RLS y los casos 15, 16, 18, 19 y 28
   - [x] 2.5b — ejercicios del día y series, la lectura de ejercicios por el cliente, la regla de D-072, el caso 17 y el seed
-- [ ] PR 2.6 — Base de datos: guardar una rutina de una vez
+- [x] PR 2.6 — Base de datos: guardar una rutina de una vez
 - [ ] PR 2.7 — Rutinas: lista de plantillas
 - [ ] PR 2.8 — Editor: los días del ciclo
 
@@ -191,6 +191,7 @@ Cosas que alguien ha visto y que no tocaban en su tarea. No se hacen sin convert
 
 Lo más nuevo, arriba.
 
+- 2026-11-15 — PR 2.6 (base de datos: guardar una rutina de una vez): `save_program` guarda la rutina entera o nada, conserva los identificadores, comprueba los topes de D-086 con un error distinto para cada uno y no pisa lo guardado desde otro dispositivo; `set_program_archived` archiva y recupera plantillas, con el tope de 300. 47 tests pgTAP nuevos. Detalles en D-096.
 - 2026-11-15 — PR 2.5b (base de datos: ejercicios del día, series y seed): tablas `program_day_exercises` y `program_sets`, de solo lectura; el cliente pasa a leer los ejercicios de sus rutinas y ningún otro; la forma de medir de un ejercicio que está en una rutina ya no cambia (`exercise_in_use`). El seed trae las tres plantillas de `docs/referencia/rutinas-de-ejemplo.md` y 20 ejercicios propios de Iron Lab. 46 tests pgTAP nuevos (casos 15, 17, 18 y 19). Detalles en D-095. El test 09 borra antes las rutinas del seed.
 - 2026-11-15 — PR 2.5a (base de datos: rutinas, bloques y días): tablas `programs`, `program_blocks` y `program_days`, de solo lectura desde la app (se escribirán con funciones), con RLS: el coach lee las de su negocio y el cliente, solo las suyas; un cliente dado de baja no lee nada. 45 tests pgTAP nuevos (casos 15, 16, 18, 19 y 28). Detalles en D-094. El propietario pidió hacer los PR 2.5 a 2.8 en el mismo chat.
 - 2026-11-15 — Lote 1 de la Fase 2 fusionado en `main` (#24 a #28) con el visto bueno del propietario, que lo probó en la app. Antes se revisó entero desde cero y se arregló un test del panel de ejercicios que fallaba a ratos (esperar al foco).

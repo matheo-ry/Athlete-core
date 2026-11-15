@@ -22,9 +22,9 @@
 ## Dónde estamos
 
 - **Fase actual:** 2 — Ejercicios y rutinas: lote 1 (ejercicios) fusionado en `main` el 2026-11-15; toca el lote 2. La Fase 1 (cuentas, negocio del coach y unirse con código) está terminada y fusionada en `main` (2026-11-14).
-- **Última tarea terminada:** PR 2.5b — Base de datos: ejercicios del día, series y seed de rutinas (2026-11-15), rama `db/rutinas-ejercicios`. PR abierto, apilado sobre el del 2.5a. El lote 1 (PR 2.1 a 2.4b) está fusionado en `main`.
+- **Última tarea terminada:** PR 2.6 — Base de datos: guardar una rutina de una vez (2026-11-15), rama `db/guardar-rutina`. PR abierto, apilado sobre los de los PR 2.5b y 2.5a. El lote 1 (PR 2.1 a 2.4b) está fusionado en `main`.
 - **En curso:** nada.
-- **Siguiente tarea:** PR 2.6 — Base de datos: guardar una rutina de una vez (`docs/PROMPTS.md` §6). Aparte, el propietario aplica en staging las migraciones 8, 9 y 10.
+- **Siguiente tarea:** PR 2.7 — Rutinas: lista de plantillas (`docs/PROMPTS.md` §6). Aparte, el propietario aplica en staging las migraciones 8, 9 y 10.
 
 ## Cómo será la Fase 2 (diseñada, D-069 a D-088)
 
@@ -54,8 +54,8 @@
 - **Ejercicios, solo en la base de datos** (PR 2.1): `exercise_library` (catálogo de la plataforma) y `exercises` (los de cada negocio; el coach lee, crea y edita, nadie borra, tope de 1.000 sin archivar). Cada negocio nuevo recibe la copia del catálogo. Valores de las listas, en D-089.
 - **Los 120 ejercicios de la plataforma** (PR 2.2): cargados en el catálogo desde `docs/referencia/biblioteca-ejercicios.md`, sin instrucciones ni vídeos. Iron Lab y Norte Strength tienen ya sus 120. Para repartir ampliaciones futuras, `copy_exercise_library_to_all_tenants()` (D-090).
 - **Módulo `exercises`** (PR 2.3): "Ejercicios" en el menú del coach. Lista por orden alfabético (los del catálogo, en el idioma de la app), pestañas "Activos" y "Archivados" con su número, buscador sin tildes y filtros de grupo, material y origen, todo en la app (D-091). Crear y editar (PR 2.4a): "Nuevo ejercicio", pulsar una fila o "Crear «lo escrito»" desde el buscador; panel en escritorio, pantalla entera en el móvil (D-092). Archivar, recuperar, duplicar y "Restaurar original" (PR 2.4b) en el panel del ejercicio; nunca se borra (D-093).
-- **Rutinas, solo en la base de datos** (PR 2.5a y 2.5b): `programs` (sin cliente = plantilla), `program_blocks`, `program_days`, `program_day_exercises` y `program_sets`. Desde la app solo se leen: el coach, las de su negocio; el cliente, las suyas y los ejercicios que llevan. Se escribirán con funciones (D-094 y D-095). El seed trae tres plantillas: "Casa + Gym" y "Pecho / Espalda y Brazo / Pierna" en Iron Lab, y "Fuerza básica" en Norte Strength.
-- **Base de datos local** (Supabase en Docker): 12 migraciones en `supabase/migrations/` (tablas, funciones de negocio, permisos, RLS, el espacio de logos, los ejercicios, las rutinas y los flags de cada módulo); 293 tests pgTAP (`npm run db:test`); 2 coaches y 6 clientes inventados (`supabase/seed.sql`, contraseña `password123`); tipos generados en `core/supabase/database.types.ts`.
+- **Rutinas, solo en la base de datos** (PR 2.5a y 2.5b): `programs` (sin cliente = plantilla), `program_blocks`, `program_days`, `program_day_exercises` y `program_sets`. Desde la app solo se leen: el coach, las de su negocio; el cliente, las suyas y los ejercicios que llevan. Se escriben con funciones: `save_program` guarda una rutina entera o nada (PR 2.6, D-096) y `set_program_archived` archiva y recupera plantillas. El seed trae tres plantillas: "Casa + Gym" y "Pecho / Espalda y Brazo / Pierna" en Iron Lab, y "Fuerza básica" en Norte Strength.
+- **Base de datos local** (Supabase en Docker): 13 migraciones en `supabase/migrations/` (tablas, funciones de negocio, permisos, RLS, el espacio de logos, los ejercicios, las rutinas y los flags de cada módulo); 340 tests pgTAP (`npm run db:test`); 2 coaches y 6 clientes inventados (`supabase/seed.sql`, contraseña `password123`); tipos generados en `core/supabase/database.types.ts`.
 - **Tests:** 436 unitarios (`npm run check`) y 48 de extremo a extremo contra Supabase local (`npm run test:e2e`).
 - **Staging** (PR 1.17): proyecto `athlete-core-staging` de Supabase (Fráncfort, plan gratuito) con las mismas tablas y datos inventados que en local. Los emails salen de verdad, por Resend, desde `no-reply@athlete-core.com`. Se prueba con `npm run dev:staging` (hace falta `.env.staging.local`; guía en `supabase/README.md`). Todavía no hay web publicada.
 - **Módulo `_template`** para copiar (`npm run new:module <nombre>`). Solo se registra en desarrollo.
@@ -70,11 +70,13 @@
 
 Los 5 más recientes, el más nuevo arriba. El historial completo está en `docs/ESTADO.md`.
 
+- 2026-11-15 — PR 2.6: `save_program` (guardar una rutina entera o nada, con los topes y el conflicto entre dispositivos) y `set_program_archived` (D-096). 47 tests pgTAP nuevos.
 - 2026-11-15 — PR 2.5b: tablas `program_day_exercises` y `program_sets`, el cliente lee los ejercicios de sus rutinas, la regla de D-072 y el seed de rutinas (D-095). 46 tests pgTAP nuevos.
 - 2026-11-15 — PR 2.5a: tablas `programs`, `program_blocks` y `program_days`, de solo lectura y con RLS (D-094). 45 tests pgTAP nuevos.
 - 2026-11-15 — PR 2.4b: archivar, recuperar, duplicar y "Restaurar original" (D-093). Cierra el lote 1. 17 tests unitarios y 1 de extremo a extremo nuevos.
 - 2026-11-15 — PR 2.4a: crear y editar ejercicios, con "Crear «lo escrito»" desde el buscador (D-092). 19 tests unitarios y 2 de extremo a extremo nuevos.
-- 2026-11-15 — PR 2.3: módulo `exercises` con la lista, el buscador, los filtros y el flag `exercises` (D-091). 26 tests unitarios y 2 de extremo a extremo nuevos.## A tener en cuenta ahora
+
+## A tener en cuenta ahora
 
 - El proyecto vive en `C:\dev\athlete-core`, **fuera de OneDrive** (sincronizar `node_modules` da errores).
 - Se usa **TypeScript 6**, no 7: el lint de TypeScript aún no admite la 7 (DECISIONES D-022).

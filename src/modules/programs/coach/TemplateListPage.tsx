@@ -1,0 +1,130 @@
+import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
+
+import { useLanguage } from '@/core/i18n';
+import { cn } from '@/core/lib';
+import { Button, Card, EmptyState, ErrorState, Input, Spinner } from '@/core/ui';
+
+import { useTemplates } from '../api/useTemplates';
+import { countByTab, visibleTemplates } from '../model/template-list';
+import type { TemplateTab } from '../model/template-list';
+import { NewTemplateForm } from './NewTemplateForm';
+import { TemplateRow } from './TemplateRow';
+import type { TemplateNotice } from './TemplateRow';
+
+const TABS: readonly TemplateTab[] = ['active', 'archived'];
+
+/**
+ * Las plantillas del coach (PR 2.7, D-085): "Activas" y "Archivadas" con su
+ * número, buscador y "Nueva plantilla". La pestaña "Asignadas" llega en el
+ * PR 2.13.
+ */
+export function TemplateListPage() {
+  const { t } = useTranslation();
+  const language = useLanguage();
+  const templates = useTemplates();
+  const [tab, setTab] = useState<TemplateTab>('active');
+  const [query, setQuery] = useState('');
+  const [isCreating, setIsCreating] = useState(false);
+  const [notice, setNotice] = useState<{ kind: TemplateNotice; name: string } | null>(null);
+
+  const all = templates.data ?? [];
+  const counts = countByTab(all);
+  const visible = visibleTemplates(all, tab, query, language);
+  const showNotice = (kind: TemplateNotice, name: string) => setNotice({ kind, name });
+
+  return (
+    <section className="flex flex-col gap-4">
+      <header className="flex flex-wrap items-start justify-between gap-3">
+        <div>
+          <h1 className="text-2xl font-bold">{t('programs.list.title')}</h1>
+          <p className="text-muted">{t('programs.list.description')}</p>
+        </div>
+        {isCreating ? null : (
+          <Button
+            onClick={() => {
+              setNotice(null);
+              setIsCreating(true);
+            }}
+          >
+            {t('programs.list.newTemplate')}
+          </Button>
+        )}
+      </header>
+
+      {isCreating ? (
+        <NewTemplateForm
+          onCreated={(_id, name) => {
+            // El editor llega en el PR 2.8: hasta entonces, se vuelve a la lista.
+            setIsCreating(false);
+            setTab('active');
+            showNotice('created', name);
+          }}
+          onCancel={() => setIsCreating(false)}
+        />
+      ) : null}
+
+      {notice !== null ? (
+        <p role="status" className="text-sm font-medium">
+          {t(`programs.list.notices.${notice.kind}`, { name: notice.name })}
+        </p>
+      ) : null}
+
+      <div role="group" aria-label={t('programs.list.tabsLabel')} className="flex gap-2">
+        {TABS.map((option) => (
+          <button
+            key={option}
+            type="button"
+            aria-pressed={tab === option}
+            onClick={() => setTab(option)}
+            className={cn(
+              'flex min-h-11 items-center gap-2 rounded-lg px-4 text-sm font-medium',
+              'focus-visible:outline-primary-readable focus-visible:outline-2',
+              tab === option ? 'bg-primary text-on-primary' : 'bg-surface text-muted',
+            )}
+          >
+            {t(`programs.list.tabs.${option}`)}
+            {/* El espacio separa el número del nombre para los lectores de pantalla. */}{' '}
+            {templates.isSuccess ? (
+              <span className="font-semibold tabular-nums">{counts[option]}</span>
+            ) : null}
+          </button>
+        ))}
+      </div>
+
+      <Input
+        label={t('programs.list.search')}
+        type="search"
+        name="search"
+        value={query}
+        onChange={(event) => setQuery(event.target.value)}
+      />
+
+      <Card>
+        {templates.isPending ? <Spinner /> : null}
+        {templates.isError ? <ErrorState onRetry={() => void templates.refetch()} /> : null}
+        {templates.isSuccess && counts[tab] === 0 ? (
+          <EmptyState
+            title={t(`programs.list.${tab === 'active' ? 'empty' : 'emptyArchived'}.title`)}
+            description={t(
+              `programs.list.${tab === 'active' ? 'empty' : 'emptyArchived'}.description`,
+            )}
+          />
+        ) : null}
+        {templates.isSuccess && counts[tab] > 0 && visible.length === 0 ? (
+          <EmptyState
+            title={t('programs.list.noResults.title')}
+            description={t('programs.list.noResults.description')}
+          />
+        ) : null}
+        {visible.length > 0 ? (
+          <ul>
+            {visible.map((template) => (
+              <TemplateRow key={template.id} template={template} onDone={showNotice} />
+            ))}
+          </ul>
+        ) : null}
+      </Card>
+    </section>
+  );
+}

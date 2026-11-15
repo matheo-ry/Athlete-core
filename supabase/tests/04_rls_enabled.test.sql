@@ -28,7 +28,7 @@ select is(
 -- Cada módulo del producto añade aquí su flag al crearse (ARQUITECTURA §15).
 select is(
   array(select key from public.features order by key),
-  array['clients', 'exercises'],
+  array['clients', 'exercises', 'programs'],
   'el catálogo de flags tiene uno por módulo del producto, y nada más (ARQUITECTURA §15)'
 );
 

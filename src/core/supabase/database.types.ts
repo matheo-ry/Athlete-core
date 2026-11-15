@@ -842,7 +842,12 @@ export type Database = {
       reactivate_client: { Args: { p_tenant: string; p_user: string }; Returns: undefined };
       regenerate_invite_code: { Args: { p_tenant: string }; Returns: string };
       remove_logo: { Args: { p_tenant: string }; Returns: undefined };
+      save_program: { Args: { p_program: Json; p_tenant: string }; Returns: Json };
       set_logo: { Args: { p_path: string; p_tenant: string }; Returns: undefined };
+      set_program_archived: {
+        Args: { p_archived: boolean; p_program: string; p_tenant: string };
+        Returns: undefined;
+      };
       update_brand: {
         Args: {
           p_accent: string;

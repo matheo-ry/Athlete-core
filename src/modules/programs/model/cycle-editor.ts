@@ -1,6 +1,12 @@
 import type { Language } from '@/core/i18n';
 
-import { addExercise, moveExercise, removeExercise } from './day-exercises';
+import {
+  addExercise,
+  moveExercise,
+  removeExercise,
+  replaceExercise,
+  setExerciseNote,
+} from './day-exercises';
 import { MAX_CYCLE_DAYS, WEEKLY_CYCLE_DAYS, restDay } from './program-document';
 import type { ProgramBlock, ProgramDay, ProgramDocument } from './program-document';
 
@@ -20,7 +26,9 @@ export type CycleEditorAction =
   // Los ejercicios de un día (PR 2.9).
   | { type: 'addExercise'; dayNumber: number; exerciseId: string }
   | { type: 'moveExercise'; dayNumber: number; index: number; direction: -1 | 1 }
-  | { type: 'removeExercise'; dayNumber: number; index: number };
+  | { type: 'removeExercise'; dayNumber: number; index: number }
+  | { type: 'replaceExercise'; dayNumber: number; index: number; exerciseId: string }
+  | { type: 'setExerciseNote'; dayNumber: number; index: number; note: string };
 
 function updateFirstBlock(
   document: ProgramDocument,
@@ -88,6 +96,18 @@ export function editCycle(document: ProgramDocument, action: CycleEditorAction):
     case 'removeExercise':
       return updateFirstBlock(document, (block) =>
         updateDay(block, action.dayNumber, (day) => removeExercise(day, action.index)),
+      );
+    case 'replaceExercise':
+      return updateFirstBlock(document, (block) =>
+        updateDay(block, action.dayNumber, (day) =>
+          replaceExercise(day, action.index, action.exerciseId),
+        ),
+      );
+    case 'setExerciseNote':
+      return updateFirstBlock(document, (block) =>
+        updateDay(block, action.dayNumber, (day) =>
+          setExerciseNote(day, action.index, action.note),
+        ),
       );
   }
 }

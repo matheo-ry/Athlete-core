@@ -6,6 +6,7 @@ import { useLanguage } from '@/core/i18n';
 import { logger } from '@/core/lib';
 import { Button, Checkbox, Input } from '@/core/ui';
 
+import { useExerciseInUse } from '../api/useExerciseInUse';
 import { useSaveExercise } from '../api/useSaveExercise';
 import type { SaveResult } from '../api/useSaveExercise';
 import { readExerciseForm } from '../model/exercise-form';
@@ -28,6 +29,7 @@ interface ExerciseFormProps {
 const FAILURE_KEYS: Record<Exclude<SaveResult['status'], 'saved'>, string> = {
   offline: 'core.errors.offline',
   limit_reached: 'exercises.form.limitReached',
+  in_use: 'exercises.form.inUse',
   error: 'core.errors.unexpected',
 };
 
@@ -36,6 +38,8 @@ export function ExerciseForm({ exercise, initialValues, onSaved, onCancel }: Exe
   const { t } = useTranslation();
   const language = useLanguage();
   const save = useSaveExercise();
+  // Si ya está en una rutina, la forma de medir y "unilateral" no cambian (D-072).
+  const inUse = useExerciseInUse(exercise?.id ?? null).data === true;
   const [values, setValues] = useState(initialValues);
   const [errors, setErrors] = useState<ExerciseFormErrors>({});
   const [failure, setFailure] = useState<string | null>(null);
@@ -87,12 +91,15 @@ export function ExerciseForm({ exercise, initialValues, onSaved, onCancel }: Exe
         value={values.measurement}
         onChange={(measurement) => set('measurement', measurement)}
         error={errorText('measurement')}
+        disabled={inUse}
       />
       <Checkbox
         label={t('exercises.form.unilateral')}
         checked={values.isUnilateral}
+        disabled={inUse}
         onChange={(event) => set('isUnilateral', event.target.checked)}
       />
+      {inUse ? <p className="text-muted text-sm">{t('exercises.form.inUseHint')}</p> : null}
       <div className="grid grid-cols-2 gap-3">
         <FilterSelect
           label={t('exercises.list.muscleGroup')}

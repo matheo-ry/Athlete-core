@@ -8,17 +8,20 @@ interface MeasurementChoiceProps {
   value: Measurement | '';
   onChange: (value: Measurement) => void;
   error?: string;
+  /** No se puede cambiar: el ejercicio ya está en una rutina (D-072). */
+  disabled?: boolean;
 }
 
 /** Las 4 formas de medir (D-072), cada una con su ejemplo. Obligatoria. */
-export function MeasurementChoice({ value, onChange, error }: MeasurementChoiceProps) {
+export function MeasurementChoice({ value, onChange, error, disabled }: MeasurementChoiceProps) {
   const { t } = useTranslation();
   const id = useId();
   const errorId = `${id}-error`;
 
   return (
     <fieldset
-      className="flex flex-col gap-2"
+      disabled={disabled}
+      className="flex flex-col gap-2 disabled:opacity-60"
       aria-invalid={error ? true : undefined}
       aria-describedby={error ? errorId : undefined}
     >

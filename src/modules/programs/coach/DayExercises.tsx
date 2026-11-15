@@ -3,49 +3,61 @@ import { useTranslation } from 'react-i18next';
 
 import { Button } from '@/core/ui';
 import { ExercisePicker, useExerciseOptions } from '@/modules/exercises';
+import type { Measurement } from '@/modules/exercises';
 
 import type { CycleEditorAction } from '../model/cycle-editor';
 import { dayCounts } from '../model/cycle-editor';
-import { hasSetData } from '../model/day-exercises';
 import type { ProgramDay } from '../model/program-document';
+import { DayExerciseRow } from './DayExerciseRow';
 
 interface DayExercisesProps {
   day: ProgramDay;
   onChange: (action: CycleEditorAction) => void;
 }
 
+/** Qué se está eligiendo en el buscador: uno nuevo o el sustituto de otro. */
+type Picking =
+  { kind: 'add' } | { kind: 'replace'; index: number; name: string; measurement: Measurement };
+
 /**
- * Los ejercicios de un día de entreno, en orden (PR 2.9): el total arriba,
- * "Añadir ejercicio" con el buscador de "Ejercicios" sin salir de la rutina,
- * "Subir", "Bajar" y "Quitar". Todo entra en "Guardar cambios".
+ * Los ejercicios de un día de entreno, en orden (PR 2.9): el total arriba y
+ * "Añadir ejercicio" con el buscador de "Ejercicios", sin salir de la rutina.
+ * "Sustituir" solo ofrece los que se miden igual (D-078). Todo entra en
+ * "Guardar cambios".
  */
 export function DayExercises({ day, onChange }: DayExercisesProps) {
   const { t } = useTranslation();
   const options = useExerciseOptions();
-  const [isPicking, setIsPicking] = useState(false);
-  const [confirmingRemove, setConfirmingRemove] = useState<number | null>(null);
+  const [picking, setPicking] = useState<Picking | null>(null);
   const counts = dayCounts(day);
-  const last = day.exercises.length - 1;
+  const dayNumber = day.dayNumber;
 
-  if (isPicking) {
+  if (picking !== null) {
     return (
       <ExercisePicker
-        title={t('programs.editor.addExercise')}
+        title={
+          picking.kind === 'add'
+            ? t('programs.editor.addExercise')
+            : t('programs.editor.replaceTitle', { name: picking.name })
+        }
+        measurement={picking.kind === 'replace' ? picking.measurement : undefined}
         onPick={(exercise) => {
-          onChange({ type: 'addExercise', dayNumber: day.dayNumber, exerciseId: exercise.id });
-          setIsPicking(false);
+          onChange(
+            picking.kind === 'add'
+              ? { type: 'addExercise', dayNumber, exerciseId: exercise.id }
+              : {
+                  type: 'replaceExercise',
+                  dayNumber,
+                  index: picking.index,
+                  exerciseId: exercise.id,
+                },
+          );
+          setPicking(null);
         }}
-        onCancel={() => setIsPicking(false)}
+        onCancel={() => setPicking(null)}
       />
     );
   }
-
-  const remove = (index: number) => {
-    setConfirmingRemove(null);
-    onChange({ type: 'removeExercise', dayNumber: day.dayNumber, index });
-  };
-  const move = (index: number, direction: -1 | 1) =>
-    onChange({ type: 'moveExercise', dayNumber: day.dayNumber, index, direction });
 
   return (
     <div className="flex flex-col gap-3">
@@ -56,71 +68,43 @@ export function DayExercises({ day, onChange }: DayExercisesProps) {
       {day.exercises.length > 0 ? (
         <ol aria-label={t('programs.editor.exercisesLabel')} className="flex flex-col">
           {day.exercises.map((item, index) => {
-            const name = options.byId.get(item.exerciseId)?.name ?? '…';
+            const exercise = options.byId.get(item.exerciseId);
             return (
-              // El ejercicio de la rutina puede no tener id todavía (sin guardar).
-              <li
+              <DayExerciseRow
+                // Un ejercicio sin guardar todavía no tiene id.
                 key={item.id ?? `new-${String(index)}-${item.exerciseId}`}
-                className="border-border flex flex-col gap-2 border-b py-2 last:border-b-0"
-              >
-                <div className="flex flex-wrap items-center justify-between gap-2">
-                  <span className="flex min-w-0 flex-col">
-                    <span className="font-medium break-words">
-                      {index + 1}. {name}
-                    </span>
-                    <span className="text-muted text-sm">
-                      {t('programs.editor.sets', { count: item.sets.length })}
-                    </span>
-                  </span>
-                  <span className="flex flex-wrap gap-1">
-                    <Button
-                      variant="ghost"
-                      aria-label={t('programs.editor.moveUp', { name })}
-                      disabled={index === 0}
-                      onClick={() => move(index, -1)}
-                    >
-                      ↑
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      aria-label={t('programs.editor.moveDown', { name })}
-                      disabled={index === last}
-                      onClick={() => move(index, 1)}
-                    >
-                      ↓
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      aria-label={t('programs.editor.remove', { name })}
-                      onClick={() =>
-                        hasSetData(item) ? setConfirmingRemove(index) : remove(index)
-                      }
-                    >
-                      ✕
-                    </Button>
-                  </span>
-                </div>
-                {confirmingRemove === index ? (
-                  <div className="border-border flex flex-col gap-2 rounded-lg border p-3">
-                    <p className="text-sm">{t('programs.editor.removeConfirm', { name })}</p>
-                    <div className="flex flex-wrap gap-2">
-                      <Button onClick={() => remove(index)}>
-                        {t('programs.editor.removeYes')}
-                      </Button>
-                      <Button variant="ghost" onClick={() => setConfirmingRemove(null)}>
-                        {t('programs.form.cancel')}
-                      </Button>
-                    </div>
-                  </div>
-                ) : null}
-              </li>
+                item={item}
+                position={index + 1}
+                exercise={exercise}
+                isFirst={index === 0}
+                isLast={index === day.exercises.length - 1}
+                onMove={(direction) =>
+                  onChange({ type: 'moveExercise', dayNumber, index, direction })
+                }
+                onRemove={() => onChange({ type: 'removeExercise', dayNumber, index })}
+                onReplace={() => {
+                  if (exercise !== undefined) {
+                    setPicking({
+                      kind: 'replace',
+                      index,
+                      name: exercise.name,
+                      measurement: exercise.measurement,
+                    });
+                  }
+                }}
+                onNote={(note) => onChange({ type: 'setExerciseNote', dayNumber, index, note })}
+              />
             );
           })}
         </ol>
       ) : (
         <p className="text-muted text-sm">{t('programs.editor.noExercises')}</p>
       )}
-      <Button variant="secondary" className="self-start" onClick={() => setIsPicking(true)}>
+      <Button
+        variant="secondary"
+        className="self-start"
+        onClick={() => setPicking({ kind: 'add' })}
+      >
         {t('programs.editor.addExercise')}
       </Button>
     </div>

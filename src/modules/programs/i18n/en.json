@@ -105,6 +105,12 @@
     "moveDown": "Move down: {{name}}",
     "remove": "Remove: {{name}}",
     "removeConfirm": "“{{name}}” already has a prescription written. Remove it from this day?",
-    "removeYes": "Yes, remove"
+    "removeYes": "Yes, remove",
+    "replace": "Replace: {{name}}",
+    "replaceTitle": "Replace “{{name}}”",
+    "archived": "Archived",
+    "note": "Note for “{{name}}”",
+    "noteHint": "Your client will see it. Up to 500 characters.",
+    "addNote": "Add a note"
   }
 }

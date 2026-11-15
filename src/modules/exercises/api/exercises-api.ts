@@ -30,7 +30,7 @@ export async function fetchExercises(tenantId: string): Promise<Exercise[]> {
 }
 
 export type SaveExerciseResult =
-  { status: 'saved'; exercise: Exercise } | { status: 'limit_reached' | 'error' };
+  { status: 'saved'; exercise: Exercise } | { status: 'limit_reached' | 'in_use' | 'error' };
 
 function toColumns(input: ExerciseInput) {
   return {
@@ -55,6 +55,11 @@ function toResult(
   // El tope de 1.000 sin archivar (D-086) lo pone un trigger de la migración 8.
   if (error.message === 'exercise_limit_reached') {
     return { status: 'limit_reached' };
+  }
+  // La forma de medir de un ejercicio que está en una rutina no cambia (D-072,
+  // migración 12). Pasa, por ejemplo, al restaurar el original.
+  if (error.message === 'exercise_in_use') {
+    return { status: 'in_use' };
   }
   logger.error('Could not save exercise', { action, code: error.code });
   return { status: 'error' };
@@ -103,4 +108,19 @@ export async function setExerciseArchived(
     .select(COLUMNS)
     .single();
   return toResult(data, error, archived ? 'archive' : 'unarchive');
+}
+
+/**
+ * Si el ejercicio está en alguna rutina (D-072): entonces su forma de medir y
+ * "unilateral" no cambian. Solo cuenta, sin traer ninguna fila.
+ */
+export async function isExerciseInUse(exerciseId: string): Promise<boolean> {
+  const { count, error } = await getSupabaseClient()
+    .from('program_day_exercises')
+    .select('id', { count: 'exact', head: true })
+    .eq('exercise_id', exerciseId);
+  if (error !== null) {
+    throw new Error(`Could not check exercise use: ${error.code}`);
+  }
+  return (count ?? 0) > 0;
 }

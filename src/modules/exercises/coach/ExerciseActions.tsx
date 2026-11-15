@@ -23,6 +23,7 @@ interface ExerciseActionsProps {
 const FAILURE_KEYS: Record<Exclude<SaveResult['status'], 'saved'>, string> = {
   offline: 'core.errors.offline',
   limit_reached: 'exercises.form.limitReached',
+  in_use: 'exercises.form.inUse',
   error: 'core.errors.unexpected',
 };
 

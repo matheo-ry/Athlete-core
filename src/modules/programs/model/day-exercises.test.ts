@@ -78,3 +78,53 @@ describe('los ejercicios de un día (PR 2.9)', () => {
     expect(hasSetData({ ...empty, note: 'Codo pegado' })).toBe(true);
   });
 });
+
+describe('sustituir y la nota (PR 2.9b)', () => {
+  it('"Sustituir" cambia el ejercicio y conserva su sitio, sus series, su descanso y su nota', () => {
+    const document = prueba();
+    const day = monday(document);
+    const first = day?.exercises[0];
+    if (day === undefined || first === undefined) throw new Error('faltan datos');
+    const withData = {
+      ...document,
+      blocks: document.blocks.map((block) => ({
+        ...block,
+        days: block.days.map((item) =>
+          item.dayNumber === 1
+            ? {
+                ...item,
+                exercises: [
+                  { ...first, restSeconds: 90, note: 'Lento' },
+                  ...item.exercises.slice(1),
+                ],
+              }
+            : item,
+        ),
+      })),
+    };
+
+    const replaced = editCycle(withData, {
+      type: 'replaceExercise',
+      dayNumber: 1,
+      index: 0,
+      exerciseId: uuid(7),
+    });
+    const item = monday(replaced)?.exercises[0];
+
+    expect(order(replaced)).toEqual([uuid(7), uuid(2), uuid(3)]);
+    expect(item).toMatchObject({ restSeconds: 90, note: 'Lento', sets: first.sets });
+  });
+
+  it('la nota se escribe en el ejercicio; vacía, queda sin nota', () => {
+    let document = editCycle(prueba(), {
+      type: 'setExerciseNote',
+      dayNumber: 1,
+      index: 1,
+      note: 'Pausa arriba',
+    });
+    expect(monday(document)?.exercises[1]?.note).toBe('Pausa arriba');
+
+    document = editCycle(document, { type: 'setExerciseNote', dayNumber: 1, index: 1, note: '  ' });
+    expect(monday(document)?.exercises[1]?.note).toBeNull();
+  });
+});

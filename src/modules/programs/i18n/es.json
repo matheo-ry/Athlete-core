@@ -105,6 +105,12 @@
     "moveDown": "Bajar: {{name}}",
     "remove": "Quitar: {{name}}",
     "removeConfirm": "«{{name}}» ya tiene escrito lo que hay que hacer. ¿Lo quitas de este día?",
-    "removeYes": "Sí, quitar"
+    "removeYes": "Sí, quitar",
+    "replace": "Sustituir: {{name}}",
+    "replaceTitle": "Sustituir «{{name}}»",
+    "archived": "Archivado",
+    "note": "Nota para «{{name}}»",
+    "noteHint": "La verá tu cliente. Hasta 500 caracteres.",
+    "addNote": "Añadir una nota"
   }
 }

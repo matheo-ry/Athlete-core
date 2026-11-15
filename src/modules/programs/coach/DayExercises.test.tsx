@@ -23,6 +23,7 @@ const exercisesApi = vi.hoisted(() => ({
   createExercise: vi.fn(),
   updateExercise: vi.fn(),
   setExerciseArchived: vi.fn(),
+  isExerciseInUse: vi.fn(() => Promise.resolve(false)),
 }));
 vi.mock('@/modules/exercises/api/exercises-api', () => exercisesApi);
 
@@ -97,7 +98,10 @@ describe('módulo programs: los ejercicios de cada día (PR 2.9)', () => {
     await openMonday();
 
     expect(await screen.findByText('1. Barbell row')).toBeVisible();
-    expect(names()).toEqual(['1. Barbell row3 sets↑↓✕', '2. Lat pulldown3 sets↑↓✕']);
+    expect(names()).toEqual([
+      '1. Barbell row3 sets↑↓⇄✕Add a note',
+      '2. Lat pulldown3 sets↑↓⇄✕Add a note',
+    ]);
     expect(screen.getByText('2 exercises · 6 sets', { selector: 'p' })).toBeVisible();
   });
 
@@ -171,5 +175,63 @@ describe('módulo programs: los ejercicios de cada día (PR 2.9)', () => {
     await user.click(screen.getByRole('button', { name: 'Remove: Barbell row' }));
     await user.click(screen.getByRole('button', { name: 'Yes, remove' }));
     expect(names()).toHaveLength(1);
+  });
+});
+
+describe('módulo programs: sustituir, nota y archivados (PR 2.9b)', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    localStorage.clear();
+    api.fetchProgram.mockResolvedValue(prueba());
+    api.saveProgram.mockResolvedValue({
+      status: 'saved',
+      id: ID,
+      updatedAt: '2026-11-15T11:00:00Z',
+    });
+    exercisesApi.fetchExercises.mockResolvedValue([LAT, LEG, ROW, PLANK]);
+    exercisesApi.isExerciseInUse.mockResolvedValue(false);
+  });
+
+  it('"Sustituir" solo ofrece los que se miden igual, y conserva el sitio y las series', async () => {
+    const { user } = await openMonday();
+    await user.click(await screen.findByRole('button', { name: 'Replace: Barbell row' }));
+
+    const picker = screen.getByRole('list', { name: 'Replace “Barbell row”' });
+    expect(within(picker).queryByRole('button', { name: /^Plank/ })).toBeNull();
+    await user.click(within(picker).getByRole('button', { name: /^Leg press/ }));
+
+    expect(names()[0]).toMatch(/^1\. Leg press3 sets/);
+    await user.click(screen.getByRole('button', { name: 'Save changes' }));
+    const sent = api.saveProgram.mock.calls[0]?.[1]?.blocks[0]?.days[0]?.exercises;
+    expect(sent?.map((item) => item.exerciseId)).toEqual([LEG.id, LAT.id]);
+    expect(sent?.[0]?.sets).toHaveLength(3);
+  });
+
+  it('la nota del ejercicio se escribe y se guarda', async () => {
+    const { user } = await openMonday();
+    const row = (await screen.findByText('1. Barbell row')).closest('li') as HTMLElement;
+    await user.click(within(row).getByRole('button', { name: 'Add a note' }));
+    await user.type(screen.getByLabelText('Note for “Barbell row”'), 'Pausa arriba');
+    await user.click(screen.getByRole('button', { name: 'Save changes' }));
+
+    const sent = api.saveProgram.mock.calls[0]?.[1]?.blocks[0]?.days[0]?.exercises;
+    expect(sent?.[0]?.note).toBe('Pausa arriba');
+  });
+
+  it('un ejercicio archivado sigue en la rutina con su etiqueta, y no sale en el buscador', async () => {
+    exercisesApi.fetchExercises.mockResolvedValue([
+      { ...LAT, archivedAt: '2026-11-15T09:00:00Z' },
+      LEG,
+      ROW,
+      PLANK,
+    ]);
+    const { user } = await openMonday();
+
+    const row = (await screen.findByText('2. Lat pulldown')).closest('li') as HTMLElement;
+    expect(within(row).getByText('Archived')).toBeVisible();
+    await user.click(screen.getByRole('button', { name: 'Add exercise' }));
+    const picker = screen.getByRole('list', { name: 'Add exercise' });
+    expect(within(picker).queryByRole('button', { name: /^Lat pulldown/ })).toBeNull();
+    expect(within(picker).getByRole('button', { name: /^Leg press/ })).toBeVisible();
   });
 });

@@ -133,7 +133,10 @@
     "errors": {
       "reps": "Escribe un número o un rango, como 8 o 8-12.",
       "time": "Escribe los segundos, como 45.",
-      "distance": "Escribe los metros, como 400."
-    }
+      "distance": "Escribe los metros, como 400.",
+      "load": "Escribe un peso, como 22,5."
+    },
+    "load": "Carga ({{unit}})",
+    "extraLoad": "Lastre ({{unit}})"
   }
 }

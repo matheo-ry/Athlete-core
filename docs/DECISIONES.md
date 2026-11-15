@@ -899,6 +899,18 @@ Cómo añadir una: copia el formato, usa el siguiente número y no borres las an
 - **Por qué:** una línea visible sin abrir nada es lo más rápido para el caso normal (todas las series iguales), que es como trabaja el propietario.
 - **Revisar si:** con 8 o 10 ejercicios por día la pantalla se hace larga en el móvil. Plegar el editor de cada ejercicio sería barato.
 
+### D-103 · El ajuste RIR o RPE y la carga objetivo
+- **Fecha:** 2026-11-15
+- **Decisión:** detalles del PR 2.10b que D-076 no fijaba.
+  - **El ajuste se guarda en `tenants.settings`** como `intensityScale` (`rir` o `rpe`). Si falta o no vale, RIR. Lo lee cualquier miembro del negocio; solo lo cambia el dueño (ya lo garantizaba el RLS de `tenants`). No hace falta ninguna migración.
+  - **Está en Ajustes → "Entrenamiento"**, solo para el dueño. Se guarda al elegir, sin botón.
+  - **`core/tenancy`** ofrece `useTenantSettings()` y `useSaveTenantSettings()`. Al guardar un ajuste se conservan los demás, también los que esa versión de la app no conozca.
+  - **En el editor,** el desplegable de intensidad ofrece la escala del ajuste. Lo escrito con la otra se sigue viendo y no se convierte.
+  - **La carga** se escribe en la unidad del usuario (kg o lb), con coma o con punto y dos decimales como mucho, y se guarda en kg con dos decimales. Se enseña con un decimal como mucho: 10 kg son "22" en libras, y "22" en libras se guarda como 9,98 kg.
+  - **En un ejercicio de peso corporal** el campo se llama "Lastre" (D-072).
+- **Por qué:** los ajustes del negocio son preferencias (ARQUITECTURA §8) y ya tenían su sitio en la base de datos.
+- **A tener en cuenta:** al pasar de libras a kilos y volver puede bailar el segundo decimal en kg. No se ve, porque se enseña con un decimal.
+
 ---
 
 ## Pendientes de decidir

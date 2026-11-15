@@ -17,9 +17,13 @@ export {
   useInviteCode,
   usePlanLimit,
   useRegenerateInviteCode,
+  useSaveTenantSettings,
   useTenantMembers,
+  useTenantSettings,
   useUpdateBrand,
 } from './useCoachData';
+export { DEFAULT_TENANT_SETTINGS, INTENSITY_SCALES, parseTenantSettings } from './tenant-settings';
+export type { IntensityScale, TenantSettings } from './tenant-settings';
 export {
   clearPendingInvite,
   readPendingInvite,
@@ -44,6 +48,7 @@ export type {
   HomePath,
   LogoChange,
   SaveLogoResult,
+  SaveSettingsResult,
   UpdateBrandResult,
   MemberActionResult,
   Membership,

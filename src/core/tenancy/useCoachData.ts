@@ -5,8 +5,11 @@ import type {
   LogoChange,
   MemberActionResult,
   SaveLogoResult,
+  SaveSettingsResult,
   UpdateBrandResult,
 } from './membership';
+import { DEFAULT_TENANT_SETTINGS } from './tenant-settings';
+import type { TenantSettings } from './tenant-settings';
 import { useTenancyContext } from './useTenancy';
 
 // Datos que solo ve el coach del negocio activo: sus miembros, su código de
@@ -136,5 +139,44 @@ export function usePlanLimit() {
     queryKey: ['tenancy', 'plan', tenantId],
     queryFn: () => source.getPlanLimit(tenantId ?? ''),
     enabled: tenantId !== null,
+  });
+}
+
+function tenantSettingsQueryKey(tenantId: string | null) {
+  return ['tenancy', 'settings', tenantId] as const;
+}
+
+/**
+ * Los ajustes del negocio activo (D-076). Mientras cargan, o si no se pueden
+ * leer, valen los de por defecto: son preferencias, no bloquean nada.
+ */
+export function useTenantSettings(): TenantSettings {
+  const { source } = useTenancyContext();
+  const tenantId = useActiveTenantId();
+  const query = useQuery({
+    queryKey: tenantSettingsQueryKey(tenantId),
+    queryFn: () => source.getSettings(tenantId ?? ''),
+    enabled: tenantId !== null,
+  });
+  return query.data ?? DEFAULT_TENANT_SETTINGS;
+}
+
+/** Cambiar un ajuste del negocio activo. Solo el dueño. Sin conexión no se intenta. */
+export function useSaveTenantSettings() {
+  const { source } = useTenancyContext();
+  const tenantId = useActiveTenantId();
+  const queryClient = useQueryClient();
+  return useMutation<SaveSettingsResult, Error, Partial<TenantSettings>>({
+    mutationFn: async (patch) => {
+      if (!navigator.onLine) {
+        return 'offline';
+      }
+      return source.saveSettings(tenantId ?? '', patch);
+    },
+    onSuccess: async (result) => {
+      if (result === 'ok') {
+        await queryClient.invalidateQueries({ queryKey: tenantSettingsQueryKey(tenantId) });
+      }
+    },
   });
 }

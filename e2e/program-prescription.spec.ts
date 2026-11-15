@@ -69,3 +69,62 @@ test('escribe 4 series de 10 con 1:30 de descanso, guarda, y después pone la ú
   await plank.getByLabel('Seconds').fill('45');
   await expect(items(page).nth(1)).toContainText('2. Plank3 × 45 s');
 });
+
+test('con el ajuste en RPE se ofrece RPE en lo nuevo, y lo escrito con RIR sigue igual', async ({
+  page,
+}) => {
+  await openPruebaMonday(page);
+  await addExercise(page, 'lat pull', 'Lat pulldown');
+  const lat = page.getByRole('group', { name: 'What to do in “Lat pulldown”' });
+  await lat.getByLabel('Intensity').selectOption('RIR 1');
+  await page.getByRole('button', { name: 'Save changes' }).click();
+  await expect(page.getByRole('status')).toHaveText('Changes saved.');
+  const editorUrl = page.url();
+
+  await page.goto('/coach/settings');
+  await page.getByRole('button', { name: 'RPE (effort from 1 to 10)' }).click();
+  await expect(page.getByRole('button', { name: 'RPE (effort from 1 to 10)' })).toHaveAttribute(
+    'aria-pressed',
+    'true',
+  );
+
+  await page.goto(editorUrl);
+  await expect(lat.getByLabel('Intensity')).toHaveValue('rir:1');
+  await expect(items(page).first()).toContainText('3 × RIR 1');
+  await addExercise(page, 'leg press', 'Leg press');
+  const leg = page.getByRole('group', { name: 'What to do in “Leg press”' });
+  await expect(leg.getByLabel('Intensity').getByRole('option', { name: 'RPE 7.5' })).toHaveCount(1);
+  await expect(leg.getByLabel('Intensity').getByRole('option', { name: 'RIR 2' })).toHaveCount(0);
+});
+
+test('la carga se escribe en la unidad del usuario: 22 lb son 10 kg', async ({ page }) => {
+  await signIn(page, 'coach.iron@example.com');
+  await chooseSpace(page, 'Iron Lab');
+  await page.goto('/coach/programs');
+  await page.getByRole('link', { name: 'Casa + Gym' }).click();
+  const flexiones = page.getByRole('group', { name: 'What to do in “Flexiones con mochila”' });
+
+  // coach.iron trabaja en libras; el lastre de un ejercicio de peso corporal.
+  await expect(flexiones.getByLabel('Extra weight (lb)')).toHaveValue('22');
+  await expect(items(page).first()).toContainText('3 × 8-12 · RIR 1 · 22 lb · 2:00');
+  await expect(page.getByRole('button', { name: 'Save changes' })).toBeDisabled();
+
+  // Con la unidad en kilos, lo mismo son 10 kg. Después se deja como estaba.
+  await page.goto('/coach/settings');
+  await page.getByRole('button', { name: 'Kilograms (kg)' }).click();
+  await expect(page.getByRole('button', { name: 'Kilograms (kg)' })).toHaveAttribute(
+    'aria-pressed',
+    'true',
+  );
+  await page.goto('/coach/programs');
+  await page.getByRole('link', { name: 'Casa + Gym' }).click();
+  await expect(flexiones.getByLabel('Extra weight (kg)')).toHaveValue('10');
+  await expect(items(page).first()).toContainText('3 × 8-12 · RIR 1 · 10 kg · 2:00');
+
+  await page.goto('/coach/settings');
+  await page.getByRole('button', { name: 'Pounds (lb)' }).click();
+  await expect(page.getByRole('button', { name: 'Pounds (lb)' })).toHaveAttribute(
+    'aria-pressed',
+    'true',
+  );
+});

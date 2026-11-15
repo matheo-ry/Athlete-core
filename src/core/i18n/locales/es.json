@@ -222,7 +222,16 @@
       "submitting": "Creando…"
     },
     "coachSettings": {
-      "title": "Ajustes"
+      "title": "Ajustes",
+      "training": {
+        "title": "Entrenamiento",
+        "intensityLabel": "Intensidad",
+        "scales": {
+          "rir": "RIR (repeticiones en reserva)",
+          "rpe": "RPE (esfuerzo de 1 a 10)"
+        },
+        "intensityHint": "La escala que se te ofrece al escribir una rutina. Cambiarla no convierte lo que ya está escrito."
+      }
     },
     "clientProfile": {
       "title": "Perfil"

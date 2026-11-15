@@ -5,9 +5,11 @@ import { useTenancy } from '@/core/tenancy';
 import { AccountSection } from '../AccountSection';
 import { MySpacesSection } from '../MySpacesSection';
 import { BrandSection } from './BrandSection';
+import { TrainingSection } from './TrainingSection';
 
 /**
  * Ajustes del coach: "Marca" (solo el dueño, PR 1.15 y 1.16, con el logo),
+ * "Entrenamiento" (solo el dueño, PR 2.10b: RIR o RPE),
  * "Mis espacios" (PR 1.14) y "Mi cuenta" (PR 1.13).
  */
 export function CoachSettingsPage() {
@@ -23,6 +25,7 @@ export function CoachSettingsPage() {
       {tenant !== null && role === 'owner' ? (
         <BrandSection key={tenant.id} tenant={tenant} />
       ) : null}
+      {tenant !== null && role === 'owner' ? <TrainingSection key={tenant.id} /> : null}
       <MySpacesSection />
       <AccountSection />
     </section>

@@ -471,6 +471,257 @@ Cómo añadir una: copia el formato, usa el siguiente número y no borres las an
 - **Lo que no cambia:** un visto bueno vale para los PR que nombra, no para los siguientes. Nada de `push --force`. Producción sigue siendo solo del propietario (regla 12). El colaborador junior no fusiona.
 - **Por qué:** decisión del propietario, que no es programador: prefiere revisar el resultado en la app y no manejar GitHub en cada PR.
 
+### D-069 · Cómo se trabaja la Fase 2: diseño antes, 18 PR en 5 lotes
+- **Fecha:** 2026-11-15
+- **Decisión:** la Fase 2 se diseñó entera en un chat de diseño, sin código (D-070 a D-088), y su plan está en `docs/PROMPTS.md` §6.
+  - **18 PR, del 2.1 al 2.18, en 5 lotes** de 3 o 4. Cada lote termina en algo que el propietario puede probar en la app.
+  - **Un lote no empieza hasta que el anterior está fusionado en `main`** con el visto bueno del propietario (D-068). Dentro de un lote los PR se pueden apilar como explica D-064.
+  - **Unas 300 líneas de verdad por PR.** Cuentan el código, el SQL y los tests. No cuentan lo que se genera solo (`database.types.ts`) ni los datos (la lista de 120 ejercicios y el seed). Si a mitad de un PR se ve que va a pasar de 400, el agente para y lo parte como dice su bloque.
+  - **Los cambios de la base de datos van en PR propios, antes que las pantallas** que los usan (2.1, 2.2, 2.5, 2.6 y 2.12).
+  - Cada PR se pide en su chat (GUIA-GIT §8), salvo que el propietario diga otra cosa.
+- **Por qué:** en la Fase 1 varios PR pasaron de 1.000 líneas y toda la fase se apiló antes de que el propietario pudiera probarla. Con lotes cortos, un error de diseño se ve con 4 PR hechos y no con 17.
+- **Consecuencias:** D-062 y D-064 (el reparto y la pila de la Fase 1) ya no describen cómo se trabaja; de D-064 solo sigue valiendo la forma de poner al día un PR apilado.
+
+### D-070 · Nicho provisional: el coach de gimnasio (P-02)
+- **Fecha:** 2026-11-15
+- **Decisión:** ajusta D-008. La Fase 2 se construye para un coach de gimnasio "genérico": musculación y fuerza, de 10 a 15 clientes, unos presenciales y otros a distancia, que hoy escribe las rutinas en Excel y las manda por WhatsApp. El powerlifting no se descarta: lo cubren las mismas herramientas (bloques que cambian cada semana o cada mes, D-075).
+- **Por qué:** el propietario aún no ha hablado con coaches. Sus rutinas reales (`docs/referencia/rutinas-de-ejemplo.md`) son de máquinas, poleas, mancuernas y peso corporal, y solo dicen cuántas series lleva cada ejercicio. Lo importante es apuntar las cargas y verlas subir, no prescribir porcentajes del RM.
+- **Consecuencias:** el porcentaje del RM y el tempo quedan para más adelante (D-076). El RM estimado sigue en la Fase 3: se calcula con lo que apunta el cliente.
+- **Estado:** provisional. P-02 no se cierra.
+- **Revisar:** cuando el propietario enseñe la demo a 3–5 coaches, que será al terminar la Fase 3 (o antes, con el lote 4 de la Fase 2 hecho). En todo caso, antes de empezar la Fase 4.
+- **Qué preguntar a esos coaches:**
+  1. ¿Cuántos clientes llevas? ¿Cuántos son presenciales y cuántos a distancia?
+  2. Enséñame la última rutina que mandaste. ¿Dónde la escribiste y cuánto tardaste?
+  3. ¿Partes de una plantilla o escribes cada rutina desde cero? ¿Qué cambias de un cliente a otro?
+  4. ¿Cada cuánto cambias la rutina de un cliente, y qué cambias: ejercicios, series o solo las cargas?
+  5. ¿Qué apuntas en cada ejercicio: repeticiones, RIR o RPE, carga, descanso, tempo, porcentaje del RM? ¿Usas superseries?
+  6. ¿Cómo te enteras de lo que ha hecho el cliente, y cada cuánto? ¿Qué miras primero?
+  7. ¿Qué te quita más tiempo? ¿Qué se te escapa?
+  8. ¿Has probado alguna app? ¿Por qué la dejaste, o por qué sigues con ella?
+  9. Después de ver la demo: ¿qué te falta para dejar tu Excel mañana? ¿Qué te sobra?
+  10. ¿Echas de menos importar tu Excel, subir tus vídeos, el chat o las fotos del cliente?
+  11. ¿Cuánto pagarías al mes? ¿Por cliente o por tramos de clientes (D-017)?
+
+### D-071 · Ejercicios: un catálogo de la plataforma y una copia para cada negocio (P-04)
+- **Fecha:** 2026-11-15
+- **Decisión:** cierra P-04.
+  - La plataforma tiene un **catálogo de 120 ejercicios** comunes, con el nombre en inglés y en español. La lista está en `docs/referencia/biblioteca-ejercicios.md`: la escribió el agente y la revisa el propietario.
+  - **Cada negocio recibe su propia copia** al crearse. A partir de ahí, todos los ejercicios de la lista de un coach son suyos: les cambia el nombre, la descripción o cualquier otro dato, los archiva y los recupera. No hay un paso de "copiar como mío".
+  - Un ejercicio que viene del catálogo recuerda de dónde viene. Mientras el coach no le cambie el nombre, cada usuario lo ve **en su idioma**. Tiene el botón **"Restaurar original"**.
+  - Los ejercicios que crea el coach se ven tal como los escribió (ARQUITECTURA §11).
+  - Las rutinas apuntan siempre a ejercicios del negocio, nunca al catálogo.
+- **Por qué:** con una biblioteca pequeña, el coach nuevo monta una rutina el primer día. Con la copia, "ocultar", "cambiar" y "copiar" son una sola cosa (editar lo tuyo), y el historial del cliente en la Fase 3 sigue a un único ejercicio. Las claves compuestas con `tenant_id` valen igual que en cualquier otra tabla de negocio.
+- **Consecuencias:**
+  - El catálogo es una tabla sin `tenant_id`, de solo lectura, como `plans` o `features`: es la excepción que ARQUITECTURA §8 tenía pendiente. Ese cambio de §8 lo aprueba el propietario.
+  - Si la plataforma añade ejercicios más adelante, una migración los añade al catálogo y a cada negocio. Los que el coach haya cambiado no se tocan.
+  - Son unas 120 filas por negocio: no pesa.
+- **Revisar si:** los coaches piden más ejercicios de serie, o instrucciones y vídeos ya puestos.
+
+### D-072 · Qué datos tiene un ejercicio
+- **Fecha:** 2026-11-15
+- **Decisión:**
+  - **Obligatorios:** el nombre (de 1 a 80 caracteres) y la forma de medirlo.
+  - **Opcionales:** grupo muscular principal, material, instrucciones (hasta 2.000 caracteres), enlace de vídeo (D-074) y la marca **"unilateral"**.
+  - **Cuatro formas de medir:**
+    - Peso y repeticiones (Remo Gironda).
+    - Peso corporal y repeticiones, con lastre opcional (flexiones con mochila, dominadas).
+    - Tiempo (plancha).
+    - Distancia (empuje de trineo, cinta).
+  - **Grupos musculares**, lista cerrada de 14: pecho, espalda, hombro, bíceps, tríceps, antebrazo, abdomen, cuádriceps, femoral, glúteo, aductores, gemelo, cuerpo completo y cardio.
+  - **Material**, lista cerrada de 8: barra, mancuernas, máquina, polea, peso corporal, banda, kettlebell y otro.
+  - **Unilateral:** el coach prescribe lo mismo para los dos lados. En la Fase 3 el cliente apunta derecha e izquierda por separado.
+  - **La forma de medir y la marca "unilateral" no se pueden cambiar** una vez que el ejercicio está en alguna rutina. Para cambiarlas, se duplica el ejercicio.
+- **Por qué:** es lo que tiene la app de apuntes del propietario, más lo que hace falta para filtrar. El propietario pidió poder apuntar cada lado por separado: hoy apunta solo el lado más débil y sabe que es un error. Cambiar la forma de medir de un ejercicio con series ya escritas o ya apuntadas las dejaría sin sentido.
+- **Revisar si:** los coaches piden grupo muscular secundario u otra forma de medir. Añadir un campo opcional es barato.
+
+### D-073 · Archivar, recuperar, duplicar y buscar ejercicios
+- **Fecha:** 2026-11-15
+- **Decisión:**
+  - **Un ejercicio nunca se borra del todo.** "Archivar" lo quita de la lista y del buscador para rutinas nuevas. Sigue apareciendo en las rutinas donde ya estaba, con la etiqueta "Archivado", y en el historial. Se recupera desde la pestaña "Archivados".
+  - **Duplicar** crea una copia propia con otro nombre.
+  - **Buscar** por nombre, sin importar tildes ni mayúsculas. **Filtros:** grupo muscular, material y origen ("todos", "míos", "de la plataforma").
+  - Si la búsqueda no encuentra nada, aparece **"Crear «lo escrito»"**. También desde el buscador que se abre dentro de una rutina, sin salir de ella.
+  - La búsqueda se hace en la app, sobre la lista ya cargada (unos cientos de filas).
+- **Por qué:** decisión del propietario: archivar siempre, y poder recuperar. Borrar de verdad rompería las rutinas y el historial.
+
+### D-074 · Vídeo de un ejercicio: solo un enlace
+- **Fecha:** 2026-11-15
+- **Decisión:** el coach pega un enlace (YouTube, Instagram o cualquier otro que empiece por `https://`). Para el cliente es un botón "Ver vídeo" que abre el enlace fuera de la app. No se suben archivos y el vídeo no se incrusta dentro de la app. El catálogo de la plataforma empieza sin vídeos.
+- **Por qué:** el plan gratuito de Supabase da 1 GB de archivos (D-063) y unos pocos vídeos lo llenan. Incrustar vídeos de YouTube dentro de la app traería sus cookies de seguimiento, y hoy la app no tiene ninguna (D-060).
+- **Revisar si:** se pasa al plan de pago de Supabase y los coaches piden subir sus propios vídeos. Añadirlo después es un esfuerzo medio.
+
+### D-075 · Cómo es una rutina: bloques, ciclo de días, ejercicios y series
+- **Fecha:** 2026-11-15
+- **Decisión:** una rutina tiene cinco niveles:
+
+  | Nivel | Qué es | Ejemplo |
+  |---|---|---|
+  | Rutina | Lo que el coach crea y asigna | "Casa + Gym" |
+  | Bloque | Un tramo de la rutina con su propio ciclo y su duración | "Bloque 1 · semanal · 4 vueltas" |
+  | Día | Cada día del ciclo: de entreno o de descanso | "Miércoles · Tirón + pierna · Gym" |
+  | Ejercicio | Un ejercicio del negocio, en orden | "Remo Gironda agarre amplio" |
+  | Serie | Lo prescrito para cada serie (D-076) | "8–12 repeticiones, RIR 1" |
+
+  - **El ciclo** de un bloque dura de 1 a 28 días. Un ciclo de 7 días se llama **"Semanal"** y sus días son lunes, martes…; los demás van por "Día 1, Día 2…".
+  - **Los descansos cuentan como día del ciclo** y los coloca el coach.
+  - **Cada día de entreno** tiene nombre, subtítulo ("Tirón + pierna") y una etiqueta de lugar ("Casa", "Gym"), los tres opcionales.
+  - **La duración de un bloque se mide en vueltas completas del ciclo** (de 1 a 52). La app muestra los días que son: 4 vueltas de un ciclo de 8 días son 32 días.
+  - **El último bloque puede no tener fin** ("Sin fecha de fin"): se repite hasta que el coach lo cambie.
+  - **Una rutina fija** es un solo bloque sin fin. **Cambios semanales** son bloques de una vuelta semanal; **mensuales**, bloques de 4 vueltas. El coach elige lo que le convenga para cada cliente.
+  - **Si el último bloque tenía duración y se acaba, se sigue repitiendo** hasta que el coach lo cambie, y el coach ve un aviso (D-085). El cliente nunca abre la app vacía.
+  - **Un bloque semanal va de lunes a domingo.** Si la rutina empieza un miércoles, el cliente hace primero esa semana a medias (miércoles a domingo) y después las vueltas completas.
+- **Por qué:** el propietario usó un ciclo de 8 días, y lo normal es repetir el mismo ciclo muchas semanas subiendo cargas. Un solo modelo cubre la rutina fija, la que cambia cada semana y la que cambia cada mes.
+- **Consecuencias:** no existe un nivel "semana": una semana es una vuelta de un ciclo de 7 días. La base de datos tiene los cinco niveles desde el primer PR, aunque las pantallas de varios bloques llegan en el PR 2.16.
+- **Revisar si:** los coaches de EE. UU. piden que la semana empiece en domingo.
+
+### D-076 · Qué se prescribe en cada serie
+- **Fecha:** 2026-11-15
+- **Decisión:**
+  - **Obligatorio:** cuántas series (de 1 a 10).
+  - **Opcional, en cada serie:** repeticiones fijas ("8") o en rango ("8–12"); intensidad; carga objetivo.
+  - **Opcional, en cada ejercicio:** descanso entre series y una nota del coach (hasta 500 caracteres), que el cliente ve.
+  - **Intensidad:** RIR (repeticiones que se dejan sin hacer, de 0 a 10), RPE (esfuerzo de 1 a 10, con medios puntos) o "al fallo". El coach elige en sus ajustes si trabaja con RIR o con RPE; por defecto, RIR. Si cambia el ajuste, lo ya escrito no se convierte.
+  - **Según la forma de medir** (D-072), en vez de repeticiones se prescribe tiempo o distancia.
+  - **Una línea por defecto:** "3 × 8–12 · RIR 1 · 2:00" vale para todas las series. El coach la despliega cuando quiere series distintas (la primera, pesada, de 6–8; las demás, de 10–12).
+  - La carga se guarda en kg y se enseña en kg o en lb (D-010).
+- **Por qué:** cada coach entrena distinto y el propietario pidió no cerrar ninguna puerta. Por dentro se guarda siempre serie a serie: pasar después de "una línea" a "cada serie" sería caro, y es lo que necesita la Fase 3 para que el cliente apunte cada serie.
+- **Consecuencias:** el descanso prescrito alimentará el cronómetro de la Fase 3. El ajuste RIR o RPE se guarda en `tenants.settings`, que solo guarda preferencias (ARQUITECTURA §8).
+- **Fuera por ahora:** el porcentaje del RM y el tempo. Mientras, el tempo se escribe en la nota. Añadirlos después es barato: un campo opcional más.
+
+### D-077 · Superseries y circuitos: previstos en la base, botón en el último lote
+- **Fecha:** 2026-11-15
+- **Decisión:** la base de datos permite desde el PR 2.5 agrupar ejercicios seguidos de un mismo día. El botón para agruparlos ("Agrupar con el siguiente") llega en el PR 2.17. Dos ejercicios agrupados son una superserie; tres o más, un circuito. Hasta entonces, el coach lo escribe en la nota.
+- **Por qué:** añadirlo a la base más tarde obligaría a tocar tablas que la Fase 3 ya estaría usando. El botón, en cambio, se puede dejar para el final.
+
+### D-078 · Plantillas y rutinas de cliente: cada cliente recibe una copia
+- **Fecha:** 2026-11-15
+- **Decisión:**
+  - Una **plantilla** es una rutina sin cliente. Ningún cliente la ve.
+  - Al **asignar** una plantilla, cada cliente recibe **su propia copia**. El coach la retoca para ese cliente y la plantilla no cambia. Editar la plantilla después no cambia las copias ya asignadas.
+  - El coach puede **crear una rutina para un cliente desde cero**, sin plantilla.
+  - **Sustituir un ejercicio** por otro conserva sus series y su prescripción (otro gimnasio, otra máquina, en casa).
+  - **Guardar como plantilla** convierte la rutina de un cliente en una plantilla nueva.
+  - **El cliente solo ve su propia rutina:** nunca las plantillas ni las rutinas de otros clientes. Lo garantiza la base de datos (RLS), no la pantalla.
+- **Por qué:** es como trabaja el propietario: una plantilla con pequeños cambios para cada cliente.
+- **Revisar si:** los coaches piden "cambiar esto a todos los que tienen esta plantilla". Cambiar de copia a enlace sería **caro**: es el corazón del diseño.
+
+### D-079 · Editar una rutina: "Guardar cambios" de una vez
+- **Fecha:** 2026-11-15
+- **Decisión:**
+  - En el editor nada cambia para nadie hasta pulsar **"Guardar cambios"**. Se guarda todo o nada.
+  - **Si el coach intenta salir con cambios sin guardar, la app avisa.**
+  - **Si la app se cierra sin querer**, lo no guardado se recupera en ese mismo dispositivo: al volver a abrir la rutina se ofrece "Recuperar" o "Descartar". Al cerrar sesión se olvida, como el código del coach recordado (D-037).
+  - **Si la misma rutina se guardó desde otro dispositivo** mientras se editaba, la app lo dice y no pisa lo guardado.
+  - Las plantillas y las rutinas nuevas se pueden guardar a medias y seguir otro día: ningún cliente las ve hasta que se asignan.
+  - Vale igual para plantillas y para rutinas de cliente. Un cambio guardado en la rutina de un cliente lo ve el cliente la próxima vez que abre la app.
+- **Por qué:** el propietario pidió que el cliente no vea una rutina a medio cambiar y un aviso por si se sale sin querer. Un borrador guardado en la nube (empezar en el ordenador y terminar en el móvil) cuesta bastante más y se puede añadir después.
+- **Consecuencias:** las tablas de rutinas no se escriben directamente desde la app, sino con funciones de la base de datos, que comprueban los permisos y los topes (D-086). Al guardar se conservan los identificadores de lo que no ha cambiado: la Fase 3 los necesita.
+- **Revisar si:** los coaches piden seguir en otro dispositivo una edición a medias. Pasar a borrador en la nube es un esfuerzo medio.
+
+### D-080 · Copiar, duplicar y reordenar
+- **Fecha:** 2026-11-15
+- **Decisión:**
+  - **Se puede duplicar a toda escala:** un ejercicio (con sus series), un día, un bloque y una plantilla entera.
+  - **Copiar y pegar entre rutinas:** un ejercicio, un día o un bloque se copian en una rutina y se pegan en otra. Lo copiado se guarda en el dispositivo.
+  - **Reordenar** ejercicios, días y bloques con botones "Subir" y "Bajar".
+- **Por qué:** el propietario pidió poder copiar "todo, en pequeña y en gran escala". Los botones funcionan igual en el móvil y en el ordenador y no necesitan una librería nueva (AGENTS.md, regla 10).
+- **Revisar si:** los coaches echan de menos arrastrar con el dedo o con el ratón. El propietario quiere valorarlo más adelante; haría falta proponer una librería.
+
+### D-081 · Asignar una rutina
+- **Fecha:** 2026-11-15
+- **Decisión:**
+  - Se asigna **a uno o a varios clientes a la vez**; cada uno recibe su copia (D-078). Solo a clientes activos.
+  - Se elige la **fecha de inicio** (hoy por defecto, o una fecha futura) y el **modo** (D-082).
+  - **Un cliente tiene una sola rutina vigente.** Puede tener además una **próxima**, con fecha futura.
+  - Al asignar una rutina que empieza hoy, la vigente pasa a **"Anteriores"**. La app avisa antes: "Ana ya tiene la rutina X".
+  - Una rutina con fecha futura queda como "próxima". Cuando llega su fecha pasa a ser la vigente, y la que había, a "Anteriores". Asignar otra con fecha futura sustituye a la próxima.
+  - El coach puede **terminar** la rutina vigente (el cliente se queda sin rutina) y **cancelar** la próxima.
+  - Las rutinas anteriores no se borran.
+- **Por qué:** con una sola rutina vigente la app sabe siempre qué toca hoy. Entrenar en casa y en el gimnasio cabe en una rutina con días etiquetados.
+- **Consecuencias:** asignar, terminar, cancelar, reiniciar y guardar como plantilla se hacen con funciones de la base de datos, que dejan constancia en `audit_log`.
+- **Revisar si:** los coaches piden dos rutinas a la vez para un mismo cliente. Cambiarlo cuesta entre medio y caro.
+
+### D-082 · Calendario, modo lista y día saltado
+- **Fecha:** 2026-11-15
+- **Decisión:** al asignar, el coach elige el modo para ese cliente:
+  - **Con calendario:** la app calcula qué toca cada día a partir de la fecha de inicio y enseña "Hoy toca…" o "Hoy: descanso". El cliente puede abrir igualmente cualquier día.
+  - **Lista:** el cliente ve los días de entreno en orden, sin fechas, y va cuando puede.
+  - "Hoy" es la fecha del dispositivo del usuario.
+  - **Día saltado** (se construye en la Fase 3): el coach elige para cada cliente si el día perdido **se pierde** (el calendario sigue) o si la rutina **se retrasa** (el cliente hace el día pendiente y todo se mueve). En los dos casos queda apuntado que ese día faltó. En modo lista queda apuntado qué días fue y qué día de la rutina hizo.
+- **Por qué:** el propietario quiere que cada coach decida lo mejor para cada cliente. La regla del día saltado necesita saber si el cliente entrenó, y eso no existe hasta que apunta sus entrenos.
+- **Consecuencias:** en la Fase 2 el modo calendario siempre sigue las fechas. En modo lista, el bloque en el que va el cliente se calcula también por fechas; en la Fase 3 se decide si pasa a contarse por sesiones hechas.
+
+### D-083 · La rutina de un cliente dado de baja, y reiniciar desde una fecha
+- **Fecha:** 2026-11-15
+- **Decisión:** completa D-055.
+  - Al dar de baja a un cliente, **sus rutinas se guardan**. El cliente deja de verlas al instante y el coach las sigue viendo en su ficha, sin poder asignarle otras mientras esté de baja.
+  - Al reactivarlo, la rutina vuelve tal cual.
+  - **"Reiniciar desde una fecha"**: el coach elige la fecha y el bloque desde el que se retoma (por defecto, el bloque en el que iba). Sirve tras una baja, unas vacaciones o una lesión.
+  - Hasta que llega esa fecha, el cliente ve "Tu rutina empieza el…".
+- **Por qué:** los datos de un cliente dado de baja se conservan (D-055). Un solo botón cubre la vuelta de una baja y las pausas.
+
+### D-084 · Qué ve el cliente en la Fase 2
+- **Fecha:** 2026-11-15
+- **Decisión:** el cliente tiene **"Entreno"**, en modo lectura:
+  - **"Hoy toca…"** con el nombre del día, su subtítulo, su lugar y cuántos ejercicios y series tiene; o "Hoy: descanso".
+  - **Los días del ciclo** del bloque en el que va, y la línea "El siguiente bloque empieza el…".
+  - **Cada día** con sus ejercicios, y **cada ejercicio** con sus series, repeticiones, intensidad, descanso, la nota del coach, las instrucciones y el botón del vídeo.
+  - **Solo el bloque actual.** Los bloques futuros no se enseñan, así el coach puede retocarlos. Esto es comodidad de la pantalla, no seguridad: la base de datos deja leer al cliente toda su rutina, que es suya.
+  - Sin rutina: "Tu coach aún no te ha asignado una rutina".
+  - **No hay "Iniciar entreno"**, ni apuntes, ni rutinas anteriores: llegan en la Fase 3.
+- **Por qué:** permite enseñar la demo completa (el coach asigna y el cliente lo ve) y es la base sobre la que la Fase 3 añade el registro. La referencia es la app de apuntes del propietario.
+
+### D-085 · Qué ve el coach
+- **Fecha:** 2026-11-15
+- **Decisión:**
+  - Menú del coach: Clientes, **Rutinas**, **Ejercicios** y Ajustes.
+  - **Rutinas** tiene dos pestañas. **"Plantillas"**: sus plantillas. **"Asignadas"**: cada cliente activo con su rutina vigente, el bloque en el que va y cuándo termina; o "Sin rutina".
+  - **La ficha del cliente** gana la pestaña **"Rutina"**: la vigente, la próxima y las anteriores, y las acciones de D-078, D-081 y D-083.
+  - **El inicio del coach** muestra una tarjeta de avisos: clientes cuyo último bloque termina en los próximos 7 días o ya se está repitiendo, y clientes sin rutina. Una rutina sin fecha de fin (D-075) no da aviso. Sin emails ni notificaciones (P-07).
+  - **Todo se puede hacer igual en el móvil y en el ordenador.** En el móvil el editor enseña un día cada vez; en el ordenador, los días a la izquierda y el contenido del día a la derecha.
+- **Por qué:** con 15 clientes, el coach tiene que ver de un vistazo quién se queda sin rutina. El propietario quiere las mismas funciones en los dos tamaños: unos coaches trabajan en el ordenador y otros en el móvil.
+- **Consecuencias:** las pestañas de la ficha estaban previstas en el manifest (ARQUITECTURA §5) pero nadie las pinta todavía: se construye en el PR 2.14. Para que un módulo aporte una tarjeta al inicio hace falta algo parecido: se construye en el PR 2.18. Los dos tocan `src/core/modules`.
+
+### D-086 · Los planes no limitan rutinas ni ejercicios
+- **Fecha:** 2026-11-15
+- **Decisión:** completa D-017. Los planes siguen limitando solo el número de clientes. Hay **topes de sentido común, iguales para todos**, que comprueba la base de datos:
+
+  | Qué | Tope |
+  |---|---|
+  | Ejercicios sin archivar por negocio | 1.000 |
+  | Plantillas sin archivar por negocio | 300 |
+  | Bloques por rutina | 12 |
+  | Vueltas por bloque | 52 |
+  | Días por ciclo | 28 |
+  | Ejercicios por día | 30 |
+  | Series por ejercicio | 10 |
+
+- **Por qué:** crear rutinas es el motivo para usar la app, y el límite de clientes ya se entiende solo. Los topes existen para que un error o un abuso no llenen la base de datos.
+- **Revisar si:** al fijar los precios se quiere diferenciar los planes por algo más (D-017). Añadir un límite después es barato.
+
+### D-087 · La Fase 3 de reojo, y los datos de salud
+- **Fecha:** 2026-11-15
+- **Decisión:** la Fase 3 no se diseña aquí, pero lo decidido en la Fase 2 la deja construir sin rehacer tablas:
+  - **Las series se guardan una a una** (D-076): el cliente apuntará peso, repeticiones y RIR de cada una, y cada lado en los unilaterales (D-072).
+  - **Las rutinas apuntan a ejercicios del negocio** (D-071), así el historial, el RM estimado y los récords siguen al ejercicio aunque cambie la rutina.
+  - **Lo que apunte el cliente guardará su propia copia** de lo que tocaba ese día. Por eso el coach puede editar la rutina, o archivar un ejercicio, sin cambiar el pasado.
+  - **El descanso prescrito** alimenta el cronómetro.
+  - **El modo y la regla del día saltado** (D-082) ya tienen su sitio.
+- **Datos de salud y menores (P-12):** la Fase 2 no guarda ningún dato de salud.
+  - En los ejercicios de peso corporal se apunta el lastre, no el peso de la persona.
+  - **No hay notas privadas del coach sobre un cliente:** ahí acabaría escribiéndose una lesión, que es un dato de salud. Si se quieren, se deciden con P-12.
+  - La nota de un ejercicio (D-076) la ve el cliente y es sobre el ejercicio, no sobre la persona.
+  - La casilla de 16 años del registro no cambia (D-060).
+- **Referencia para la Fase 3:** la app de apuntes del propietario. Tiene el entreno de hoy, "Iniciar entreno", el historial reciente de cada ejercicio, peso, repeticiones y RIR por serie, cronómetro de descanso, notas del día, los ajustes de la máquina ("asiento 2") que se comparten entre rutinas, el historial "45×8(1)", gráficas de peso, 1RM, volumen y repeticiones, récords, rutinas anteriores, peso corporal y descargar en Excel.
+
+### D-088 · Qué queda fuera de la Fase 2
+- **Fecha:** 2026-11-15
+- **Decisión:** nada de esto se construye en la Fase 2.
+  - **Fase 3:** apuntar series, cargas y RIR; el cronómetro; el historial, las gráficas, el RM estimado y los récords; el peso corporal; las rutinas anteriores para el cliente; aplicar la regla del día saltado.
+  - **Fase 5:** pagos (P-05).
+  - **Sin fase todavía** (apuntado en `docs/ESTADO.md`, "Ideas y deuda"): chat; fotos del cliente; importar desde Excel o pegar una lista de texto; porcentaje del RM y tempo; subir vídeos; borrador guardado en la nube; notas privadas del coach; avisos por email o notificación; arrastrar para reordenar; imprimir o exportar a PDF; compartir plantillas entre coaches; el segundo coach (`staff`); límites por plan.
+- **Por qué:** el propietario pidió "cada cosa en su fase". El chat está fuera de la primera versión (ARQUITECTURA §14). Las fotos del cuerpo pueden ser datos de salud y dependen de P-12. Un importador de Excel que falle la mitad de las veces da peor imagen que no tenerlo: cada coach tiene un Excel distinto.
+
 ---
 
 ## Pendientes de decidir
@@ -478,9 +729,9 @@ Cómo añadir una: copia el formato, usa el siguiente número y no borres las an
 | Nº | Qué | Cuándo hay que decidirlo |
 |---|---|---|
 | P-01 | **Cerrado el 2026-11-14.** El dominio es `athlete-core.com`, gestionado en Cloudflare. Los emails salen de `no-reply@athlete-core.com` (D-046) | — |
-| P-02 | Nicho definitivo tras hablar con coaches | Antes de la Fase 2 |
+| P-02 | Nicho definitivo tras hablar con coaches. **Provisional desde el 2026-11-15** (D-070): coach de gimnasio, musculación y fuerza. El propietario hablará con 3–5 coaches cuando tenga la demo; las preguntas están en D-070 | Al terminar la Fase 3 y, en todo caso, antes de empezar la Fase 4 |
 | P-03 | Hosting de la web: Vercel o Cloudflare Pages. Comprobar en ambos el coste con dos personas subiendo código y las condiciones de uso comercial | Antes de enseñar la app a coaches |
-| P-04 | Biblioteca global de ejercicios: cómo conviven los ejercicios de la plataforma con los propios de cada coach | Fase 2 |
+| P-04 | **Cerrado el 2026-11-15** por D-071: un catálogo de 120 ejercicios de la plataforma y una copia para cada negocio, que el coach edita como suya | — |
 | P-05 | Pagos: proveedor para la suscripción del coach, cobros del coach a sus clientes y dónde se contrata (web o app, según las normas de las tiendas) | Fase 5 |
 | P-06 | Modo sin conexión para registrar entrenos | Tras los primeros pilotos |
 | P-07 | Notificaciones push | Fase 4 |

@@ -1,17 +1,18 @@
 # ESTADO DEL PROYECTO
 
-**Última actualización:** 2026-11-14
-**Fase actual:** 2 — Ejercicios y rutinas, sin empezar (la Fase 1 terminó y se fusionó el 2026-11-14)
+**Última actualización:** 2026-11-15
+**Fase actual:** 2 — Ejercicios y rutinas: diseñada el 2026-11-15, sin empezar a programar (la Fase 1 terminó y se fusionó el 2026-11-14)
 
 Este archivo lo actualiza quien termina una tarea, en el mismo Pull Request, junto con `CONTEXTO.md` (que resume este en una página).
 
 ## En curso
 
-Nada. No hay ningún PR abierto.
+Nada. El diseño de la Fase 2 está hecho (DECISIONES D-069 a D-088) y su plan, en `docs/PROMPTS.md` §6.
 
 ## Siguiente
 
-1. Fase 2 — módulo `exercises` (biblioteca y ejercicios propios), en un chat nuevo. Antes hay que decidir P-02 (nicho) y P-04 (cómo conviven los ejercicios de la plataforma con los de cada coach).
+1. **PR 2.1 — Base de datos: ejercicios** (`docs/PROMPTS.md` §6), en un chat nuevo. Es el primero del lote 1.
+2. El propietario aprobó el 2026-11-15 el cambio de `docs/ARQUITECTURA.md` §8 (la excepción del catálogo de ejercicios, D-071) y dio por buenas, por ahora, la lista de `docs/referencia/biblioteca-ejercicios.md` y las rutinas de ejemplo. Se pueden retocar más adelante.
 
 ## Fases
 
@@ -59,14 +60,51 @@ El diseño está en DECISIONES D-036 a D-067, y el detalle de cada PR, en `docs/
 - [x] PR 1.16 — Marca: logo
 - [x] PR 1.17 — Staging y emails reales
 
-### Fase 2 — Ejercicios y rutinas (coach)
+### Fase 2 — Ejercicios y rutinas
 
-- [ ] Módulo `exercises`: biblioteca y ejercicios propios
-- [ ] Módulo `programs`: crear, editar, duplicar y asignar rutinas
+El diseño está en DECISIONES D-069 a D-088, y el detalle de cada PR, en `docs/PROMPTS.md` §6. Son 18 PR en 5 lotes: un lote no empieza hasta que el anterior está fusionado con el visto bueno del propietario (D-069).
+
+- [x] Decidir cómo funciona toda la fase (D-069 a D-088)
+
+**Lote 1 — Ejercicios**
+
+- [ ] PR 2.1 — Base de datos: ejercicios
+- [ ] PR 2.2 — Los 120 ejercicios de la plataforma
+- [ ] PR 2.3 — Ejercicios: lista, buscador y filtros
+- [ ] PR 2.4 — Crear, editar, archivar y recuperar ejercicios
+
+**Lote 2 — Plantilla**
+
+- [ ] PR 2.5 — Base de datos: rutinas
+- [ ] PR 2.6 — Base de datos: guardar una rutina de una vez
+- [ ] PR 2.7 — Rutinas: lista de plantillas
+- [ ] PR 2.8 — Editor: los días del ciclo
+
+**Lote 3 — Rellenar la rutina**
+
+- [ ] PR 2.9 — Editor: los ejercicios de cada día
+- [ ] PR 2.10 — Editor: series y prescripción
+- [ ] PR 2.11 — Copiar y duplicar
+
+**Lote 4 — Asignar y verla como cliente**
+
+- [ ] PR 2.12 — Base de datos: asignar
+- [ ] PR 2.13 — Asignar a clientes y pestaña "Asignadas"
+- [ ] PR 2.14 — Ficha del cliente: pestaña "Rutina"
+- [ ] PR 2.15 — El cliente ve su rutina
+
+**Lote 5 — Bloques y remates**
+
+- [ ] PR 2.16 — Varios bloques
+- [ ] PR 2.17 — Superseries
+- [ ] PR 2.18 — Inicio: avisos del coach y "Hoy toca" del cliente
 
 ### Fase 3 — Entreno y progreso (cliente)
 
-- [ ] Módulo `workouts`: el cliente ve su rutina y registra series, cargas y RPE
+La referencia es la app de apuntes del propietario (D-087). Antes de empezar se decide P-12 (datos de salud y menores).
+
+- [ ] Módulo `workouts`: el cliente inicia el entreno de hoy y registra series, cargas y RIR o RPE, con cronómetro de descanso
+- [ ] Aplicar la regla del día saltado y dejar apuntado qué día hizo el cliente (D-082)
 - [ ] El coach revisa los entrenos de cada cliente
 - [ ] Módulo `progress`: gráficas, RM estimado y récords
 - [ ] Tests de flujos completos en el CI
@@ -92,6 +130,7 @@ El diseño está en DECISIONES D-036 a D-067, y el detalle de cada PR, en `docs/
 
 ## Bloqueos y dudas abiertas
 
+- **El nicho es provisional** (D-070, P-02): el propietario hablará con 3–5 coaches cuando tenga la demo. Las preguntas están en D-070.
 - Resend en plan gratuito: 100 emails al día y 3.000 al mes (D-046). Hay que revisarlo antes de los pilotos.
 - Staging se pausa tras una semana sin uso (D-063). Si deja de responder, es eso: se reanuda desde el panel de Supabase con **Restore project** (guía de staging, paso 6).
 - El proyecto de staging está conectado al repositorio de GitHub (comprobación "Supabase Preview", siempre omitida). No se sabe si fue a propósito; no hace nada. Se quita en el panel de Supabase, Settings → Integrations.
@@ -124,12 +163,22 @@ Cosas que alguien ha visto y que no tocaban en su tarea. No se hacen sin convert
 - Test de fronteras: añadir el caso permitido de la tabla de dependencias entre módulos cuando existan dos módulos reales (`programs` → `exercises`).
 - Zod ocupa buena parte del peso de la app. Si el tamaño llega a importar, valorar su variante ligera.
 - Un test pgTAP que pruebe cada política de UPDATE por separado (`tenants_update` y `profiles_update`). Hoy, si se afloja una, la política de lectura sigue bloqueando (Postgres la aplica en los UPDATE con WHERE) y los tests no lo notan. No es un agujero, pero la segunda capa no está vigilada. (`members_update` ya no existe: desde el PR 1.8, dar de baja y reactivar van por función.)
-- Los casos 15 a 19 y 28 de `docs/referencia/pruebas-aislamiento.sql` se escriben con la primera tabla de negocio (`programs`, Fase 2).
+- Los casos 15 a 19 y 28 de `docs/referencia/pruebas-aislamiento.sql` se escriben en los PR 2.1, 2.5, 2.6 y 2.12: cada bloque de `docs/PROMPTS.md` §6 dice cuáles.
+- Chat entre coach y cliente, y fotos del cliente guardadas para que el coach las vea (lo pidió el propietario al diseñar la Fase 2). El chat está fuera de la primera versión (ARQUITECTURA §14) y las fotos dependen de P-12.
+- Importar rutinas desde Excel. Antes, algo más sencillo: pegar una lista de texto ("Remo Gironda — 3 series") y que la app la convierta en ejercicios (D-088).
+- Reordenar ejercicios, días y bloques arrastrando, además de con "Subir" y "Bajar". El propietario quiere valorarlo; haría falta una librería (D-080).
+- Porcentaje del RM y tempo en la prescripción (D-076).
+- Subir vídeos de ejercicios, en vez de solo un enlace (D-074).
+- Seguir en otro dispositivo una rutina a medio editar: borrador guardado en la nube (D-079).
+- Notas privadas del coach sobre un cliente. Dependen de P-12, porque acabarían guardando lesiones (D-087).
+- Imprimir una rutina o exportarla a PDF, y compartir plantillas entre coaches (D-088).
+- Que la semana pueda empezar en domingo, si lo piden los coaches de EE. UU. (D-075).
 
 ## Registro de cambios
 
 Lo más nuevo, arriba.
 
+- 2026-11-15 — Diseño de la Fase 2: decisiones D-069 a D-088 (catálogo de 120 ejercicios con una copia para cada negocio; rutinas por bloques con ciclos de 1 a 28 días; series una a una; plantillas que se copian a cada cliente; "Guardar cambios" de una vez; una rutina vigente por cliente; el cliente ve su rutina en lectura), la lista de los 18 PR en 5 lotes en `docs/PROMPTS.md` §6, la biblioteca y las rutinas de ejemplo en `docs/referencia/`, P-04 cerrado y P-02 provisional. Solo documentación: sin código ni migraciones. Queda pendiente que el propietario apruebe el cambio de ARQUITECTURA §8.
 - 2026-11-14 — Fase 1 fusionada en `main`: los 18 PR (del 4 al 21), en orden y con "Squash and merge", por un agente con el visto bueno del propietario (D-068). En cada uno se comprobó que `main` quedaba con el contenido exacto de la rama. Dos tropiezos, ninguno del código: un test de una rama intermedia (`JoinAfterSignup`) que a veces falla por lentitud y pasó al repetirlo, y un fallo de Docker en el CI de GitHub que pasó al relanzarlo.
 - 2026-11-14 — PR 1.17 (staging, terminado): proyecto `athlete-core-staging` en Fráncfort, plan gratuito, con las 7 migraciones, los datos inventados y los 150 tests pgTAP en verde. Emails por Resend desde `no-reply@athlete-core.com` (dominio en Cloudflare, con SPF, DKIM y DMARC). Probado por el propietario: registro y recuperar la contraseña con emails de verdad, en Gmail y en Outlook, sin caer en spam. El tope de intentos cuenta la IP real de cada conexión (D-052): no hizo falta ninguna migración. D-063 revisada: sin cambios. Guía corregida: Resend va antes que `config push`, y los tests en staging piden la contraseña de la base de datos. Cerrado P-01. Los agentes fusionan con el visto bueno del propietario (D-068).
 - 2026-11-14 — PR 1.17 (staging, preparado): guía paso a paso en `supabase/README.md` (crear el proyecto en la UE, aplicar migraciones y datos inventados, configurar las cuentas con `config push`, conectar Resend, probar y reanudar si se pausa); las variables de staging en `.env.example`; `npm run dev:staging`. Comprobado en la CLI de Supabase 3.1 que los comandos de la guía existen. Falta seguirla con el propietario: necesita el dominio y las cuentas.

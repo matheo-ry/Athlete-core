@@ -21,10 +21,17 @@
 
 ## Dónde estamos
 
-- **Fase actual:** 2 — Ejercicios y rutinas, sin empezar. La Fase 1 (cuentas, negocio del coach y unirse con código) está terminada y fusionada en `main` (2026-11-14).
-- **Última tarea terminada:** PR 1.17 — Staging y emails reales (2026-11-14), rama `chore/staging`.
-- **En curso:** nada. No hay ningún PR abierto.
-- **Siguiente tarea:** Fase 2, módulo `exercises` (biblioteca y ejercicios propios). Antes, el propietario decide P-02 (nicho) y P-04 (ejercicios de la plataforma y de cada coach).
+- **Fase actual:** 2 — Ejercicios y rutinas: diseñada, sin empezar a programar. La Fase 1 (cuentas, negocio del coach y unirse con código) está terminada y fusionada en `main` (2026-11-14).
+- **Última tarea terminada:** el diseño de la Fase 2 (2026-11-15), rama `docs/diseno-fase-2`. Solo documentación.
+- **En curso:** nada.
+- **Siguiente tarea:** PR 2.1 — Base de datos: ejercicios (`docs/PROMPTS.md` §6). ARQUITECTURA §8 ya recoge la excepción del catálogo de ejercicios (D-071), aprobada por el propietario.
+
+## Cómo será la Fase 2 (diseñada, D-069 a D-088)
+
+- **Ejercicios:** la plataforma trae 120 y cada negocio recibe su copia, que el coach edita, archiva y recupera como suya; además crea los propios. Vídeo, solo con enlace.
+- **Rutinas:** rutina → bloques → días del ciclo (de 1 a 28; 7 es "semanal") → ejercicios → series, guardadas una a una. Las plantillas se copian a cada cliente; un cliente tiene una sola rutina vigente. El editor guarda todo de una vez.
+- **El cliente** ve su rutina en modo lectura ("Hoy toca…"). Apuntar entrenos es la Fase 3.
+- **Cómo se trabaja:** 18 PR en 5 lotes, de unas 300 líneas de verdad. Un lote no empieza hasta que el anterior está fusionado con el visto bueno del propietario.
 
 ## Cómo funciona la Fase 1 (hecha)
 
@@ -52,18 +59,18 @@
 
 ## Qué falta (lo próximo)
 
-- La Fase 2: ejercicios y rutinas. Publicar la web (P-03) sigue pendiente.
+- La Fase 2 entera: todavía no hay ninguna tabla ni pantalla de ejercicios o de rutinas. Publicar la web (P-03) sigue pendiente.
 - Las guardas por sesión y por rol son comodidad, no seguridad: los datos los protege el RLS.
 
 ## Últimos cambios
 
 Los 5 más recientes, el más nuevo arriba. El historial completo está en `docs/ESTADO.md`.
 
+- 2026-11-15 — Diseño de la Fase 2: D-069 a D-088, los 18 PR en `docs/PROMPTS.md` §6 y la biblioteca de 120 ejercicios en `docs/referencia/`. P-04 cerrado; P-02, provisional.
 - 2026-11-14 — PR 1.17: staging en marcha con emails reales por Resend; los agentes fusionan con el visto bueno del propietario (D-068).
 - 2026-11-14 — PR 1.16: el logo del coach, en Storage, visible en toda la app.
 - 2026-11-14 — PR 1.15: la marca del coach (nombre, colores y modo, con vista previa); `update_brand` (D-067).
 - 2026-11-14 — PR 1.14: selector de espacio y "Mis espacios"; el último espacio se recuerda hasta cerrar sesión (D-066).
-- 2026-11-14 — PR 1.13: perfil y cuenta; "Cerrar sesión" pasa al perfil y a los ajustes.
 
 ## A tener en cuenta ahora
 

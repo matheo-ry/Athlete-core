@@ -840,6 +840,19 @@ Cómo añadir una: copia el formato, usa el siguiente número y no borres las an
   - **Icono del menú:** `clipboard`.
 - **Por qué:** son las opciones más sencillas que cumplen el bloque del PR y se parecen a lo que el coach ya conoce de "Ejercicios".
 
+### D-098 · Cómo funciona el editor de los días del ciclo
+- **Fecha:** 2026-11-15
+- **Decisión:** detalles del PR 2.8a que D-075, D-079 y D-085 no fijaban.
+  - **El PR 2.8 se parte en dos,** como preveía su bloque: 2.8a (el editor y "Guardar cambios") y 2.8b (aviso al salir y recuperación en el dispositivo). El aviso "Esta rutina se ha cambiado desde otro dispositivo", con "Volver a cargar", va ya en el 2.8a: es lo que contesta `save_program` y no cuesta nada enseñarlo.
+  - **Dirección:** `/coach/programs/<id>`, con el día abierto en `?day=3`. En el móvil, "Atrás" vuelve a la lista de días. En escritorio siempre hay un día abierto: el primero si no se ha elegido.
+  - **Los nombres de la semana salen del propio navegador** (`Intl`), en el idioma de la app y con mayúscula: "Lunes", "Monday". El día 1 de un ciclo semanal es el lunes (D-075).
+  - **El ciclo se cambia con un campo y "Cambiar",** no al escribir: escribir "10" pasa por "1", y acortaría el ciclo a un día.
+  - **Marcar como descanso un día con ejercicios pide confirmación** y se los quita: `save_program` no admite ejercicios en un día de descanso (D-096). El nombre, el subtítulo y el lugar se conservan.
+  - **Al guardar, la rutina se vuelve a pedir** y el editor empieza de nuevo desde lo guardado: así lo nuevo trae su identificador y el siguiente guardado no lo duplica.
+  - **"Nueva plantilla" abre el editor** de la plantilla recién creada, y el nombre de cada fila de la lista abre el suyo.
+  - **El nombre de la rutina se cambia en la lista** ("Renombrar", D-097), no en el editor.
+- **Por qué:** son las opciones más sencillas que cumplen el bloque del PR.
+
 ---
 
 ## Pendientes de decidir

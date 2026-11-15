@@ -36,7 +36,6 @@
       "description": "Try another name."
     },
     "notices": {
-      "created": "“{{name}}” created.",
       "renamed": "Renamed to “{{name}}”.",
       "archived": "“{{name}}” archived. You can find it in Archived.",
       "unarchived": "“{{name}}” is active again."
@@ -55,5 +54,41 @@
     "cycleDaysInvalid": "Write a number from 1 to 28.",
     "limitReached": "You already have 300 active templates. Archive one to add another.",
     "conflict": "This program was changed from another device. Reload the page and try again."
+  },
+  "editor": {
+    "description": "The days of the cycle. Changes are kept on this screen until you save them.",
+    "backToList": "← Programs",
+    "save": "Save changes",
+    "saved": "Changes saved.",
+    "unsaved": "You have unsaved changes.",
+    "conflict": "This program was changed from another device. Reload it to see the latest version: your changes here will be lost.",
+    "reload": "Reload",
+    "changeCycle": "Change",
+    "weeklyDescription": "Weekly: Monday to Sunday.",
+    "shortenConfirm_one": "{{days}} has content. If you shorten the cycle, it will be removed.",
+    "shortenConfirm_other": "{{days}} have content. If you shorten the cycle, they will be removed.",
+    "shortenYes": "Yes, shorten",
+    "daysLabel": "Days of the cycle",
+    "day": "Day {{number}}",
+    "backToDays": "← Days",
+    "kindLabel": "Type of day",
+    "kinds": {
+      "training": "Training",
+      "rest": "Rest"
+    },
+    "rest": "Rest",
+    "restDescription": "A rest day. Mark it as training to give it a name and exercises.",
+    "restConfirm_one": "This day has {{count}} exercise. If you mark it as rest, it will be removed.",
+    "restConfirm_other": "This day has {{count}} exercises. If you mark it as rest, they will be removed.",
+    "restYes": "Yes, mark as rest",
+    "dayName": "Name (optional)",
+    "subtitle": "Subtitle (optional)",
+    "subtitleHint": "For example, “Pull + legs”.",
+    "place": "Place (optional)",
+    "placeHint": "For example, “Home” or “Gym”.",
+    "exercises_one": "{{count}} exercise",
+    "exercises_other": "{{count}} exercises",
+    "sets_one": "{{count}} set",
+    "sets_other": "{{count}} sets"
   }
 }

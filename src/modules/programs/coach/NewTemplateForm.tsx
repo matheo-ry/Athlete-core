@@ -10,7 +10,7 @@ import { WEEKLY_CYCLE_DAYS, newTemplateSchema } from '../model/program-document'
 import { TEMPLATE_ACTION_ERRORS } from './template-action-errors';
 
 interface NewTemplateFormProps {
-  onCreated: (id: string, name: string) => void;
+  onCreated: (id: string) => void;
   onCancel: () => void;
 }
 
@@ -45,7 +45,7 @@ export function NewTemplateForm({ onCreated, onCancel }: NewTemplateFormProps) {
       .mutateAsync({ kind: 'create', ...parsed.data })
       .then((result) => {
         if (result.status === 'saved') {
-          onCreated(result.id, parsed.data.name);
+          onCreated(result.id);
         } else {
           setFailure(t(TEMPLATE_ACTION_ERRORS[result.status]));
         }

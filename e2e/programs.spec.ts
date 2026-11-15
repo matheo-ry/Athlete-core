@@ -57,8 +57,12 @@ test('un negocio nuevo no tiene plantillas; crea una, la renombra, la archiva y 
   await page.getByLabel('Name', { exact: true }).fill('Prueba');
   await page.getByLabel('Days in the cycle').fill('10');
   await page.getByRole('button', { name: 'Create' }).click();
-  await expect(page.getByRole('status')).toHaveText('“Prueba” created.');
-  await expect(page.getByRole('listitem')).toContainText('10-day cycle · 0 training days');
+  // Se abre en el editor (PR 2.8).
+  await expect(page.getByRole('heading', { name: 'Prueba', level: 1 })).toBeVisible();
+  await expect(page).toHaveURL(/\/coach\/programs\/[0-9a-f-]{36}$/);
+  await page.getByRole('link', { name: '← Programs' }).click();
+  await expect(page).toHaveURL(/\/coach\/programs$/);
+  await expect(page.getByText(/^10-day cycle · 0 training days/)).toBeVisible();
 
   await page.getByRole('button', { name: 'Rename: Prueba' }).click();
   await page.getByLabel('New name for “Prueba”').fill('Prueba 2');
@@ -72,4 +76,89 @@ test('un negocio nuevo no tiene plantillas; crea una, la renombra, la archiva y 
   await page.getByRole('button', { name: 'Archived 1' }).click();
   await page.getByRole('button', { name: 'Recover: Prueba 2' }).click();
   await expect(page.getByRole('button', { name: 'Active 1' })).toBeVisible();
+
+  // El editor (PR 2.8, criterio 3): con 7 días pasa a ser semanal.
+  await page.getByRole('button', { name: 'Active 1' }).click();
+  await page.getByRole('link', { name: 'Prueba 2' }).click();
+  await page.getByLabel('Days in the cycle').fill('7');
+  await page.getByRole('button', { name: 'Change', exact: true }).click();
+  const days = page.getByRole('list', { name: 'Days of the cycle' }).getByRole('button');
+  await expect(days).toHaveCount(7);
+  await expect(days.first()).toContainText('Monday');
+  await expect(days.last()).toContainText('Sunday');
+
+  for (const [day, name, place] of [
+    ['Monday', 'Torso', 'Casa'],
+    ['Thursday', 'Pierna', 'Gym'],
+  ]) {
+    await days.filter({ hasText: day }).click();
+    await expect(page.getByRole('heading', { name: day, level: 2 })).toBeVisible();
+    await page.getByRole('button', { name: 'Training', exact: true }).click();
+    await page.getByLabel('Name (optional)').fill(name ?? '');
+    await page.getByLabel('Place (optional)').fill(place ?? '');
+  }
+  await page.getByRole('button', { name: 'Save changes' }).click();
+  await expect(page.getByRole('status')).toHaveText('Changes saved.');
+  await expect(page.getByRole('button', { name: 'Save changes' })).toBeDisabled();
+
+  await page.reload();
+  await expect(days.nth(0)).toContainText('Torso · Casa · 0 exercises · 0 sets');
+  await expect(days.nth(3)).toContainText('Pierna · Gym');
+  await expect(days.nth(1)).toContainText('Rest');
+});
+
+test('el editor enseña las rutinas de ejemplo y guardar no pierde ejercicios ni series', async ({
+  page,
+}) => {
+  await signIn(page, 'coach.iron@example.com');
+  await chooseSpace(page, 'Iron Lab');
+  await page.goto('/coach/programs');
+  await page.getByRole('link', { name: 'Casa + Gym' }).click();
+
+  const days = page.getByRole('list', { name: 'Days of the cycle' }).getByRole('button');
+  await expect(days).toHaveCount(7);
+  await expect(days.nth(0)).toContainText(
+    'MondayEmpuje + dorsal + bíceps · Casa · 7 exercises · 20 sets',
+  );
+  await expect(days.nth(1)).toContainText('TuesdayRest');
+  await expect(days.nth(2)).toContainText('WednesdayTirón + pierna · Gym · 8 exercises · 19 sets');
+
+  // Criterio 4: cambiar el subtítulo del viernes y guardar no toca el lunes.
+  // Después se deja como estaba, para no cambiar el seed a los demás tests.
+  for (const subtitle of ['Empuje fuerte', 'Empuje']) {
+    await days.nth(4).click();
+    await expect(page.getByRole('heading', { name: 'Friday', level: 2 })).toBeVisible();
+    await page.getByLabel('Subtitle (optional)').fill(subtitle);
+    await page.getByRole('button', { name: 'Save changes' }).click();
+    await expect(page.getByRole('status')).toHaveText('Changes saved.');
+    await expect(days.nth(4)).toContainText(`Friday${subtitle} · Casa · 5 exercises · 16 sets`);
+    await expect(days.nth(0)).toContainText('7 exercises · 20 sets');
+  }
+
+  // Criterio 2: la de 8 días va de "Día 1" a "Día 8".
+  await page.getByRole('link', { name: '← Programs' }).click();
+  await expect(page).toHaveURL(/\/coach\/programs$/);
+  await page.getByRole('link', { name: 'Pecho / Espalda y Brazo / Pierna' }).click();
+  await expect(days).toHaveCount(8);
+  await expect(days.first()).toContainText('Day 1');
+  await expect(days.last()).toContainText('Day 8');
+});
+
+test('en el móvil el editor enseña la lista de días y, al tocar uno, ese día', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await signIn(page, 'coach.norte@example.com');
+  await page.goto('/coach/programs');
+  await page.getByRole('link', { name: 'Fuerza básica' }).click();
+
+  const days = page.getByRole('list', { name: 'Days of the cycle' });
+  await expect(days).toBeVisible();
+  await expect(page.getByLabel('Subtitle (optional)')).toBeHidden();
+
+  await days.getByRole('button', { name: /^Wednesday/ }).click();
+  await expect(page.getByRole('heading', { name: 'Wednesday', level: 2 })).toBeVisible();
+  await expect(days).toBeHidden();
+  await expect(page.getByLabel('Subtitle (optional)')).toBeVisible();
+
+  await page.getByRole('button', { name: '← Days' }).click();
+  await expect(days).toBeVisible();
 });

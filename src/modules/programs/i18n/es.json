@@ -112,5 +112,28 @@
     "note": "Nota para «{{name}}»",
     "noteHint": "La verá tu cliente. Hasta 500 caracteres.",
     "addNote": "Añadir una nota"
+  },
+  "prescription": {
+    "label": "Qué hay que hacer en «{{name}}»",
+    "sets": "Series",
+    "set": "Serie {{number}}",
+    "target": {
+      "reps": "Repeticiones",
+      "time": "Segundos",
+      "distance": "Metros"
+    },
+    "intensity": "Intensidad",
+    "none": "—",
+    "failure": "Al fallo",
+    "restMinutes": "Descanso (min)",
+    "restSeconds": "Descanso (s)",
+    "restShortcuts": "Atajos de descanso para «{{name}}»",
+    "split": "Series distintas",
+    "makeUniform": "Todas iguales",
+    "errors": {
+      "reps": "Escribe un número o un rango, como 8 o 8-12.",
+      "time": "Escribe los segundos, como 45.",
+      "distance": "Escribe los metros, como 400."
+    }
   }
 }

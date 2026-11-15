@@ -1,41 +1,10 @@
 import { expect, test } from '@playwright/test';
-import type { Page } from '@playwright/test';
 
 import { chooseSpace, signIn } from './helpers';
-import { E2E_PASSWORD, createTestBusiness } from './supabase-helpers';
+import { addExercise, items, openPruebaMonday } from './program-helpers';
 
 // Los ejercicios de cada día del editor (PR 2.9), contra Supabase local. Los
 // tests que cambian rutinas lo hacen en un negocio propio.
-
-const suffix = () => Date.now().toString().slice(-5);
-
-/** Un negocio nuevo con la plantilla "Prueba" (semanal) abierta en el lunes, ya de entreno. */
-async function openPruebaMonday(page: Page) {
-  const business = await createTestBusiness(`E2E Ejercicios del día ${suffix()}`);
-  await signIn(page, business.coachEmail, '/login', E2E_PASSWORD);
-  await expect(page).toHaveURL(/\/coach$/);
-  await page.goto('/coach/programs');
-  await page.getByRole('button', { name: 'New template' }).click();
-  await page.getByLabel('Name', { exact: true }).fill('Prueba');
-  await page.getByRole('button', { name: 'Create' }).click();
-  await expect(page.getByRole('heading', { name: 'Prueba', level: 1 })).toBeVisible();
-  await page.getByRole('list', { name: 'Days of the cycle' }).getByRole('button').first().click();
-  await expect(page.getByRole('heading', { name: 'Monday', level: 2 })).toBeVisible();
-  await page.getByRole('button', { name: 'Training', exact: true }).click();
-}
-
-async function addExercise(page: Page, search: string, name: string) {
-  await page.getByRole('button', { name: 'Add exercise' }).click();
-  await page.getByLabel('Search by name').fill(search);
-  await page
-    .getByRole('list', { name: 'Add exercise' })
-    // El nombre exacto y, detrás, la forma de medir: "Leg press" no coge "Leg press (single-leg)".
-    .getByRole('button', { name: new RegExp(`^${name} ?(Weight|Bodyweight|Time|Distance)`) })
-    .click();
-}
-
-const items = (page: Page) =>
-  page.getByRole('list', { name: 'Exercises of the day' }).getByRole('listitem');
 
 test('el lunes de "Casa + Gym" enseña sus 7 ejercicios en orden', async ({ page }) => {
   await signIn(page, 'coach.iron@example.com');
@@ -45,13 +14,14 @@ test('el lunes de "Casa + Gym" enseña sus 7 ejercicios en orden', async ({ page
 
   await expect(page.getByText('7 exercises · 20 sets', { exact: true })).toBeVisible();
   await expect(items(page)).toHaveText([
-    /^1\. Flexiones con mochila3 sets/,
-    /^2\. Flexiones con pies en la cama3 sets/,
-    /^3\. Dumbbell lateral raise3 sets/,
-    /^4\. Sphinx push-up3 sets/,
-    /^5\. Dominadas prono agarre abierto3 sets/,
-    /^6\. Curl martillo con mancuernas2 sets/,
-    /^7\. Abdomen3 sets/,
+    // coach.iron trabaja en libras: los 10 kg de lastre se ven como 22 lb (PR 2.10).
+    /^1\. Flexiones con mochila3 × 8-12 · RIR 1 · 22 lb · 2:00/,
+    /^2\. Flexiones con pies en la cama3 × 8-12 · RIR 1 · 2:00/,
+    /^3\. Dumbbell lateral raise3 × 8-12 · RIR 1 · 2:00/,
+    /^4\. Sphinx push-up3 × 8-12 · RIR 1 · 2:00/,
+    /^5\. Dominadas prono agarre abierto3 × 8-12 · RIR 1 · 2:00/,
+    /^6\. Curl martillo con mancuernas2 × 8-12 · RIR 1 · 2:00/,
+    /^7\. Abdomen3 × 12-15 · RIR 1 · 1:00/,
   ]);
 });
 

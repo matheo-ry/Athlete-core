@@ -98,10 +98,9 @@ describe('módulo programs: los ejercicios de cada día (PR 2.9)', () => {
     await openMonday();
 
     expect(await screen.findByText('1. Barbell row')).toBeVisible();
-    expect(names()).toEqual([
-      '1. Barbell row3 sets↑↓⇄✕Add a note',
-      '2. Lat pulldown3 sets↑↓⇄✕Add a note',
-    ]);
+    expect(names()).toHaveLength(2);
+    expect(names()[0]).toMatch(/^1\. Barbell row3 sets↑↓⇄✕/);
+    expect(names()[1]).toMatch(/^2\. Lat pulldown3 sets↑↓⇄✕/);
     expect(screen.getByText('2 exercises · 6 sets', { selector: 'p' })).toBeVisible();
   });
 

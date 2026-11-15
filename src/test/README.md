@@ -3,6 +3,7 @@
 Utilidades compartidas para los tests unitarios (Vitest + Testing Library).
 
 - `setup.ts`: se ejecuta antes de cada archivo de test (matchers de jest-dom, idioma en inglés, limpieza).
+- `load-translations.ts`: carga los textos de todos los módulos, para los tests que pintan una pieza suelta sin montar la app entera.
 - `render-app.tsx`: monta la app entera en una ruta, para tests de pantallas y navegación. Por defecto hay una sesión de coach abierta; para probar sin sesión, pásale `auth: createFakeAuthService({ signedInAs: null })`.
 - `fake-auth-service.ts`: un `AuthService` en memoria, sin Supabase ni red, con tres cuentas inventadas.
 - `translation-shape.ts`: compara dos archivos de textos (mismas claves y mismos huecos). Lo usan los tests que exigen inglés y español.

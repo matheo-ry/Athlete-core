@@ -8,7 +8,12 @@ import {
   setExerciseNote,
 } from './day-exercises';
 import { MAX_CYCLE_DAYS, WEEKLY_CYCLE_DAYS, restDay } from './program-document';
-import type { ProgramBlock, ProgramDay, ProgramDocument } from './program-document';
+import type {
+  ProgramBlock,
+  ProgramDay,
+  ProgramDayExercise,
+  ProgramDocument,
+} from './program-document';
 
 // El estado del editor, primera parte (PR 2.8): los días del ciclo del primer
 // bloque. Todo cambio devuelve un documento nuevo y no toca lo que no cambia:
@@ -28,7 +33,9 @@ export type CycleEditorAction =
   | { type: 'moveExercise'; dayNumber: number; index: number; direction: -1 | 1 }
   | { type: 'removeExercise'; dayNumber: number; index: number }
   | { type: 'replaceExercise'; dayNumber: number; index: number; exerciseId: string }
-  | { type: 'setExerciseNote'; dayNumber: number; index: number; note: string };
+  | { type: 'setExerciseNote'; dayNumber: number; index: number; note: string }
+  /** Lo prescrito en un ejercicio: sus series y su descanso (PR 2.10). */
+  | { type: 'setExercise'; dayNumber: number; index: number; item: ProgramDayExercise };
 
 function updateFirstBlock(
   document: ProgramDocument,
@@ -108,6 +115,15 @@ export function editCycle(document: ProgramDocument, action: CycleEditorAction):
         updateDay(block, action.dayNumber, (day) =>
           setExerciseNote(day, action.index, action.note),
         ),
+      );
+    case 'setExercise':
+      return updateFirstBlock(document, (block) =>
+        updateDay(block, action.dayNumber, (day) => ({
+          ...day,
+          exercises: day.exercises.map((item, position) =>
+            position === action.index ? action.item : item,
+          ),
+        })),
       );
   }
 }

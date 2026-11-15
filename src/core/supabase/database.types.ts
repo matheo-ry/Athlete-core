@@ -293,6 +293,196 @@ export type Database = {
         };
         Relationships: [];
       };
+      program_blocks: {
+        Row: {
+          cycle_days: number;
+          id: string;
+          laps: number | null;
+          name: string | null;
+          position: number;
+          program_id: string;
+          tenant_id: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          cycle_days: number;
+          id?: string;
+          laps?: number | null;
+          name?: string | null;
+          position: number;
+          program_id: string;
+          tenant_id: string;
+        };
+        Update: {
+          cycle_days?: number;
+          id?: string;
+          laps?: number | null;
+          name?: string | null;
+          position?: number;
+          program_id?: string;
+          tenant_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'program_blocks_tenant_id_fkey';
+            columns: ['tenant_id'];
+            isOneToOne: false;
+            referencedRelation: 'tenant_effective_features';
+            referencedColumns: ['tenant_id'];
+          },
+          {
+            foreignKeyName: 'program_blocks_tenant_id_fkey';
+            columns: ['tenant_id'];
+            isOneToOne: false;
+            referencedRelation: 'tenants';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'program_blocks_tenant_id_program_id_fkey';
+            columns: ['tenant_id', 'program_id'];
+            isOneToOne: false;
+            referencedRelation: 'programs';
+            referencedColumns: ['tenant_id', 'id'];
+          },
+        ];
+      };
+      program_days: {
+        Row: {
+          block_id: string;
+          day_number: number;
+          id: string;
+          kind: string;
+          name: string | null;
+          place: string | null;
+          program_id: string;
+          subtitle: string | null;
+          tenant_id: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          block_id: string;
+          day_number: number;
+          id?: string;
+          kind: string;
+          name?: string | null;
+          place?: string | null;
+          program_id: string;
+          subtitle?: string | null;
+          tenant_id: string;
+        };
+        Update: {
+          block_id?: string;
+          day_number?: number;
+          id?: string;
+          kind?: string;
+          name?: string | null;
+          place?: string | null;
+          program_id?: string;
+          subtitle?: string | null;
+          tenant_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'program_days_tenant_id_fkey';
+            columns: ['tenant_id'];
+            isOneToOne: false;
+            referencedRelation: 'tenant_effective_features';
+            referencedColumns: ['tenant_id'];
+          },
+          {
+            foreignKeyName: 'program_days_tenant_id_fkey';
+            columns: ['tenant_id'];
+            isOneToOne: false;
+            referencedRelation: 'tenants';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'program_days_tenant_id_program_id_block_id_fkey';
+            columns: ['tenant_id', 'program_id', 'block_id'];
+            isOneToOne: false;
+            referencedRelation: 'program_blocks';
+            referencedColumns: ['tenant_id', 'program_id', 'id'];
+          },
+        ];
+      };
+      programs: {
+        Row: {
+          archived_at: string | null;
+          client_id: string | null;
+          created_at: string;
+          created_by: string | null;
+          ended_at: string | null;
+          id: string;
+          mode: string;
+          name: string;
+          source_program_id: string | null;
+          start_block_id: string | null;
+          starts_on: string | null;
+          tenant_id: string;
+          updated_at: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          archived_at?: string | null;
+          client_id?: string | null;
+          created_at?: string;
+          created_by?: string | null;
+          ended_at?: string | null;
+          id?: string;
+          mode?: string;
+          name: string;
+          source_program_id?: string | null;
+          start_block_id?: string | null;
+          starts_on?: string | null;
+          tenant_id: string;
+          updated_at?: string;
+        };
+        Update: {
+          archived_at?: string | null;
+          client_id?: string | null;
+          created_at?: string;
+          created_by?: string | null;
+          ended_at?: string | null;
+          id?: string;
+          mode?: string;
+          name?: string;
+          source_program_id?: string | null;
+          start_block_id?: string | null;
+          starts_on?: string | null;
+          tenant_id?: string;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'programs_start_block_fkey';
+            columns: ['tenant_id', 'id', 'start_block_id'];
+            isOneToOne: false;
+            referencedRelation: 'program_blocks';
+            referencedColumns: ['tenant_id', 'program_id', 'id'];
+          },
+          {
+            foreignKeyName: 'programs_tenant_id_client_id_fkey';
+            columns: ['tenant_id', 'client_id'];
+            isOneToOne: false;
+            referencedRelation: 'tenant_members';
+            referencedColumns: ['tenant_id', 'user_id'];
+          },
+          {
+            foreignKeyName: 'programs_tenant_id_fkey';
+            columns: ['tenant_id'];
+            isOneToOne: false;
+            referencedRelation: 'tenant_effective_features';
+            referencedColumns: ['tenant_id'];
+          },
+          {
+            foreignKeyName: 'programs_tenant_id_fkey';
+            columns: ['tenant_id'];
+            isOneToOne: false;
+            referencedRelation: 'tenants';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
       tenant_features: {
         Row: {
           config: NonNullable<Json>;
@@ -497,6 +687,7 @@ export type Database = {
       email_status: { Args: { p_email: string }; Returns: string };
       generate_invite_code: { Args: Record<PropertyKey, never>; Returns: string };
       is_member: { Args: { p_roles?: string[]; p_tenant: string }; Returns: boolean };
+      is_program_client: { Args: { p_program: string; p_tenant: string }; Returns: boolean };
       join_tenant_with_code: { Args: { p_code: string }; Returns: Json };
       my_spaces: {
         Args: Record<PropertyKey, never>;

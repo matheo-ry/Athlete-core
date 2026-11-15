@@ -786,6 +786,21 @@ Cómo añadir una: copia el formato, usa el siguiente número y no borres las an
 - **Por qué:** "Restaurar original" quiere decir volver a lo que trae la plataforma. Quitar instrucciones o un vídeo que escribió el coach no se puede deshacer, así que se avisa antes.
 - **Revisar si:** los coaches piden que restaurar conserve sus instrucciones y su vídeo.
 
+### D-094 · Cómo se guardan las rutinas en la base de datos
+- **Fecha:** 2026-11-15
+- **Decisión:** detalles de las tablas del PR 2.5 que D-075 a D-083 no fijaban.
+  - **Tablas:** `programs` (rutinas), `program_blocks` (bloques), `program_days` (días del ciclo) y, en el PR 2.5b, `program_day_exercises` y `program_sets`.
+  - **Una plantilla es una rutina sin cliente** (`client_id` vacío). La base de datos impide que una plantilla tenga fecha de inicio, y que la rutina de un cliente no la tenga o se archive: las de cliente se terminan (`ended_at`), las plantillas se archivan (`archived_at`).
+  - **Cada tabla hija lleva también el id de su rutina** (`program_id`), dentro de su clave foránea. Así una fila no puede colgar de un bloque de otra rutina, y el RLS sabe de quién es cada fila sin recorrer niveles.
+  - **Desde la app solo se lee.** No hay permiso de escritura para nadie: se escribe con las funciones de los PR 2.6 y 2.12. Por eso las reglas que cruzan filas (qué bloque puede no tener fin, que haya una fila por cada día del ciclo, que el día no pase de los días del ciclo) las comprueba la función que guarda, no la tabla.
+  - **Valores, en inglés:** modo `calendar` o `list` (D-082); tipo de día `training` o `rest`.
+  - **"De qué plantilla salió"** (`source_program_id`) es solo informativo: no tiene clave foránea.
+  - **"Desde qué bloque se cuenta"** (`start_block_id`, D-083): vacío quiere decir el primero. Tiene que ser un bloque de esa misma rutina.
+  - **Un cliente lee el contenido de su rutina** con `is_program_client`, que solo responde sí o no sobre el propio usuario. Ve también su rutina próxima y las anteriores; cuál enseñar lo decide la pantalla.
+  - **El flag `programs` se añade en el PR 2.7,** con el módulo (misma salvedad que D-089).
+- **Por qué:** con una sola puerta de escritura, las reglas viven en un sitio y la Fase 3 puede fiarse de los identificadores (D-087).
+- **A tener en cuenta:** "una sola rutina vigente por cliente" (D-081) depende de fechas y la comprueban las funciones del PR 2.12, no la tabla.
+
 ---
 
 ## Pendientes de decidir

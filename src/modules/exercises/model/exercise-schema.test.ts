@@ -10,6 +10,8 @@ const ROW = {
   equipment: 'cable',
   measurement: 'weight_reps',
   is_unilateral: false,
+  instructions: null,
+  video_url: null,
   archived_at: null,
   exercise_library: { name_en: 'Lat pulldown', name_es: 'Jalón al pecho' },
 };
@@ -26,6 +28,8 @@ describe('parseExercises', () => {
         equipment: 'cable',
         measurement: 'weight_reps',
         isUnilateral: false,
+        instructions: null,
+        videoUrl: null,
         archivedAt: null,
       },
     ]);

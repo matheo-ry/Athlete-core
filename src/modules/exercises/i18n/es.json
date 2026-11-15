@@ -34,7 +34,10 @@
     "noResults": {
       "title": "Ningún ejercicio coincide",
       "description": "Prueba con otro nombre o quita algún filtro."
-    }
+    },
+    "newExercise": "Nuevo ejercicio",
+    "createFromSearch": "Crear «{{name}}»",
+    "saved": "«{{name}}» guardado."
   },
   "muscleGroups": {
     "chest": "Pecho",
@@ -61,5 +64,41 @@
     "band": "Banda",
     "kettlebell": "Kettlebell",
     "other": "Otro"
+  },
+  "measurements": {
+    "weight_reps": "Peso y repeticiones",
+    "bodyweight_reps": "Peso corporal y repeticiones",
+    "time": "Tiempo",
+    "distance": "Distancia"
+  },
+  "form": {
+    "newTitle": "Nuevo ejercicio",
+    "editTitle": "Editar ejercicio",
+    "name": "Nombre",
+    "measurement": "Cómo se mide",
+    "measurementExamples": {
+      "weight_reps": "Como un remo con barra.",
+      "bodyweight_reps": "Con lastre opcional, como las dominadas.",
+      "time": "Como una plancha.",
+      "distance": "Como un empuje de trineo."
+    },
+    "unilateral": "Unilateral: un lado cada vez, con lo mismo para los dos lados",
+    "notSet": "Sin indicar",
+    "instructions": "Instrucciones (opcional)",
+    "videoUrl": "Enlace de vídeo (opcional)",
+    "videoUrlHint": "Tiene que empezar por https://. Se abre fuera de la app.",
+    "watchVideo": "Ver vídeo",
+    "save": "Guardar",
+    "saving": "Guardando…",
+    "cancel": "Cancelar",
+    "limitReached": "Ya tienes 1.000 ejercicios activos, el máximo. Archiva alguno para hacer sitio.",
+    "errors": {
+      "nameRequired": "Escribe el nombre del ejercicio.",
+      "nameTooLong": "El nombre puede tener como mucho 80 caracteres.",
+      "measurementRequired": "Elige cómo se mide.",
+      "instructionsTooLong": "Las instrucciones pueden tener como mucho 2.000 caracteres.",
+      "videoUrlNotHttps": "El enlace tiene que empezar por https:// y no llevar espacios.",
+      "videoUrlTooLong": "El enlace puede tener como mucho 500 caracteres."
+    }
   }
 }

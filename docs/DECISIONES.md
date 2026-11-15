@@ -761,6 +761,20 @@ Cómo añadir una: copia el formato, usa el siguiente número y no borres las an
 - **Por qué:** son las opciones más sencillas que cumplen D-073. Un desplegable nativo abre en el móvil la lista del propio sistema, que es la más cómoda con el dedo.
 - **A tener en cuenta:** un negocio con más de 1.000 ejercicios entre activos y archivados vería incompletos los archivados (apuntado en "Ideas y deuda"). Si el PR 2.4 necesita un desplegable en el formulario, es el momento de subir `FilterSelect` a `core/ui`, con el visto bueno del propietario.
 
+### D-092 · Cómo funciona el formulario de un ejercicio
+- **Fecha:** 2026-11-15
+- **Decisión:** detalles del PR 2.4a que D-072 a D-074 no fijaban.
+  - **El PR 2.4 se parte en dos,** como preveía su bloque: 2.4a (crear y editar) y 2.4b (archivar, recuperar, duplicar y restaurar). Aun así, el 2.4a ronda las 650 líneas de código y 380 de tests: partir el formulario dejaría una pantalla a medias.
+  - **El ejercicio abierto va en la dirección:** `/coach/exercises?exercise=<id>`, `?exercise=new` y `?exercise=new&name=…` (el "Crear «lo escrito»"). En el móvil, "Atrás" cierra el formulario, y recargar no lo pierde.
+  - **En el móvil el formulario sustituye a la lista** dentro de la carcasa (la barra inferior sigue a la vista). **Desde 1.024 px de ancho** es un panel a la derecha de la lista, que se queda fijo al bajar.
+  - **Al guardar, el formulario se cierra** y la lista dice "«Nombre» guardado".
+  - **Un ejercicio del catálogo al que no se le toca el nombre sigue sin nombre propio** (D-089): cambiarle el grupo no lo deja "congelado" en un idioma. Si el coach escribe otro nombre, se guarda el suyo.
+  - **La forma de medir son 4 opciones a la vista,** cada una con su ejemplo, sin ninguna marcada al crear: es la que más pesa después (D-072). Grupo y material son desplegables con "Sin indicar" como primera opción.
+  - **"Ver vídeo"** aparece en el formulario cuando el ejercicio tiene enlace guardado, y abre una pestaña nueva (D-074).
+  - **`FilterSelect` y el campo de varias líneas (`TextArea`) se quedan en el módulo:** `core/ui` es zona protegida y esta tarea no la pedía. Apuntado en "Ideas y deuda".
+- **Por qué:** son las opciones más sencillas que cumplen el bloque del PR. La dirección es la forma más barata de que "Atrás" funcione en el móvil sin una ruta nueva en el manifest.
+- **Revisar si:** los coaches piden crear varios ejercicios seguidos sin que el formulario se cierre.
+
 ---
 
 ## Pendientes de decidir

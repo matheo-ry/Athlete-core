@@ -740,6 +740,16 @@ Cómo añadir una: copia el formato, usa el siguiente número y no borres las an
 - **Por qué:** los valores en inglés siguen la norma de código (AGENTS §4) y la app los traduce con i18n. Con el nombre vacío, cada usuario ve el ejercicio en su idioma sin guardar el idioma en ningún sitio. Los permisos por columna dejan cerrado lo que no hace falta abrir (D-032).
 - **Consecuencias:** el PR 2.2 escribe los 120 ejercicios con estos valores, y el PR 2.4 valida con Zod las mismas listas y límites.
 
+### D-090 · Cómo se reparte el catálogo a los negocios que ya existen
+- **Fecha:** 2026-11-15
+- **Decisión:** detalles del PR 2.2 que D-071 no fijaba.
+  - **La copia va en una función, `copy_exercise_library_to_all_tenants()`.** Pone en cada negocio los ejercicios del catálogo que le falten y nada más: no duplica, y no toca los que el coach haya cambiado o archivado. Nadie tiene permiso para llamarla: solo se usa desde una migración.
+  - **Cuando la plataforma añada ejercicios** (D-071), la migración que los añada al catálogo vuelve a llamar a esa función.
+  - **El grupo muscular de cada ejercicio es el apartado** de `docs/referencia/biblioteca-ejercicios.md` en el que está. Las filas de la migración salen del documento con un script, no escritas a mano.
+  - **El test de las tablas (09) usa un catálogo propio** de una fila; el catálogo real lo comprueba el test 10.
+- **Por qué:** hacía falta poder repetir la copia para probar que no duplica, y la misma pieza sirve para las ampliaciones futuras del catálogo. El trigger del PR 2.1 (un negocio nuevo) no se toca.
+- **A tener en cuenta:** la copia pasa por el tope de 1.000 (D-086). Si algún día un negocio tiene casi 1.000 ejercicios sin archivar y el catálogo crece, la migración fallaría: habrá que decidir entonces si esas copias se saltan el tope.
+
 ---
 
 ## Pendientes de decidir

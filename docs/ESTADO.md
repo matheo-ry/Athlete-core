@@ -7,11 +7,11 @@ Este archivo lo actualiza quien termina una tarea, en el mismo Pull Request, jun
 
 ## En curso
 
-Nada. El lote 1 (PR 2.1, 2.2, 2.3, 2.4a y 2.4b; #24 a #28) está fusionado en `main` desde el 2026-11-15, probado por el propietario.
+El lote 2. El PR 2.5a (rama `db/rutinas`) está abierto. El lote 1 (PR 2.1 a 2.4b; #24 a #28) está fusionado en `main` desde el 2026-11-15.
 
 ## Siguiente
 
-1. **PR 2.5 — Base de datos: rutinas** (`docs/PROMPTS.md` §6), en un chat nuevo. Es el primero del lote 2.
+1. **PR 2.5b — Base de datos: ejercicios del día, series y seed de rutinas** (`docs/PROMPTS.md` §6), apilado sobre el 2.5a. Después, los PR 2.6, 2.7 y 2.8.
 2. El propietario aplica las migraciones 8, 9 y 10 (ejercicios) en staging (GUIA-GIT §9). No bloquea el PR 2.5.
 3. El propietario dio por buenas, por ahora, la lista de `docs/referencia/biblioteca-ejercicios.md` y las rutinas de ejemplo. Se pueden retocar más adelante.
 
@@ -78,7 +78,9 @@ El diseño está en DECISIONES D-069 a D-088, y el detalle de cada PR, en `docs/
 
 **Lote 2 — Plantilla**
 
-- [ ] PR 2.5 — Base de datos: rutinas
+- [ ] PR 2.5 — Base de datos: rutinas (partido en dos, como preveía `docs/PROMPTS.md` §6)
+  - [x] 2.5a — rutinas, bloques y días, con su RLS y los casos 15, 16, 18, 19 y 28
+  - [ ] 2.5b — ejercicios del día y series, la lectura de ejercicios por el cliente, la regla de D-072, el caso 17 y el seed
 - [ ] PR 2.6 — Base de datos: guardar una rutina de una vez
 - [ ] PR 2.7 — Rutinas: lista de plantillas
 - [ ] PR 2.8 — Editor: los días del ciclo
@@ -189,6 +191,7 @@ Cosas que alguien ha visto y que no tocaban en su tarea. No se hacen sin convert
 
 Lo más nuevo, arriba.
 
+- 2026-11-15 — PR 2.5a (base de datos: rutinas, bloques y días): tablas `programs`, `program_blocks` y `program_days`, de solo lectura desde la app (se escribirán con funciones), con RLS: el coach lee las de su negocio y el cliente, solo las suyas; un cliente dado de baja no lee nada. 45 tests pgTAP nuevos (casos 15, 16, 18, 19 y 28). Detalles en D-094. El propietario pidió hacer los PR 2.5 a 2.8 en el mismo chat.
 - 2026-11-15 — Lote 1 de la Fase 2 fusionado en `main` (#24 a #28) con el visto bueno del propietario, que lo probó en la app. Antes se revisó entero desde cero y se arregló un test del panel de ejercicios que fallaba a ratos (esperar al foco).
 - 2026-11-15 — PR 2.4b (archivar, recuperar, duplicar y restaurar): en el panel del ejercicio, "Duplicar" (copia propia con todo, "… (copia)", y abre su formulario), "Restaurar original" (solo en los del catálogo que han cambiado; con confirmación, porque quita las instrucciones y el vídeo) y "Archivar" o "Recuperar" (nunca se borra). La lista carga los datos del catálogo de cada ejercicio para saber si ha cambiado. Detalles en D-093. Sin migraciones. 17 tests unitarios nuevos (436 en total) y 1 de extremo a extremo (48). Cierra el lote 1.
 - 2026-11-15 — PR 2.4a (crear y editar ejercicios): "Nuevo ejercicio", editar cualquier ejercicio pulsando su fila y "Crear «lo escrito»" cuando una búsqueda no encuentra nada. Formulario con nombre y forma de medir obligatorios, unilateral, grupo, material, instrucciones y enlace de vídeo (solo `https://`, D-074), validado con Zod con los límites de la migración 8. En el móvil sustituye a la lista; en escritorio, panel a su lado. Un ejercicio del catálogo editado sin tocar el nombre se sigue viendo en el idioma de cada uno. Detalles en D-092. Sin migraciones. 19 tests unitarios nuevos (419 en total) y 2 de extremo a extremo (47). El PR 2.4 se partió en dos, como preveía su bloque.

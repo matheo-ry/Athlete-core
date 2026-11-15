@@ -49,6 +49,8 @@ const exerciseRowSchema = z
     equipment: z.enum(EQUIPMENT).nullable(),
     measurement: z.enum(MEASUREMENTS),
     is_unilateral: z.boolean(),
+    instructions: z.string().nullable(),
+    video_url: z.string().nullable(),
     archived_at: z.string().nullable(),
     exercise_library: z.object({ name_en: z.string(), name_es: z.string() }).nullable(),
   })
@@ -65,6 +67,8 @@ const exerciseRowSchema = z
     equipment: row.equipment,
     measurement: row.measurement,
     isUnilateral: row.is_unilateral,
+    instructions: row.instructions,
+    videoUrl: row.video_url,
     archivedAt: row.archived_at,
   }));
 
@@ -73,4 +77,9 @@ export type Exercise = z.output<typeof exerciseRowSchema>;
 /** Valida en la frontera lo que devuelve la base de datos (AGENTS.md §4). */
 export function parseExercises(rows: unknown): Exercise[] {
   return z.array(exerciseRowSchema).parse(rows);
+}
+
+/** Lo mismo para una sola fila: la que devuelve la base de datos al guardar. */
+export function parseExercise(row: unknown): Exercise {
+  return exerciseRowSchema.parse(row);
 }

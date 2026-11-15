@@ -21,6 +21,8 @@ function exercise(id: number, en: string, es: string, overrides: Partial<Exercis
     equipment: 'cable',
     measurement: 'weight_reps',
     isUnilateral: false,
+    instructions: null,
+    videoUrl: null,
     archivedAt: null,
     ...overrides,
   };

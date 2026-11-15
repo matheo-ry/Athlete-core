@@ -34,7 +34,10 @@
     "noResults": {
       "title": "No exercise matches",
       "description": "Try another name or remove a filter."
-    }
+    },
+    "newExercise": "New exercise",
+    "createFromSearch": "Create “{{name}}”",
+    "saved": "“{{name}}” saved."
   },
   "muscleGroups": {
     "chest": "Chest",
@@ -61,5 +64,41 @@
     "band": "Band",
     "kettlebell": "Kettlebell",
     "other": "Other"
+  },
+  "measurements": {
+    "weight_reps": "Weight and reps",
+    "bodyweight_reps": "Bodyweight and reps",
+    "time": "Time",
+    "distance": "Distance"
+  },
+  "form": {
+    "newTitle": "New exercise",
+    "editTitle": "Edit exercise",
+    "name": "Name",
+    "measurement": "How it is measured",
+    "measurementExamples": {
+      "weight_reps": "Like a barbell row.",
+      "bodyweight_reps": "With optional extra weight, like pull-ups.",
+      "time": "Like a plank.",
+      "distance": "Like a sled push."
+    },
+    "unilateral": "Unilateral: one side at a time, same prescription for both sides",
+    "notSet": "Not set",
+    "instructions": "Instructions (optional)",
+    "videoUrl": "Video link (optional)",
+    "videoUrlHint": "It must start with https://. It opens outside the app.",
+    "watchVideo": "Watch video",
+    "save": "Save",
+    "saving": "Saving…",
+    "cancel": "Cancel",
+    "limitReached": "You already have 1,000 active exercises, the maximum. Archive one to make room.",
+    "errors": {
+      "nameRequired": "Write the name of the exercise.",
+      "nameTooLong": "The name can have at most 80 characters.",
+      "measurementRequired": "Choose how it is measured.",
+      "instructionsTooLong": "The instructions can have at most 2,000 characters.",
+      "videoUrlNotHttps": "The link must start with https:// and have no spaces.",
+      "videoUrlTooLong": "The link can have at most 500 characters."
+    }
   }
 }

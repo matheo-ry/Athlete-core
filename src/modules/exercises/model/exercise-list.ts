@@ -46,6 +46,15 @@ export function exerciseName(exercise: Exercise, language: Language): string {
   return exercise.name ?? exercise.libraryName?.[language] ?? '';
 }
 
+/** El ejercicio con su nombre a la vista y si es propio. */
+export function toListItem(exercise: Exercise, language: Language): ExerciseListItem {
+  return {
+    ...exercise,
+    displayName: exerciseName(exercise, language),
+    isOwn: exercise.libraryKey === null,
+  };
+}
+
 function tabOf(exercise: Exercise): ExerciseTab {
   return exercise.archivedAt === null ? 'active' : 'archived';
 }
@@ -74,11 +83,7 @@ export function visibleExercises(
   const collator = new Intl.Collator(language, { sensitivity: 'base' });
   return exercises
     .filter((exercise) => tabOf(exercise) === tab)
-    .map((exercise) => ({
-      ...exercise,
-      displayName: exerciseName(exercise, language),
-      isOwn: exercise.libraryKey === null,
-    }))
+    .map((exercise) => toListItem(exercise, language))
     .filter((item) => search === '' || fold(item.displayName).includes(search))
     .filter((item) => filters.muscleGroup === 'all' || item.muscleGroup === filters.muscleGroup)
     .filter((item) => filters.equipment === 'all' || item.equipment === filters.equipment)

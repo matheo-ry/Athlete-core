@@ -1,0 +1,59 @@
+{
+  "nav": {
+    "coach": "Programs"
+  },
+  "list": {
+    "title": "Programs",
+    "description": "Your templates. Each client gets their own copy when you assign one.",
+    "newTemplate": "New template",
+    "tabsLabel": "Show",
+    "tabs": {
+      "active": "Active",
+      "archived": "Archived"
+    },
+    "search": "Search by name",
+    "weekly": "Weekly",
+    "cycle": "{{count}}-day cycle",
+    "blocks_one": "{{count}} block",
+    "blocks_other": "{{count}} blocks",
+    "trainingDays_one": "{{count}} training day",
+    "trainingDays_other": "{{count}} training days",
+    "edited": "Edited {{date}}",
+    "rename": "Rename",
+    "renameLabel": "New name for “{{name}}”",
+    "archive": "Archive",
+    "unarchive": "Recover",
+    "empty": {
+      "title": "You don't have any templates yet",
+      "description": "Create the first one."
+    },
+    "emptyArchived": {
+      "title": "No archived templates",
+      "description": "Templates you archive will appear here."
+    },
+    "noResults": {
+      "title": "No template matches",
+      "description": "Try another name."
+    },
+    "notices": {
+      "created": "“{{name}}” created.",
+      "renamed": "Renamed to “{{name}}”.",
+      "archived": "“{{name}}” archived. You can find it in Archived.",
+      "unarchived": "“{{name}}” is active again."
+    }
+  },
+  "form": {
+    "newTitle": "New template",
+    "name": "Name",
+    "cycleDays": "Days in the cycle",
+    "cycleDaysHint": "7 days is a weekly program, Monday to Sunday. You can change it later.",
+    "create": "Create",
+    "save": "Save",
+    "cancel": "Cancel",
+    "nameRequired": "Write the name of the template.",
+    "nameTooLong": "The name can be up to 80 characters.",
+    "cycleDaysInvalid": "Write a number from 1 to 28.",
+    "limitReached": "You already have 300 active templates. Archive one to add another.",
+    "conflict": "This program was changed from another device. Reload the page and try again."
+  }
+}

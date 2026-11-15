@@ -828,6 +828,18 @@ Cómo añadir una: copia el formato, usa el siguiente número y no borres las an
   - **No se deja constancia en `audit_log`:** guardar es una edición normal, como cambiar un ejercicio. Sí la dejarán asignar, terminar y reiniciar (D-081, PR 2.12).
 - **Por qué:** con un documento entero el editor puede trabajar sin conexión con la base de datos hasta "Guardar cambios", y la base de datos sigue siendo la única que decide qué vale.
 
+### D-097 · Cómo funciona la lista de plantillas
+- **Fecha:** 2026-11-15
+- **Decisión:** detalles del PR 2.7 que D-085 no fijaba.
+  - **"Activas" y "Archivadas" son dos pestañas con su número**, como en "Ejercicios" (D-091). La pestaña "Asignadas" de D-085 llegará en el PR 2.13 por encima de estas.
+  - **Cada fila:** "Semanal" o "Ciclo de N días", "N días de entreno" y "Editada el…". **Con varios bloques**, solo "N bloques": cada bloque puede tener su ciclo y sus días de entreno.
+  - **"Nueva plantilla" y "Renombrar" se hacen en la propia lista,** sin cambiar de pantalla: un formulario encima de la lista y un campo en la fila.
+  - **Renombrar carga la rutina entera y la vuelve a guardar** con `save_program` (D-096): es la única forma de cambiar una rutina. Si otra persona la cambió entre medias, dice "Esta rutina se ha cambiado desde otro dispositivo".
+  - **Una plantilla archivada no se renombra:** primero se recupera.
+  - **El documento de una rutina** (el esquema Zod del editor) vive en `model/program-document.ts`, con los mismos topes que la base de datos.
+  - **Icono del menú:** `clipboard`.
+- **Por qué:** son las opciones más sencillas que cumplen el bloque del PR y se parecen a lo que el coach ya conoce de "Ejercicios".
+
 ---
 
 ## Pendientes de decidir

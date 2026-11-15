@@ -1,0 +1,59 @@
+{
+  "nav": {
+    "coach": "Rutinas"
+  },
+  "list": {
+    "title": "Rutinas",
+    "description": "Tus plantillas. Cada cliente recibe su propia copia al asignársela.",
+    "newTemplate": "Nueva plantilla",
+    "tabsLabel": "Mostrar",
+    "tabs": {
+      "active": "Activas",
+      "archived": "Archivadas"
+    },
+    "search": "Buscar por nombre",
+    "weekly": "Semanal",
+    "cycle": "Ciclo de {{count}} días",
+    "blocks_one": "{{count}} bloque",
+    "blocks_other": "{{count}} bloques",
+    "trainingDays_one": "{{count}} día de entreno",
+    "trainingDays_other": "{{count}} días de entreno",
+    "edited": "Editada el {{date}}",
+    "rename": "Renombrar",
+    "renameLabel": "Nuevo nombre para «{{name}}»",
+    "archive": "Archivar",
+    "unarchive": "Recuperar",
+    "empty": {
+      "title": "Aún no tienes plantillas",
+      "description": "Crea la primera."
+    },
+    "emptyArchived": {
+      "title": "No hay plantillas archivadas",
+      "description": "Aquí aparecerán las plantillas que archives."
+    },
+    "noResults": {
+      "title": "Ninguna plantilla coincide",
+      "description": "Prueba con otro nombre."
+    },
+    "notices": {
+      "created": "«{{name}}» creada.",
+      "renamed": "Ahora se llama «{{name}}».",
+      "archived": "«{{name}}» archivada. La tienes en Archivadas.",
+      "unarchived": "«{{name}}» vuelve a estar activa."
+    }
+  },
+  "form": {
+    "newTitle": "Nueva plantilla",
+    "name": "Nombre",
+    "cycleDays": "Días del ciclo",
+    "cycleDaysHint": "Con 7 días es una rutina semanal, de lunes a domingo. Puedes cambiarlo después.",
+    "create": "Crear",
+    "save": "Guardar",
+    "cancel": "Cancelar",
+    "nameRequired": "Escribe el nombre de la plantilla.",
+    "nameTooLong": "El nombre puede tener hasta 80 caracteres.",
+    "cycleDaysInvalid": "Escribe un número del 1 al 28.",
+    "limitReached": "Ya tienes 300 plantillas activas. Archiva una para añadir otra.",
+    "conflict": "Esta rutina se ha cambiado desde otro dispositivo. Recarga la página y vuelve a intentarlo."
+  }
+}

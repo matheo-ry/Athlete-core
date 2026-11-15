@@ -722,6 +722,24 @@ Cómo añadir una: copia el formato, usa el siguiente número y no borres las an
   - **Sin fase todavía** (apuntado en `docs/ESTADO.md`, "Ideas y deuda"): chat; fotos del cliente; importar desde Excel o pegar una lista de texto; porcentaje del RM y tempo; subir vídeos; borrador guardado en la nube; notas privadas del coach; avisos por email o notificación; arrastrar para reordenar; imprimir o exportar a PDF; compartir plantillas entre coaches; el segundo coach (`staff`); límites por plan.
 - **Por qué:** el propietario pidió "cada cosa en su fase". El chat está fuera de la primera versión (ARQUITECTURA §14). Las fotos del cuerpo pueden ser datos de salud y dependen de P-12. Un importador de Excel que falle la mitad de las veces da peor imagen que no tenerlo: cada coach tiene un Excel distinto.
 
+### D-089 · Cómo se guardan los ejercicios en la base de datos
+- **Fecha:** 2026-11-15
+- **Decisión:** detalles de las tablas del PR 2.1 que D-071 a D-073 no fijaban.
+  - **Tablas:** `exercise_library` (el catálogo) y `exercises` (los de cada negocio). El catálogo se identifica por su clave en inglés (`key`), como `plans` y `features`; `exercises.library_key` apunta a ella.
+  - **Valores de las listas cerradas, en inglés:**
+    - Forma de medir (`measurement`): `weight_reps`, `bodyweight_reps`, `time`, `distance`.
+    - Grupo (`muscle_group`): `chest`, `back`, `shoulders`, `biceps`, `triceps`, `forearms`, `abs`, `quads`, `hamstrings`, `glutes`, `adductors`, `calves`, `full_body`, `cardio`.
+    - Material (`equipment`): `barbell`, `dumbbells`, `machine`, `cable`, `bodyweight`, `band`, `kettlebell`, `other`.
+  - **El nombre vacío (`null`) significa "vale el del catálogo".** Un ejercicio sin nombre tiene que venir del catálogo. "Restaurar original" vuelve a dejarlo vacío.
+  - **Las copias del catálogo no tienen autor** (`created_by` vacío). "Propio" es el que no viene del catálogo (`library_key` vacío).
+  - **Una sola copia de cada ejercicio del catálogo por negocio.** El coach no puede crear ejercicios "del catálogo": solo llegan con la copia. "Duplicar" crea uno propio.
+  - **Permisos columna a columna:** el coach no elige el id, las fechas ni el origen, y no mueve un ejercicio a otro negocio.
+  - **El enlace de vídeo:** empieza por `https://`, sin espacios y con 500 caracteres como máximo.
+  - **El tope de 1.000** (D-086) se comprueba al crear y al recuperar un archivado, con el error `exercise_limit_reached`.
+  - **El flag `exercises` se añade en el PR 2.3,** con el módulo: un test exige que el catálogo de flags tenga uno por módulo del producto, y nada más.
+- **Por qué:** los valores en inglés siguen la norma de código (AGENTS §4) y la app los traduce con i18n. Con el nombre vacío, cada usuario ve el ejercicio en su idioma sin guardar el idioma en ningún sitio. Los permisos por columna dejan cerrado lo que no hace falta abrir (D-032).
+- **Consecuencias:** el PR 2.2 escribe los 120 ejercicios con estos valores, y el PR 2.4 valida con Zod las mismas listas y límites.
+
 ---
 
 ## Pendientes de decidir

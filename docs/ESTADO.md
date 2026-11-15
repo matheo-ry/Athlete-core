@@ -1,18 +1,19 @@
 # ESTADO DEL PROYECTO
 
 **Última actualización:** 2026-11-15
-**Fase actual:** 2 — Ejercicios y rutinas: diseñada el 2026-11-15, sin empezar a programar (la Fase 1 terminó y se fusionó el 2026-11-14)
+**Fase actual:** 2 — Ejercicios y rutinas: lote 1 en marcha (la Fase 1 terminó y se fusionó el 2026-11-14)
 
 Este archivo lo actualiza quien termina una tarea, en el mismo Pull Request, junto con `CONTEXTO.md` (que resume este en una página).
 
 ## En curso
 
-Nada. El diseño de la Fase 2 está hecho (DECISIONES D-069 a D-088) y su plan, en `docs/PROMPTS.md` §6.
+Nada. El PR 2.1 está abierto (rama `db/ejercicios`), a la espera de revisión.
 
 ## Siguiente
 
-1. **PR 2.1 — Base de datos: ejercicios** (`docs/PROMPTS.md` §6), en un chat nuevo. Es el primero del lote 1.
-2. El propietario aprobó el 2026-11-15 el cambio de `docs/ARQUITECTURA.md` §8 (la excepción del catálogo de ejercicios, D-071) y dio por buenas, por ahora, la lista de `docs/referencia/biblioteca-ejercicios.md` y las rutinas de ejemplo. Se pueden retocar más adelante.
+1. **PR 2.2 — Los 120 ejercicios de la plataforma** (`docs/PROMPTS.md` §6), en un chat nuevo. Los valores de grupo, material y forma de medir están en D-089.
+2. **El flag `exercises` queda para el PR 2.3:** el test `04_rls_enabled` exige un flag por módulo del producto, y el módulo se crea en ese PR.
+3. El propietario dio por buenas, por ahora, la lista de `docs/referencia/biblioteca-ejercicios.md` y las rutinas de ejemplo. Se pueden retocar más adelante.
 
 ## Fases
 
@@ -68,7 +69,7 @@ El diseño está en DECISIONES D-069 a D-088, y el detalle de cada PR, en `docs/
 
 **Lote 1 — Ejercicios**
 
-- [ ] PR 2.1 — Base de datos: ejercicios
+- [x] PR 2.1 — Base de datos: ejercicios (sin el flag `exercises`, que llega con el módulo en el PR 2.3)
 - [ ] PR 2.2 — Los 120 ejercicios de la plataforma
 - [ ] PR 2.3 — Ejercicios: lista, buscador y filtros
 - [ ] PR 2.4 — Crear, editar, archivar y recuperar ejercicios
@@ -163,7 +164,8 @@ Cosas que alguien ha visto y que no tocaban en su tarea. No se hacen sin convert
 - Test de fronteras: añadir el caso permitido de la tabla de dependencias entre módulos cuando existan dos módulos reales (`programs` → `exercises`).
 - Zod ocupa buena parte del peso de la app. Si el tamaño llega a importar, valorar su variante ligera.
 - Un test pgTAP que pruebe cada política de UPDATE por separado (`tenants_update` y `profiles_update`). Hoy, si se afloja una, la política de lectura sigue bloqueando (Postgres la aplica en los UPDATE con WHERE) y los tests no lo notan. No es un agujero, pero la segunda capa no está vigilada. (`members_update` ya no existe: desde el PR 1.8, dar de baja y reactivar van por función.)
-- Los casos 15 a 19 y 28 de `docs/referencia/pruebas-aislamiento.sql` se escriben en los PR 2.1, 2.5, 2.6 y 2.12: cada bloque de `docs/PROMPTS.md` §6 dice cuáles.
+- Los casos 15 a 19 y 28 de `docs/referencia/pruebas-aislamiento.sql` se escriben en los PR 2.1 (hecho: 15, 18 a medias y 28, para `exercises`), 2.5, 2.6 y 2.12: cada bloque de `docs/PROMPTS.md` §6 dice cuáles.
+- Las listas cerradas de ejercicios (grupo, material y forma de medir) están escritas dos veces en la migración 8, una por tabla. Si cambian, hay que cambiar las dos (y el esquema Zod del PR 2.4).
 - Chat entre coach y cliente, y fotos del cliente guardadas para que el coach las vea (lo pidió el propietario al diseñar la Fase 2). El chat está fuera de la primera versión (ARQUITECTURA §14) y las fotos dependen de P-12.
 - Importar rutinas desde Excel. Antes, algo más sencillo: pegar una lista de texto ("Remo Gironda — 3 series") y que la app la convierta en ejercicios (D-088).
 - Reordenar ejercicios, días y bloques arrastrando, además de con "Subir" y "Bajar". El propietario quiere valorarlo; haría falta una librería (D-080).
@@ -177,6 +179,8 @@ Cosas que alguien ha visto y que no tocaban en su tarea. No se hacen sin convert
 ## Registro de cambios
 
 Lo más nuevo, arriba.
+
+- 2026-11-15 — PR 2.1 (base de datos: ejercicios): migración 8 con `exercise_library` (el catálogo de la plataforma, solo lectura, vacío hasta el PR 2.2) y `exercises` (los de cada negocio). Listas cerradas de D-072; el coach lee, crea y edita, nadie borra (D-073) y el cliente todavía no lee nada; cada negocio nuevo recibe la copia del catálogo con un trigger propio; tope de 1.000 sin archivar (D-086). 41 tests pgTAP nuevos (191 en total), con los casos 15, 18 (crear) y 28. Los detalles, en D-089. El flag `exercises` se deja para el PR 2.3.
 
 - 2026-11-15 — Diseño de la Fase 2: decisiones D-069 a D-088 (catálogo de 120 ejercicios con una copia para cada negocio; rutinas por bloques con ciclos de 1 a 28 días; series una a una; plantillas que se copian a cada cliente; "Guardar cambios" de una vez; una rutina vigente por cliente; el cliente ve su rutina en lectura), la lista de los 18 PR en 5 lotes en `docs/PROMPTS.md` §6, la biblioteca y las rutinas de ejemplo en `docs/referencia/`, P-04 cerrado y P-02 provisional. Solo documentación: sin código ni migraciones. Queda pendiente que el propietario apruebe el cambio de ARQUITECTURA §8.
 - 2026-11-14 — Fase 1 fusionada en `main`: los 18 PR (del 4 al 21), en orden y con "Squash and merge", por un agente con el visto bueno del propietario (D-068). En cada uno se comprobó que `main` quedaba con el contenido exacto de la rama. Dos tropiezos, ninguno del código: un test de una rama intermedia (`JoinAfterSignup`) que a veces falla por lentitud y pasó al repetirlo, y un fallo de Docker en el CI de GitHub que pasó al relanzarlo.

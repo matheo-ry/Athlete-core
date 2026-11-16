@@ -13,7 +13,7 @@ import { DayList } from './DayList';
 import { DayPanel } from './DayPanel';
 import { LeaveWarning } from './LeaveWarning';
 import { RecoverDraft } from './RecoverDraft';
-import { useDayLabel } from './useDayText';
+import { useDayLabel } from '../shared/useDayText';
 import { useUnsavedChanges } from './useUnsavedChanges';
 
 const FAILURES = {

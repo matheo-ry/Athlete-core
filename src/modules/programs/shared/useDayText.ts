@@ -6,11 +6,12 @@ import { dayCounts, weekdayName } from '../model/cycle-editor';
 import type { ProgramBlock, ProgramDay } from '../model/program-document';
 
 /** "Lunes" en un ciclo semanal; "Día 3" en los demás (D-075). */
-export function useDayLabel(block: ProgramBlock) {
+export function useDayLabel(block: ProgramBlock | undefined) {
   const { t } = useTranslation();
   const language = useLanguage();
   return (dayNumber: number) =>
-    weekdayName(block, dayNumber, language) ?? t('programs.editor.day', { number: dayNumber });
+    (block === undefined ? null : weekdayName(block, dayNumber, language)) ??
+    t('programs.editor.day', { number: dayNumber });
 }
 
 /** Lo que se ve de un día sin abrirlo: "Descanso", o su nombre, lugar, ejercicios y series. */

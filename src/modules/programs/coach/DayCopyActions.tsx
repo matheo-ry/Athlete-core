@@ -6,7 +6,7 @@ import { Button } from '@/core/ui';
 import type { CycleEditorAction } from '../model/cycle-editor';
 import type { ProgramBlock, ProgramDay } from '../model/program-document';
 import { SelectField } from './SelectField';
-import { useDayLabel } from './useDayText';
+import { useDayLabel } from '../shared/useDayText';
 import { useProgramClipboard } from './useProgramClipboard';
 
 interface DayCopyActionsProps {

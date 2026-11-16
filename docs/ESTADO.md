@@ -7,13 +7,13 @@ Este archivo lo actualiza quien termina una tarea, en el mismo Pull Request, jun
 
 ## En curso
 
-Nada. **El lote 3 está fusionado en `main`** (PR #36 a #42, 2026-11-16), con el visto bueno del propietario tras probarlo. **El lote 4 está empezado:** el PR 2.12 (#43, base de datos: asignar) y, apilados encima, los PR 2.13a (#44, asignar una plantilla) y 2.13b (la pestaña "Asignadas") están abiertos. Los lotes 1 y 2 se fusionaron el 2026-11-15.
+Nada. **El lote 4 está completo** (2026-11-16): los PR 2.12 (#43), 2.13a (#44), 2.13b (#45), 2.14a (#46), 2.14b (#47) y 2.15 están abiertos, apilados en ese orden, a la espera de que el propietario los pruebe y dé el visto bueno para fusionarlos. Los lotes 1, 2 y 3 están fusionados en `main`.
 
 ## Siguiente
 
-1. PR 2.15 — El cliente ve su rutina (`docs/PROMPTS.md` §6). Cierra el lote 4.
-2. El propietario prueba el lote 4 entero y da el visto bueno para fusionarlo (PR #43 en adelante, en orden).
-3. El propietario aplica en staging las migraciones 8 a 16 (GUIA-GIT §9). No bloquea seguir.
+1. **El propietario prueba el lote 4** ("Al terminar el lote", `docs/PROMPTS.md` §6) y da el visto bueno para fusionar los PR #43 en adelante, en orden (D-064 y D-068). Que revise los cambios en `src/core/modules` del PR 2.14a (D-109).
+2. Después, el lote 5: PR 2.16 a 2.18 (`docs/PROMPTS.md` §6).
+3. El propietario aplica en staging las migraciones 8 a 16 (GUIA-GIT §9). Mejor después de fusionar el lote 4, de una vez.
 4. El propietario dio por buenas, por ahora, la lista de `docs/referencia/biblioteca-ejercicios.md` y las rutinas de ejemplo. Se pueden retocar más adelante.
 
 ## Fases
@@ -111,7 +111,7 @@ El diseño está en DECISIONES D-069 a D-088, y el detalle de cada PR, en `docs/
 - [x] PR 2.14 — Ficha del cliente: pestaña "Rutina"
   - [x] 2.14a — el mecanismo de pestañas y la pestaña en lectura, con "Editar"
   - [x] 2.14b — las acciones
-- [ ] PR 2.15 — El cliente ve su rutina
+- [x] PR 2.15 — El cliente ve su rutina
 
 **Lote 5 — Bloques y remates**
 
@@ -206,6 +206,7 @@ Cosas que alguien ha visto y que no tocaban en su tarea. No se hacen sin convert
 
 Lo más nuevo, arriba.
 
+- 2026-11-16 — PR 2.15 (el cliente ve su rutina): "Entreno" en la barra del cliente (`/client/program`). Con calendario, "Hoy toca" (o "Hoy: descanso") y los días del bloque con hoy marcado; en modo lista, sus días de entreno en orden. Cada día con sus ejercicios, su resumen y la nota del coach; cada ejercicio con sus series una a una, el descanso, la nota, las instrucciones y "Ver vídeo" (fuera de la app). Estados: sin rutina y "Tu rutina empieza el…". Todo en lectura. El módulo exercises da también las instrucciones y el vídeo (`ExerciseOption`); los textos de días, ejercicios y progreso pasan a `programs/shared/` (D-111). Cierra el lote 4.
 - 2026-11-16 — PR 2.14b (las acciones de la pestaña "Rutina"): "Asignar una plantilla" (la ventana del PR 2.13 con el cliente ya elegido y un desplegable de plantillas), "Crear desde cero" (abre el editor), "Reiniciar desde una fecha" (fecha y bloque, por defecto el que iba), "Guardar como plantilla", "Terminar" y "Cancelar la próxima" (con confirmación). Con el cliente dado de baja no sale ninguna (D-110).
 - 2026-11-16 — PR 2.14a (la pestaña "Rutina", en lectura): la ficha del cliente pinta las pestañas que declaran los módulos activos en su manifest, sin importarlos (`src/core/modules`: `ClientProfileTabsProvider`, `useClientProfileTabs`, `ClientProfileTabContent`; la carcasa del coach las reparte). La pestaña "Rutina" de programs: la rutina actual con por dónde va, el modo, la fecha de inicio y los días del bloque (hoy marcado), la próxima y las anteriores; "Editar" abre el editor, que dice "Rutina de Ana" y vuelve a su ficha. Con el cliente dado de baja, sin "Editar" y con el aviso (D-109).
 - 2026-11-16 — PR 2.13b (la pestaña "Asignadas"): tercera pestaña en "Rutinas", junto a "Activas" y "Archivadas". Cada cliente activo con su rutina vigente (la semana o vuelta en que va y cuándo termina, el bloque si hay varios, "Modo lista" y el aviso si ya terminó y se repite), su próxima con la fecha, o "Sin rutina". Buscador por nombre y los 4 estados (D-108).

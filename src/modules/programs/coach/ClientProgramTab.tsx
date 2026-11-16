@@ -12,7 +12,7 @@ import type { ClientProgram } from '../model/assignments';
 import { localToday } from '../model/calendar';
 import { ClientProgramActions } from './ClientProgramActions';
 import { CurrentProgramDays } from './CurrentProgramDays';
-import { shortDate, useProgressText } from './useProgressText';
+import { shortDate, useProgressText } from '../shared/useProgressText';
 
 /**
  * La pestaña "Rutina" de la ficha de un cliente (PR 2.14, D-085): la vigente

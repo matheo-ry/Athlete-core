@@ -65,6 +65,9 @@ export interface ExerciseOption {
   measurement: Exercise['measurement'];
   isUnilateral: boolean;
   isArchived: boolean;
+  /** Para lo que ve el cliente de cada ejercicio (PR 2.15). */
+  instructions: string | null;
+  videoUrl: string | null;
 }
 
 export function toOption(exercise: Exercise, language: Language): ExerciseOption {
@@ -74,6 +77,8 @@ export function toOption(exercise: Exercise, language: Language): ExerciseOption
     measurement: exercise.measurement,
     isUnilateral: exercise.isUnilateral,
     isArchived: exercise.archivedAt !== null,
+    instructions: exercise.instructions,
+    videoUrl: exercise.videoUrl,
   };
 }
 

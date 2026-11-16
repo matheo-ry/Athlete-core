@@ -1,17 +1,17 @@
 # ESTADO DEL PROYECTO
 
 **Última actualización:** 2026-11-16
-**Fase actual:** 2 — Ejercicios y rutinas: terminada y los 5 lotes fusionados en `main` (la Fase 1 terminó y se fusionó el 2026-11-14)
+**Fase actual:** 3 — Entreno y progreso: **diseñada** (D-115 a D-136), sin empezar a construir. La Fase 2 terminó y se fusionó entera en `main`.
 
 Este archivo lo actualiza quien termina una tarea, en el mismo Pull Request, junto con `CONTEXTO.md` (que resume este en una página).
 
 ## En curso
 
-Nada. **La Fase 2 está construida y fusionada entera en `main`** (lotes 1 a 5, PR #24 a #28, #30 a #35, #36 a #42, #43 a #48, #50 a #52). Los 399 tests pgTAP pasan al 100% tanto en local como en remoto en staging (`Result: PASS`).
+Nada. **La Fase 3 está diseñada**: decisiones D-115 a D-136 y el plan de 18 PR en 5 lotes en `docs/PROMPTS.md` §7.
 
 ## Siguiente
 
-1. **Diseñar la Fase 3** (entreno y progreso del cliente) con el propietario, como se hizo con la Fase 2. Antes hay que decidir P-12 (datos de salud y menores). La referencia es su app de apuntes (D-087).
+1. **PR 3.1 — App de Android y tests de flujos completos en el CI** (`docs/PROMPTS.md` §7). Para probarlo, el propietario tiene que instalar Android Studio una vez (la guía llega en el mismo PR).
 2. El propietario dio por buenas, por ahora, la lista de `docs/referencia/biblioteca-ejercicios.md` y las rutinas de ejemplo. Se pueden retocar más adelante.
 
 ## Fases
@@ -119,18 +119,48 @@ El diseño está en DECISIONES D-069 a D-088, y el detalle de cada PR, en `docs/
 
 ### Fase 3 — Entreno y progreso (cliente)
 
-La referencia es la app de apuntes del propietario (D-087). Antes de empezar se decide P-12 (datos de salud y menores).
+El diseño está en DECISIONES D-115 a D-136, y el detalle de cada PR, en `docs/PROMPTS.md` §7. Son 18 PR en 5 lotes: un lote no empieza hasta que el anterior está fusionado con el visto bueno del propietario (D-115). La referencia es la app de apuntes del propietario (D-087). **Entrenar es solo en la app del móvil** (D-116).
 
-- [ ] Módulo `workouts`: el cliente inicia el entreno de hoy y registra series, cargas y RIR o RPE, con cronómetro de descanso
-- [ ] Aplicar la regla del día saltado y dejar apuntado qué día hizo el cliente (D-082)
-- [ ] El coach revisa los entrenos de cada cliente
-- [ ] Módulo `progress`: gráficas, RM estimado y récords
-- [ ] Tests de flujos completos en el CI
+- [x] Decidir cómo funciona toda la fase (D-115 a D-136), con P-06 cerrado y P-12 cerrado en parte
+
+**Lote 1 — Cimientos**
+
+- [ ] PR 3.1 — App de Android y tests de flujos completos en el CI
+- [ ] PR 3.2 — Base de datos: entrenos
+- [ ] PR 3.3 — Base de datos: datos de salud, set-up y ajustes del cliente
+- [ ] PR 3.4 — Guardado en el móvil
+
+**Lote 2 — Apuntar**
+
+- [ ] PR 3.5 — Apuntar un entreno
+- [ ] PR 3.6 — Subida, cierre y resumen
+- [ ] PR 3.7 — Cronómetro de descanso
+
+**Lote 3 — Completar el entreno**
+
+- [ ] PR 3.8 — Unilaterales, grupos, cambiar y saltar
+- [ ] PR 3.9 — Consentimiento, peso corporal y medidas
+- [ ] PR 3.10 — Notas del día, set-up y "¿Seguro?"
+- [ ] PR 3.11 — Historial del cliente y corregir
+
+**Lote 4 — El coach**
+
+- [ ] PR 3.12 — El día saltado
+- [ ] PR 3.13 — Pestaña "Entrenos" en la ficha
+- [ ] PR 3.14 — Actividad y avisos del coach
+
+**Lote 5 — Progreso**
+
+- [ ] PR 3.15 — Módulo `progress`: historial, RM y récords
+- [ ] PR 3.16 — Gráficas
+- [ ] PR 3.17 — Minilogros, racha, niveles y logros
+- [ ] PR 3.18 — Descargar en Excel
 
 ### Fase 4 — Pilotos
 
-- [ ] Proyectos nativos de Android e iOS
+- [ ] Proyecto nativo de iOS (el de Android llega en la Fase 3, D-117) y publicar en Google Play
 - [ ] Compilación de iOS en la nube y TestFlight
+- [ ] Textos legales con el consentimiento de datos de salud y la edad de los menores por país, revisados por un abogado (D-126)
 - [ ] Publicación de la web
 - [ ] Avisos de errores y de caídas
 - [ ] Borrar la cuenta desde dentro de la app (lo piden las tiendas) y que un cliente pueda darse de baja de un coach
@@ -145,6 +175,17 @@ La referencia es la app de apuntes del propietario (D-087). Antes de empezar se 
 
 - [ ] Suscripción del coach y límites por plan
 - [ ] Cobros del coach a sus clientes
+
+### Fase 6 — Crecimiento
+
+Ideas aprobadas como ideas, no como diseño: se diseñan cuando llegue la fase (D-134 y `docs/referencia/ideas-de-negocio.md`).
+
+- [ ] Modo Alumni: el exalumno sigue usando la app por libre, pagando, y el coach se lleva una parte. Necesita pagos y cambia D-055. Comprobar antes las normas de pago de Apple y Google para este caso
+- [ ] Retos gratuitos de unos días, que no gastan plazas del plan
+- [ ] Pase para un amigo
+- [ ] Coaches embajadores
+- [ ] Tarjetas de récords para Instagram
+- [ ] Directorio público de coaches: solo cuando haya decenas de coaches (D-053)
 
 ## Bloqueos y dudas abiertas
 
@@ -185,7 +226,9 @@ Cosas que alguien ha visto y que no tocaban en su tarea. No se hacen sin convert
 - Los casos 15 a 19 y 28 de `docs/referencia/pruebas-aislamiento.sql` se escriben en los PR 2.1 (hecho: 15, 18 a medias y 28, para `exercises`), 2.5, 2.6 y 2.12: cada bloque de `docs/PROMPTS.md` §6 dice cuáles.
 - Las listas cerradas de ejercicios (grupo, material y forma de medir) están escritas dos veces en la migración 8, una por tabla. Si cambian, hay que cambiar las dos (y el esquema Zod del PR 2.4).
 - La copia del catálogo pasa por el tope de 1.000 ejercicios: si el catálogo crece y algún negocio está casi en el tope, la migración fallaría. Decidir entonces si las copias de la plataforma se lo saltan (D-090).
-- Chat entre coach y cliente, y fotos del cliente guardadas para que el coach las vea (lo pidió el propietario al diseñar la Fase 2). El chat está fuera de la primera versión (ARQUITECTURA §14) y las fotos dependen de P-12.
+- Chat entre coach y cliente, y fotos del cliente guardadas para que el coach las vea (lo pidió el propietario al diseñar la Fase 2). El chat está fuera de la primera versión (ARQUITECTURA §14); las fotos usarán el consentimiento de D-126. Con el chat, "Comentar" un entreno abre el chat y el cliente ve que su coach le escribe "sobre tu entreno del lunes" (D-128).
+- App de escritorio para el coach, además de la web y del móvil (D-116).
+- Que el aviso del descanso baje la música un momento, si el PR 3.7 ve que el sistema no lo hace solo (D-123).
 - Importar rutinas desde Excel. Antes, algo más sencillo: pegar una lista de texto ("Remo Gironda — 3 series") y que la app la convierta en ejercicios (D-088).
 - Reordenar ejercicios, días y bloques arrastrando, además de con "Subir" y "Bajar". El propietario quiere valorarlo; haría falta una librería (D-080).
 - Porcentaje del RM y tempo en la prescripción (D-076).
@@ -205,6 +248,7 @@ Cosas que alguien ha visto y que no tocaban en su tarea. No se hacen sin convert
 
 Lo más nuevo, arriba.
 
+- 2026-11-16 — Diseño de la Fase 3: decisiones D-115 a D-136. Entrenar solo en la app del móvil (la web sirve para todo lo demás); la app de Android se adelanta al PR 3.1; guardado en el móvil sin conexión (cierra P-06); apuntar sin botón de "hecha", con − y +, teclado, gris de la vez anterior y "Igual"; cronómetro con alarma con la pantalla apagada; tres reglas del día saltado; consentimiento de datos de salud, peso y medidas (P-12 cerrado en parte); lo que ve el coach; progreso, gráficas, logros y Excel; los 100 primeros coaches; ideas de negocio en `docs/referencia/ideas-de-negocio.md` y la Fase 6. El plan de 18 PR en 5 lotes, en `docs/PROMPTS.md` §7. AGENTS.md §1, ARQUITECTURA §1, §12 y §14 y README cambiados con la aprobación del propietario. Solo documentación.
 - 2026-11-16 — Lote 4 de la Fase 2 fusionado en `main` (#43 a #48) con el visto bueno del propietario, probado en la app. Abarca: base de datos para asignar (PR 2.12), asignar una plantilla a clientes (PR 2.13a), pestaña "Asignadas" (PR 2.13b), pestaña "Rutina" en la ficha del cliente (PR 2.14a), acciones de la rutina (PR 2.14b) y la vista de la rutina para el cliente en "Entreno" (PR 2.15).
 - 2026-11-17 — Fix tests pgTAP en staging: el usuario temporal de la CLI de Supabase (`cli_login_postgres`) es miembro de `postgres` pero no asume el rol automáticamente ni tiene permisos sobre `extensions`, `auth` o tablas protegidas por RLS. Cada archivo de test asume `set local role postgres;`, concede `grant usage on schema extensions to public;` y sustituye los `reset role;` por `set local role postgres;`. Los 15 archivos de test y las 399 pruebas pgTAP pasan con `Result: PASS` tanto en local como en staging al 100%.
 - 2026-11-17 — PR 2.18 (los inicios): un módulo declara en su manifest tarjetas para el inicio del coach o del cliente (`homeCards`, en `src/core/modules`), y las carcasas las pintan sin importar ningún módulo. programs aporta dos: en el inicio del coach, "Rutinas que mirar" (clientes sin rutina, con la rutina terminada y repitiéndose, o que termina en 7 días; cada línea lleva a su ficha; sin avisos, "Todos tus clientes tienen rutina"); en el del cliente, "Hoy toca", "Hoy: descanso" o el estado de su rutina, que lleva a "Entreno". Se quitan los textos provisionales de los dos inicios (D-114). **Cierra la Fase 2.**

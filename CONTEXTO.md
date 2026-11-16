@@ -6,7 +6,7 @@
 ## La app
 
 - **ATHLETE CORE**: app para **coaches de gimnasio (foco en fuerza)** y sus clientes.
-- **Una sola app** para web, iOS y Android, con dos perfiles:
+- **Una sola app** para web, iOS y Android (los entrenos se registran **solo en la app del móvil**; la web sirve para todo lo demás, D-116), con dos perfiles:
   - **Coach**: crea rutinas, asigna, sigue el progreso de sus clientes y personaliza su marca.
   - **Cliente**: entra con el código de su coach, ve la marca de su coach y registra sus entrenos.
 - Cada coach es un **tenant**: sus datos están aislados de los demás en la propia base de datos.
@@ -21,17 +21,19 @@
 
 ## Dónde estamos
 
-- **Fase actual:** 2 — Ejercicios y rutinas, **terminada y fusionada en `main`** (lotes 1 a 5, PR #24 a #28, #30 a #35, #36 a #42, #43 a #48, #50 a #52). La Fase 1 está terminada y fusionada en `main` (2026-11-14).
-- **Última tarea terminada:** `fix(db): compatibilidad de tests pgTAP en staging con permisos de postgres` (399 tests pasando en verde al 100% en local y en staging).
+- **Fase actual:** 3 — Entreno y progreso, **diseñada** (D-115 a D-136) y sin empezar a construir. Las Fases 1 y 2 están terminadas y fusionadas en `main`.
+- **Última tarea terminada:** el diseño de la Fase 3 (solo documentación).
 - **En curso:** nada.
-- **Siguiente tarea:** **diseñar la Fase 3** (entreno y progreso del cliente) con el propietario; antes decidir P-12 (datos de salud y menores). En staging, todas las migraciones 1 a 16 están aplicadas y probadas.
+- **Siguiente tarea:** **PR 3.1 — App de Android y tests de flujos completos en el CI** (`docs/PROMPTS.md` §7). En staging, todas las migraciones 1 a 16 están aplicadas y probadas.
 
-## Cómo será la Fase 2 (diseñada, D-069 a D-088)
+## Cómo será la Fase 3 (diseñada, D-115 a D-136)
 
-- **Ejercicios:** la plataforma trae 120 y cada negocio recibe su copia, que el coach edita, archiva y recupera como suya; además crea los propios. Vídeo, solo con enlace.
-- **Rutinas:** rutina → bloques → días del ciclo (de 1 a 28; 7 es "semanal") → ejercicios → series, guardadas una a una. Las plantillas se copian a cada cliente; un cliente tiene una sola rutina vigente. El editor guarda todo de una vez.
-- **El cliente** ve su rutina en modo lectura ("Hoy toca…"). Apuntar entrenos es la Fase 3.
-- **Cómo se trabaja:** 18 PR en 5 lotes, de unas 300 líneas de verdad. Un lote no empieza hasta que el anterior está fusionado con el visto bueno del propietario.
+- **Entrenar, solo en la app del móvil** (la de Android llega en el PR 3.1; iOS, en la Fase 4). Todo se guarda en el teléfono al instante y se sube solo: sin cobertura no se pierde nada (D-118).
+- **Apuntar:** un ejercicio por pantalla; peso, repeticiones y RIR o RPE con − y + o teclado; la serie se ilumina sin botón de "hecha"; en gris, la vez anterior del mismo día de la rutina, y "Igual" la copia. Unilaterales por lado, superseries, cambiar o saltar un ejercicio, notas del día y set-up de la máquina.
+- **Cronómetro** fijo para toda la app, con alarma con la pantalla apagada. Tres reglas del día saltado, que elige el coach.
+- **Datos de salud:** un consentimiento por espacio para el peso, las medidas y las notas (D-126).
+- **El coach** ve la actividad, los entrenos y los avisos de cada cliente. **Progreso:** historial "45×8(1)", RM estimado, récords, gráficas, logros y Excel.
+- **Cómo se trabaja:** 18 PR en 5 lotes, igual que la Fase 2.
 
 ## Cómo funciona la Fase 1 (hecha)
 
@@ -64,18 +66,18 @@
 
 ## Qué falta (lo próximo)
 
-- De la Fase 2: el lote 5: los bloques y remates (PR 2.16 a 2.18). Publicar la web (P-03) sigue pendiente.
+- La Fase 3, en 18 PR (`docs/PROMPTS.md` §7). Publicar la web (P-03) sigue pendiente.
 - Las guardas por sesión y por rol son comodidad, no seguridad: los datos los protege el RLS.
 
 ## Últimos cambios
 
 Los 5 más recientes, el más nuevo arriba. El historial completo está en `docs/ESTADO.md`.
 
+- 2026-11-16 — Diseño de la Fase 3: D-115 a D-136, plan de 18 PR en `docs/PROMPTS.md` §7, ideas de negocio en `docs/referencia/ideas-de-negocio.md` y Fase 6 en ESTADO. Entrenar, solo en la app del móvil.
+- 2026-11-17 — Tests pgTAP compatibles con staging: los 399 pasan en local y en staging.
 - 2026-11-17 — PR 2.18: los inicios con rutinas: avisos para el coach y "Hoy toca" para el cliente (D-114). Cierra la Fase 2.
 - 2026-11-17 — PR 2.17: superseries y circuitos, en el editor y para el cliente (D-113).
 - 2026-11-17 — PR 2.16: varios bloques en una rutina, en el editor y para el cliente (D-112).
-- 2026-11-16 — Lote 4 de la Fase 2 fusionado en `main` (#43 a #48) con el visto bueno del propietario tras probarlo en la app: asignar rutinas a clientes, ficha y vista del cliente en "Entreno".
-- 2026-11-16 — PR 2.15: "Entreno" para el cliente: hoy toca, los días, cada día y cada ejercicio, en lectura (D-111). Cierra el lote 4.
 
 ## A tener en cuenta ahora
 
@@ -88,6 +90,7 @@ Los 5 más recientes, el más nuevo arriba. El historial completo está en `docs
 - El proyecto de staging de Supabase está conectado al repositorio de GitHub (comprobación "Supabase Preview", siempre omitida). No hace nada; se quita en el panel, Settings → Integrations.
 - El dominio es `athlete-core.com`, en Cloudflare. Antes del primer usuario real hacen falta los textos legales definitivos (D-060) y revisar el plan de Supabase (D-063).
 - El identificador de la app móvil (`app.athletecore.mobile`) es provisional: hay que fijarlo antes de publicar en las tiendas.
+- Las ideas de `docs/referencia/ideas-de-negocio.md` (precios, planes, Modo Alumni…) **no son decisiones**: lo decidido está en D-132 a D-134.
 
 ## Para saber más
 

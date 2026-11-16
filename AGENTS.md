@@ -8,7 +8,7 @@
 
 **ATHLETE CORE** es una app para **coaches de gimnasio (foco en fuerza)** y sus clientes.
 
-- Una sola app: web, iOS y Android con el mismo código.
+- Una sola app: web, iOS y Android con el mismo código. Los entrenos se empiezan y se registran solo en la app del móvil; la web sirve para todo lo demás.
 - El **coach** crea rutinas y sigue a sus clientes. El **cliente** entra con el código de su coach, ve la marca de su coach y registra sus entrenos.
 - Cada coach es un **tenant** (un negocio aislado). Los datos de un coach jamás se ven desde otro.
 

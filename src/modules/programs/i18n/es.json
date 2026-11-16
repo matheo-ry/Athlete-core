@@ -330,5 +330,16 @@
     "groupLabel": "Agrupar «{{name}}» con el ejercicio siguiente",
     "ungroup": "Desagrupar",
     "ungroupLabel": "Desagrupar «{{name}}»"
+  },
+  "home": {
+    "alertsTitle": "Rutinas que mirar",
+    "allGood": "Todos tus clientes tienen rutina.",
+    "noProgram": "Sin rutina",
+    "endsOn": "Termina la rutina el {{date}}",
+    "repeating": "Terminada: se repite hasta que la cambies",
+    "todayTitle": "Hoy toca",
+    "todayRest": "Hoy: descanso",
+    "open": "Abrir entreno",
+    "listProgram": "Tu rutina"
   }
 }

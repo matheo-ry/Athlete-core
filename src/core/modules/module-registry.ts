@@ -2,6 +2,7 @@ import type { Profile } from '../tenancy';
 
 import type {
   ClientProfileTab,
+  HomeCard,
   ModuleManifest,
   ModuleNavItem,
   ModuleRoute,
@@ -23,4 +24,9 @@ export function collectNavItems(
 /** Pestañas que aportan los módulos a la ficha de un cliente. */
 export function collectClientProfileTabs(modules: readonly ModuleManifest[]): ClientProfileTab[] {
   return modules.flatMap((module) => module.clientProfileTabs);
+}
+
+/** Tarjetas que aportan los módulos al inicio de un perfil, ya ordenadas. */
+export function collectHomeCards(modules: readonly ModuleManifest[], profile: Profile): HomeCard[] {
+  return modules.flatMap((module) => module.homeCards[profile]).sort((a, b) => a.order - b.order);
 }

@@ -21,6 +21,7 @@ function fakeModule(key: string): ModuleManifest {
       es: () => Promise.resolve({ default: {} }),
     },
     clientProfileTabs: [],
+    homeCards: { coach: [], client: [] },
   });
 }
 

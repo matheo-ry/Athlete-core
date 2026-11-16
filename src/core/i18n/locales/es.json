@@ -68,10 +68,8 @@
     },
     "coachHome": {
       "title": "Panel del coach",
-      "description": "Desde aquí seguirás a tus clientes y sus entrenos.",
+      "description": "Tus clientes y sus rutinas, de un vistazo.",
       "businessLabel": "Tu negocio",
-      "emptyTitle": "Todavía no hay nada que mostrar",
-      "emptyDescription": "Los clientes, las rutinas y los ejercicios llegan en las próximas fases.",
       "firstSteps": {
         "title": "Primeros pasos",
         "shareCode": "Comparte tu código",
@@ -82,10 +80,8 @@
     },
     "clientHome": {
       "title": "Hoy",
-      "description": "Aquí verás el entreno de hoy de tu coach.",
-      "coachLabel": "Tu coach",
-      "emptyTitle": "No hay entreno para hoy",
-      "emptyDescription": "Cuando tu coach te asigne una rutina, aparecerá aquí."
+      "description": "Lo que toca hoy.",
+      "coachLabel": "Tu coach"
     },
     "welcome": {
       "title": "Te damos la bienvenida",

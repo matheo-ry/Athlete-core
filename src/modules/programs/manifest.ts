@@ -56,4 +56,23 @@ export const programsModule = defineModule({
         import('./coach/ClientProgramTab').then((tab) => ({ Component: tab.ClientProgramTab })),
     },
   ],
+  // El inicio de cada perfil (PR 2.18, D-085 y D-084).
+  homeCards: {
+    coach: [
+      {
+        key: 'programs-alerts',
+        order: 10,
+        lazy: () =>
+          import('./coach/CoachAlertsCard').then((card) => ({ Component: card.CoachAlertsCard })),
+      },
+    ],
+    client: [
+      {
+        key: 'programs-today',
+        order: 10,
+        lazy: () =>
+          import('./client/ClientTodayCard').then((card) => ({ Component: card.ClientTodayCard })),
+      },
+    ],
+  },
 });

@@ -39,6 +39,14 @@ export interface ClientProfileTab {
   lazy: () => Promise<{ Component: ComponentType<ClientProfileTabProps> }>;
 }
 
+/** Tarjeta que un módulo añade al inicio de un perfil (PR 2.18, D-114). */
+export interface HomeCard {
+  key: string;
+  /** Posición en el inicio: de menor a mayor. */
+  order: number;
+  lazy: () => Promise<{ Component: ComponentType }>;
+}
+
 export interface ModuleManifest {
   /** Nombre único en snake_case. Coincide con su feature flag y con el prefijo de sus textos. */
   key: string;
@@ -46,6 +54,8 @@ export interface ModuleManifest {
   nav: Record<Profile, readonly ModuleNavItem[]>;
   i18n: ModuleTranslations;
   clientProfileTabs: readonly ClientProfileTab[];
+  /** Lo que el módulo enseña en el inicio del coach y en el del cliente. */
+  homeCards: Record<Profile, readonly HomeCard[]>;
 }
 
 const KEY_PATTERN = /^[a-z][a-z0-9_]*$/;

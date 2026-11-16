@@ -29,4 +29,5 @@ export const exercisesModule = defineModule({
     es: () => import('./i18n/es.json'),
   },
   clientProfileTabs: [],
+  homeCards: { coach: [], client: [] },
 });

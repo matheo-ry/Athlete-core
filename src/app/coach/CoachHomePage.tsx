@@ -1,14 +1,20 @@
 import { useTranslation } from 'react-i18next';
 
+import { HomeCardContent, collectHomeCards } from '@/core/modules';
 import { useTenancy } from '@/core/tenancy';
-import { Card, EmptyState } from '@/core/ui';
+import { Card } from '@/core/ui';
 
+import { useActiveModules } from '../useActiveModules';
 import { FirstStepsCard } from './FirstStepsCard';
 
-/** Inicio del coach: su negocio y, al empezar, los primeros pasos (D-049). */
+/**
+ * Inicio del coach: su negocio, al empezar los primeros pasos (D-049) y las
+ * tarjetas que aportan los módulos activos, como los avisos de rutinas (PR 2.18).
+ */
 export function CoachHomePage() {
   const { t } = useTranslation();
   const { tenant } = useTenancy();
+  const cards = collectHomeCards(useActiveModules(), 'coach');
 
   return (
     <section className="flex flex-col gap-4">
@@ -23,12 +29,9 @@ export function CoachHomePage() {
         </Card>
       ) : null}
       <FirstStepsCard />
-      <Card>
-        <EmptyState
-          title={t('app.coachHome.emptyTitle')}
-          description={t('app.coachHome.emptyDescription')}
-        />
-      </Card>
+      {cards.map((card) => (
+        <HomeCardContent key={card.key} card={card} />
+      ))}
     </section>
   );
 }

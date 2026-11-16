@@ -34,4 +34,5 @@ export const clientsModule = defineModule({
   },
   // Las pestañas de la ficha de un cliente las aportan otros módulos (Fases 2 y 3).
   clientProfileTabs: [],
+  homeCards: { coach: [], client: [] },
 });

@@ -10,9 +10,13 @@
 -- vacía el catálogo y pone su fila antes de crear los negocios.
 -- =====================================================================
 begin;
+-- En staging, el usuario temporal de la CLI (cli_login_postgres) es miembro
+-- de postgres pero no asume el rol automáticamente ni tiene permisos sobre
+-- "extensions" ni "auth". Asumimos postgres y concedemos uso de "extensions"
+-- a public para que pgTAP siga disponible tras cualquier "reset role;".
+set local role postgres;
+grant usage on schema extensions to public;
 create extension if not exists pgtap with schema extensions;
--- En staging, el usuario temporal de la CLI no busca en "extensions", donde
--- vive pgTAP. Es la misma ruta de búsqueda que ya hay en local.
 set local search_path to "$user", public, extensions;
 
 select plan(41);
@@ -52,7 +56,7 @@ select throws_ok('select 1 from public.exercise_library', '42501', null,
   'sin sesión no se lee el catálogo');
 select throws_ok('select 1 from public.exercises', '42501', null,
   'sin sesión no se leen los ejercicios');
-reset role;
+set local role postgres;
 
 -- ----- A y B crean su negocio; C se une a A -----
 set local role authenticated;
@@ -154,7 +158,7 @@ select throws_ok(
 
 -- ----- Caso 28: updated_at -----
 -- Dentro de una transacción now() no avanza: se envejece la fila a mano.
-reset role;
+set local role postgres;
 update public.exercises
 set created_at = now() - interval '1 day', updated_at = now() - interval '1 day'
 where id = current_setting('t.ex_a')::uuid;
@@ -209,7 +213,7 @@ select is((select count(*)::int from public.exercise_library), 1,
 
 -- ----- El tope de D-086: 1.000 ejercicios sin archivar por negocio -----
 -- A tiene 2 (la copia y el suyo): con 998 más llega al tope.
-reset role;
+set local role postgres;
 insert into public.exercises (tenant_id, name, measurement)
 select current_setting('t.ta')::uuid, 'Relleno ' || n, 'weight_reps'
 from generate_series(1, 998) n;
@@ -237,7 +241,6 @@ select lives_ok(
   $$ insert into public.exercises (tenant_id, name, measurement, created_by)
      values (current_setting('t.tb')::uuid, 'Plancha', 'time', auth.uid()) $$,
   'tope: es de cada negocio, el de A no afecta a B');
-
-reset role;
+set local role postgres;
 select * from finish();
 rollback;

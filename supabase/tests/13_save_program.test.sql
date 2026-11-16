@@ -8,9 +8,13 @@
 -- "back_squat" (peso y repeticiones) y "plank" (tiempo).
 -- =====================================================================
 begin;
+-- En staging, el usuario temporal de la CLI (cli_login_postgres) es miembro
+-- de postgres pero no asume el rol automáticamente ni tiene permisos sobre
+-- "extensions" ni "auth". Asumimos postgres y concedemos uso de "extensions"
+-- a public para que pgTAP siga disponible tras cualquier "reset role;".
+set local role postgres;
+grant usage on schema extensions to public;
 create extension if not exists pgtap with schema extensions;
--- En staging, el usuario temporal de la CLI no busca en "extensions", donde
--- vive pgTAP. Es la misma ruta de búsqueda que ya hay en local.
 set local search_path to "$user", public, extensions;
 
 select plan(47);
@@ -256,7 +260,7 @@ set local role anon;
 select throws_ok(
   $$ select public.save_program('00000000-0000-4000-8000-000000000000', '{}') $$,
   '42501', null, 'sin sesión no se puede llamar a save_program');
-reset role;
+set local role postgres;
 
 -- ----- Una rutina de cliente se guarda igual que una plantilla, sin cambiar de cliente -----
 insert into public.programs (tenant_id, name, client_id, starts_on)
@@ -295,7 +299,7 @@ select throws_ok(
 
 -- ----- El tope de D-086: 300 plantillas sin archivar por negocio -----
 -- A tiene 2 sin archivar ("Dos bloques" y "Plancha a tiempo"): con 298 más llega al tope.
-reset role;
+set local role postgres;
 insert into public.programs (tenant_id, name)
 select current_setting('t.ta')::uuid, 'Relleno ' || n from generate_series(1, 298) n;
 set local role authenticated;
@@ -318,7 +322,6 @@ select lives_ok(
 select lives_ok(
   $$ select public.set_program_archived(current_setting('t.ta')::uuid, current_setting('t.p')::uuid, false) $$,
   'tope: y entonces sí se recupera la otra (las archivadas y las de clientes no cuentan)');
-
-reset role;
+set local role postgres;
 select * from finish();
 rollback;

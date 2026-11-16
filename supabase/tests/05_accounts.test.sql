@@ -4,9 +4,13 @@
 -- DECISIONES D-040, D-043, D-052, D-058 y D-060.
 -- =====================================================================
 begin;
+-- En staging, el usuario temporal de la CLI (cli_login_postgres) es miembro
+-- de postgres pero no asume el rol automáticamente ni tiene permisos sobre
+-- "extensions" ni "auth". Asumimos postgres y concedemos uso de "extensions"
+-- a public para que pgTAP siga disponible tras cualquier "reset role;".
+set local role postgres;
+grant usage on schema extensions to public;
 create extension if not exists pgtap with schema extensions;
--- En staging, el usuario temporal de la CLI no busca en "extensions", donde
--- vive pgTAP. Es la misma ruta de búsqueda que ya hay en local.
 set local search_path to "$user", public, extensions;
 
 select plan(24);
@@ -74,17 +78,17 @@ select throws_ok(
   $$ select public.email_status('full@example.test') $$,
   'P0001', 'rate_limited', 'la comprobación 61 desde la misma conexión se bloquea'
 );
-reset role;
+set local role postgres;
 
 set local request.headers to '{"x-forwarded-for":"198.51.100.7"}';
 set local role anon;
 select is(public.email_status('full@example.test'), 'confirmed', 'otra conexión no está bloqueada');
-reset role;
+set local role postgres;
 
 -- ----- El esquema del tope no es accesible desde la app -----
 set local role anon;
 select throws_ok('select * from private.rate_limit_hits', '42501', null, 'anon no puede leer el registro de intentos');
-reset role;
+set local role postgres;
 set local role authenticated;
 select throws_ok('select * from private.rate_limit_hits', '42501', null, 'authenticated tampoco');
 
@@ -99,7 +103,7 @@ select throws_ok(
   $$ update public.profiles set terms_version = 'falsa' where user_id = auth.uid() $$,
   '42501', null, 'nadie cambia la versión de los términos directamente'
 );
-reset role;
+set local role postgres;
 select is(
   (select terms_version from public.profiles where user_id = '00000000-0000-4000-8000-0000000000a2'),
   'draft-2026-11', 'accept_terms guarda la versión en el perfil del propio usuario'
@@ -107,7 +111,7 @@ select is(
 
 set local role anon;
 select throws_ok($$ select public.accept_terms('draft-2026-11') $$, '42501', null, 'anon no puede aceptar términos');
-reset role;
+set local role postgres;
 
 select * from finish();
 rollback;

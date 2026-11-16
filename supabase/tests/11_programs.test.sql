@@ -9,9 +9,13 @@
 -- se ponen sin RLS ("reset role"), como hará la función que guarda.
 -- =====================================================================
 begin;
+-- En staging, el usuario temporal de la CLI (cli_login_postgres) es miembro
+-- de postgres pero no asume el rol automáticamente ni tiene permisos sobre
+-- "extensions" ni "auth". Asumimos postgres y concedemos uso de "extensions"
+-- a public para que pgTAP siga disponible tras cualquier "reset role;".
+set local role postgres;
+grant usage on schema extensions to public;
 create extension if not exists pgtap with schema extensions;
--- En staging, el usuario temporal de la CLI no busca en "extensions", donde
--- vive pgTAP. Es la misma ruta de búsqueda que ya hay en local.
 set local search_path to "$user", public, extensions;
 
 select plan(45);
@@ -37,7 +41,7 @@ set local request.jwt.claims to '{"sub":"00000000-0000-4000-8000-00000000000d","
 select public.join_tenant_with_code(current_setting('t.code_a'));
 set local request.jwt.claims to '{"sub":"00000000-0000-4000-8000-00000000000e","role":"authenticated"}';
 select public.join_tenant_with_code(current_setting('t.code_b'));
-reset role;
+set local role postgres;
 
 -- ----- Rutinas de prueba: en A, una plantilla, la de C y la de D; en B, una plantilla -----
 -- Cada una con un bloque semanal y dos días (entreno y descanso).
@@ -68,7 +72,7 @@ select pg_temp.add_program('tpl_b', current_setting('t.tb')::uuid, 'Plantilla de
 set local role anon;
 select throws_ok('select 1 from public.programs', '42501', null, 'sin sesión no se leen las rutinas');
 select throws_ok('select 1 from public.program_days', '42501', null, 'sin sesión no se leen los días');
-reset role;
+set local role postgres;
 
 -- ----- Caso 15: el coach lee las rutinas de su negocio y nadie escribe directamente -----
 set local role authenticated;
@@ -152,7 +156,7 @@ select is((select count(*)::int from public.programs), 3, 'baja: el coach sigue 
 select public.reactivate_client(current_setting('t.ta')::uuid, '00000000-0000-4000-8000-00000000000c');
 set local request.jwt.claims to '{"sub":"00000000-0000-4000-8000-00000000000c","role":"authenticated"}';
 select is((select count(*)::int from public.program_days), 2, 'baja: al reactivarlo, la rutina vuelve tal cual');
-reset role;
+set local role postgres;
 
 -- ----- Caso 16: la clave compuesta impide poner a un cliente de otro coach -----
 select throws_ok(

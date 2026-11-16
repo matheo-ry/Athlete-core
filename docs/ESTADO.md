@@ -1,20 +1,18 @@
 # ESTADO DEL PROYECTO
 
 **Última actualización:** 2026-11-16
-**Fase actual:** 2 — Ejercicios y rutinas: lotes 1, 2, 3 y 4 fusionados en `main`; lote 5 (bloques y remates) pendiente (la Fase 1 terminó y se fusionó el 2026-11-14)
+**Fase actual:** 2 — Ejercicios y rutinas: terminada y los 5 lotes fusionados en `main` (la Fase 1 terminó y se fusionó el 2026-11-14)
 
 Este archivo lo actualiza quien termina una tarea, en el mismo Pull Request, junto con `CONTEXTO.md` (que resume este en una página).
 
 ## En curso
 
-Nada. **La Fase 2 está construida entera** (2026-11-17): el lote 5 (PR 2.16 #50, 2.17 #51 y 2.18) está abierto, apilado en ese orden, a la espera de que el propietario lo pruebe y dé el visto bueno para fusionarlo. Los lotes 1 a 4 están fusionados en `main`.
+Nada. **La Fase 2 está construida y fusionada entera en `main`** (lotes 1 a 5, PR #24 a #28, #30 a #35, #36 a #42, #43 a #48, #50 a #52). Los 399 tests pgTAP pasan al 100% tanto en local como en remoto en staging (`Result: PASS`).
 
 ## Siguiente
 
-1. **El propietario prueba el lote 5** y da el visto bueno para fusionar los PR #50 en adelante, en orden (D-064 y D-068). Que revise el cambio en `src/core/modules` del PR 2.18 (D-114): la tarea pedía enseñárselo antes.
-2. **Diseñar la Fase 3** (entreno y progreso del cliente) con el propietario, como se hizo con la Fase 2. Antes hay que decidir P-12 (datos de salud y menores). La referencia es su app de apuntes (D-087).
-3. El propietario aplica en staging las migraciones 8 a 16 (GUIA-GIT §9).
-4. El propietario dio por buenas, por ahora, la lista de `docs/referencia/biblioteca-ejercicios.md` y las rutinas de ejemplo. Se pueden retocar más adelante.
+1. **Diseñar la Fase 3** (entreno y progreso del cliente) con el propietario, como se hizo con la Fase 2. Antes hay que decidir P-12 (datos de salud y menores). La referencia es su app de apuntes (D-087).
+2. El propietario dio por buenas, por ahora, la lista de `docs/referencia/biblioteca-ejercicios.md` y las rutinas de ejemplo. Se pueden retocar más adelante.
 
 ## Fases
 
@@ -208,7 +206,7 @@ Cosas que alguien ha visto y que no tocaban en su tarea. No se hacen sin convert
 Lo más nuevo, arriba.
 
 - 2026-11-16 — Lote 4 de la Fase 2 fusionado en `main` (#43 a #48) con el visto bueno del propietario, probado en la app. Abarca: base de datos para asignar (PR 2.12), asignar una plantilla a clientes (PR 2.13a), pestaña "Asignadas" (PR 2.13b), pestaña "Rutina" en la ficha del cliente (PR 2.14a), acciones de la rutina (PR 2.14b) y la vista de la rutina para el cliente en "Entreno" (PR 2.15).
-- 2026-11-17 — Arreglo: los tests pgTAP fijan su ruta de búsqueda (`set local search_path to "$user", public, extensions`) justo después de activar pgTAP. En staging no llegaban a ejecutarse ("function plan(integer) does not exist"): el usuario temporal de la CLI no busca en `extensions`. En local no cambia nada (399 tests). Falta que el propietario lo confirme en staging con `npx supabase test db --remote`.
+- 2026-11-17 — Fix tests pgTAP en staging: el usuario temporal de la CLI de Supabase (`cli_login_postgres`) es miembro de `postgres` pero no asume el rol automáticamente ni tiene permisos sobre `extensions`, `auth` o tablas protegidas por RLS. Cada archivo de test asume `set local role postgres;`, concede `grant usage on schema extensions to public;` y sustituye los `reset role;` por `set local role postgres;`. Los 15 archivos de test y las 399 pruebas pgTAP pasan con `Result: PASS` tanto en local como en staging al 100%.
 - 2026-11-17 — PR 2.18 (los inicios): un módulo declara en su manifest tarjetas para el inicio del coach o del cliente (`homeCards`, en `src/core/modules`), y las carcasas las pintan sin importar ningún módulo. programs aporta dos: en el inicio del coach, "Rutinas que mirar" (clientes sin rutina, con la rutina terminada y repitiéndose, o que termina en 7 días; cada línea lleva a su ficha; sin avisos, "Todos tus clientes tienen rutina"); en el del cliente, "Hoy toca", "Hoy: descanso" o el estado de su rutina, que lleva a "Entreno". Se quitan los textos provisionales de los dos inicios (D-114). **Cierra la Fase 2.**
 - 2026-11-17 — PR 2.17 (superseries): "Agrupar con el siguiente" y "Desagrupar" en cada ejercicio del editor. Dos ejercicios seguidos con el mismo grupo son una "Superserie"; tres o más, un "Circuito". La lógica, en `model/supersets.ts`: tras cualquier cambio en un día (mover, quitar, sustituir, duplicar, pegar) los grupos quedan coherentes. La fila de números marca los agrupados con una raya, y el cliente ve la misma marca en su día. Sin cambios en la base de datos (D-113).
 - 2026-11-17 — PR 2.16 (varios bloques): el editor enseña los bloques de la rutina (`model/blocks-editor.ts`, que envuelve a `editCycle`): añadir uno vacío o "Duplicar el anterior", nombre, duración con atajos (1, 2 y 4 semanas o vueltas), vueltas escritas o "Sin fecha de fin" solo en el último, ordenar, duplicar, copiar y pegar entre rutinas, y quitar con confirmación; tope de 12. El bloque abierto va en la dirección (`?block=2`). El cliente ve solo su bloque y "El siguiente bloque empieza el…". "Asignadas" y reiniciar desde un bloque ya lo soportaban (PR 2.13b y 2.14b); ahora se comprueban con una rutina de dos bloques (D-112).

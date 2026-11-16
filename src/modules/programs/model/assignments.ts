@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-import { daysBetween } from './calendar';
+import { calendarPosition, daysBetween, programEndsOn } from './calendar';
 import type { CalendarBlock } from './calendar';
 
 // Las rutinas de los clientes que siguen abiertas (D-081): la vigente de cada
@@ -113,4 +113,38 @@ export function assignmentWarnings(
       },
     ];
   });
+}
+
+/** Por dónde va una rutina hoy, para enseñarlo en una línea (PR 2.13b). */
+export interface RoutineProgress {
+  /** Desde 1. */
+  blockNumber: number;
+  blockCount: number;
+  /** 0 = la semana a medias del principio (D-075). */
+  lap: number;
+  /** Vueltas del bloque en que va; vacío = sin fin. */
+  laps: number | null;
+  isWeekly: boolean;
+  /** El último bloque terminó sus vueltas y se repite (D-075): el coach debería cambiarla. */
+  isRepeating: boolean;
+  /** Cuándo termina la rutina entera; vacío = se repite sin fin. */
+  endsOn: string | null;
+}
+
+/** En qué bloque y vuelta va hoy la rutina vigente de un cliente. */
+export function routineProgress(program: ClientProgram, today: string): RoutineProgress | null {
+  const position = calendarPosition(program.blocks, program.startsOn, today, program.startBlockId);
+  if (position.status === 'upcoming') {
+    return null;
+  }
+  const block = program.blocks[position.blockIndex];
+  return {
+    blockNumber: position.blockIndex + 1,
+    blockCount: program.blocks.length,
+    lap: position.lap,
+    laps: block?.laps ?? null,
+    isWeekly: block?.cycleDays === 7,
+    isRepeating: position.isRepeating,
+    endsOn: programEndsOn(program.blocks, program.startsOn, program.startBlockId),
+  };
 }

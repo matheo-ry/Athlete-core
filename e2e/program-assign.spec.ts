@@ -1,7 +1,7 @@
 import { expect, test } from '@playwright/test';
 import type { Locator, Page } from '@playwright/test';
 
-import { signIn } from './helpers';
+import { chooseSpace, signIn } from './helpers';
 import {
   E2E_PASSWORD,
   createJoinedClient,
@@ -138,4 +138,71 @@ test('en el móvil la ventana de asignar ocupa la pantalla', async ({ page }) =>
   expect(box?.width).toBe(390);
   await assign(page, dialog, ['Carla Asignar'], 'Assign to 1 client');
   await expect(page.getByRole('status')).toHaveText('“Casa” assigned.');
+});
+
+/** La fila de un cliente en "Asignadas". */
+const assignedRow = (page: Page, name: string) =>
+  page
+    .getByRole('list', { name: 'Clients and their programs' })
+    .getByRole('listitem')
+    .filter({ hasText: name });
+
+test('"Asignadas" enseña la rutina de cada cliente de Iron Lab, y ninguno de Norte', async ({
+  page,
+}) => {
+  await signIn(page, 'coach.iron@example.com');
+  await chooseSpace(page, 'Iron Lab');
+  await page.goto('/coach/programs');
+  await page.getByRole('button', { name: 'Assigned' }).click();
+
+  // Criterio 1, con las rutinas del seed (PR 2.12).
+  await expect(assignedRow(page, 'Ana Ejemplo')).toContainText('Casa + Gym');
+  await expect(assignedRow(page, 'Bruno Prueba')).toContainText('Pecho / Espalda y Brazo / Pierna');
+  await expect(assignedRow(page, 'Carla Demo')).toContainText('No program');
+  // Criterio 7.
+  await expect(page.getByText('Diego Ficticio')).toHaveCount(0);
+  await expect(page.getByText('Elena Inventada')).toHaveCount(0);
+});
+
+test('"Asignadas" de Norte enseña a Diego con su rutina y a Elena con la próxima', async ({
+  page,
+}) => {
+  await signIn(page, 'coach.norte@example.com');
+  await expect(page).toHaveURL(/\/coach$/);
+  await page.goto('/coach/programs');
+  await page.getByRole('button', { name: 'Assigned' }).click();
+
+  // Criterio 2: Diego, en modo lista; Elena, como próxima, con su fecha.
+  await expect(assignedRow(page, 'Diego Ficticio')).toContainText('Fuerza básica');
+  await expect(assignedRow(page, 'Diego Ficticio')).toContainText('List mode');
+  await expect(assignedRow(page, 'Elena Inventada')).toContainText('No program');
+  await expect(assignedRow(page, 'Elena Inventada')).toContainText(/Next: Fuerza básica, starts /);
+  // Fran está dado de baja: no sale.
+  await expect(page.getByText('Fran Ejemplo')).toHaveCount(0);
+});
+
+test('después de asignar, cambiar la plantilla no cambia la rutina del cliente', async ({
+  page,
+}) => {
+  const business = await createTestBusiness(`E2E Copia ${suffix()}`);
+  await joinedClient(business.code, 'Carla Copia');
+  await rpc(business.coach, 'save_program', {
+    p_tenant: business.tenantId,
+    p_program: template('Casa'),
+  });
+
+  await signIn(page, business.coachEmail, '/login', E2E_PASSWORD);
+  await expect(page).toHaveURL(/\/coach$/);
+  await page.goto('/coach/programs');
+  const dialog = await openAssign(page, 'Casa');
+  await assign(page, dialog, ['Carla Copia'], 'Assign to 1 client');
+
+  // Criterio 6: se renombra la plantilla; la rutina de Carla sigue igual.
+  await page.getByRole('button', { name: 'Rename: Casa' }).click();
+  await page.getByLabel('New name for “Casa”').fill('Casa nueva');
+  await page.getByRole('button', { name: 'Save', exact: true }).click();
+  await expect(page.getByRole('status')).toHaveText('Renamed to “Casa nueva”.');
+  await page.getByRole('button', { name: 'Assigned' }).click();
+  await expect(assignedRow(page, 'Carla Copia')).toContainText('Casa · Week');
+  await expect(assignedRow(page, 'Carla Copia')).not.toContainText('Casa nueva');
 });

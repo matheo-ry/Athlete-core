@@ -9,7 +9,8 @@
     "tabsLabel": "Mostrar",
     "tabs": {
       "active": "Activas",
-      "archived": "Archivadas"
+      "archived": "Archivadas",
+      "assigned": "Asignadas"
     },
     "search": "Buscar por nombre",
     "weekly": "Semanal",
@@ -193,5 +194,29 @@
       "clientNotFound": "Uno de los clientes ya no está activo. Cierra y vuelve a intentarlo.",
       "templateArchived": "Esta plantilla está archivada. Recupérala para asignarla."
     }
+  },
+  "assigned": {
+    "search": "Buscar clientes por nombre",
+    "listLabel": "Clientes y sus rutinas",
+    "empty": {
+      "title": "Aún no tienes clientes",
+      "description": "Comparte tu código desde Clientes para que se unan."
+    },
+    "noResults": {
+      "title": "Ningún cliente coincide",
+      "description": "Prueba con otro nombre."
+    },
+    "noProgram": "Sin rutina",
+    "block": "Bloque {{number}} de {{count}}",
+    "week": "Semana {{lap}} de {{laps}}",
+    "weekNoEnd": "Semana {{lap}}",
+    "lap": "Vuelta {{lap}} de {{laps}}",
+    "lapNoEnd": "Vuelta {{lap}}",
+    "firstWeek": "Semana de inicio",
+    "endsOn": "Termina el {{date}}",
+    "noEnd": "Sin fecha de fin",
+    "repeating": "Terminada: se repite hasta que la cambies",
+    "listMode": "Modo lista",
+    "next": "Próxima: {{name}}, empieza el {{date}}"
   }
 }

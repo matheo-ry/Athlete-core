@@ -1,7 +1,7 @@
 import { expect, test } from '@playwright/test';
 
 import { chooseSpace, signIn } from './helpers';
-import { addExercise, items, openPruebaMonday } from './program-helpers';
+import { addExercise, items, openExercise, openPruebaMonday } from './program-helpers';
 
 // Los ejercicios de cada día del editor (PR 2.9), contra Supabase local. Los
 // tests que cambian rutinas lo hacen en un negocio propio.
@@ -45,6 +45,7 @@ test('añade ejercicios buscándolos, crea uno sin salir, los ordena, quita uno 
   // Criterio 4: el último sube al primer puesto, se quita otro y se guarda.
   await page.getByRole('button', { name: 'Move up: remo con goma' }).click();
   await page.getByRole('button', { name: 'Move up: remo con goma' }).click();
+  await openExercise(page, 3);
   await page.getByRole('button', { name: 'Remove: Leg press' }).click();
   await page.getByRole('button', { name: 'Save changes' }).click();
   await expect(page.getByRole('status')).toHaveText('Changes saved.');
@@ -73,6 +74,7 @@ test('sustituye un ejercicio conservando sus series, y uno archivado se ve con s
   await addExercise(page, 'leg press', 'Leg press');
 
   // Criterio 5: sustituir conserva el sitio y las 3 series.
+  await openExercise(page, 1);
   await page.getByRole('button', { name: 'Replace: Lat pulldown' }).click();
   await page.getByLabel('Search by name').fill('neutral');
   await page

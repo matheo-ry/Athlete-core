@@ -923,6 +923,17 @@ Cómo añadir una: copia el formato, usa el siguiente número y no borres las an
   - **Si lo pegado lleva un ejercicio archivado** que la rutina de destino no tenía, la base de datos no lo admite (D-073) y la app lo explica: "Recupéralo en Ejercicios o quítalo de la rutina".
 - **Por qué:** el propietario pidió copiar a toda escala. Con el editor guardando un documento entero (D-079), copiar es mover piezas del documento sin tocar la base de datos hasta "Guardar cambios".
 
+### D-106 · Los ejercicios de un día se editan de uno en uno
+- **Fecha:** 2026-11-16
+- **Decisión:** pedido por el propietario al probar el lote 3. (D-105 está en el PR 2.12a.)
+  - En el editor, el día enseña **una fila con los números de sus ejercicios, en orden** (1, 2, 3…; solo los que hay), y debajo **solo el ejercicio elegido**, con todos sus campos.
+  - Se cambia de ejercicio **tocando su número** o, en el móvil, **deslizando hacia los lados**. Con muchos ejercicios, la fila de números se desliza.
+  - Al **añadir, pegar o duplicar** se pasa al ejercicio nuevo. Al **subir o bajar** uno, se sigue viendo ese. Al cambiar de día se empieza por el primero.
+  - Quien usa lector de pantalla oye en cada número el nombre del ejercicio y su resumen.
+- **Por qué:** con cada ejercicio desplegado, un día de 8 ejercicios obligaba a bajar mucho, sobre todo en el móvil.
+- **Consecuencias:** ya no se ven los nombres de todos los ejercicios del día de un vistazo: el resumen sigue en la lista de días ("7 ejercicios · 20 series").
+- **Revisar si:** los coaches echan de menos ver la lista entera con nombres.
+
 ---
 
 ## Pendientes de decidir

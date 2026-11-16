@@ -1883,3 +1883,771 @@ CRITERIOS DE ACEPTACIÓN:
    ha asignado una rutina".
 6. Ningún inicio dice ya "llega en la Fase 3" ni textos de ejemplo.
 ```
+
+---
+
+## 7. Fase 3 — Entreno y progreso
+
+El diseño está decidido en `docs/DECISIONES.md` (D-115 a D-136). Son **18 PR en 5 lotes**. Se piden **en este orden y de uno en uno**, cada uno en su chat.
+
+| Lote | PR | Qué hace | Rama |
+|---|---|---|---|
+| 1. Cimientos | 3.1 | App de Android y tests de flujos completos en el CI | `feat/app-android` |
+| | 3.2 | Base de datos: entrenos | `db/entrenos` |
+| | 3.3 | Base de datos: datos de salud, set-up y ajustes del cliente | `db/salud-y-ajustes` |
+| | 3.4 | Guardado en el móvil | `feat/guardado-en-el-movil` |
+| 2. Apuntar | 3.5 | Apuntar un entreno | `feat/modulo-workouts` |
+| | 3.6 | Subida, cierre y resumen | `feat/cerrar-entreno` |
+| | 3.7 | Cronómetro de descanso | `feat/cronometro` |
+| 3. Completar | 3.8 | Unilaterales, grupos, cambiar y saltar | `feat/entreno-completo` |
+| | 3.9 | Consentimiento, peso corporal y medidas | `feat/peso-y-medidas` |
+| | 3.10 | Notas del día, set-up y "¿Seguro?" | `feat/notas-y-setup` |
+| | 3.11 | Historial del cliente y corregir | `feat/historial-de-entrenos` |
+| 4. El coach | 3.12 | El día saltado | `feat/dia-saltado` |
+| | 3.13 | Pestaña "Entrenos" en la ficha | `feat/entrenos-en-la-ficha` |
+| | 3.14 | Actividad y avisos del coach | `feat/actividad-del-coach` |
+| 5. Progreso | 3.15 | Módulo `progress`: historial, RM y récords | `feat/modulo-progress` |
+| | 3.16 | Gráficas | `feat/graficas` |
+| | 3.17 | Minilogros, racha, niveles y logros | `feat/logros` |
+| | 3.18 | Descargar en Excel | `feat/excel` |
+
+### Cómo se trabaja por lotes (D-115)
+
+Igual que en la Fase 2 (§6): un lote no empieza hasta que el anterior está fusionado en `main` con el visto bueno del propietario (D-068); unas 300 líneas de verdad por PR (no cuentan `database.types.ts` ni el proyecto `android/` generado); si va a pasar de 400, se para y se parte como dice su bloque.
+
+| Lote | Al terminar el lote, el propietario puede… |
+|---|---|
+| 1 | Instalar la app en su Android, entrar como Ana y ver su rutina aunque quite el wifi |
+| 2 | Hacer un entreno con el wifi apagado, cerrar la app a mitad, volver y seguir; oír el descanso con la pantalla apagada |
+| 3 | Hacer un día entero de su rutina real: unilaterales, superseries, cambiar una máquina, notas, peso corporal y medidas |
+| 4 | Entrar como coach y ver lo que hizo Ana, sus avisos y la regla del día saltado |
+| 5 | Ver su progreso, sus gráficas, sus logros y descargar el Excel |
+
+### Lo que dan por hecho todos los bloques
+
+- Se abre con la cabecera de §0 y, debajo, el bloque del PR. Se termina como indica AGENTS.md §8.
+- **Entrenar es solo en la app del móvil (D-116).** En la web, donde saldría "Iniciar entreno", sale "Para entrenar, abre la app en tu móvil". En desarrollo y en los tests se activa en el navegador con la variable del PR 3.1.
+- **Nada se pierde (D-118):** todo lo que el cliente apunta se guarda en el móvil al instante, antes de intentar subirlo.
+- **Módulos y fronteras (ARQUITECTURA §6):** `workouts` usa `programs` y `exercises`; `progress` usa `workouts` y `exercises`. `programs` **nunca** importa `workouts`: si una pantalla de `programs` necesita llevar a un entreno, usa un enlace a la ruta de `workouts` y `useFeature('workouts')` de `core/flags`, sin importar el módulo. Si algo no encaja, el agente para y pregunta.
+- **Los PR de base de datos** llevan, en la misma migración, `tenant_id`, claves compuestas, permisos explícitos, RLS con políticas y su test de aislamiento en `supabase/tests/` (AGENTS.md §5). Terminan con los tipos regenerados (`npm run db:types`).
+- **Zonas protegidas:** cada bloque dice cuáles toca; se repite en el apartado "Zonas protegidas" del PR.
+- **Librerías:** las de D-135 están aprobadas. Si hace falta otra, se anota en D-135 con su porqué antes de instalarla y se dice en el PR.
+- Textos en inglés y en español. Botones de 44 px o más; la pantalla de apuntar se usa con una mano. Toda pantalla con datos trata sus 4 estados. Coach: mismas funciones en el móvil y en el ordenador (D-085).
+- Los nombres de tablas y funciones son orientativos. Lo que hace cada una, no.
+
+Para comprobar los criterios:
+
+- **En el ordenador**, como en la Fase 2 (§6): Docker Desktop, `npm run db:start`, `npm run db:reset` y `npm run dev`, con el registro de entrenos activado en el navegador (la variable del PR 3.1).
+- **En el móvil del propietario (Android):** la app apunta a **staging**. Antes de que el propietario pruebe un lote, el agente aplica en staging las migraciones nuevas y vuelve a cargar los datos inventados (guía de `supabase/README.md`), y le pasa el archivo de la app nueva para instalarla (guía del PR 3.1).
+- Usuarios inventados, contraseña `password123`: `coach.iron@example.com` (Iron Lab: **Ana**, "Casa + Gym" con calendario, en kg; **Bruno**, "Pecho / Espalda y Brazo / Pierna", ciclo de 8 días con unilaterales, en libras; **Carla**, sin rutina, en español) y `coach.norte@example.com` (Norte Strength: **Diego**, "Fuerza básica" en modo lista, con la plancha por tiempo; **Elena**, rutina próxima; **Fran**, dado de baja).
+- **Cada lista de criterios parte del seed recién cargado.** "El lunes" es el día "Lunes" de "Casa + Gym": si hoy no toca, se abre ese día desde "Entreno".
+
+---
+
+### PR 3.1 — App de Android y tests de flujos completos en el CI
+
+```
+TAREA: que la app se pueda instalar en un móvil Android, y que los
+tests de flujos completos se ejecuten en el CI.
+RAMA: feat/app-android
+DECISIONES: D-116, D-117 y D-135.
+ZONAS PROTEGIDAS: archivos de configuración de la raíz (Capacitor,
+package.json), .github/ (el CI), src/core/native y src/core/config.
+
+INCLUYE:
+1. El proyecto nativo android/ con Capacitor (@capacitor/android),
+   guardado en Git, con el identificador provisional de la app
+   (app.athletecore.mobile).
+2. Una guía para el propietario, que no es programador: qué instalar
+   una sola vez (Android Studio), cómo generar el archivo de la app
+   (APK de pruebas), cómo pasarlo al móvil e instalarlo, y cómo hacer
+   que la app apunte a staging. Un comando de npm para generarlo (por
+   ejemplo, npm run android:build).
+3. core/native: saber si estamos en la app instalada (isNativeApp) y
+   si se puede registrar un entreno (canLogWorkouts): en la app, sí;
+   en la web publicada, no; en desarrollo y en los tests, según una
+   variable de entorno (por ejemplo VITE_ALLOW_WEB_WORKOUTS), validada
+   en core/config y anotada en .env.example. Nunca activa en un build
+   de producción. Tests unitarios.
+4. El CI ejecuta npm run test:e2e contra Supabase local (ARQUITECTURA
+   §13, punto 3), con la variable del punto 3 activada.
+5. La app instalada abre, entra con los usuarios de staging y se ve
+   igual que en el navegador: barra de estado, zonas seguras de la
+   pantalla y el botón "atrás" de Android, que vuelve atrás.
+6. Las versiones nuevas, en DECISIONES ("Versiones instaladas").
+
+NO INCLUYE: iOS (Fase 4); publicar en Google Play (Fase 4); ninguna
+pantalla de entreno; guardar nada en el móvil (PR 3.4).
+
+SI PASA DE 300 LÍNEAS (sin contar android/ generado), se parte así:
+- 3.1a: la app de Android, core/native y la guía (puntos 1, 2, 3, 5
+  y 6). Criterios 1 a 4.
+- 3.1b: los tests de flujos completos en el CI (punto 4). Criterio 5.
+
+CRITERIOS DE ACEPTACIÓN:
+1. Sigo la guía, instalo la app en mi Android y aparece con su icono.
+2. Entro como ana@example.com (staging) y veo su inicio y "Entreno".
+3. El botón "atrás" del móvil vuelve a la pantalla anterior; nada
+   queda tapado por la barra de arriba ni por la de abajo.
+4. En el navegador (npm run dev) todo sigue igual que antes.
+5. En el PR, el CI tiene un paso de tests de flujos completos en
+   verde.
+```
+
+### PR 3.2 — Base de datos: entrenos
+
+```
+TAREA: crear las tablas de los entrenos y la función que los recibe
+desde el móvil.
+RAMA: db/entrenos
+DECISIONES: D-087, D-118, D-119, D-120, D-121, D-122, D-124 y D-125.
+ZONAS PROTEGIDAS: supabase/.
+
+INCLUYE (en una migración nueva, o dos si crece):
+1. Tablas de negocio según la plantilla (tenant_id, claves
+   compuestas, índices por tenant_id, updated_at):
+   - El entreno: cliente, rutina, bloque, día de la rutina, fecha del
+     entreno (la del último dato cambiado, en la zona del móvil),
+     hora de inicio, hora del último cambio, cuándo se cerró y cómo
+     (a mano, todo hecho, a las 12 horas), el dispositivo que lo tiene
+     abierto y cuándo se corrigió por última vez.
+   - Los ejercicios del entreno: el ejercicio hecho, su orden, su
+     grupo (superserie), la COPIA de lo prescrito ese día (series,
+     repeticiones, intensidad, descanso, nota del coach: D-087), si se
+     saltó, si es un cambio y a qué ejercicio sustituye (D-122), y la
+     nota del día (hasta 500 caracteres).
+   - Las series: número, lado (derecha, izquierda o ninguno), peso en
+     kg, repeticiones, segundos o metros, RIR o RPE o "al fallo", si
+     es una serie de más, y cuándo se apuntó.
+   - Los identificadores los crea el móvil (D-118).
+2. Una función para subir un entreno entero desde el móvil (por
+   ejemplo sync_workout): crea o pone al día el entreno, sus
+   ejercicios y sus series de una vez; subir dos veces lo mismo no
+   duplica nada; en cada serie se queda el cambio más reciente
+   (D-124). Comprueba que quien sube es el cliente, activo en ese
+   negocio, y que la rutina es suya. Rechaza corregir un entreno
+   cerrado hace más de 7 días. Marca "Editado" si se corrige uno
+   cerrado.
+3. Descartar un entreno (D-119): función que lo borra, solo el
+   cliente y solo si es suyo.
+4. La regla del día saltado de cada rutina de cliente (D-125): "se
+   pierde" (por defecto), "se recupera en el siguiente descanso" o
+   "se mueve todo", y desde cuándo vale. La cambia el coach con una
+   función que lo anota en audit_log.
+5. Los días faltados, del lado de las rutinas (para que programs los
+   lea sin importar workouts, ARQUITECTURA §6): la rutina, el día de
+   la rutina y la fecha que faltó. Los apunta la app del cliente con
+   una función (la fecha la da el móvil, D-105).
+6. Permisos y RLS: el cliente lee sus entrenos y escribe solo con las
+   funciones; el coach (owner y staff) lee los de los clientes de su
+   negocio y no los escribe; un cliente dado de baja no lee ni
+   escribe nada.
+7. El flag "workouts", de tipo core.
+8. Tests pgTAP: aislamiento (un cliente no ve los entrenos de otro;
+   un coach no ve los de otro negocio; sin sesión, nada); subir dos
+   veces no duplica; el cambio más reciente gana; no se corrige
+   pasados 7 días; un cliente dado de baja no sube; nadie borra salvo
+   "descartar"; la regla del día saltado solo la cambia el coach.
+
+NO INCLUYE: consentimiento, peso, medidas, set-up y ajustes (PR 3.3);
+ninguna pantalla.
+
+SI PASA DE 300 LÍNEAS, se parte así:
+- 3.2a: las tres tablas, la función de subir, descartar, el flag y
+  sus tests (puntos 1, 2, 3, 6, 7 y 8). Criterios 1 a 3.
+- 3.2b: la regla del día saltado y los días faltados, con sus tests
+  (puntos 4 y 5). Criterio 4.
+
+CRITERIOS DE ACEPTACIÓN:
+1. npm run db:reset y npm run db:test terminan sin errores.
+2. En Studio existen las tablas, vacías y con el candado de RLS.
+3. La descripción del PR dice qué test cubre cada regla del punto 8.
+4. La app arranca y se ve igual que antes de este PR.
+```
+
+### PR 3.3 — Base de datos: datos de salud, set-up y ajustes del cliente
+
+```
+TAREA: crear lo que guarda el consentimiento, el peso, las medidas,
+el set-up de cada ejercicio y los ajustes de entreno del cliente.
+RAMA: db/salud-y-ajustes
+DECISIONES: D-120, D-122, D-123, D-126, D-127 y D-130.
+ZONAS PROTEGIDAS: supabase/.
+
+INCLUYE:
+1. Consentimiento de datos de salud, por espacio (cliente y negocio):
+   si lo dio, cuándo y qué versión del texto, y cuándo lo retiró.
+   Funciones para darlo y para retirarlo; retirarlo borra el peso,
+   las medidas y el texto de las notas del día de ese espacio
+   (D-126). Queda en audit_log, sin datos de salud.
+2. Peso corporal: fecha y peso en kg. Medidas: fecha, cuál (lista
+   cerrada de D-127, con lado en brazo, muslo y gemelo) y valor en
+   cm. Solo se escriben con el consentimiento dado (lo comprueba la
+   base de datos). Las notas del día del PR 3.2, igual: sin
+   consentimiento, se rechazan.
+3. Set-up del cliente: uno por cliente y ejercicio (hasta 500
+   caracteres), compartido entre rutinas (D-122).
+4. Ajustes de entreno del cliente, de la persona y no del negocio
+   (en profiles): descanso por defecto (2:00), arrancar el descanso
+   solo, sonido, vibración y cómo funciona "Igual" (D-120 y D-123).
+5. El interruptor de logros del negocio (D-130) en tenants.settings,
+   activado por defecto.
+6. Permisos y RLS: el cliente lee y escribe lo suyo; el coach lee el
+   peso, las medidas y el set-up de sus clientes (lo de salud, solo
+   con consentimiento) y no los escribe; nadie más.
+7. Tests pgTAP: aislamiento de cada tabla; sin consentimiento no se
+   escribe peso, medidas ni notas; retirarlo borra; el coach no
+   escribe; un cliente dado de baja no lee nada.
+
+NO INCLUYE: pantallas (PR 3.7, 3.9 y 3.10).
+
+SI PASA DE 300 LÍNEAS, se parte así:
+- 3.3a: consentimiento, peso y medidas (puntos 1 y 2, con sus tests).
+- 3.3b: set-up, ajustes y el interruptor (puntos 3 a 5, con sus
+  tests).
+
+CRITERIOS DE ACEPTACIÓN:
+1. npm run db:reset y npm run db:test terminan sin errores.
+2. La descripción del PR dice qué test cubre cada regla del punto 7.
+3. La app arranca y se ve igual que antes de este PR.
+```
+
+### PR 3.4 — Guardado en el móvil
+
+```
+TAREA: que la app guarde en el teléfono lo necesario para entrenar
+sin cobertura, y una cola de lo pendiente de subir.
+RAMA: feat/guardado-en-el-movil
+DECISIONES: D-116, D-118 y D-135.
+ZONAS PROTEGIDAS: src/core/native (envoltorio del almacén del
+teléfono, @capacitor/preferences, y de @capacitor/app para saber
+cuándo se vuelve a la app) y src/core/auth si cerrar sesión tiene que
+avisar de lo pendiente.
+
+INCLUYE:
+1. El módulo workouts (npm run new:module workouts), con su README y
+   su manifest, todavía sin pantallas.
+2. Un almacén en el móvil: guardar, leer y borrar, validado con Zod
+   al leer. En el navegador (desarrollo y tests), el del navegador.
+3. Al abrir la app o volver a ella con conexión: se descarga la
+   rutina vigente entera y, de cada ejercicio, lo de la vez anterior
+   (D-120: mismo día de la rutina; si no, cualquier día). Sin
+   conexión, se usa lo guardado.
+4. La cola de subida: lo pendiente se sube solo al haber conexión,
+   en orden, y se reintenta si falla. Si la base de datos lo rechaza
+   porque el cliente ya no tiene acceso, se avisa (D-118) y se
+   registra el error sin datos personales.
+5. Cerrar sesión con algo pendiente pregunta antes (D-118).
+6. Tests unitarios de la cola (sube, reintenta, no duplica, rechazo).
+
+NO INCLUYE: pantallas de entreno (PR 3.5); el cronómetro (PR 3.7).
+
+CRITERIOS DE ACEPTACIÓN:
+1. En el móvil, entro como Ana con wifi. Quito el wifi y los datos,
+   cierro la app (quitándola de la multitarea) y la abro: veo su
+   rutina y el día de hoy.
+2. Lo mismo apagando el móvil del todo y encendiéndolo.
+3. En el navegador, todo sigue igual que antes.
+```
+
+### PR 3.5 — Apuntar un entreno
+
+```
+TAREA: que el cliente empiece un entreno y apunte sus series, en la
+app del móvil.
+RAMA: feat/modulo-workouts
+DECISIONES: D-116, D-119 y D-120.
+ZONAS PROTEGIDAS: ninguna. Si la tarjeta del inicio necesita algo
+nuevo de src/core/modules, se enseña antes al propietario.
+
+INCLUYE:
+1. "Iniciar entreno" en la tarjeta "Hoy toca" del inicio del cliente,
+   que pasa a ser de workouts (usa el cálculo de programs por su
+   index; la de programs se quita), y en cada día de "Entreno" (un
+   enlace a la ruta de workouts, sin importarlo). En la web: "Para
+   entrenar, abre la app en tu móvil".
+2. El resumen del día: sus ejercicios con su anillo de series hechas
+   ("1/3"), el total ("6/20 series") y "Terminar entreno" (el cierre
+   completo llega en el PR 3.6).
+3. Un ejercicio por pantalla: nombre, "Ejercicio 3 de 7" con la fila
+   de puntos, deslizar al siguiente, y sus series.
+4. Cada serie: peso, repeticiones e intensidad (RIR o RPE según el
+   negocio, y "F" al fallo) con − y + grandes y teclado al tocar el
+   número; los pasos de D-120. Ejercicios de tiempo, en segundos; de
+   distancia, en metros. Peso en la unidad del cliente.
+5. En gris, lo de la vez anterior (D-120). La serie se ilumina con el
+   color de la marca al cambiar un dato o al pulsar "Igual";
+   tocándola, se desmarca. Sin botón "Marcar serie hecha".
+6. "Igual" con la forma por defecto de D-120 (el ajuste llega en el
+   PR 3.7). "+ Serie".
+7. Cada cambio se guarda en el móvil al instante (PR 3.4) y va a la
+   cola de subida.
+8. Con un entreno abierto, abrir la app lleva directo al ejercicio
+   que toca (D-119). Un solo entreno abierto a la vez.
+9. Test de extremo a extremo (flujo crítico "registrar entreno",
+   AGENTS.md §6): Ana inicia el lunes, apunta 3 series y las sigue
+   viendo al recargar.
+
+NO INCLUYE: cierre automático, resumen final y "Descartar" (PR 3.6);
+cronómetro (PR 3.7); unilaterales, grupos, cambiar y saltar (PR 3.8);
+notas y set-up (PR 3.10).
+
+SI PASA DE 300 LÍNEAS, se parte así:
+- 3.5a: iniciar, el resumen del día, la pantalla del ejercicio y las
+  series con − y + y teclado (puntos 1 a 4 y 7). Criterios 1 a 3.
+- 3.5b: el gris, iluminar, "Igual", "+ Serie", ir directo y el test
+  (puntos 5, 6, 8 y 9). Criterios 4 a 7.
+
+CRITERIOS DE ACEPTACIÓN:
+1. En el móvil, como Ana, "Hoy toca" tiene "Iniciar entreno". En la
+   web, en su lugar, "Para entrenar, abre la app en tu móvil".
+2. Inicio el lunes: veo sus 7 ejercicios y "0/20 series". Entro en
+   "Flexiones con mochila": "Ejercicio 1 de 7" y tres series.
+3. Pongo 10 kg de lastre con + y 12 repeticiones con el teclado: la
+   serie 1 se ilumina. El resumen dice "1/20".
+4. Toco la serie iluminada: se apaga.
+5. Entro como Bruno: los pesos salen en libras.
+6. Cierro la app a mitad y la abro: estoy en el mismo ejercicio, con
+   lo apuntado.
+7. La siguiente vez que hago el lunes, en la serie 1 veo en gris
+   "10 × 12" y "Igual" lo copia.
+```
+
+### PR 3.6 — Subida, cierre y resumen
+
+```
+TAREA: que un entreno se cierre y se suba solo, sin perder nada.
+RAMA: feat/cerrar-entreno
+DECISIONES: D-118, D-119 y D-124.
+ZONAS PROTEGIDAS: src/core/native (notificación local del
+recordatorio de las 6 horas, @capacitor/local-notifications).
+
+INCLUYE:
+1. Se cierra solo cuando todas las series de todos los ejercicios
+   están hechas o el ejercicio está saltado; "Terminar entreno" a
+   mano; "Descartar entreno" con confirmación. Uno sin series hechas
+   no se guarda.
+2. El resumen final: duración, series hechas y ejercicios (los
+   récords y los minilogros se añaden en los PR 3.15 y 3.17).
+3. La fecha del entreno es la del último dato cambiado (D-119).
+4. A las 6 horas de la última serie, recordatorio en el móvil
+   (notificación local, también sin cobertura). A las 12 horas sin
+   tocarlo, se cierra solo y al abrir la app sale "Guardamos tu
+   entreno del lunes".
+5. "Pendiente de subir" a la vista mientras haya algo en la cola.
+6. Dos móviles (D-124): "Este entreno está abierto en otro
+   dispositivo" y "Seguir aquí".
+7. Si el coach cambió la rutina, el entreno empezado sigue con la
+   suya (D-124).
+
+NO INCLUYE: el cronómetro (PR 3.7); el historial y corregir (PR 3.11).
+
+CRITERIOS DE ACEPTACIÓN:
+1. Con el wifi y los datos apagados, como Ana, inicio el lunes,
+   apunto 3 series, cierro la app y la abro: siguen ahí. Enciendo el
+   wifi: "Pendiente de subir" desaparece, y en Studio está el
+   entreno.
+2. Apunto todas las series del lunes: el entreno se cierra solo y veo
+   el resumen.
+3. Empiezo otro, apunto una serie y no lo toco: a las 6 horas me
+   llega el recordatorio (el PR explica cómo acortar el tiempo para
+   probarlo).
+4. Un entreno que empiezo un día y cierro al siguiente queda con la
+   fecha del día en que apunté la última serie.
+5. Con un entreno abierto, el coach cambia la rutina y guarda: el
+   entreno sigue igual; el siguiente ya trae el cambio.
+6. "Descartar entreno" lo borra tras confirmar.
+```
+
+### PR 3.7 — Cronómetro de descanso
+
+```
+TAREA: el cronómetro de descanso, siempre a la vista, con aviso al
+terminar aunque la pantalla esté apagada.
+RAMA: feat/cronometro
+DECISIONES: D-120, D-123 y D-135.
+ZONAS PROTEGIDAS: src/core/native (notificación local y vibración,
+@capacitor/local-notifications y @capacitor/haptics).
+
+INCLUYE:
+1. Arranca solo con el primer cambio de una serie o con "Igual";
+   corregir esa serie no lo reinicia.
+2. El descanso: el del coach en ese ejercicio; si no hay, el del
+   cliente (2:00 de partida); el cambio a mano vale solo para ese
+   entreno.
+3. Barra fija en todas las pantallas del entreno: tiempo que queda,
+   pausar, parar, saltar, +15 s y −15 s, y atajos (1:00, 1:30, 2:00,
+   3:00).
+4. Al llegar a cero: sonido corto, vibración y notificación, también
+   con la pantalla apagada o en otra app. La cuenta se calcula con la
+   hora de inicio: al volver a la app, es correcta.
+5. Perfil → "Entreno" (ajustes del PR 3.3): descanso por defecto,
+   arrancar el descanso solo, sonido, vibración y cómo funciona
+   "Igual" (D-120).
+6. Tests unitarios del cálculo del tiempo y del descanso que toca.
+
+NO INCLUYE: el cronómetro en superseries y unilaterales (PR 3.8).
+
+CRITERIOS DE ACEPTACIÓN:
+1. Como Ana, apunto una serie: arranca el descanso de 2:00 (el del
+   coach) y lo sigo viendo en la barra al pasar a otro ejercicio.
+2. Bloqueo el móvil: al llegar a cero suena, vibra y sale la
+   notificación.
+3. Con música puesta, se oye el aviso. El PR dice si el sistema baja
+   la música un momento; si no lo hace, queda anotado como mejora.
+4. Lo cambio a mano a 3:00 en ese entreno; en el siguiente vuelve a
+   2:00 y la rutina del coach no ha cambiado.
+5. En el Perfil apago "Arrancar el descanso solo": al apuntar ya no
+   arranca; lo arranco a mano desde la barra.
+6. Cambio "Igual" a "copiar la serie anterior de hoy": en la serie 2,
+   "Igual" copia la serie 1 de hoy.
+```
+
+### PR 3.8 — Unilaterales, grupos, cambiar y saltar
+
+```
+TAREA: que se pueda apuntar cualquier ejercicio de una rutina real.
+RAMA: feat/entreno-completo
+DECISIONES: D-121 y D-122.
+
+INCLUYE:
+1. Unilaterales: derecha e izquierda en cada serie, cada una con su
+   peso, repeticiones e intensidad; "Igual" copia los dos lados; el
+   descanso arranca cuando están los dos.
+2. Superseries y circuitos (D-113): al apuntar una serie, la app pasa
+   al siguiente del grupo en la misma serie; el descanso arranca al
+   acabar la ronda. La marca "Superserie · 1 de 2" a la vista.
+3. "Cambiar ejercicio": buscador de los ejercicios del negocio
+   (ExercisePicker de exercises), solo para hoy; lo apuntado cuenta
+   para el ejercicio hecho; se ve "Cambiado por …".
+4. "Saltar ejercicio" y deshacerlo.
+
+NO INCLUYE: avisar al coach de los cambios (PR 3.14).
+
+CRITERIOS DE ACEPTACIÓN:
+1. Como Bruno, en "Curl banco Scott unilateral" apunto derecha 30 × 9
+   e izquierda 30 × 8; el descanso arranca al apuntar la izquierda.
+2. Con dos ejercicios del lunes de Ana agrupados (desde el editor):
+   tras la serie 1 del primero paso solo al segundo, y el descanso
+   arranca tras él.
+3. En Ana, cambio un ejercicio por otro y apunto: el resumen dice
+   "Cambiado por …", y la vez siguiente el gris del original sigue
+   siendo el de antes.
+4. Salto un ejercicio y apunto todo lo demás: el entreno se cierra
+   solo.
+5. Como Diego, la plancha pide segundos.
+```
+
+### PR 3.9 — Consentimiento, peso corporal y medidas
+
+```
+TAREA: pedir el consentimiento de datos de salud y que el cliente
+apunte su peso y sus medidas.
+RAMA: feat/peso-y-medidas
+DECISIONES: D-116, D-126 y D-127.
+ZONAS PROTEGIDAS: src/core/tenancy (el consentimiento es de cada
+espacio y lo usan varios módulos: por ejemplo useHealthConsent) y
+src/app/client si la ventana sale al entrar en el espacio.
+
+INCLUYE:
+1. La ventana del consentimiento, con el texto en borrador de D-126,
+   al entrar por primera vez en el espacio de un coach (también a los
+   clientes que ya existen). "Acepto" y "Ahora no". Con "Ahora no", se
+   vuelve a pedir al intentar apuntar peso, medidas o notas.
+2. Perfil → "Datos de salud": ver si está dado, darlo y retirarlo
+   (con confirmación: borra peso, medidas y notas de ese espacio).
+3. Peso corporal: en el inicio del cliente, el último ("85 kg ·
+   apuntado el 16 nov"), "Actualizar" e historial. En la app y en la
+   web. En la unidad del cliente.
+4. Medidas: la lista de D-127, apuntar las que quiera con fecha, y su
+   historial. En cm o pulgadas.
+5. Lastre: con consentimiento y peso apuntado, el ejercicio de peso
+   corporal enseña "Lastre 10 · Total 95 kg" (D-127).
+6. Los datos los lleva workouts (los necesita para el total con
+   lastre; progress los leerá por su index, ARQUITECTURA §6).
+
+NO INCLUYE: las gráficas de peso y medidas (PR 3.16); lo que ve el
+coach (PR 3.13).
+
+SI PASA DE 300 LÍNEAS, se parte así:
+- 3.9a: consentimiento y peso corporal (puntos 1, 2, 3, 5 y 6).
+  Criterios 1, 2, 4 y 5.
+- 3.9b: medidas (punto 4). Criterio 3.
+
+CRITERIOS DE ACEPTACIÓN:
+1. Entro como Ana: sale la ventana del consentimiento. Con "Ahora
+   no", al ir a apuntar mi peso me lo vuelve a pedir.
+2. Acepto, apunto 85 kg y en "Flexiones con mochila" veo "Total 95
+   kg" con 10 de lastre.
+3. Apunto cintura 82 cm y brazo derecho 38: salen en su historial.
+4. En la web, como Ana, apunto mi peso: funciona.
+5. Retiro el consentimiento: tras confirmar, el peso y las medidas
+   desaparecen y el lastre vuelve a salir solo.
+```
+
+### PR 3.10 — Notas del día, set-up y "¿Seguro?"
+
+```
+TAREA: las notas del día, el set-up de cada ejercicio y el aviso de
+un peso que no cuadra.
+RAMA: feat/notas-y-setup
+DECISIONES: D-120, D-122 y D-126.
+
+INCLUYE:
+1. Nota del día en cada ejercicio del entreno (abajo, hasta 500
+   caracteres). Sin consentimiento, lo pide.
+2. Set-up del cliente en cada ejercicio, compartido entre rutinas:
+   se escribe y se guarda desde el entreno ("Asiento 2 · Agarre
+   línea 3").
+3. En el mismo sitio, lo del coach: las instrucciones del ejercicio y
+   su nota en la rutina.
+4. "¿Seguro?" si el peso cambia más de un 50 % respecto a la vez
+   anterior (D-120).
+5. Todo se guarda en el móvil y se sube como el resto (D-118).
+
+CRITERIOS DE ACEPTACIÓN:
+1. En "Remo Gironda agarre amplio" escribo el set-up "Asiento 2"; si
+   el coach pone ese ejercicio en otro día, sale el mismo set-up.
+2. Escribo la nota "Dolor de hombro": queda en ese entreno y no en el
+   siguiente.
+3. Veo la nota del coach y las instrucciones del ejercicio.
+4. Con 35 kg la vez anterior, escribo 5.9: sale "¿Seguro? La vez
+   anterior fueron 35 kg".
+5. Sin wifi, escribo una nota y el set-up, cierro la app y la abro:
+   siguen ahí.
+```
+
+### PR 3.11 — Historial del cliente y corregir
+
+```
+TAREA: que el cliente vea sus entrenos y corrija uno durante 7 días.
+RAMA: feat/historial-de-entrenos
+DECISIONES: D-116, D-124 y D-129.
+
+INCLUYE:
+1. "Mis entrenos": del más nuevo al más viejo, con fecha, día de la
+   rutina, series hechas y las marcas "Editado" y "Pendiente de
+   subir". En la app y en la web (en la web, solo lectura).
+2. Un entreno: cada ejercicio con sus series como "45×8(1) /
+   45×7(1)", "(F)" al fallo, los lados en los unilaterales, la nota,
+   lo cambiado y lo saltado.
+3. "Corregir", en la app, durante 7 días desde que se cerró. Después,
+   solo lectura. La corrección se guarda en el móvil y se sube.
+4. Los entrenos de rutinas anteriores salen con el nombre de su
+   rutina.
+
+CRITERIOS DE ACEPTACIÓN:
+1. Como Ana, tras dos entrenos, los veo en "Mis entrenos" con sus
+   series en formato "10×12(1)".
+2. Corrijo un peso del entreno de ayer: queda con "Editado".
+3. En la web veo mis entrenos, pero no puedo corregirlos.
+4. Un entreno de hace más de 7 días (el agente lo prepara en el seed)
+   no tiene "Corregir".
+```
+
+### PR 3.12 — El día saltado
+
+```
+TAREA: aplicar la regla del día saltado que elija el coach para cada
+cliente.
+RAMA: feat/dia-saltado
+DECISIONES: D-082, D-105 y D-125.
+
+INCLUYE:
+1. La lógica pura en programs/model (el calendario con días faltados
+   y las tres reglas), con tests unitarios de cada una: "se pierde",
+   "se recupera en el siguiente descanso" (por orden si hay varios) y
+   "se mueve todo" (también el fin de cada bloque). Una rutina
+   próxima empieza en su fecha.
+2. La app del cliente, al abrirse, apunta los días faltados desde la
+   última vez (función del PR 3.2), con la fecha del móvil.
+3. "Hoy toca" y "Entreno" usan la regla: "Hoy toca: Lunes
+   (recuperar)"; "Lunes, hecho el martes".
+4. Modo lista: el bloque avanza por entrenos hechos (D-125).
+5. El coach elige la regla en la pestaña "Rutina" de la ficha, con una
+   línea que explica cada una. "Asignadas" y los avisos usan las
+   fechas movidas.
+
+CRITERIOS DE ACEPTACIÓN (el PR explica cómo simular días para
+probarlo):
+1. Ana con "Se pierde": sin entrenar el lunes, el martes es
+   descanso, y el lunes sale como faltado.
+2. Cambio a Ana a "Se recupera": tras faltar el lunes, el martes
+   (descanso) sale "Hoy toca: Lunes (recuperar)".
+3. Cambio a Bruno a "Se mueve todo": tras faltar un día, su ciclo de
+   8 días se mueve uno, y en "Asignadas" su bloque termina un día más
+   tarde.
+4. Diego (lista): el bloque avanza al completar sus entrenos, no por
+   fechas.
+```
+
+### PR 3.13 — Pestaña "Entrenos" en la ficha del cliente
+
+```
+TAREA: que el coach vea los entrenos, el peso y las medidas de cada
+cliente.
+RAMA: feat/entrenos-en-la-ficha
+DECISIONES: D-124, D-126, D-127 y D-128.
+
+INCLUYE:
+1. Pestaña "Entrenos" en la ficha (la aporta workouts por su
+   manifest, D-109): lista con fecha, día, series hechas y las marcas
+   "En curso", "Editado" y "Faltado".
+2. Un entreno por dentro: series como en el Excel, flecha frente a la
+   vez anterior, notas del día, set-up, cambiado y saltado, duración.
+3. Peso corporal y medidas del cliente si dio el consentimiento; si
+   no, "Tu cliente no ha dado permiso para compartir sus datos de
+   salud".
+4. Móvil y ordenador, con las mismas funciones.
+
+CRITERIOS DE ACEPTACIÓN:
+1. Ana hace un entreno; como coach.iron, en su ficha → "Entrenos", lo
+   veo con sus series y su nota.
+2. Un entreno a medias de Ana, ya subido, sale "En curso".
+3. Veo su peso (85 kg) y sus medidas.
+4. Bruno no ha dado el consentimiento: sale el aviso y no veo nada de
+   salud.
+5. coach.norte no puede ver nada de Ana (lo garantiza el RLS).
+```
+
+### PR 3.14 — Actividad y avisos del coach
+
+```
+TAREA: que el coach se entere de un vistazo de lo que hace cada
+cliente.
+RAMA: feat/actividad-del-coach
+DECISIONES: D-114 y D-128.
+
+INCLUYE:
+1. Tarjeta "Actividad" en el inicio del coach (homeCards): lo último
+   arriba, "Ana terminó Lunes · 2 récords · cambió 1 ejercicio · 1
+   nota"; lo no abierto, marcado (lo abierto se recuerda en el
+   dispositivo del coach). Cada línea lleva al entreno.
+2. Avisos: "Sin entrenar desde hace 7 días" y "Cambió Press
+   horizontal 3 veces en 4 semanas", con enlace a la ficha.
+3. Sin actividad: "Aún no hay entrenos de tus clientes".
+
+CRITERIOS DE ACEPTACIÓN:
+1. Ana termina un entreno: en el inicio del coach sale arriba, marcado
+   como nuevo; al abrirlo deja de estarlo.
+2. Un cliente sin entrenos desde hace más de 7 días (el seed lo
+   prepara) sale en los avisos.
+3. Ana cambia el mismo ejercicio en 3 entrenos: sale el aviso.
+```
+
+### PR 3.15 — Módulo progress: historial, RM y récords
+
+```
+TAREA: el progreso de cada ejercicio, para el cliente y para el
+coach.
+RAMA: feat/modulo-progress
+DECISIONES: D-129.
+
+INCLUYE:
+1. El módulo progress (npm run new:module progress), con "Progreso"
+   en la barra del cliente (/client/progress) y la pestaña "Progreso"
+   en la ficha del cliente.
+2. Los ejercicios hechos, agrupados por rutina (también las
+   anteriores), con el último y el récord.
+3. El historial de cada ejercicio en texto: "DIA 1: 45×8(1) /
+   45×7(1)", con fecha y la marca de nota.
+4. RM estimado (Epley sumando el RIR; con RPE, RIR = 10 − RPE; no con
+   más de 12) y récords (peso máximo y RM). Si el resumen del entreno
+   también los usa, la lógica vive en workouts/model y progress la
+   toma por su index. Tests unitarios.
+5. Los récords salen en el resumen del entreno (PR 3.6) y en la
+   tarjeta de actividad del coach (PR 3.14).
+
+CRITERIOS DE ACEPTACIÓN:
+1. Ana, tras 3 entrenos del lunes, ve en "Progreso" sus ejercicios, y
+   en "Flexiones con mochila" su historial "DIA 1 … DIA 3".
+2. 50 × 6 (RIR 0) da un RM estimado de 60 kg; 80 × 8 (RIR 2), 106,7.
+3. Bato un peso máximo: el resumen del entreno dice "Récord".
+4. El coach ve lo mismo en la pestaña "Progreso" de Ana.
+```
+
+### PR 3.16 — Gráficas
+
+```
+TAREA: las gráficas del progreso, sin librería.
+RAMA: feat/graficas
+DECISIONES: D-127, D-129 y D-135.
+ZONAS PROTEGIDAS: src/core/ui si la gráfica la usan dos módulos
+(progress y workouts, para el peso corporal).
+
+INCLUYE:
+1. Una gráfica de línea propia (SVG): tocar o deslizar enseña el
+   valor; colores de la marca.
+2. Por ejercicio: peso máximo, RM estimado, volumen y repeticiones,
+   con último, récord y % de progreso por RM (D-129). Periodo: 4
+   semanas, 3 meses o todo.
+3. Peso corporal y cada medida, con su gráfica.
+4. Debajo de la gráfica, el entreno elegido con sus series y su nota.
+
+CRITERIOS DE ACEPTACIÓN:
+1. Ana ve la gráfica de RM de un ejercicio con 3 entrenos; tocando un
+   punto, su valor y su fecha.
+2. El % de progreso cambia al pasar de "4 semanas" a "Todo".
+3. Ve la gráfica de su peso corporal.
+4. En el móvil y en el ordenador se ve bien.
+```
+
+### PR 3.17 — Minilogros, racha, niveles y logros
+
+```
+TAREA: lo que motiva al cliente a seguir.
+RAMA: feat/logros
+DECISIONES: D-130.
+
+INCLUYE:
+1. Minilogro al apuntar una serie que mejora la misma serie de la vez
+   anterior (D-130), y la cuenta en el resumen del entreno.
+2. Racha de semanas completas (D-130), en el inicio del cliente, con
+   la semana (L a D) marcando lo hecho.
+3. Niveles por entrenos terminados: 1 Novato (0), 2 Constante (5), 3
+   Comprometido (10), 4 Disciplinado (25), 5 Fuerte (50), 6 Imparable
+   (100), 7 Leyenda (200). Nombres provisionales.
+4. Logros (18): primer entreno; primera semana completa; 10, 25, 50,
+   100 y 200 entrenos; primer récord; 10 y 50 récords; 4, 12 y 26
+   semanas seguidas; primer minilogro; 100 minilogros; primer peso
+   corporal apuntado; primer entreno de más de 60 minutos; un mes sin
+   faltar ningún día. Con su icono, y bloqueados los que faltan.
+5. El interruptor del coach: Ajustes → "Entrenamiento" → "Logros y
+   motivación". Apagado, no sale nada de esto.
+6. Todo se calcula a partir de los entrenos. Tests unitarios.
+
+CRITERIOS DE ACEPTACIÓN:
+1. Ana hizo 80 × 12 la vez anterior; hoy apunta 80 × 13: sale un
+   minilogro.
+2. Ana completa los 4 días de su semana: su racha sube a 1 y gana
+   "Primera semana completa".
+3. Tras su primer entreno, "Primer entreno" desbloqueado y nivel 1.
+4. El coach apaga los logros: Ana no ve nada de esto.
+```
+
+### PR 3.18 — Descargar en Excel
+
+```
+TAREA: descargar los entrenos en Excel, con el formato de la app de
+apuntes del propietario. Cierra la Fase 3.
+RAMA: feat/excel
+DECISIONES: D-131 y D-135.
+
+INCLUYE:
+1. "Descargar Excel" en "Progreso" del cliente y en la ficha del
+   cliente para el coach. En la app (se comparte o se guarda con el
+   menú del móvil) y en la web (se descarga).
+2. Hoja "Día a día": fecha · rutina · día; cada ejercicio con sus
+   series "45X8(1)" y su nota.
+3. Una hoja por rutina: cada ejercicio con sus entrenos (día, fecha,
+   series y nota).
+4. Hoja "Peso corporal", si hay consentimiento.
+5. Librería write-excel-file (D-135).
+6. docs/ESTADO.md y CONTEXTO.md: la Fase 3 queda terminada.
+
+CRITERIOS DE ACEPTACIÓN:
+1. Como Ana, descargo el Excel y lo abro: "Día a día", una hoja por
+   rutina y "Peso corporal", como en la app de apuntes.
+2. Como coach.iron, descargo el de Ana desde su ficha.
+3. Sin consentimiento, no hay hoja de peso.
+```

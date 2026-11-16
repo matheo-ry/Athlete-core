@@ -1,6 +1,6 @@
 # ATHLETE CORE
 
-App para coaches de gimnasio y sus clientes. Una sola app (web, iOS y Android): el coach crea rutinas y sigue a sus clientes; el cliente entra con el código de su coach, ve su marca y registra sus entrenos.
+App para coaches de gimnasio y sus clientes. Una sola app (web, iOS y Android): el coach crea rutinas y sigue a sus clientes; el cliente entra con el código de su coach, ve su marca y registra sus entrenos. Los entrenos se registran solo en la app del móvil; la web sirve para todo lo demás.
 
 ## Por dónde empezar
 

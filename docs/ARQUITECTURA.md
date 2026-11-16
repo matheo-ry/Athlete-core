@@ -5,7 +5,7 @@ Los cambios en este documento los aprueba el propietario.
 
 ## 1. Resumen
 
-- **Una sola app**, con el mismo código para web, iOS y Android.
+- **Una sola app**, con el mismo código para web, iOS y Android. Los entrenos se empiezan y se registran solo en la app del móvil; la web sirve para todo lo demás (DECISIONES D-116).
 - **Dos perfiles** dentro de esa app: **coach** y **cliente**. Mismo inicio de sesión; el rol decide qué se ve.
 - **Cada coach es un tenant**: un negocio con sus clientes, sus rutinas y su marca. Los datos de un tenant están aislados de los demás en la propia base de datos.
 - El cliente descarga la app, crea su cuenta, escribe **el código de su coach** y a partir de ahí ve el nombre, el logo y los colores de su coach.
@@ -362,7 +362,9 @@ Cada archivo se guarda en una ruta que empieza por el `tenant_id`, con política
 
 - Capacitor empaqueta la misma app web para iOS y Android. No hay código separado por plataforma.
 - Las funciones nativas (notificaciones, cámara, salud) se usan solo a través de `core/native`, para que el resto del código no dependa de Capacitor.
-- `android/` e `ios/` se generan en la Fase 4 y se guardan en Git.
+- `android/` se genera en la Fase 3 (PR 3.1) e `ios/` en la Fase 4. Los dos se guardan en Git.
+- Si se puede registrar un entreno lo decide `core/native` (¿estamos en la app instalada?). En desarrollo y en los tests se activa en el navegador con una variable de entorno; nunca en la web publicada (DECISIONES D-116).
+- Los entrenos se guardan en el almacén del teléfono y se suben solos al tener conexión (DECISIONES D-118).
 - La compilación de iOS se hace en un servicio en la nube, sin necesidad de Mac.
 
 ## 13. Comandos, tests y CI
@@ -394,7 +396,7 @@ El CI se ejecuta en cada Pull Request:
 Para no dispersarse, esto **no** se construye hasta que su fase llegue:
 
 - Pagos (suscripción del coach y cobros del coach a sus clientes).
-- Modo sin conexión completo.
+- Modo sin conexión para toda la app. Desde la Fase 3, registrar entrenos sí funciona sin conexión (DECISIONES D-118); el resto sigue D-061.
 - Notificaciones push.
 - Chat.
 - Integraciones de salud y relojes.

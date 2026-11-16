@@ -43,12 +43,31 @@
    - Del lastre: sirve para la salud y el control; "mismas repes pesando más es avance; una repe más pesando menos puede ser estancamiento".
 8. **Rapidez**: entrar casi directo al entreno. **Con un entreno empezado, cada vez que abre la app va directo al ejercicio que le toca.**
 
-## DECISIÓN DEL PROPIETARIO: NADA DE WEB (2026-11-16)
+## DECISIÓN DEL PROPIETARIO: ENTRENAR, SOLO EN LA APP DEL MÓVIL (2026-11-16, corregida)
 
-- **La app es solo descargada (iOS y Android). Nada de web, ni ahora ni nunca.** Era una idea y la rechaza. En el futuro puede haber app propia de cada coach, pero no web.
-- **Hay que cambiar todo lo escrito que diga que la app funciona en web**: AGENTS.md §1, ARQUITECTURA §1, §2 (hosting web, P-03), §3 (vista previa por PR), §12, D-001, CONTEXTO.md, ESTADO.md (Fase 4 "Publicación de la web") y lo que salga al buscar. AGENTS.md y ARQUITECTURA son zona protegida: se enseña el cambio exacto antes de escribirlo.
-- Consecuencias que hay que hablar con él: el coach en el ordenador (D-085), las pruebas de la Fase 3 en el móvil (adelantar el proyecto nativo de Android), y la página de pago del coach (Fase 5, normas de Apple y Google). Con app nativa desaparece el límite de Safari (7 días) y se puede tener alarma con la pantalla apagada.
-- Seguir usando el navegador **para desarrollar y para los tests** no es "web": es una herramienta, no algo que se publica.
+- Primero dijo "nada de web, nunca"; **después lo corrigió: fue un error de interpretación suyo.**
+- **Lo que vale:** la web existe y coaches y clientes entran como siempre (ver su semana, su rutina, su progreso, ajustes…). **Lo único que no se puede hacer en la web es empezar o registrar un entreno: eso, solo en la app del móvil** (Android e iOS).
+- Hay que **aclararlo en todos los sitios** donde se habla de la web: AGENTS.md §1, ARQUITECTURA §1, §2, §12 y §14, D-001, README.md, CONTEXTO.md y ESTADO.md. AGENTS.md y ARQUITECTURA son zona protegida: enseñar el cambio exacto antes.
+- El coach: web, app del móvil y, más adelante, posible app de escritorio.
+- Consecuencias: el límite de Safari (7 días, modo privado) deja de importar, porque los entrenos solo se guardan en la app; la alarma con la pantalla apagada es posible desde la Fase 3.
+
+## Respuestas de la tanda 3
+
+1. **Coach con ordenador**: web y app del móvil; posibilidad futura de app de escritorio.
+2. **App de Android en la Fase 3**: sí, en el primer PR. Su móvil es Android. Tiene un iPhone a mano solo los fines de semana (de su pareja).
+3. **Cierre del entreno**: se cierra solo con todo hecho (o saltado o cambiado) y resumen con logros; a las 12 h sin tocarlo se cierra solo con la fecha del último dato; antes, al abrir la app va directo a él; siempre "Terminar entreno". **Además: a las 6 h de tener el entreno abierto, un recordatorio** de que sigue abierto, para cerrarlo o apuntar lo que se hizo o si se saltó un ejercicio.
+4. **Corregir**: en el historial, durante 7 días; el coach ve "editado". Así lo tiene en su app.
+5. **Dos móviles**: como la recomendación.
+6. **Coach cambia la rutina a mitad**: como la recomendación (el entreno empezado sigue con la rutina que tenía).
+7. **Cronómetro**: a) **el cambio manual NO se recuerda**: es solo para ese día (por si iba con prisa); orden: lo del coach, si no el ajuste del cliente, y el cambio manual solo para ese entreno. b) ajuste para desactivar el arranque automático.
+8. **"La vez anterior"**: el mismo día de la rutina (lunes con lunes), y así en todo, porque un mismo ejercicio puede ir pesado un día y a más repeticiones otro.
+9. (Vacía: el propietario no escribió nada.)
+
+## Decidido por el chat de diseño (sin objeción del propietario)
+
+- Consentimiento al entrar por primera vez en el espacio de cada coach; "Ahora no" lo vuelve a pedir al apuntar peso o medidas. El texto dice que es solo entre coach y cliente para mejorar su servicio, y que ATHLETE CORE lo guarda por encargo del coach.
+- El ajuste del botón "Igual" es de cada cliente, en su Perfil.
+- Medidas corporales: Fase 3, en el lote del peso corporal.
 
 ## Respuestas de la tanda 2
 
@@ -63,6 +82,6 @@
 
 ## Cosas a tener en cuenta (detectadas por el chat de diseño)
 
-- La alarma con la pantalla apagada, la notificación y bajar la música **no se pueden hacer bien en la web**: necesitan la app nativa (notificación local, no push). Es justo una de sus quejas de Strong y Hevy. Con "nada de web", se propone adelantar la app nativa a la Fase 3.
+- La alarma con la pantalla apagada, la notificación y bajar la música **no se pueden hacer bien en la web**: necesitan la app nativa (notificación local, no push). Es justo una de sus quejas de Strong y Hevy. Se adelanta la app de Android a la Fase 3 (aprobado, tanda 3).
 - La nota del día puede contener lesiones o dolores: es dato de salud (P-12), igual que el peso corporal.
 - El "Total 85 kg" con lastre usa el peso corporal: dato de salud (P-12).

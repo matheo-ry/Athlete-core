@@ -923,9 +923,26 @@ Cómo añadir una: copia el formato, usa el siguiente número y no borres las an
   - **Si lo pegado lleva un ejercicio archivado** que la rutina de destino no tenía, la base de datos no lo admite (D-073) y la app lo explica: "Recupéralo en Ejercicios o quítalo de la rutina".
 - **Por qué:** el propietario pidió copiar a toda escala. Con el editor guardando un documento entero (D-079), copiar es mover piezas del documento sin tocar la base de datos hasta "Guardar cambios".
 
+### D-105 · Cómo asigna la base de datos una rutina
+- **Fecha:** 2026-11-16
+- **Decisión:** detalles del PR 2.12 que D-081 y D-083 no fijaban.
+  - **"Hoy" lo dice el dispositivo del coach** (D-082), no el servidor: las funciones reciben esa fecha y solo la aceptan si está a un día, como mucho, de la fecha del servidor.
+  - **La fecha de inicio** puede ser pasada o futura, hasta un año en cada sentido.
+  - **Con fecha de hoy o pasada,** todas las rutinas ya empezadas y sin terminar del cliente quedan terminadas. No se borran.
+  - **Con fecha futura, la próxima que hubiera se borra.** Nunca llegó a empezar: no tiene historia que guardar.
+  - **Al asignar a varios, o todos o ninguno:** si un cliente no vale (dado de baja o de otro negocio), no se asigna a nadie. Como mucho, 100 clientes de una vez.
+  - **Solo se asignan plantillas sin archivar.** La copia lleva el nombre de la plantilla y apunta de cuál salió.
+  - **Una rutina vacía** para un cliente nace como una plantilla nueva: un bloque sin fecha de fin con todos sus días de descanso.
+  - **Terminar y cancelar son dos operaciones distintas:** la vigente se termina (se guarda en "Anteriores"); la próxima se cancela (se borra). La rutina de un cliente dado de baja se puede terminar.
+  - **Reiniciar** cambia la fecha y el bloque de una rutina sin terminar, y trata a las demás rutinas del cliente como al asignar: para hoy o antes, las ya empezadas quedan terminadas; para una fecha futura, sustituye a la próxima. Una rutina terminada no se reinicia: se asigna otra.
+  - **Guardar como plantilla** copia la rutina del cliente entera, sin cliente ni fechas, con el nombre que escriba el coach. Cuenta para el tope de plantillas (D-086).
+  - **En `audit_log`** quedan `program.assigned`, `program.created_for_client`, `program.ended`, `program.canceled`, `program.restarted` y `program.saved_as_template`, solo con identificadores.
+- **Por qué:** con la fecha del servidor, un coach que asigna "para mañana" de noche podía dejar al cliente sin rutina unas horas por la diferencia horaria. Borrar la próxima sustituida evita acumular rutinas que nadie llegó a usar.
+- **Revisar si:** los coaches echan de menos recuperar una "próxima" que sustituyeron por error.
+
 ### D-106 · Los ejercicios de un día se editan de uno en uno
 - **Fecha:** 2026-11-16
-- **Decisión:** pedido por el propietario al probar el lote 3. (D-105 está en el PR 2.12a.)
+- **Decisión:** pedido por el propietario al probar el lote 3.
   - En el editor, el día enseña **una fila con los números de sus ejercicios, en orden** (1, 2, 3…; solo los que hay), y debajo **solo el ejercicio elegido**, con todos sus campos.
   - Se cambia de ejercicio **tocando su número** o, en el móvil, **deslizando hacia los lados**. Con muchos ejercicios, la fila de números se desliza.
   - Al **añadir, pegar o duplicar** se pasa al ejercicio nuevo. Al **subir o bajar** uno, se sigue viendo ese. Al cambiar de día se empieza por el primero.

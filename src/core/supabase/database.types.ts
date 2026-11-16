@@ -812,13 +812,44 @@ export type Database = {
     Functions: {
       accept_terms: { Args: { p_version: string }; Returns: undefined };
       archive_client: { Args: { p_tenant: string; p_user: string }; Returns: undefined };
+      assign_program: {
+        Args: {
+          p_clients: string[];
+          p_mode: string;
+          p_starts_on: string;
+          p_template: string;
+          p_tenant: string;
+          p_today: string;
+        };
+        Returns: Json;
+      };
       can_manage_logo: { Args: { p_object_name: string }; Returns: boolean };
+      cancel_next_program: {
+        Args: { p_program: string; p_tenant: string; p_today: string };
+        Returns: undefined;
+      };
       copy_exercise_library_to_all_tenants: {
         Args: Record<PropertyKey, never>;
         Returns: undefined;
       };
+      create_client_program: {
+        Args: {
+          p_client: string;
+          p_cycle_days: number;
+          p_mode: string;
+          p_name: string;
+          p_starts_on: string;
+          p_tenant: string;
+          p_today: string;
+        };
+        Returns: string;
+      };
       create_tenant: { Args: { p_coach_terms_version: string; p_name: string }; Returns: string };
       email_status: { Args: { p_email: string }; Returns: string };
+      end_program: {
+        Args: { p_program: string; p_tenant: string; p_today: string };
+        Returns: undefined;
+      };
       generate_invite_code: { Args: Record<PropertyKey, never>; Returns: string };
       is_exercise_in_my_programs: {
         Args: { p_exercise: string; p_tenant: string };
@@ -842,7 +873,21 @@ export type Database = {
       reactivate_client: { Args: { p_tenant: string; p_user: string }; Returns: undefined };
       regenerate_invite_code: { Args: { p_tenant: string }; Returns: string };
       remove_logo: { Args: { p_tenant: string }; Returns: undefined };
+      restart_program: {
+        Args: {
+          p_block: string;
+          p_program: string;
+          p_starts_on: string;
+          p_tenant: string;
+          p_today: string;
+        };
+        Returns: undefined;
+      };
       save_program: { Args: { p_program: Json; p_tenant: string }; Returns: Json };
+      save_program_as_template: {
+        Args: { p_name: string; p_program: string; p_tenant: string };
+        Returns: string;
+      };
       set_logo: { Args: { p_path: string; p_tenant: string }; Returns: undefined };
       set_program_archived: {
         Args: { p_archived: boolean; p_program: string; p_tenant: string };

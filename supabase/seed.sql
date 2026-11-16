@@ -322,3 +322,36 @@ set target_load_kg = 10
 from public.program_day_exercises de
 join public.exercises e on e.id = de.exercise_id
 where s.day_exercise_id = de.id and e.name = 'Flexiones con mochila';
+
+
+-- =====================================================================
+-- Rutinas asignadas (PR 2.12a): cada cliente con su copia de una
+-- plantilla. Las fechas, relativas al día en que se carga el seed.
+-- Ana: "Casa + Gym" (calendario). Bruno: "Pecho / Espalda y Brazo /
+-- Pierna" (calendario). Carla: ninguna. Diego: "Fuerza básica" en modo
+-- lista. Elena: "Fuerza básica" como próxima, para dentro de 7 días.
+-- Fran (dado de baja): "Fuerza básica", de antes de su baja.
+-- Se copian con private.copy_program, sin pasar por assign_program: el
+-- seed no actúa como ningún usuario y Fran ya está dado de baja.
+-- =====================================================================
+do $$
+declare
+  v_row record;
+begin
+  for v_row in
+    select p.tenant_id, p.id as template_id, p.name, p.created_by, a.client_id, a.starts_on, a.mode
+    from (values
+      ('Casa + Gym',                       '20000000-0000-4000-8000-000000000001'::uuid, current_date - 14, 'calendar'),
+      ('Pecho / Espalda y Brazo / Pierna', '20000000-0000-4000-8000-000000000002'::uuid, current_date - 3,  'calendar'),
+      ('Fuerza básica',                    '20000000-0000-4000-8000-000000000004'::uuid, current_date - 7,  'list'),
+      ('Fuerza básica',                    '20000000-0000-4000-8000-000000000005'::uuid, current_date + 7,  'calendar'),
+      ('Fuerza básica',                    '20000000-0000-4000-8000-000000000006'::uuid, current_date - 60, 'calendar')
+    ) as a (template_name, client_id, starts_on, mode)
+    join public.programs p on p.name = a.template_name and p.client_id is null
+  loop
+    perform private.copy_program(
+      v_row.tenant_id, v_row.template_id, v_row.name, v_row.client_id,
+      v_row.starts_on, v_row.mode, v_row.created_by);
+  end loop;
+end
+$$;

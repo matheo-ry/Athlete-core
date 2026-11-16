@@ -289,7 +289,8 @@
     "rest": "Descanso entre series: {{time}}",
     "coachNote": "Nota de tu coach",
     "instructions": "Cómo se hace",
-    "watchVideo": "Ver vídeo"
+    "watchVideo": "Ver vídeo",
+    "nextBlock": "El siguiente bloque empieza el {{date}}."
   },
   "blocks": {
     "label": "Bloques de la rutina",

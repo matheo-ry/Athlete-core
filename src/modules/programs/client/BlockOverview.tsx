@@ -1,6 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router';
 
+import { useLanguage } from '@/core/i18n';
 import { cn } from '@/core/lib';
 import { Card } from '@/core/ui';
 
@@ -8,6 +9,7 @@ import type { ClientProgram } from '../model/assignments';
 import type { ClientBlock } from '../model/client-view';
 import { dayCounts } from '../model/cycle-editor';
 import { useDayLabel, useDaySummary } from '../shared/useDayText';
+import { shortDate } from '../shared/useProgressText';
 
 interface BlockOverviewProps extends ClientBlock {
   program: ClientProgram;
@@ -15,7 +17,14 @@ interface BlockOverviewProps extends ClientBlock {
 }
 
 /** "Hoy toca" y los días del bloque en que va el cliente (D-084). */
-export function BlockOverview({ program, documentName, block, todayNumber }: BlockOverviewProps) {
+export function BlockOverview({
+  program,
+  documentName,
+  block,
+  todayNumber,
+  nextBlockStartsOn,
+}: BlockOverviewProps) {
+  const language = useLanguage();
   const { t } = useTranslation();
   const label = useDayLabel(block);
   const summary = useDaySummary();
@@ -85,6 +94,11 @@ export function BlockOverview({ program, documentName, block, todayNumber }: Blo
             </li>
           ))}
         </ul>
+        {nextBlockStartsOn === null ? null : (
+          <p className="text-muted mt-3 text-sm">
+            {t('programs.client.nextBlock', { date: shortDate(nextBlockStartsOn, language) })}
+          </p>
+        )}
       </Card>
     </div>
   );

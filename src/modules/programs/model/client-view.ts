@@ -1,5 +1,5 @@
 import type { ClientProgram } from './assignments';
-import { calendarPosition } from './calendar';
+import { calendarPosition, scheduleBlocks } from './calendar';
 import type { ProgramBlock, ProgramDocument } from './program-document';
 
 // Lo que necesita "Entreno" del cliente (PR 2.15, D-082 y D-084).
@@ -8,6 +8,8 @@ export interface ClientBlock {
   block: ProgramBlock;
   /** El día que toca hoy; vacío en modo lista (D-082). */
   todayNumber: number | null;
+  /** Cuándo empieza el bloque siguiente; vacío si este es el último (D-084). */
+  nextBlockStartsOn: string | null;
 }
 
 /**
@@ -27,5 +29,10 @@ export function clientBlock(
   }
   const todayNumber =
     program.mode === 'calendar' && position.status === 'running' ? position.dayNumber : null;
-  return { block, todayNumber };
+  // El cliente ve solo su bloque; del siguiente, cuándo empieza (PR 2.16).
+  const schedule = scheduleBlocks(program.blocks, program.startsOn, program.startBlockId);
+  const place = schedule.findIndex((item) => item.index === index);
+  const nextBlockStartsOn =
+    position.status === 'running' ? (schedule[place + 1]?.startsOn ?? null) : null;
+  return { block, todayNumber, nextBlockStartsOn };
 }

@@ -3,8 +3,25 @@ import type { Page } from '@playwright/test';
 
 import { chooseSpace, signIn } from './helpers';
 import { addExercise, openPruebaMonday } from './program-helpers';
+import {
+  E2E_PASSWORD,
+  createJoinedClient,
+  createTestBusiness,
+  rpc,
+  signInApi,
+} from './supabase-helpers';
 
 // Varios bloques en el editor (PR 2.16a), contra Supabase local.
+
+const suffix = () => Date.now().toString().slice(-5);
+
+/** La fecha del dispositivo dentro de N dias, AAAA-MM-DD. */
+function localDate(days: number): string {
+  const date = new Date();
+  date.setDate(date.getDate() + days);
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  return String(date.getFullYear()) + '-' + month + '-' + String(date.getDate()).padStart(2, '0');
+}
 
 const blocks = (page: Page) =>
   page.getByRole('list', { name: 'Blocks of the program' }).getByRole('button');
@@ -86,4 +103,64 @@ test('en el móvil se añade un bloque y se quita con confirmación', async ({ p
   await expect(page.getByText('Remove block 2 with all its days and exercises?')).toBeVisible();
   await page.getByRole('button', { name: 'Yes, remove' }).click();
   await expect(page.getByRole('list', { name: 'Blocks of the program' })).toHaveCount(0);
+});
+
+test('con dos bloques: "Bloque 1 de 2" en Asignadas, el cliente ve solo el suyo, y reiniciar desde el bloque 2 lo cambia', async ({
+  page,
+  browser,
+}) => {
+  const business = await createTestBusiness(`E2E Bloques ${suffix()}`);
+  const clientEmail = await createJoinedClient(business.code);
+  const client = await signInApi(clientEmail, E2E_PASSWORD);
+  const block = (name: string, laps: number | null) => ({
+    cycle_days: 2,
+    laps,
+    days: [
+      { day_number: 1, kind: 'training', name, exercises: [] },
+      { day_number: 2, kind: 'rest', exercises: [] },
+    ],
+  });
+  const saved = (await rpc(business.coach, 'save_program', {
+    p_tenant: business.tenantId,
+    p_program: { name: 'Dos bloques', blocks: [block('Fase A', 3), block('Fase B', null)] },
+  })) as { id: string };
+  const today = localDate(0);
+  await rpc(business.coach, 'assign_program', {
+    p_tenant: business.tenantId,
+    p_template: saved.id,
+    p_clients: [client.userId],
+    p_starts_on: today,
+    p_mode: 'calendar',
+    p_today: today,
+  });
+
+  // Criterio 5: en "Asignadas", el bloque en que va y cuándo termina.
+  await signIn(page, business.coachEmail, '/login', E2E_PASSWORD);
+  await expect(page).toHaveURL(/\/coach$/);
+  await page.goto('/coach/programs');
+  await page.getByRole('button', { name: 'Assigned' }).click();
+  await expect(
+    page.getByRole('list', { name: 'Clients and their programs' }).getByRole('listitem'),
+  ).toContainText('Dos bloques · Block 1 of 2 · Round 1 of 3');
+
+  // Criterio 6: la clienta ve los días del primer bloque y cuándo empieza el siguiente.
+  const context = await browser.newContext();
+  const clientPage = await context.newPage();
+  await signIn(clientPage, clientEmail, '/login', E2E_PASSWORD);
+  await clientPage.getByRole('link', { name: 'Training' }).first().click();
+  await expect(clientPage.getByRole('link', { name: 'Day 1 · Fase A' })).toBeVisible();
+  await expect(clientPage.getByText(/^The next block starts on /)).toBeVisible();
+  await expect(clientPage.getByText('Fase B')).toHaveCount(0);
+
+  // Criterio 7: el coach reinicia desde hoy en el bloque 2.
+  await page.goto(`/coach/clients/${client.userId}`);
+  await page.getByRole('button', { name: 'Restart from a date' }).click();
+  await page.getByLabel('From block').selectOption({ label: 'Block 2' });
+  await page.getByRole('button', { name: 'Restart', exact: true }).click();
+  await expect(page.getByRole('status')).toHaveText('Program restarted.');
+
+  await clientPage.reload();
+  await expect(clientPage.getByRole('link', { name: 'Day 1 · Fase B' })).toBeVisible();
+  await expect(clientPage.getByText(/^The next block starts on /)).toHaveCount(0);
+  await context.close();
 });

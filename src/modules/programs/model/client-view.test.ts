@@ -22,6 +22,41 @@ function program(mode: 'calendar' | 'list', startsOn: string) {
   return parsed;
 }
 
+describe('clientBlock con varios bloques (PR 2.16)', () => {
+  it('va por el bloque que toca y dice cuándo empieza el siguiente', () => {
+    const [parsed] = parseClientPrograms([
+      {
+        id: 'p',
+        name: 'Dos bloques',
+        client_id: 'ana',
+        starts_on: '2026-11-16',
+        start_block_id: null,
+        mode: 'calendar',
+        program_blocks: [
+          { id: 'b1', position: 1, cycle_days: 7, laps: 1 },
+          { id: 'b2', position: 2, cycle_days: 7, laps: null },
+        ],
+      },
+    ]);
+    if (parsed === undefined) throw new Error('falta la rutina');
+    const first = newTemplate('Dos bloques', 7).blocks[0];
+    if (first === undefined) throw new Error('falta el bloque');
+    const document = { ...newTemplate('Dos bloques', 7), blocks: [first, { ...first, name: 'B' }] };
+
+    const inFirst = clientBlock(parsed, document, '2026-11-18');
+    expect(inFirst?.block).toBe(document.blocks[0]);
+    expect(inFirst?.nextBlockStartsOn).toBe('2026-11-23');
+
+    const inSecond = clientBlock(parsed, document, '2026-11-24');
+    expect(inSecond?.block.name).toBe('B');
+    expect(inSecond?.nextBlockStartsOn).toBeNull();
+
+    // Reiniciada desde el segundo bloque (D-083): el cliente va por ese.
+    const restarted = clientBlock({ ...parsed, startBlockId: 'b2' }, document, '2026-11-18');
+    expect(restarted?.block.name).toBe('B');
+  });
+});
+
 describe('clientBlock', () => {
   const document = newTemplate('Casa + Gym', 7);
 

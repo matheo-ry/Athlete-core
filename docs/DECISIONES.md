@@ -951,6 +951,17 @@ Cómo añadir una: copia el formato, usa el siguiente número y no borres las an
 - **Consecuencias:** ya no se ven los nombres de todos los ejercicios del día de un vistazo: el resumen sigue en la lista de días ("7 ejercicios · 20 series").
 - **Revisar si:** los coaches echan de menos ver la lista entera con nombres.
 
+### D-107 · La ventana de asignar y el calendario
+- **Fecha:** 2026-11-16
+- **Decisión:** detalles del PR 2.13a que D-075, D-081 y D-082 no fijaban.
+  - **"Asignar" es un botón en cada plantilla activa** de la lista. Abre una ventana: a pantalla completa en el móvil, centrada en el ordenador. Escape la cierra.
+  - **Los clientes salen en una lista de casillas**, por nombre, con un buscador y la rutina que tiene ahora cada uno ("Tiene «Casa + Gym»" o "Sin rutina"). Solo los clientes activos.
+  - **La fecha de inicio** es hoy por defecto y admite hasta un año hacia atrás o hacia delante (lo mismo que la base de datos, D-105). El modo es "Con calendario" por defecto.
+  - **El resumen** dice cuándo empieza (si es una fecha futura), cuándo termina o "Se repite hasta que la cambies", y un aviso por cada cliente al que se le sustituye una rutina: la vigente, si empieza hoy o antes; la próxima, si empieza más adelante.
+  - **El calendario cuenta días de calendario** ("AAAA-MM-DD") sin hora ni zona: hoy es la fecha del dispositivo (D-082) y los cambios de hora no mueven nada. Un bloque que no es el último y no tiene vueltas cuenta como 1 vuelta (la base de datos no lo permite; es solo por seguridad).
+  - **En la semana a medias** de un bloque semanal (D-075) la vuelta es la 0 y toca el día de la semana de hoy.
+- **Por qué:** el coach decide sin salir de la lista de plantillas y ve antes de confirmar a quién le cambia algo.
+
 ---
 
 ## Pendientes de decidir

@@ -39,10 +39,12 @@
       "renamed": "Ahora se llama «{{name}}».",
       "archived": "«{{name}}» archivada. La tienes en Archivadas.",
       "unarchived": "«{{name}}» vuelve a estar activa.",
-      "duplicated": "«{{name}}» creada."
+      "duplicated": "«{{name}}» creada.",
+      "assigned": "«{{name}}» asignada."
     },
     "duplicate": "Duplicar",
-    "copyName": "Copia de {{name}}"
+    "copyName": "Copia de {{name}}",
+    "assign": "Asignar"
   },
   "form": {
     "newTitle": "Nueva plantilla",
@@ -158,5 +160,38 @@
     "replaceConfirm_one": "{{day}} ya tiene {{count}} ejercicio. Se sustituirá.",
     "replaceConfirm_other": "{{day}} ya tiene {{count}} ejercicios. Se sustituirán.",
     "replaceYes": "Sí, sustituir"
+  },
+  "assign": {
+    "title": "Asignar «{{name}}»",
+    "close": "Cerrar",
+    "clients": "Clientes",
+    "searchClients": "Buscar clientes por nombre",
+    "noMatches": "Ningún cliente coincide.",
+    "noClients": "Aún no tienes clientes. Comparte tu código desde Clientes.",
+    "noProgram": "Sin rutina",
+    "hasProgram": "Tiene «{{name}}»",
+    "startsOn": "Fecha de inicio",
+    "mode": "Cómo la ve tu cliente",
+    "modes": {
+      "calendar": "Con calendario",
+      "list": "Lista"
+    },
+    "modeHints": {
+      "calendar": "La app enseña qué toca cada día, contando desde la fecha de inicio.",
+      "list": "Los días de entreno en orden, sin fechas. Tu cliente va cuando puede."
+    },
+    "startsLater": "Empieza el {{date}}.",
+    "endsOn": "Termina el {{date}}.",
+    "repeats": "Se repite hasta que la cambies.",
+    "replacesCurrent": "{{client}} ya tiene la rutina «{{program}}». Pasará a Anteriores.",
+    "replacesNext": "{{client}} ya tiene «{{program}}» como próxima. Se sustituirá.",
+    "confirm_one": "Asignar a {{count}} cliente",
+    "confirm_other": "Asignar a {{count}} clientes",
+    "pickClient": "Elige al menos un cliente.",
+    "invalidDate": "Elige una fecha como mucho a un año de hoy.",
+    "errors": {
+      "clientNotFound": "Uno de los clientes ya no está activo. Cierra y vuelve a intentarlo.",
+      "templateArchived": "Esta plantilla está archivada. Recupérala para asignarla."
+    }
   }
 }

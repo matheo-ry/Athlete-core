@@ -471,6 +471,132 @@ export type Database = {
           },
         ];
       };
+      program_missed_day_rules: {
+        Row: {
+          created_at: string;
+          created_by: string | null;
+          id: string;
+          program_id: string;
+          rule: string;
+          starts_on: string;
+          tenant_id: string;
+          updated_at: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          created_at?: string;
+          created_by?: string | null;
+          id?: string;
+          program_id: string;
+          rule: string;
+          starts_on: string;
+          tenant_id: string;
+          updated_at?: string;
+        };
+        Update: {
+          created_at?: string;
+          created_by?: string | null;
+          id?: string;
+          program_id?: string;
+          rule?: string;
+          starts_on?: string;
+          tenant_id?: string;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'program_missed_day_rules_tenant_id_fkey';
+            columns: ['tenant_id'];
+            isOneToOne: false;
+            referencedRelation: 'tenant_effective_features';
+            referencedColumns: ['tenant_id'];
+          },
+          {
+            foreignKeyName: 'program_missed_day_rules_tenant_id_fkey';
+            columns: ['tenant_id'];
+            isOneToOne: false;
+            referencedRelation: 'tenants';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'program_missed_day_rules_tenant_id_program_id_fkey';
+            columns: ['tenant_id', 'program_id'];
+            isOneToOne: false;
+            referencedRelation: 'programs';
+            referencedColumns: ['tenant_id', 'id'];
+          },
+        ];
+      };
+      program_missed_days: {
+        Row: {
+          block_id: string | null;
+          created_at: string;
+          day_number: number;
+          id: string;
+          missed_on: string;
+          program_day_id: string | null;
+          program_id: string;
+          tenant_id: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          block_id?: string | null;
+          created_at?: string;
+          day_number: number;
+          id?: string;
+          missed_on: string;
+          program_day_id?: string | null;
+          program_id: string;
+          tenant_id: string;
+        };
+        Update: {
+          block_id?: string | null;
+          created_at?: string;
+          day_number?: number;
+          id?: string;
+          missed_on?: string;
+          program_day_id?: string | null;
+          program_id?: string;
+          tenant_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'program_missed_days_tenant_id_fkey';
+            columns: ['tenant_id'];
+            isOneToOne: false;
+            referencedRelation: 'tenant_effective_features';
+            referencedColumns: ['tenant_id'];
+          },
+          {
+            foreignKeyName: 'program_missed_days_tenant_id_fkey';
+            columns: ['tenant_id'];
+            isOneToOne: false;
+            referencedRelation: 'tenants';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'program_missed_days_tenant_id_program_id_block_id_fkey';
+            columns: ['tenant_id', 'program_id', 'block_id'];
+            isOneToOne: false;
+            referencedRelation: 'program_blocks';
+            referencedColumns: ['tenant_id', 'program_id', 'id'];
+          },
+          {
+            foreignKeyName: 'program_missed_days_tenant_id_program_id_fkey';
+            columns: ['tenant_id', 'program_id'];
+            isOneToOne: false;
+            referencedRelation: 'programs';
+            referencedColumns: ['tenant_id', 'id'];
+          },
+          {
+            foreignKeyName: 'program_missed_days_tenant_id_program_id_program_day_id_fkey';
+            columns: ['tenant_id', 'program_id', 'program_day_id'];
+            isOneToOne: false;
+            referencedRelation: 'program_days';
+            referencedColumns: ['tenant_id', 'program_id', 'id'];
+          },
+        ];
+      };
       program_sets: {
         Row: {
           day_exercise_id: string;
@@ -1149,6 +1275,10 @@ export type Database = {
       };
       preview_invite: { Args: { p_code: string }; Returns: Json };
       reactivate_client: { Args: { p_tenant: string; p_user: string }; Returns: undefined };
+      record_missed_days: {
+        Args: { p_days: Json; p_program: string; p_tenant: string; p_today: string };
+        Returns: undefined;
+      };
       regenerate_invite_code: { Args: { p_tenant: string }; Returns: string };
       remove_logo: { Args: { p_tenant: string }; Returns: undefined };
       restart_program: {
@@ -1167,6 +1297,10 @@ export type Database = {
         Returns: string;
       };
       set_logo: { Args: { p_path: string; p_tenant: string }; Returns: undefined };
+      set_missed_day_rule: {
+        Args: { p_program: string; p_rule: string; p_tenant: string; p_today: string };
+        Returns: undefined;
+      };
       set_program_archived: {
         Args: { p_archived: boolean; p_program: string; p_tenant: string };
         Returns: undefined;

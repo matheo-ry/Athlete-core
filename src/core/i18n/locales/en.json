@@ -222,7 +222,16 @@
       "submitting": "Creating…"
     },
     "coachSettings": {
-      "title": "Settings"
+      "title": "Settings",
+      "training": {
+        "title": "Training",
+        "intensityLabel": "Intensity",
+        "scales": {
+          "rir": "RIR (reps in reserve)",
+          "rpe": "RPE (effort from 1 to 10)"
+        },
+        "intensityHint": "The scale you are offered when you write a program. Changing it does not convert what is already written."
+      }
     },
     "clientProfile": {
       "title": "Profile"

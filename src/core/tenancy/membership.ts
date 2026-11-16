@@ -28,6 +28,10 @@ export type MemberActionResult =
   'ok' | 'plan_full' | 'not_allowed' | 'not_found' | 'offline' | 'error';
 
 /** De dónde salen los espacios. En la app, de Supabase; en los tests, de una lista falsa. */
+import type { TenantSettings } from './tenant-settings';
+
+export type SaveSettingsResult = 'ok' | 'not_allowed' | 'offline' | 'error';
+
 export interface TenancySource {
   listMemberships(userId: string): Promise<Membership[]>;
   /** A qué coach pertenece un código (D-051). Funciona sin sesión. */
@@ -47,6 +51,10 @@ export interface TenancySource {
   reactivateClient(tenantId: string, userId: string): Promise<MemberActionResult>;
   /** Crear el negocio del usuario, que pasa a ser su dueño (D-049 y D-060). */
   createBusiness(name: string, coachTermsVersion: string): Promise<CreateBusinessResult>;
+  /** Los ajustes del negocio (D-076). Los lee cualquier miembro. */
+  getSettings(tenantId: string): Promise<TenantSettings>;
+  /** Cambiar un ajuste del negocio. Solo el dueño (lo garantiza el RLS). */
+  saveSettings(tenantId: string, patch: Partial<TenantSettings>): Promise<SaveSettingsResult>;
   /** Guardar el nombre, los colores y el modo del negocio (D-057). Solo el dueño. */
   updateBrand(tenantId: string, input: BrandInput): Promise<UpdateBrandResult>;
   /** Subir un logo nuevo y apuntarlo en la marca (D-057). Solo el dueño. */

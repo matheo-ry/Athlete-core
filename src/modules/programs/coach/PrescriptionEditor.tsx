@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import type { WeightUnit } from '@/core/lib';
 import { Button } from '@/core/ui';
 
 import {
@@ -15,6 +16,7 @@ import {
 } from '../model/prescription';
 import type { IntensityScale, TargetKind } from '../model/prescription';
 import type { ProgramDayExercise, ProgramSet } from '../model/program-document';
+import { LoadInput } from './LoadInput';
 import { RestControl } from './RestControl';
 import { SelectField } from './SelectField';
 import { TargetInput } from './TargetInput';
@@ -28,6 +30,10 @@ interface PrescriptionEditorProps {
   kind: TargetKind;
   /** La escala con la que trabaja el coach (D-076). */
   scale: IntensityScale;
+  /** La unidad en la que el usuario escribe la carga; se guarda en kg. */
+  unit: WeightUnit;
+  /** Peso corporal: la carga es el lastre (D-072). */
+  isBodyweight: boolean;
   onChange: (item: ProgramDayExercise) => void;
 }
 
@@ -36,7 +42,15 @@ interface PrescriptionEditorProps {
  * en una sola línea para todas, repeticiones e intensidad; con "Series
  * distintas", cada serie por separado. El descanso es del ejercicio.
  */
-export function PrescriptionEditor({ item, name, kind, scale, onChange }: PrescriptionEditorProps) {
+export function PrescriptionEditor({
+  item,
+  name,
+  kind,
+  scale,
+  unit,
+  isBodyweight,
+  onChange,
+}: PrescriptionEditorProps) {
   const { t } = useTranslation();
   // Si ya vienen distintas, se abre desplegado.
   const [isSplit, setIsSplit] = useState(() => !areSetsUniform(item.sets));
@@ -77,6 +91,14 @@ export function PrescriptionEditor({ item, name, kind, scale, onChange }: Prescr
         value={intensityKey(set)}
         options={intensityOptions(set)}
         onChange={(key) => onChange(updateSets(item, parseIntensityKey(key), index))}
+      />
+      <LoadInput
+        label={t(isBodyweight ? 'programs.prescription.extraLoad' : 'programs.prescription.load', {
+          unit,
+        })}
+        kg={set.targetLoadKg}
+        unit={unit}
+        onChange={(patch) => onChange(updateSets(item, patch, index))}
       />
     </>
   );

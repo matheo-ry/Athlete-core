@@ -133,7 +133,10 @@
     "errors": {
       "reps": "Write a number or a range, like 8 or 8-12.",
       "time": "Write the seconds, like 45.",
-      "distance": "Write the meters, like 400."
-    }
+      "distance": "Write the meters, like 400.",
+      "load": "Write a weight, like 22.5."
+    },
+    "load": "Load ({{unit}})",
+    "extraLoad": "Extra weight ({{unit}})"
   }
 }

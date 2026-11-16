@@ -3,11 +3,12 @@ import userEvent from '@testing-library/user-event';
 import { useState } from 'react';
 import { beforeAll, describe, expect, it } from 'vitest';
 
+import type { WeightUnit } from '@/core/lib';
 import { loadAllTranslations } from '@/test/load-translations';
 
 import { newDayExercise } from '../model/day-exercises';
 import { prescriptionSummary, updateSets } from '../model/prescription';
-import type { TargetKind } from '../model/prescription';
+import type { IntensityScale, TargetKind } from '../model/prescription';
 import type { ProgramDayExercise } from '../model/program-document';
 import { PrescriptionEditor } from './PrescriptionEditor';
 
@@ -17,12 +18,28 @@ import { PrescriptionEditor } from './PrescriptionEditor';
 const OPTIONS = { failureLabel: 'To failure', unit: 'kg', locale: 'en' } as const;
 const EXERCISE = '00000000-0000-4000-8000-000000000001';
 
-function Harness({ initial, kind = 'reps' }: { initial: ProgramDayExercise; kind?: TargetKind }) {
+interface HarnessProps {
+  initial: ProgramDayExercise;
+  kind?: TargetKind;
+  scale?: IntensityScale;
+  unit?: WeightUnit;
+}
+
+function Harness({ initial, kind = 'reps', scale = 'rir', unit = 'kg' }: HarnessProps) {
   const [item, setItem] = useState(initial);
   return (
     <>
-      <p data-testid="summary">{prescriptionSummary(item, OPTIONS)}</p>
-      <PrescriptionEditor item={item} name="Row" kind={kind} scale="rir" onChange={setItem} />
+      <p data-testid="summary">{prescriptionSummary(item, { ...OPTIONS, unit })}</p>
+      <p data-testid="kg">{String(item.sets[0]?.targetLoadKg)}</p>
+      <PrescriptionEditor
+        item={item}
+        name="Row"
+        kind={kind}
+        scale={scale}
+        unit={unit}
+        isBodyweight={false}
+        onChange={setItem}
+      />
     </>
   );
 }
@@ -113,5 +130,34 @@ describe('módulo programs: series y prescripción (PR 2.10a)', () => {
     render(<Harness initial={initial} />);
 
     expect(screen.getByLabelText('Intensity')).toHaveDisplayValue('RPE 7.5');
+  });
+
+  it('con el ajuste en RPE se ofrece RPE, con medios puntos (PR 2.10b)', async () => {
+    const user = userEvent.setup();
+    render(<Harness initial={newDayExercise(EXERCISE)} scale="rpe" />);
+
+    const options = within(screen.getByLabelText('Intensity')).getAllByRole('option');
+    expect(options.map((option) => option.textContent).slice(0, 4)).toEqual([
+      '—',
+      'RPE 1',
+      'RPE 1.5',
+      'RPE 2',
+    ]);
+    await user.selectOptions(screen.getByLabelText('Intensity'), 'RPE 7.5');
+    expect(summary()).toBe('3 × RPE 7.5');
+  });
+
+  it('la carga se escribe en libras y se guarda en kilos (PR 2.10b)', async () => {
+    const user = userEvent.setup();
+    render(<Harness initial={newDayExercise(EXERCISE)} unit="lb" />);
+
+    await user.type(screen.getByLabelText('Load (lb)'), '22');
+    expect(screen.getByTestId('kg')).toHaveTextContent('9.98');
+    expect(summary()).toBe('3 × 22 lb');
+    expect(screen.getByLabelText('Load (lb)')).toHaveValue('22');
+
+    await user.type(screen.getByLabelText('Load (lb)'), 'x');
+    expect(screen.getByText('Write a weight, like 22.5.')).toBeVisible();
+    expect(screen.getByTestId('kg')).toHaveTextContent('9.98');
   });
 });

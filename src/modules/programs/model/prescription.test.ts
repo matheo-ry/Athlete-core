@@ -6,8 +6,10 @@ import {
   formatRest,
   intensityKey,
   intensityValues,
+  loadText,
   makeSetsUniform,
   parseIntensityKey,
+  parseLoad,
   parseTarget,
   prescriptionSummary,
   setSetCount,
@@ -158,5 +160,30 @@ describe('lo prescrito en un ejercicio (PR 2.10, D-076)', () => {
       '0:45',
       '0:00',
     ]);
+  });
+});
+
+describe('la carga objetivo (PR 2.10b)', () => {
+  it('se escribe en la unidad del usuario y se guarda en kg', () => {
+    expect(parseLoad('10', 'kg')).toEqual({ targetLoadKg: 10 });
+    expect(parseLoad('22,5', 'kg')).toEqual({ targetLoadKg: 22.5 });
+    expect(parseLoad('22', 'lb')).toEqual({ targetLoadKg: 9.98 });
+    expect(parseLoad('', 'lb')).toEqual({ targetLoadKg: null });
+  });
+
+  it('lo que no es un peso, o pasa de 1.000 kg, no vale', () => {
+    for (const text of ['diez', '-5', '10.555', '1001']) {
+      expect(parseLoad(text, 'kg')).toBeNull();
+    }
+    expect(parseLoad('2205', 'lb')).toBeNull();
+    expect(parseLoad('2200', 'lb')).not.toBeNull();
+  });
+
+  it('se enseña en la unidad del usuario, con un decimal como mucho', () => {
+    expect(loadText(10, 'kg')).toBe('10');
+    expect(loadText(10, 'lb')).toBe('22');
+    expect(loadText(9.98, 'lb')).toBe('22');
+    expect(loadText(22.5, 'kg')).toBe('22.5');
+    expect(loadText(null, 'kg')).toBe('');
   });
 });

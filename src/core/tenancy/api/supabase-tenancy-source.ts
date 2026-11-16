@@ -9,6 +9,7 @@ import { parseInvitePreview, parseJoinResult } from '../invite';
 import { parseMembers, parsePlanLimit } from '../members';
 import { parseMemberships } from '../membership';
 import type { MemberActionResult, TenancySource } from '../membership';
+import { mergeTenantSettings, parseTenantSettings } from '../tenant-settings';
 
 interface RpcError {
   code?: string;
@@ -143,6 +144,42 @@ export function createSupabaseTenancySource(): TenancySource {
         p_user: userId,
       });
       return error === null ? 'ok' : memberActionFailure(error, 'reactivate client');
+    },
+
+    // Los ajustes son preferencias (ARQUITECTURA §8). Los lee cualquier miembro
+    // del negocio; el RLS solo deja cambiarlos al dueño.
+    async getSettings(tenantId) {
+      const { data, error } = await getSupabaseClient()
+        .from('tenants')
+        .select('settings')
+        .eq('id', tenantId)
+        .single();
+      if (error !== null) {
+        throw new Error(`Could not load tenant settings: ${error.code}`);
+      }
+      return parseTenantSettings(data.settings);
+    },
+
+    // Se guarda lo que había con lo nuevo encima. Si el RLS no deja (no es el
+    // dueño), no cambia ninguna fila y no hay error: por eso se cuentan.
+    async saveSettings(tenantId, patch) {
+      const client = getSupabaseClient();
+      const current = await client.from('tenants').select('settings').eq('id', tenantId).single();
+      if (current.error !== null) {
+        return failureStatus(current.error, 'load settings').status;
+      }
+      const settings = z
+        .record(z.string(), z.json())
+        .parse(mergeTenantSettings(current.data.settings, patch));
+      const { data, error } = await client
+        .from('tenants')
+        .update({ settings })
+        .eq('id', tenantId)
+        .select('id');
+      if (error !== null) {
+        return failureStatus(error, 'save settings').status;
+      }
+      return data.length === 1 ? 'ok' : 'not_allowed';
     },
 
     // update_brand valida otra vez el nombre, los colores y el modo, y solo deja

@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { useProfile } from '@/core/auth';
 import { useLanguage } from '@/core/i18n';
 import { DEFAULT_WEIGHT_UNIT } from '@/core/lib';
+import { useTenantSettings } from '@/core/tenancy';
 import { Button } from '@/core/ui';
 import type { ExerciseOption } from '@/modules/exercises';
 
@@ -51,6 +52,7 @@ export function DayExerciseRow({
   const [isConfirmingRemove, setIsConfirmingRemove] = useState(false);
   const [isWritingNote, setIsWritingNote] = useState(false);
   const language = useLanguage();
+  const { intensityScale: scale } = useTenantSettings();
   const unit = useProfile().data?.weightUnit ?? DEFAULT_WEIGHT_UNIT;
   const name = exercise?.name ?? '…';
   const showNote = isWritingNote || item.note !== null;
@@ -135,7 +137,9 @@ export function DayExerciseRow({
           item={item}
           name={name}
           kind={targetKindOf(exercise.measurement)}
-          scale="rir"
+          scale={scale}
+          unit={unit}
+          isBodyweight={exercise.measurement === 'bodyweight_reps'}
           onChange={onPrescription}
         />
       )}

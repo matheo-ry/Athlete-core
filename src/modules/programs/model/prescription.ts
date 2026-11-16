@@ -1,4 +1,4 @@
-import { formatWeight } from '@/core/lib';
+import { formatWeight, fromKg, toKg } from '@/core/lib';
 import type { WeightUnit } from '@/core/lib';
 
 import type { ProgramDayExercise, ProgramSet } from './program-document';
@@ -220,4 +220,30 @@ export function prescriptionSummary(item: ProgramDayExercise, options: SummaryOp
     })
     .join(' + ');
   return item.restSeconds === null ? sets : `${sets} · ${formatRest(item.restSeconds)}`;
+}
+
+// ----- La carga objetivo (PR 2.10b) -----
+
+const MAX_LOAD_KG = 1000;
+
+/** La carga en la unidad del usuario, con un decimal como mucho: 10 kg son "22" en libras. */
+export function loadText(kg: number | null, unit: WeightUnit): string {
+  return kg === null ? '' : String(Number(fromKg(kg, unit).toFixed(1)));
+}
+
+/**
+ * Lee la carga escrita en la unidad del usuario (con coma o con punto) y la
+ * pasa a kg, que es como se guarda (AGENTS.md §4). Vacío es "sin indicar".
+ * Devuelve `null` si lo escrito no vale.
+ */
+export function parseLoad(text: string, unit: WeightUnit): { targetLoadKg: number | null } | null {
+  const clean = text.trim().replace(',', '.');
+  if (clean === '') {
+    return { targetLoadKg: null };
+  }
+  if (!/^\d{1,4}(\.\d{1,2})?$/.test(clean)) {
+    return null;
+  }
+  const kg = Number(toKg(Number(clean), unit).toFixed(2));
+  return kg > MAX_LOAD_KG ? null : { targetLoadKg: kg };
 }

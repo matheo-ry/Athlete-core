@@ -1,5 +1,5 @@
 import { DEFAULT_BRAND, checkLogoFile, logoPathFor } from '@/core/branding';
-import { normalizeInviteCode } from '@/core/tenancy';
+import { normalizeInviteCode, parseTenantSettings } from '@/core/tenancy';
 import type {
   CreateBusinessResult,
   InvitePreview,
@@ -11,6 +11,7 @@ import type {
   TenancySource,
   Tenant,
   TenantMember,
+  TenantSettings,
 } from '@/core/tenancy';
 
 // Espacios falsos para los tests: los mismos dos negocios que el seed de la base
@@ -126,6 +127,7 @@ export function createFakeTenancySource({
   fail = false,
   currentEmail = () => null,
 }: FakeTenancyOptions = {}): FakeTenancySource {
+  const settings = new Map<string, Partial<TenantSettings>>();
   // Copias propias: unirse o regenerar no tocan las listas compartidas.
   const store = new Map(Object.entries(memberships).map(([email, list]) => [email, [...list]]));
   const codes = new Map<string, Tenant>([
@@ -296,6 +298,18 @@ export function createFakeTenancySource({
       codes.set(randomCode(), tenant);
       store.set(email, [...own, member(tenant, 'owner', { joinedAt: new Date().toISOString() })]);
       return Promise.resolve({ status: 'created', tenantId: tenant.id });
+    },
+
+    // Los ajustes del negocio (D-076): los lee cualquiera; los cambia el dueño.
+    getSettings(tenantId) {
+      return Promise.resolve(parseTenantSettings(settings.get(tenantId)));
+    },
+    saveSettings(tenantId, patch) {
+      if (!isOwnerOf(tenantId)) {
+        return Promise.resolve('not_allowed');
+      }
+      settings.set(tenantId, { ...settings.get(tenantId), ...patch });
+      return Promise.resolve('ok');
     },
 
     // Como update_brand: solo el dueño; nombre de 2 a 40, colores #RRGGBB y modo

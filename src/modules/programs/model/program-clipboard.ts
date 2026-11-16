@@ -2,16 +2,18 @@ import { z } from 'zod';
 
 import { DEVICE_DRAFT_PREFIX } from '@/core/lib';
 
-import { programDayExerciseSchema, programDaySchema } from './program-document';
+import { programBlockSchema, programDayExerciseSchema, programDaySchema } from './program-document';
 
 // Lo copiado en el editor, para pegarlo en otra rutina (PR 2.11, D-080): un
-// ejercicio o un día. Se guarda en el dispositivo, uno por usuario y negocio
+// ejercicio, un día o un bloque. Se guarda en el dispositivo, uno por usuario y negocio
 // (los ejercicios son de cada negocio), y se olvida al cerrar sesión, como
 // los borradores (core/lib/device-drafts). Lo leído se valida con Zod.
 
 const clipboardSchema = z.discriminatedUnion('kind', [
   z.object({ kind: z.literal('exercise'), item: programDayExerciseSchema }),
   z.object({ kind: z.literal('day'), day: programDaySchema }),
+  // Un bloque entero (PR 2.16).
+  z.object({ kind: z.literal('block'), block: programBlockSchema }),
 ]);
 
 export type ProgramClipboard = z.infer<typeof clipboardSchema>;

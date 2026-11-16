@@ -6,8 +6,11 @@ import { cn, logger } from '@/core/lib';
 import { Button, Card } from '@/core/ui';
 
 import { useSaveProgram } from '../api/useProgram';
-import { editCycle, firstBlock, isDirty } from '../model/cycle-editor';
+import { editProgram } from '../model/blocks-editor';
+import { isDirty } from '../model/cycle-editor';
+import type { CycleEditorAction } from '../model/cycle-editor';
 import type { ProgramDocument } from '../model/program-document';
+import { BlockBar } from './BlockBar';
 import { CycleControl } from './CycleControl';
 import { DayList } from './DayList';
 import { DayPanel } from './DayPanel';
@@ -34,19 +37,29 @@ interface ProgramEditorProps {
 }
 
 /**
- * El editor de una rutina (PR 2.8): los días del ciclo del primer bloque.
- * Los cambios se quedan en la pantalla hasta "Guardar cambios", que guarda
- * todo de una vez (D-079). El día abierto va en la dirección (`?day=3`): en
- * el móvil, "Atrás" vuelve a la lista de días.
+ * El editor de una rutina (PR 2.8): sus bloques (PR 2.16) y los días del
+ * ciclo del bloque elegido. Los cambios se quedan en la pantalla hasta
+ * "Guardar cambios", que guarda todo de una vez (D-079). El bloque y el día
+ * abiertos van en la dirección (`?block=2&day=3`): en el móvil, "Atrás"
+ * vuelve a la lista de días.
  */
 export function ProgramEditor({ saved, justSaved, onSaved, onReload }: ProgramEditorProps) {
   const { t } = useTranslation();
-  const [draft, dispatch] = useReducer(editCycle, saved);
+  const [draft, dispatch] = useReducer(editProgram, saved);
   const save = useSaveProgram(saved.id ?? '');
   const [failure, setFailure] = useState<string | null>(null);
   const [isConflict, setIsConflict] = useState(false);
   const [searchParams, setSearchParams] = useSearchParams();
-  const block = firstBlock(draft);
+  // El bloque elegido, desde 1 en la dirección; sin elegir, el primero.
+  const requestedBlock = Number(searchParams.get('block') ?? '1') - 1;
+  const blockIndex = draft.blocks[requestedBlock] === undefined ? 0 : requestedBlock;
+  const block = draft.blocks[blockIndex];
+  const inBlock = (action: CycleEditorAction) => dispatch({ type: 'inBlock', blockIndex, action });
+  const goTo = (index: number, day: number | null) =>
+    setSearchParams({
+      ...(index > 0 ? { block: String(index + 1) } : {}),
+      ...(day === null ? {} : { day: String(day) }),
+    });
   const label = useDayLabel(block ?? { id: null, name: null, cycleDays: 1, laps: null, days: [] });
   const dirty = isDirty(saved, draft);
   const unsaved = useUnsavedChanges(saved, draft, dirty, save.isPending);
@@ -130,7 +143,17 @@ export function ProgramEditor({ saved, justSaved, onSaved, onReload }: ProgramEd
       ) : null}
 
       <Card>
-        <CycleControl block={block} onChange={dispatch} />
+        <BlockBar
+          blocks={draft.blocks}
+          selected={blockIndex}
+          onSelect={(index) => goTo(index, null)}
+          onChange={dispatch}
+        />
+      </Card>
+
+      <Card>
+        {/* Al cambiar de bloque, el campo empieza con los días de ese bloque. */}
+        <CycleControl key={blockIndex} block={block} onChange={inBlock} />
       </Card>
 
       <div className="flex flex-col gap-4 lg:grid lg:grid-cols-[20rem_1fr] lg:items-start lg:gap-6">
@@ -144,7 +167,7 @@ export function ProgramEditor({ saved, justSaved, onSaved, onReload }: ProgramEd
           <DayList
             block={block}
             selectedDay={shownDay?.dayNumber ?? null}
-            onSelect={(dayNumber) => setSearchParams({ day: String(dayNumber) })}
+            onSelect={(dayNumber) => goTo(blockIndex, dayNumber)}
           />
         </Card>
         {shownDay !== undefined ? (
@@ -152,16 +175,16 @@ export function ProgramEditor({ saved, justSaved, onSaved, onReload }: ProgramEd
             <Button
               variant="ghost"
               className="self-start lg:hidden"
-              onClick={() => setSearchParams({})}
+              onClick={() => goTo(blockIndex, null)}
             >
               {t('programs.editor.backToDays')}
             </Button>
             <DayPanel
-              key={shownDay.dayNumber}
+              key={`${String(blockIndex)}-${String(shownDay.dayNumber)}`}
               block={block}
               day={shownDay}
               label={label(shownDay.dayNumber)}
-              onChange={dispatch}
+              onChange={inBlock}
             />
           </Card>
         ) : null}

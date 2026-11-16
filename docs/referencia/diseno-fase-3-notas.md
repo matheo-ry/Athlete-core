@@ -43,8 +43,26 @@
    - Del lastre: sirve para la salud y el control; "mismas repes pesando más es avance; una repe más pesando menos puede ser estancamiento".
 8. **Rapidez**: entrar casi directo al entreno. **Con un entreno empezado, cada vez que abre la app va directo al ejercicio que le toca.**
 
+## DECISIÓN DEL PROPIETARIO: NADA DE WEB (2026-11-16)
+
+- **La app es solo descargada (iOS y Android). Nada de web, ni ahora ni nunca.** Era una idea y la rechaza. En el futuro puede haber app propia de cada coach, pero no web.
+- **Hay que cambiar todo lo escrito que diga que la app funciona en web**: AGENTS.md §1, ARQUITECTURA §1, §2 (hosting web, P-03), §3 (vista previa por PR), §12, D-001, CONTEXTO.md, ESTADO.md (Fase 4 "Publicación de la web") y lo que salga al buscar. AGENTS.md y ARQUITECTURA son zona protegida: se enseña el cambio exacto antes de escribirlo.
+- Consecuencias que hay que hablar con él: el coach en el ordenador (D-085), las pruebas de la Fase 3 en el móvil (adelantar el proyecto nativo de Android), y la página de pago del coach (Fase 5, normas de Apple y Google). Con app nativa desaparece el límite de Safari (7 días) y se puede tener alarma con la pantalla apagada.
+- Seguir usando el navegador **para desarrollar y para los tests** no es "web": es una herramienta, no algo que se publica.
+
+## Respuestas de la tanda 2
+
+- **Consentimiento de datos de salud**: un consentimiento inicial, que aclara que los datos son **solo entre el coach y el cliente, para mejorar su servicio y su asesoramiento**. Opción A: una vez, y así para toda la app (peso, medidas, notas y lo que venga después). Sin consentimiento se entrena igual, sin peso corporal ni medidas.
+- **Medidas corporales**: "super buena idea", un apartado de medidas. En la fase que el chat de diseño vea mejor.
+- **Menores**: como recomendó el chat: casilla de 16 años hasta los textos legales definitivos; después, con el abogado, edad por país (14 España, 13 Reino Unido y EE. UU., 16 resto de Europa, nunca menos de 13).
+- **Serie hecha sin botón**: tal cual la recomendación: se ilumina al cambiar un dato o al pulsar "Igual"; el descanso arranca con el primer cambio; corregir esa serie no lo reinicia; las no iluminadas no cuentan; tocando una iluminada se desmarca.
+- **Botón "Igual"**: por defecto pone peso, repeticiones y RIR **de la vez anterior en esa misma serie** (la primera vez no hay nada). **Un ajuste** permite la otra forma: la primera serie coge la de la vez anterior y las siguientes copian la serie anterior de ese mismo día.
+- **Máquina ocupada**: tal cual la recomendación ("Cambiar ejercicio" solo para hoy; cuenta para el ejercicio hecho; el coach ve "Cambiado por…" y un aviso si se cambia 3 veces en 4 semanas; además "Saltar ejercicio").
+- **Set-up de la máquina**: tal cual la recomendación (del cliente, por ejercicio, compartido entre rutinas; el coach lo ve; junto a las instrucciones y la nota del coach).
+- **Rachas, niveles y logros**: **todo en esta fase** (minilogros por serie, récords, racha de semanas, niveles y colección de logros), con interruptor del coach, activado por defecto.
+
 ## Cosas a tener en cuenta (detectadas por el chat de diseño)
 
-- La alarma con la pantalla apagada, la notificación y bajar la música **no se pueden hacer bien en la web**: llegan con la app nativa (Fase 4, notificación local, no push). Es justo una de sus quejas de Strong y Hevy. Decidido ya: escribirlo como límite de la Fase 3.
+- La alarma con la pantalla apagada, la notificación y bajar la música **no se pueden hacer bien en la web**: necesitan la app nativa (notificación local, no push). Es justo una de sus quejas de Strong y Hevy. Con "nada de web", se propone adelantar la app nativa a la Fase 3.
 - La nota del día puede contener lesiones o dolores: es dato de salud (P-12), igual que el peso corporal.
 - El "Total 85 kg" con lastre usa el peso corporal: dato de salud (P-12).

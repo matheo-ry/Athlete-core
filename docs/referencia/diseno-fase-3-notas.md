@@ -63,7 +63,20 @@
 8. **"La vez anterior"**: el mismo día de la rutina (lunes con lunes), y así en todo, porque un mismo ejercicio puede ir pesado un día y a más repeticiones otro.
 9. (Vacía: el propietario no escribió nada.)
 
+## Respuestas de la tanda 4
+
+1. **Cómo se entera el coach**: tal cual: tarjeta "Actividad" en su inicio (lo último arriba, marcado lo no mirado) y aviso "Sin entrenar desde hace 7 días". Sin emails ni notificaciones.
+2. **Lo que ve el coach de un entreno**: como el Excel, pestaña "Entrenos" en la ficha. **Sin comentarios en la Fase 3.** Cuando llegue el chat: opción de comentar un entreno, y en el chat del cliente sale que le escribe "por el entreno X".
+3. **Día saltado**: depende del coach. **Todas las opciones disponibles y elige el coach** para cada cliente: (a) se pierde y se sigue; (b) se recupera ocupando el siguiente día de descanso; (c) se mueve todo un día (lo que hacía él con su ciclo de 8 días). Tiene que quedar preparado para lo que usen los coaches. Modo lista por entrenos hechos: sin objeción.
+4. **RM y récords**: la recomendación (Epley sumando el RIR; sin RM por encima de 12 repeticiones; récords de peso máximo y RM; con lastre, el total si hay consentimiento).
+5. **Errores al apuntar**: la recomendación ("¿Seguro?" si cambia más de un 50 %; % de progreso por RM y con periodo).
+6. **Medidas**: la recomendación (lista fija opcional; brazo, muslo y gemelo con derecho e izquierdo; sin fotos).
+7. **Excel**: al final de la fase, con su formato.
+8. **Niveles, logros y tarjetas**: "lo que se pueda hacer ahora, ahora; lo que tenga que ir luego, luego". Niveles y logros en la Fase 3; tarjetas de Instagram después (Fase 6).
+
 ## Decidido por el chat de diseño (sin objeción del propietario)
+
+- En la web se puede apuntar el peso corporal y las medidas (no son un entreno). Corregir un entreno pasado, solo en la app.
 
 - Consentimiento al entrar por primera vez en el espacio de cada coach; "Ahora no" lo vuelve a pedir al apuntar peso o medidas. El texto dice que es solo entre coach y cliente para mejorar su servicio, y que ATHLETE CORE lo guarda por encargo del coach.
 - El ajuste del botón "Igual" es de cada cliente, en su Perfil.

@@ -7,13 +7,14 @@ Este archivo lo actualiza quien termina una tarea, en el mismo Pull Request, jun
 
 ## En curso
 
-Nada.
+Nada. **La Fase 2 está construida entera** (2026-11-17): el lote 5 (PR 2.16 #50, 2.17 #51 y 2.18) está abierto, apilado en ese orden, a la espera de que el propietario lo pruebe y dé el visto bueno para fusionarlo. Los lotes 1 a 4 están fusionados en `main`.
 
 ## Siguiente
 
-1. PR 2.18 — Inicio: avisos del coach y "Hoy toca" del cliente (`docs/PROMPTS.md` §6). Cierra el lote 5 y la Fase 2.
-2. El propietario aplica en staging las migraciones 8 a 16 (GUIA-GIT §9).
-3. El propietario dio por buenas, por ahora, la lista de `docs/referencia/biblioteca-ejercicios.md` y las rutinas de ejemplo. Se pueden retocar más adelante.
+1. **El propietario prueba el lote 5** y da el visto bueno para fusionar los PR #50 en adelante, en orden (D-064 y D-068). Que revise el cambio en `src/core/modules` del PR 2.18 (D-114): la tarea pedía enseñárselo antes.
+2. **Diseñar la Fase 3** (entreno y progreso del cliente) con el propietario, como se hizo con la Fase 2. Antes hay que decidir P-12 (datos de salud y menores). La referencia es su app de apuntes (D-087).
+3. El propietario aplica en staging las migraciones 8 a 16 (GUIA-GIT §9).
+4. El propietario dio por buenas, por ahora, la lista de `docs/referencia/biblioteca-ejercicios.md` y las rutinas de ejemplo. Se pueden retocar más adelante.
 
 ## Fases
 
@@ -116,7 +117,7 @@ El diseño está en DECISIONES D-069 a D-088, y el detalle de cada PR, en `docs/
 
 - [x] PR 2.16 — Varios bloques
 - [x] PR 2.17 — Superseries
-- [ ] PR 2.18 — Inicio: avisos del coach y "Hoy toca" del cliente
+- [x] PR 2.18 — Inicio: avisos del coach y "Hoy toca" del cliente
 
 ### Fase 3 — Entreno y progreso (cliente)
 
@@ -162,6 +163,8 @@ La referencia es la app de apuntes del propietario (D-087). Antes de empezar se 
 
 Cosas que alguien ha visto y que no tocaban en su tarea. No se hacen sin convertirlas antes en tarea.
 
+- `docs/ARQUITECTURA.md` §5: el ejemplo de manifest no enseña `homeCards` (PR 2.18, D-114) ni lo que recibe una pestaña de la ficha (`ClientProfileTabProps`, PR 2.14a, D-109). Es zona protegida y ninguna de las dos tareas pedía tocarla: actualizarlo cuando el propietario lo apruebe.
+
 - Tests que fallan a ratos (2026-11-15): con el ordenador cargado (dos servidores de la app abiertos), algunos tests unitarios antiguos agotan su tiempo (`SignupPage`, `JoinAfterSignup`, `ExercisePanel`) y `npm run check` falla sin que el código tenga nada mal; al repetir, pasan. Además, 1 de 5 pasadas completas de `npm run test:e2e` tuvo un fallo que no se pudo reproducir. Habría que mirar si conviene subir el límite de tiempo o bajar el número de tests a la vez.
 - En la pantalla de un código de coach que no existe (`/join`), dejar a la vista "Ya tengo cuenta" y "Soy coach", como en la primera pantalla (lo echó en falta el propietario al probar staging).
 - Los tests pgTAP en staging necesitan la contraseña de la base de datos, porque el usuario temporal de la CLI no busca en el esquema `extensions`. Se evitaría fijando el `search_path` en la cabecera de cada test.
@@ -206,6 +209,7 @@ Cosas que alguien ha visto y que no tocaban en su tarea. No se hacen sin convert
 Lo más nuevo, arriba.
 
 - 2026-11-16 — Lote 4 de la Fase 2 fusionado en `main` (#43 a #48) con el visto bueno del propietario, probado en la app. Abarca: base de datos para asignar (PR 2.12), asignar una plantilla a clientes (PR 2.13a), pestaña "Asignadas" (PR 2.13b), pestaña "Rutina" en la ficha del cliente (PR 2.14a), acciones de la rutina (PR 2.14b) y la vista de la rutina para el cliente en "Entreno" (PR 2.15).
+- 2026-11-17 — PR 2.18 (los inicios): un módulo declara en su manifest tarjetas para el inicio del coach o del cliente (`homeCards`, en `src/core/modules`), y las carcasas las pintan sin importar ningún módulo. programs aporta dos: en el inicio del coach, "Rutinas que mirar" (clientes sin rutina, con la rutina terminada y repitiéndose, o que termina en 7 días; cada línea lleva a su ficha; sin avisos, "Todos tus clientes tienen rutina"); en el del cliente, "Hoy toca", "Hoy: descanso" o el estado de su rutina, que lleva a "Entreno". Se quitan los textos provisionales de los dos inicios (D-114). **Cierra la Fase 2.**
 - 2026-11-17 — PR 2.17 (superseries): "Agrupar con el siguiente" y "Desagrupar" en cada ejercicio del editor. Dos ejercicios seguidos con el mismo grupo son una "Superserie"; tres o más, un "Circuito". La lógica, en `model/supersets.ts`: tras cualquier cambio en un día (mover, quitar, sustituir, duplicar, pegar) los grupos quedan coherentes. La fila de números marca los agrupados con una raya, y el cliente ve la misma marca en su día. Sin cambios en la base de datos (D-113).
 - 2026-11-17 — PR 2.16 (varios bloques): el editor enseña los bloques de la rutina (`model/blocks-editor.ts`, que envuelve a `editCycle`): añadir uno vacío o "Duplicar el anterior", nombre, duración con atajos (1, 2 y 4 semanas o vueltas), vueltas escritas o "Sin fecha de fin" solo en el último, ordenar, duplicar, copiar y pegar entre rutinas, y quitar con confirmación; tope de 12. El bloque abierto va en la dirección (`?block=2`). El cliente ve solo su bloque y "El siguiente bloque empieza el…". "Asignadas" y reiniciar desde un bloque ya lo soportaban (PR 2.13b y 2.14b); ahora se comprueban con una rutina de dos bloques (D-112).
 - 2026-11-16 — PR 2.15 (el cliente ve su rutina): "Entreno" en la barra del cliente (`/client/program`). Con calendario, "Hoy toca" (o "Hoy: descanso") y los días del bloque con hoy marcado; en modo lista, sus días de entreno en orden. Cada día con sus ejercicios, su resumen y la nota del coach; cada ejercicio con sus series una a una, el descanso, la nota, las instrucciones y "Ver vídeo" (fuera de la app). Estados: sin rutina y "Tu rutina empieza el…". Todo en lectura. El módulo exercises da también las instrucciones y el vídeo (`ExerciseOption`); los textos de días, ejercicios y progreso pasan a `programs/shared/` (D-111). Cierra el lote 4.

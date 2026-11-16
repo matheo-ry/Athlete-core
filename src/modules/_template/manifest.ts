@@ -36,4 +36,5 @@ export const templateModule = defineModule({
   },
   // Pestañas que este módulo añade a la ficha de un cliente (vista del coach).
   clientProfileTabs: [],
+  homeCards: { coach: [], client: [] },
 });

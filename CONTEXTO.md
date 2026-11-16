@@ -21,10 +21,10 @@
 
 ## Dónde estamos
 
-- **Fase actual:** 2 — Ejercicios y rutinas: lotes 1, 2, 3 y 4 fusionados en `main`; lote 5 (bloques y remates) empezado. La Fase 1 está terminada y fusionada en `main` (2026-11-14).
-- **Última tarea terminada:** PR 2.17 — Superseries (2026-11-17), rama `feat/superseries`, apilada sobre el PR 2.16 (#50).
+- **Fase actual:** 2 — Ejercicios y rutinas, **construida entera**: lotes 1 a 4 fusionados en `main`; el lote 5 (bloques, superseries e inicios) está abierto, a la espera de que el propietario lo pruebe. La Fase 1 está terminada y fusionada en `main` (2026-11-14).
+- **Última tarea terminada:** PR 2.18 — Inicio: avisos del coach y "Hoy toca" del cliente (2026-11-17), rama `feat/inicio-con-rutinas`, apilada sobre el PR 2.17 (#51), que va sobre el 2.16 (#50). Toca `src/core/modules` (D-114).
 - **En curso:** nada.
-- **Siguiente tarea:** PR 2.18 — Inicio: avisos del coach y "Hoy toca" del cliente (`docs/PROMPTS.md` §6), que cierra la Fase 2. Aparte, aplicar en staging las migraciones 8 a 16.
+- **Siguiente tarea:** que el propietario pruebe el lote 5 y dé el visto bueno para fusionarlo (D-068). Después, **diseñar la Fase 3** (entreno y progreso) con él; antes hay que decidir P-12 (datos de salud y menores). Aparte, aplicar en staging las migraciones 8 a 16.
 
 ## Cómo será la Fase 2 (diseñada, D-069 a D-088)
 
@@ -57,7 +57,7 @@
 - **Módulo `programs`** (PR 2.7): "Rutinas" en el menú del coach. Lista de plantillas con "Semanal" o "Ciclo de N días" y sus días de entreno, pestañas "Activas" y "Archivadas", buscador, "Nueva plantilla" (nombre y días del ciclo), renombrar, archivar y recuperar (D-097). El documento de una rutina (esquema Zod del editor) está en `model/program-document.ts`. El editor (PR 2.8a, `/coach/programs/<id>`): los días del ciclo del primer bloque, de entreno o de descanso, con nombre, subtítulo y lugar, y "Guardar cambios" de una vez (D-098). Con cambios sin guardar, avisa al salir y los guarda en el dispositivo para "Recuperar" al volver; se borran al cerrar sesión (PR 2.8b, D-099). Cada día de entreno tiene sus ejercicios en orden: añadir con el buscador de "Ejercicios" sin salir, crear uno nuevo, subir, bajar y quitar (PR 2.9a, D-100); sustituir por otro que se mide igual, nota para el cliente y etiqueta "Archivado" (PR 2.9b, D-101). En cada ejercicio se escribe lo prescrito: series, repeticiones, intensidad y descanso, con el resumen "3 × 8-12 · RIR 1 · 2:00" (PR 2.10a, D-102), y la carga en kg o lb. El dueño elige en Ajustes → "Entrenamiento" si trabaja con RIR o con RPE (PR 2.10b, D-103). Se puede duplicar un ejercicio, un día o una plantilla entera, y copiar y pegar entre rutinas (PR 2.11, D-104).
 - **Rutinas en la base de datos** (PR 2.5a y 2.5b): `programs` (sin cliente = plantilla), `program_blocks`, `program_days`, `program_day_exercises` y `program_sets`. Desde la app solo se leen: el coach, las de su negocio; el cliente, las suyas y los ejercicios que llevan. Se escriben con funciones: `save_program` guarda una rutina entera o nada (PR 2.6, D-096) y `set_program_archived` archiva y recupera plantillas. El seed trae tres plantillas: "Casa + Gym" y "Pecho / Espalda y Brazo / Pierna" en Iron Lab, y "Fuerza básica" en Norte Strength.
 - **Base de datos local** (Supabase en Docker): 16 migraciones en `supabase/migrations/` (tablas, funciones de negocio, permisos, RLS, el espacio de logos, los ejercicios, las rutinas y los flags de cada módulo); 399 tests pgTAP (`npm run db:test`); 2 coaches y 6 clientes inventados (`supabase/seed.sql`, contraseña `password123`); tipos generados en `core/supabase/database.types.ts`.
-- **Tests:** 597 unitarios (`npm run check`) y 87 de extremo a extremo contra Supabase local (`npm run test:e2e`).
+- **Tests:** 600 unitarios (`npm run check`) y 91 de extremo a extremo contra Supabase local (`npm run test:e2e`).
 - **Staging** (PR 1.17): proyecto `athlete-core-staging` de Supabase (Fráncfort, plan gratuito) con las mismas tablas y datos inventados que en local. Los emails salen de verdad, por Resend, desde `no-reply@athlete-core.com`. Se prueba con `npm run dev:staging` (hace falta `.env.staging.local`; guía en `supabase/README.md`). Todavía no hay web publicada.
 - **Módulo `_template`** para copiar (`npm run new:module <nombre>`). Solo se registra en desarrollo.
 - **Reglas que se comprueban solas:** ESLint con las fronteras de ARQUITECTURA §6, hooks de Git (formato, mensaje de commit, no subir `main`), CI con `npm run check`, y tests que vigilan las fronteras, los textos en dos idiomas y la forma fija de los módulos.
@@ -71,11 +71,11 @@
 
 Los 5 más recientes, el más nuevo arriba. El historial completo está en `docs/ESTADO.md`.
 
+- 2026-11-17 — PR 2.18: los inicios con rutinas: avisos para el coach y "Hoy toca" para el cliente (D-114). Cierra la Fase 2.
 - 2026-11-17 — PR 2.17: superseries y circuitos, en el editor y para el cliente (D-113).
 - 2026-11-17 — PR 2.16: varios bloques en una rutina, en el editor y para el cliente (D-112).
 - 2026-11-16 — Lote 4 de la Fase 2 fusionado en `main` (#43 a #48) con el visto bueno del propietario tras probarlo en la app: asignar rutinas a clientes, ficha y vista del cliente en "Entreno".
 - 2026-11-16 — PR 2.15: "Entreno" para el cliente: hoy toca, los días, cada día y cada ejercicio, en lectura (D-111). Cierra el lote 4.
-- 2026-11-16 — PR 2.14b: las acciones de la rutina de un cliente desde su ficha: asignar, crear desde cero, reiniciar, terminar, cancelar y guardar como plantilla (D-110).
 
 ## A tener en cuenta ahora
 

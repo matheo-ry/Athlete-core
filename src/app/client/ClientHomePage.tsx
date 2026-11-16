@@ -1,12 +1,19 @@
 import { useTranslation } from 'react-i18next';
 
+import { HomeCardContent, collectHomeCards } from '@/core/modules';
 import { useTenancy } from '@/core/tenancy';
-import { Card, EmptyState } from '@/core/ui';
+import { Card } from '@/core/ui';
 
-/** Inicio de ejemplo del cliente (Fase 0). El entreno de hoy llega en la Fase 3. */
+import { useActiveModules } from '../useActiveModules';
+
+/**
+ * Inicio del cliente: su coach y las tarjetas que aportan los módulos activos,
+ * como "Hoy toca" (PR 2.18).
+ */
 export function ClientHomePage() {
   const { t } = useTranslation();
   const { tenant } = useTenancy();
+  const cards = collectHomeCards(useActiveModules(), 'client');
 
   return (
     <section className="flex flex-col gap-4">
@@ -20,12 +27,9 @@ export function ClientHomePage() {
           <p className="text-lg font-semibold">{tenant.name}</p>
         </Card>
       ) : null}
-      <Card>
-        <EmptyState
-          title={t('app.clientHome.emptyTitle')}
-          description={t('app.clientHome.emptyDescription')}
-        />
-      </Card>
+      {cards.map((card) => (
+        <HomeCardContent key={card.key} card={card} />
+      ))}
     </section>
   );
 }

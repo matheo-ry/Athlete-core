@@ -1030,6 +1030,17 @@ Cómo añadir una: copia el formato, usa el siguiente número y no borres las an
   - **El cliente** ve la misma marca en la lista de su día. El descanso sigue siendo el de cada ejercicio: no hay un descanso propio del grupo.
 - **Por qué:** el coach no tiene que cuidar los grupos al reordenar; la app los mantiene con sentido.
 
+### D-114 · Las tarjetas del inicio
+- **Fecha:** 2026-11-17
+- **Decisión:** detalles del PR 2.18 que D-084 y D-085 no fijaban.
+  - **El manifest gana `homeCards`:** por cada perfil (coach y cliente), una lista de tarjetas con su clave, su orden y su componente, que se carga al pintarlo. Es obligatorio en todos los módulos, como `clientProfileTabs`; los que no aportan nada lo dejan vacío. Las páginas de inicio (`src/app`) las pintan por orden con `HomeCardContent`, sin importar ningún módulo. Si una tarjeta no se puede cargar, no sale y el error queda registrado: el inicio sigue sirviendo. **Pendiente de que el propietario lo vea** (la tarea lo pedía); el ejemplo de ARQUITECTURA §5 no se ha tocado.
+  - **Los avisos del coach, uno por cliente como mucho** y por urgencia: "Sin rutina"; "Terminada: se repite hasta que la cambies"; "Termina la rutina el…" si faltan 7 días o menos. Una rutina sin fecha de fin no avisa, y un cliente con una próxima ya asignada tampoco.
+  - **Sin clientes todavía, la tarjeta de avisos no sale:** de eso se ocupan los primeros pasos. Mientras carga, tampoco.
+  - **La tarjeta del cliente** dice el día de hoy con su nombre y cuántos ejercicios y series tiene, y lleva a ese día; en descanso, "Hoy: descanso"; en modo lista, el nombre de su rutina; sin rutina o con la rutina por empezar, lo mismo que "Entreno".
+  - **Se quitan los textos provisionales** de los dos inicios ("llegará en las próximas fases").
+- **Por qué:** cada inicio enseña lo que hay que hacer hoy, y una función nueva puede añadir su tarjeta desde su manifest sin tocar las carcasas.
+- **Revisar si:** el coach quiere elegir con cuántos días de margen se le avisa.
+
 ---
 
 ## Pendientes de decidir

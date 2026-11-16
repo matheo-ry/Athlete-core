@@ -26,6 +26,7 @@ function buildManifest(overrides: Partial<ModuleManifest> = {}): ModuleManifest 
     },
     i18n: { en: loadTexts, es: loadTexts },
     clientProfileTabs: [],
+    homeCards: { coach: [], client: [] },
     ...overrides,
   };
 }

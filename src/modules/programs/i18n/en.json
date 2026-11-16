@@ -330,5 +330,16 @@
     "groupLabel": "Group “{{name}}” with the next exercise",
     "ungroup": "Ungroup",
     "ungroupLabel": "Ungroup “{{name}}”"
+  },
+  "home": {
+    "alertsTitle": "Programs to look at",
+    "allGood": "All your clients have a program.",
+    "noProgram": "No program",
+    "endsOn": "Program ends {{date}}",
+    "repeating": "Finished: repeating until you change it",
+    "todayTitle": "Today",
+    "todayRest": "Today: rest",
+    "open": "Open training",
+    "listProgram": "Your program"
   }
 }

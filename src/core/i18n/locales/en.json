@@ -68,10 +68,8 @@
     },
     "coachHome": {
       "title": "Coach dashboard",
-      "description": "From here you will follow your clients and their training.",
+      "description": "Your clients and their programs, at a glance.",
       "businessLabel": "Your business",
-      "emptyTitle": "Nothing to show yet",
-      "emptyDescription": "Clients, programs and exercises arrive in the next phases.",
       "firstSteps": {
         "title": "First steps",
         "shareCode": "Share your code",
@@ -82,10 +80,8 @@
     },
     "clientHome": {
       "title": "Today",
-      "description": "Here you will see today's workout from your coach.",
-      "coachLabel": "Your coach",
-      "emptyTitle": "No workout for today",
-      "emptyDescription": "When your coach assigns you a program, it will show up here."
+      "description": "What is on today.",
+      "coachLabel": "Your coach"
     },
     "welcome": {
       "title": "Welcome",

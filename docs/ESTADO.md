@@ -248,6 +248,7 @@ Cosas que alguien ha visto y que no tocaban en su tarea. No se hacen sin convert
 - Buscar un ejercicio del catálogo también por su nombre en el otro idioma, si los coaches lo piden (hoy solo cuenta el que se ve, D-091).
 - App de Android (PR 3.1a): en móviles con Android 7.0 y 7.1 sale todavía el icono de Capacitor (los PNG de `android/app/src/main/res/mipmap-*`); desde Android 8 sale el propio. Se cambia con el icono definitivo (Fase 4).
 - Los tests de flujos completos dejan en la consola de Vite el aviso de React "Encountered two children with the same key" (visto en el PR 3.1a; ya pasaba antes, no lo causa ese PR). Buscar qué lista repite claves.
+- En la primera ejecución del CI con los tests de flujos completos (PR 3.1b), dos pasaron solo al segundo intento: `archive.spec.ts` (dar de baja y reactivar) y `program-blocks.spec.ts` (añadir y ordenar bloques). En local pasan siempre. Si vuelven a fallar, mirar sus esperas.
 - En la app instalada, los enlaces de invitación usarían `https://localhost` si no se pone `VITE_PUBLIC_APP_URL` al generarla. Ponerla cuando haya web publicada (P-03).
 
 ## Registro de cambios

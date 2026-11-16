@@ -97,6 +97,14 @@
     "leaveTitle": "Leave without saving?",
     "leaveDescription": "Your changes stay on this device: you can recover them when you open this program again.",
     "stay": "Stay",
-    "leave": "Leave"
+    "leave": "Leave",
+    "exercisesLabel": "Exercises of the day",
+    "addExercise": "Add exercise",
+    "noExercises": "No exercises yet.",
+    "moveUp": "Move up: {{name}}",
+    "moveDown": "Move down: {{name}}",
+    "remove": "Remove: {{name}}",
+    "removeConfirm": "“{{name}}” already has a prescription written. Remove it from this day?",
+    "removeYes": "Yes, remove"
   }
 }

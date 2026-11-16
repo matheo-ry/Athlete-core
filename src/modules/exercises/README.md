@@ -8,4 +8,5 @@
 - **El cliente no ve nada de este módulo** todavía: verá los ejercicios dentro de su rutina (PR 2.15).
 - **Flag:** `exercises` (tipo core, activo para todos), añadido en la migración `20261115120000_exercises_feature.sql`.
 - **Archivar, recuperar, duplicar y restaurar** (PR 2.4b, D-093): en el panel del ejercicio, debajo del formulario (`coach/ExerciseActions.tsx`). Nunca se borra (D-073). "Restaurar original" sale solo en los del catálogo que han cambiado (`model/exercise-actions.ts`), pide confirmación y lo deja como el catálogo. Todo pasa por `useSaveExercise`.
+- **Para otros módulos** (`index.ts`, PR 2.9a, D-100): `ExercisePicker` (`coach/ExercisePicker.tsx`), el buscador con los filtros de esta pantalla, solo con los activos y con "Crear «lo escrito»"; y `useExerciseOptions` (`api/useExerciseOptions.ts`), el nombre a la vista, la forma de medir y si está archivado de cada ejercicio, por identificador. Los usa el editor de rutinas (`programs`).
 - **Estado:** completo para el lote 1. La regla de no cambiar la forma de medir de un ejercicio que está en una rutina llega con las rutinas (PR 2.5 y 2.9).

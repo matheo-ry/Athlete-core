@@ -864,6 +864,17 @@ Cómo añadir una: copia el formato, usa el siguiente número y no borres las an
   - **"Cambios guardados" desaparece en cuanto se vuelve a cambiar algo,** para que no parezca que lo nuevo ya está guardado.
 - **Por qué:** cumple D-079 con el menor número de piezas, y los borradores no se quedan en un dispositivo compartido.
 
+### D-100 · Cómo se ponen los ejercicios de un día
+- **Fecha:** 2026-11-15
+- **Decisión:** detalles del PR 2.9a que D-073, D-078 y D-080 no fijaban.
+  - **El PR 2.9 se parte en dos,** como preveía su bloque: 2.9a (lista, añadir, crear, ordenar y quitar) y 2.9b (sustituir, nota, archivados y bloquear la forma de medir).
+  - **El módulo `exercises` ofrece por su `index.ts`** dos piezas para otros módulos: `ExercisePicker` (el buscador con los filtros de "Ejercicios", solo con los activos, y "Crear «lo escrito»" con el mismo formulario) y `useExerciseOptions` (el nombre a la vista, la forma de medir y si está archivado, por identificador). Las dos usan la misma consulta que "Ejercicios": comparten la caché.
+  - **El buscador ocupa el sitio del día** mientras se elige, en el móvil y en escritorio. Elegir uno lo añade al final del día y vuelve al día.
+  - **Un ejercicio nuevo entra con 3 series vacías** y sin descanso ni nota. La prescripción se escribe en el PR 2.10.
+  - **"Quitar" pide confirmación solo si hay algo escrito:** alguna serie con datos, descanso o nota.
+  - **Los botones de ordenar son flechas** (↑ ↓ ✕) con su nombre completo para los lectores de pantalla ("Subir: Lat pulldown"), para que quepan en una fila en el móvil.
+- **Por qué:** son las opciones más sencillas que cumplen el bloque del PR y reutilizan lo que ya conoce el coach.
+
 ---
 
 ## Pendientes de decidir

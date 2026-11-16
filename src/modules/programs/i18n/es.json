@@ -97,6 +97,14 @@
     "leaveTitle": "¿Salir sin guardar?",
     "leaveDescription": "Tus cambios se quedan en este dispositivo: podrás recuperarlos al volver a abrir esta rutina.",
     "stay": "Quedarme",
-    "leave": "Salir"
+    "leave": "Salir",
+    "exercisesLabel": "Ejercicios del día",
+    "addExercise": "Añadir ejercicio",
+    "noExercises": "Todavía no hay ejercicios.",
+    "moveUp": "Subir: {{name}}",
+    "moveDown": "Bajar: {{name}}",
+    "remove": "Quitar: {{name}}",
+    "removeConfirm": "«{{name}}» ya tiene escrito lo que hay que hacer. ¿Lo quitas de este día?",
+    "removeYes": "Sí, quitar"
   }
 }

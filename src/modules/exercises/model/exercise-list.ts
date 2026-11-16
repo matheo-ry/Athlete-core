@@ -55,6 +55,28 @@ export function toListItem(exercise: Exercise, language: Language): ExerciseList
   };
 }
 
+/**
+ * Lo que otros módulos saben de un ejercicio (las rutinas, PR 2.9): su nombre
+ * a la vista, cómo se mide y si está archivado.
+ */
+export interface ExerciseOption {
+  id: string;
+  name: string;
+  measurement: Exercise['measurement'];
+  isUnilateral: boolean;
+  isArchived: boolean;
+}
+
+export function toOption(exercise: Exercise, language: Language): ExerciseOption {
+  return {
+    id: exercise.id,
+    name: exerciseName(exercise, language),
+    measurement: exercise.measurement,
+    isUnilateral: exercise.isUnilateral,
+    isArchived: exercise.archivedAt !== null,
+  };
+}
+
 function tabOf(exercise: Exercise): ExerciseTab {
   return exercise.archivedAt === null ? 'active' : 'archived';
 }

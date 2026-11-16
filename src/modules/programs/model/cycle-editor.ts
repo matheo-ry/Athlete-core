@@ -1,5 +1,6 @@
 import type { Language } from '@/core/i18n';
 
+import { addExercise, moveExercise, removeExercise } from './day-exercises';
 import { MAX_CYCLE_DAYS, WEEKLY_CYCLE_DAYS, restDay } from './program-document';
 import type { ProgramBlock, ProgramDay, ProgramDocument } from './program-document';
 
@@ -15,7 +16,11 @@ export type CycleEditorAction =
   | { type: 'setDayKind'; dayNumber: number; kind: ProgramDay['kind'] }
   | { type: 'setDayText'; dayNumber: number; field: DayTextField; value: string }
   /** "Recuperar" los cambios que quedaron en el dispositivo (PR 2.8b). */
-  | { type: 'replace'; document: ProgramDocument };
+  | { type: 'replace'; document: ProgramDocument }
+  // Los ejercicios de un día (PR 2.9).
+  | { type: 'addExercise'; dayNumber: number; exerciseId: string }
+  | { type: 'moveExercise'; dayNumber: number; index: number; direction: -1 | 1 }
+  | { type: 'removeExercise'; dayNumber: number; index: number };
 
 function updateFirstBlock(
   document: ProgramDocument,
@@ -70,6 +75,20 @@ export function editCycle(document: ProgramDocument, action: CycleEditorAction):
       );
     case 'replace':
       return action.document;
+    case 'addExercise':
+      return updateFirstBlock(document, (block) =>
+        updateDay(block, action.dayNumber, (day) => addExercise(day, action.exerciseId)),
+      );
+    case 'moveExercise':
+      return updateFirstBlock(document, (block) =>
+        updateDay(block, action.dayNumber, (day) =>
+          moveExercise(day, action.index, action.direction),
+        ),
+      );
+    case 'removeExercise':
+      return updateFirstBlock(document, (block) =>
+        updateDay(block, action.dayNumber, (day) => removeExercise(day, action.index)),
+      );
   }
 }
 

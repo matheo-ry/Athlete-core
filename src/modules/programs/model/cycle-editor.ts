@@ -9,6 +9,7 @@ import {
   setExerciseNote,
 } from './day-exercises';
 import { MAX_CYCLE_DAYS, WEEKLY_CYCLE_DAYS, restDay } from './program-document';
+import { groupWithNext, normalizeGroups, ungroup } from './supersets';
 import type {
   ProgramBlock,
   ProgramDay,
@@ -41,7 +42,10 @@ export type CycleEditorAction =
   | { type: 'duplicateExercise'; dayNumber: number; index: number }
   | { type: 'pasteExercise'; dayNumber: number; item: ProgramDayExercise }
   /** Deja el día igual que `source`: duplicar un día en otro, o pegar uno copiado. */
-  | { type: 'replaceDay'; dayNumber: number; source: ProgramDay };
+  | { type: 'replaceDay'; dayNumber: number; source: ProgramDay }
+  // Superseries y circuitos (PR 2.17).
+  | { type: 'groupWithNext'; dayNumber: number; index: number }
+  | { type: 'ungroup'; dayNumber: number; index: number };
 
 function updateFirstBlock(
   document: ProgramDocument,
@@ -58,7 +62,10 @@ function updateDay(
 ): ProgramBlock {
   return {
     ...block,
-    days: block.days.map((day) => (day.dayNumber === dayNumber ? update(day) : day)),
+    // Tras cualquier cambio en un día, sus superseries quedan coherentes (D-077).
+    days: block.days.map((day) =>
+      day.dayNumber === dayNumber ? normalizeGroups(update(day)) : day,
+    ),
   };
 }
 
@@ -129,6 +136,14 @@ export function editCycle(document: ProgramDocument, action: CycleEditorAction):
     case 'pasteExercise':
       return updateFirstBlock(document, (block) =>
         updateDay(block, action.dayNumber, (day) => pasteExercise(day, action.item)),
+      );
+    case 'groupWithNext':
+      return updateFirstBlock(document, (block) =>
+        updateDay(block, action.dayNumber, (day) => groupWithNext(day, action.index)),
+      );
+    case 'ungroup':
+      return updateFirstBlock(document, (block) =>
+        updateDay(block, action.dayNumber, (day) => ungroup(day, action.index)),
       );
     case 'replaceDay':
       return updateFirstBlock(document, (block) =>

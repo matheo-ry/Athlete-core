@@ -321,5 +321,14 @@
     "paste": "Pegar bloque",
     "full": "Una rutina puede tener hasta 12 bloques.",
     "lastHint": "Solo el último bloque puede quedar sin fecha de fin."
+  },
+  "supersets": {
+    "superset": "Superserie",
+    "circuit": "Circuito",
+    "position": "{{position}} de {{size}}",
+    "group": "Agrupar con el siguiente",
+    "groupLabel": "Agrupar «{{name}}» con el ejercicio siguiente",
+    "ungroup": "Desagrupar",
+    "ungroupLabel": "Desagrupar «{{name}}»"
   }
 }

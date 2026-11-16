@@ -8,6 +8,7 @@ import type { Measurement } from '@/modules/exercises';
 import type { CycleEditorAction } from '../model/cycle-editor';
 import { dayCounts } from '../model/cycle-editor';
 import type { ProgramDay } from '../model/program-document';
+import { canGroupWithNext, groupInfo } from '../model/supersets';
 import { DayExerciseRow } from './DayExerciseRow';
 import { ExerciseTabs } from './ExerciseTabs';
 import { useProgramClipboard } from './useProgramClipboard';
@@ -94,6 +95,7 @@ export function DayExercises({ day, onChange }: DayExercisesProps) {
           <ExerciseTabs
             items={day.exercises}
             byId={options.byId}
+            day={day}
             selected={selected}
             onSelect={select}
           />
@@ -129,6 +131,13 @@ export function DayExercises({ day, onChange }: DayExercisesProps) {
                 select(selected + 1);
               }}
               onCopy={() => copy({ kind: 'exercise', item })}
+              group={groupInfo(day, selected)}
+              onGroup={
+                canGroupWithNext(day, selected)
+                  ? () => onChange({ type: 'groupWithNext', dayNumber, index: selected })
+                  : null
+              }
+              onUngroup={() => onChange({ type: 'ungroup', dayNumber, index: selected })}
               onPrescription={(changed) =>
                 onChange({ type: 'setExercise', dayNumber, index: selected, item: changed })
               }

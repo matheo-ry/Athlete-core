@@ -911,6 +911,18 @@ Cómo añadir una: copia el formato, usa el siguiente número y no borres las an
 - **Por qué:** los ajustes del negocio son preferencias (ARQUITECTURA §8) y ya tenían su sitio en la base de datos.
 - **A tener en cuenta:** al pasar de libras a kilos y volver puede bailar el segundo decimal en kg. No se ve, porque se enseña con un decimal.
 
+### D-104 · Cómo se copia y se duplica
+- **Fecha:** 2026-11-15
+- **Decisión:** detalles del PR 2.11 que D-080 no fijaba.
+  - **Ejercicio:** "Duplicar" lo pone justo debajo con las mismas series, descanso y nota. "Copiar" lo guarda para pegarlo ("Pegar ejercicio") al final de otro día, de esta rutina o de otra.
+  - **Día:** "Duplicar este día en…" con un desplegable de los demás días del ciclo. "Copiar día" y, en cualquier día (también de descanso), "Pegar aquí el día copiado". El destino queda igual que el original: tipo, nombre, subtítulo, lugar, ejercicios y series.
+  - **Si el día de destino ya tiene ejercicios, se pregunta antes de sustituirlos,** tanto al duplicar como al pegar.
+  - **Lo copiado se guarda en el dispositivo,** uno por usuario y negocio (los ejercicios son de cada negocio), con el prefijo de los borradores (D-099): se olvida al cerrar sesión. Copiar otra cosa sustituye a lo anterior.
+  - **Plantilla:** "Duplicar" en la lista crea "Copia de …" (recortado a 80 caracteres), con todos sus bloques, y se queda en la lista.
+  - **Toda copia nace sin identificadores:** al guardar, la base de datos la crea como algo nuevo. Cambiar la copia no cambia el original.
+  - **Si lo pegado lleva un ejercicio archivado** que la rutina de destino no tenía, la base de datos no lo admite (D-073) y la app lo explica: "Recupéralo en Ejercicios o quítalo de la rutina".
+- **Por qué:** el propietario pidió copiar a toda escala. Con el editor guardando un documento entero (D-079), copiar es mover piezas del documento sin tocar la base de datos hasta "Guardar cambios".
+
 ---
 
 ## Pendientes de decidir

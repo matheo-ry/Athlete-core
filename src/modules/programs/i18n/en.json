@@ -38,8 +38,11 @@
     "notices": {
       "renamed": "Renamed to “{{name}}”.",
       "archived": "“{{name}}” archived. You can find it in Archived.",
-      "unarchived": "“{{name}}” is active again."
-    }
+      "unarchived": "“{{name}}” is active again.",
+      "duplicated": "“{{name}}” created."
+    },
+    "duplicate": "Duplicate",
+    "copyName": "Copy of {{name}}"
   },
   "form": {
     "newTitle": "New template",
@@ -53,7 +56,8 @@
     "nameTooLong": "The name can be up to 80 characters.",
     "cycleDaysInvalid": "Write a number from 1 to 28.",
     "limitReached": "You already have 300 active templates. Archive one to add another.",
-    "conflict": "This program was changed from another device. Reload the page and try again."
+    "conflict": "This program was changed from another device. Reload the page and try again.",
+    "archivedExercise": "There is an archived exercise that this program did not have. Recover it in Exercises or remove it from the program."
   },
   "editor": {
     "description": "The days of the cycle. Changes are kept on this screen until you save them.",
@@ -138,5 +142,21 @@
     },
     "load": "Load ({{unit}})",
     "extraLoad": "Extra weight ({{unit}})"
+  },
+  "copy": {
+    "duplicate": "Duplicate",
+    "copy": "Copy",
+    "duplicateExercise": "Duplicate: {{name}}",
+    "copyExercise": "Copy: {{name}}",
+    "pasteExercise": "Paste exercise",
+    "duplicateDayTo": "Duplicate this day to",
+    "duplicateDay": "Duplicate day",
+    "copyDay": "Copy day",
+    "pasteDay": "Paste the copied day here",
+    "dayCopied": "Day copied. Open another day or another program to paste it.",
+    "dayReplaced": "{{day}} is now a copy.",
+    "replaceConfirm_one": "{{day}} already has {{count}} exercise. It will be replaced.",
+    "replaceConfirm_other": "{{day}} already has {{count}} exercises. They will be replaced.",
+    "replaceYes": "Yes, replace"
   }
 }

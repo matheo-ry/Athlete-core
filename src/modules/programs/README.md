@@ -14,4 +14,5 @@
 - **Sustituir, nota y archivados** (PR 2.9b, D-101, `coach/DayExerciseRow.tsx`): "Sustituir" solo ofrece los que se miden igual y conserva las series; la nota la verá el cliente; un ejercicio archivado se queda con su etiqueta.
 - **Lo prescrito** (PR 2.10a, D-102, `coach/PrescriptionEditor.tsx`): series, repeticiones (o segundos, o metros), intensidad y descanso de cada ejercicio; "Series distintas" para escribir cada serie. La lógica y el resumen de una línea (`prescriptionSummary`), en `model/prescription.ts`: lo usarán también la vista del cliente y la ficha.
 - **Escala y carga** (PR 2.10b, D-103): el desplegable de intensidad ofrece la escala del negocio (`useTenantSettings` de `core/tenancy`); la carga (`coach/LoadInput.tsx`) se escribe en la unidad del usuario y se guarda en kg.
-- **Estado:** lista de plantillas y editor completo de una rutina de un bloque. Siguiente: copiar y duplicar (PR 2.11).
+- **Copiar y duplicar** (PR 2.11, D-104): un ejercicio, un día (`coach/DayCopyActions.tsx`) o una plantilla entera. La lógica, en `model/copy.ts`; lo copiado para pegar en otra rutina, en `model/program-clipboard.ts` (en el dispositivo, validado con Zod, se olvida al cerrar sesión).
+- **Estado:** lote 3 completo: lista de plantillas y editor completo de una rutina de un bloque. Siguiente: asignar a clientes (PR 2.12 y 2.13).

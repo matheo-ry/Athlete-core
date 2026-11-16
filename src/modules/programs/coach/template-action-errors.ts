@@ -8,5 +8,6 @@ export const TEMPLATE_ACTION_ERRORS: Record<
   offline: 'core.errors.offline',
   conflict: 'programs.form.conflict',
   limit_reached: 'programs.form.limitReached',
+  archived_exercise: 'programs.form.archivedExercise',
   error: 'core.errors.unexpected',
 };

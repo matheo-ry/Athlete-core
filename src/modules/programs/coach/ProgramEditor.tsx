@@ -19,6 +19,7 @@ import { useUnsavedChanges } from './useUnsavedChanges';
 const FAILURES = {
   offline: 'core.errors.offline',
   limit_reached: 'programs.form.limitReached',
+  archived_exercise: 'programs.form.archivedExercise',
   error: 'core.errors.unexpected',
 } as const;
 
@@ -151,6 +152,7 @@ export function ProgramEditor({ saved, justSaved, onSaved, onReload }: ProgramEd
             </Button>
             <DayPanel
               key={shownDay.dayNumber}
+              block={block}
               day={shownDay}
               label={label(shownDay.dayNumber)}
               onChange={dispatch}

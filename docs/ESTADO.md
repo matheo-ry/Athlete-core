@@ -7,11 +7,11 @@ Este archivo lo actualiza quien termina una tarea, en el mismo Pull Request, jun
 
 ## En curso
 
-El lote 3. Los PR 2.9a (rama `feat/editor-ejercicios`, #36) 2.9b (rama `feat/editor-sustituir`, #37) 2.10a (rama `feat/editor-series`, #38) y 2.10b (rama `feat/editor-carga`) están abiertos, apilados. Los lotes 1 (PR 2.1 a 2.4b, #24 a #28) y 2 (PR 2.5a a 2.8b, #30 a #35) están fusionados en `main` desde el 2026-11-15; el propietario pidió hacer y fusionar el lote 2 en el mismo chat, y todavía no lo ha probado en la app.
+Nada. **El lote 3 está completo:** los PR 2.9a (#36), 2.9b (#37), 2.10a (#38), 2.10b (#39) y 2.11 (rama `feat/copiar-y-duplicar`) están abiertos, apilados en ese orden. Los lotes 1 (#24 a #28) y 2 (#30 a #35) están fusionados en `main` desde el 2026-11-15; el lote 2 se fusionó a petición del propietario sin que lo probara antes.
 
 ## Siguiente
 
-1. **PR 2.11 — Copiar y duplicar** (`docs/PROMPTS.md` §6), apilado sobre el 2.10b. Es el último del lote 3.
+1. **El propietario prueba los lotes 2 y 3** ("Al terminar el lote", `docs/PROMPTS.md` §6: montar entera su rutina real, con ejercicios y series, y copiarla) y da el visto bueno para fusionar los PR 2.9a a 2.11, en orden (D-064). Que revise los cambios en `src/core/` de los PR 2.8b (D-099) y 2.10b (D-103). Después, el lote 4: PR 2.12 — Base de datos: asignar.
 2. El propietario prueba el lote 2 en la app y revisa el cambio en `src/core/` del PR 2.8b (D-099). Si algo no le gusta, se arregla en un PR nuevo.
 3. El propietario aplica en staging las migraciones 8 a 14 (GUIA-GIT §9). No bloquea seguir.
 4. El propietario dio por buenas, por ahora, la lista de `docs/referencia/biblioteca-ejercicios.md` y las rutinas de ejemplo. Se pueden retocar más adelante.
@@ -96,7 +96,7 @@ El diseño está en DECISIONES D-069 a D-088, y el detalle de cada PR, en `docs/
 - [x] PR 2.10 — Editor: series y prescripción (partido en dos, como preveía `docs/PROMPTS.md` §6)
   - [x] 2.10a — la línea única, "Series distintas", repeticiones (o segundos, o metros), intensidad, descanso y el resumen
   - [x] 2.10b — el ajuste RIR o RPE y la carga en kg o lb
-- [ ] PR 2.11 — Copiar y duplicar
+- [x] PR 2.11 — Copiar y duplicar
 
 **Lote 4 — Asignar y verla como cliente**
 
@@ -197,6 +197,8 @@ Cosas que alguien ha visto y que no tocaban en su tarea. No se hacen sin convert
 ## Registro de cambios
 
 Lo más nuevo, arriba.
+
+- 2026-11-15 — PR 2.11 (copiar y duplicar): duplicar un ejercicio; duplicar un día en otro del mismo ciclo, con confirmación si el destino tiene ejercicios; copiar un ejercicio o un día y pegarlo en otra rutina (se guarda en el dispositivo y se olvida al cerrar sesión); y duplicar una plantilla entera desde la lista ("Copia de …"). La lógica, en `model/copy.ts`. 7 tests unitarios y 2 de extremo a extremo nuevos. Detalles en D-104. Cierra el lote 3.
 
 - 2026-11-15 — PR 2.10b (editor: el ajuste RIR o RPE y la carga): "Entrenamiento" en los Ajustes del coach, solo para el dueño, para elegir RIR o RPE (se guarda en `tenants.settings`; `useTenantSettings` y `useSaveTenantSettings` en `core/tenancy`); el editor ofrece la escala elegida sin convertir lo ya escrito; y la carga objetivo, escrita en kg o lb y guardada en kg ("Lastre" en los ejercicios de peso corporal). Toca `src/core/tenancy` (lo pedía el bloque) y los textos de `src/core/i18n`. 9 tests unitarios y 2 de extremo a extremo nuevos. Detalles en D-103.
 

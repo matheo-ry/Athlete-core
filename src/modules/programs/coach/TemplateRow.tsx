@@ -13,7 +13,7 @@ import { describeCycle } from '../model/template-list';
 import type { TemplateSummary } from '../model/template-list';
 import { TEMPLATE_ACTION_ERRORS } from './template-action-errors';
 
-export type TemplateNotice = 'renamed' | 'archived' | 'unarchived';
+export type TemplateNotice = 'renamed' | 'archived' | 'unarchived' | 'duplicated';
 
 interface TemplateRowProps {
   template: TemplateSummary;
@@ -125,6 +125,22 @@ export function TemplateRow({ template, onDone }: TemplateRowProps) {
                 onClick={() => setIsRenaming(true)}
               >
                 {t('programs.list.rename')}
+              </Button>
+            )}
+            {/* Una plantilla nueva igual que esta: "Copia de …" (PR 2.11). */}
+            {isArchived ? null : (
+              <Button
+                variant="secondary"
+                disabled={action.isPending}
+                aria-label={`${t('programs.list.duplicate')}: ${template.name}`}
+                onClick={() => {
+                  const name = t('programs.list.copyName', { name: template.name });
+                  run({ kind: 'duplicate', id: template.id, name }, () =>
+                    onDone('duplicated', name),
+                  );
+                }}
+              >
+                {t('programs.list.duplicate')}
               </Button>
             )}
             <Button

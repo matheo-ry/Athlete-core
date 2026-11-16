@@ -53,7 +53,7 @@ export async function fetchProgram(tenantId: string, programId: string): Promise
 
 export type SaveProgramResult =
   | { status: 'saved'; id: string; updatedAt: string }
-  | { status: 'conflict' | 'limit_reached' | 'error' };
+  | { status: 'conflict' | 'limit_reached' | 'archived_exercise' | 'error' };
 
 /** Lo que dice la base de datos de lo guardado (D-096). */
 function parseSaved(data: unknown): { id: string; updatedAt: string } | null {
@@ -89,6 +89,11 @@ export async function saveProgram(
   }
   if (error.message === 'template_limit_reached') {
     return { status: 'limit_reached' };
+  }
+  // Un ejercicio archivado no se añade a una rutina que no lo tenía (D-073):
+  // pasa al pegar o al duplicar una plantilla que lo lleva.
+  if (error.message === 'exercise_archived') {
+    return { status: 'archived_exercise' };
   }
   logger.error('Could not save program', { code: error.code, rule: error.message });
   return { status: 'error' };

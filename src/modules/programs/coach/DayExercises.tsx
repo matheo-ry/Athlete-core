@@ -9,6 +9,7 @@ import type { CycleEditorAction } from '../model/cycle-editor';
 import { dayCounts } from '../model/cycle-editor';
 import type { ProgramDay } from '../model/program-document';
 import { DayExerciseRow } from './DayExerciseRow';
+import { useProgramClipboard } from './useProgramClipboard';
 
 interface DayExercisesProps {
   day: ProgramDay;
@@ -29,6 +30,7 @@ export function DayExercises({ day, onChange }: DayExercisesProps) {
   const { t } = useTranslation();
   const options = useExerciseOptions();
   const [picking, setPicking] = useState<Picking | null>(null);
+  const { clipboard, copy } = useProgramClipboard();
   const counts = dayCounts(day);
   const dayNumber = day.dayNumber;
 
@@ -93,6 +95,8 @@ export function DayExercises({ day, onChange }: DayExercisesProps) {
                   }
                 }}
                 onNote={(note) => onChange({ type: 'setExerciseNote', dayNumber, index, note })}
+                onDuplicate={() => onChange({ type: 'duplicateExercise', dayNumber, index })}
+                onCopy={() => copy({ kind: 'exercise', item })}
                 onPrescription={(changed) =>
                   onChange({ type: 'setExercise', dayNumber, index, item: changed })
                 }
@@ -110,6 +114,15 @@ export function DayExercises({ day, onChange }: DayExercisesProps) {
       >
         {t('programs.editor.addExercise')}
       </Button>
+      {clipboard?.kind === 'exercise' ? (
+        <Button
+          variant="ghost"
+          className="self-start"
+          onClick={() => onChange({ type: 'pasteExercise', dayNumber, item: clipboard.item })}
+        >
+          {t('programs.copy.pasteExercise')}
+        </Button>
+      ) : null}
     </div>
   );
 }

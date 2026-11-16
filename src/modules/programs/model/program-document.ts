@@ -22,7 +22,7 @@ const programSetSchema = z.object({
   targetLoadKg: z.number().min(0).max(1000).nullable(),
 });
 
-const programDayExerciseSchema = z.object({
+export const programDayExerciseSchema = z.object({
   id,
   exerciseId: z.uuid(),
   supersetGroup: count(1, 15),
@@ -31,7 +31,7 @@ const programDayExerciseSchema = z.object({
   sets: z.array(programSetSchema).min(1).max(10),
 });
 
-const programDaySchema = z.object({
+export const programDaySchema = z.object({
   id,
   dayNumber: z.number().int().min(1).max(MAX_CYCLE_DAYS),
   kind: z.enum(['training', 'rest']),

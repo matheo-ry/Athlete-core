@@ -1,19 +1,19 @@
 # ESTADO DEL PROYECTO
 
-**Última actualización:** 2026-11-16
+**Última actualización:** 2026-11-17
 **Fase actual:** 3 — Entreno y progreso, en construcción (diseño en D-115 a D-137). La Fase 2 terminó y se fusionó entera en `main`.
 
 Este archivo lo actualiza quien termina una tarea, en el mismo Pull Request, junto con `CONTEXTO.md` (que resume este en una página).
 
 ## En curso
 
-**PR 3.1a — App de Android** (`feat/app-android`, #56) y **PR 3.1b — Tests de flujos completos en el CI** (`ci/tests-e2e`, sobre el 3.1a), en revisión. El PR 3.1 pasaba de 300 líneas y se ha partido.
+**PR 3.2a — Base de datos: entrenos** (`db/entrenos`), en revisión. El PR 3.2 pasaba de 300 líneas y se ha partido como preveía su bloque: el 3.2b (regla del día saltado y días faltados) va encima.
 
 ## Siguiente
 
-1. **El propietario prueba el PR 3.1a en su móvil** con la guía de `android/README.md` (instalar Android Studio una vez y `npm run android:build`).
-2. Fusionar el 3.1a y después el 3.1b (con el visto bueno del propietario, D-068).
-3. **PR 3.2 — Base de datos: entrenos** (`docs/PROMPTS.md` §7).
+1. **PR 3.2b — El día saltado y los días faltados, en la base de datos** (`docs/PROMPTS.md` §7, puntos 4 y 5 del PR 3.2).
+2. Fusionar el 3.2a y el 3.2b (con el visto bueno del propietario, D-068).
+3. **PR 3.3 — Base de datos: datos de salud, set-up y ajustes del cliente.**
 4. El propietario dio por buenas, por ahora, la lista de `docs/referencia/biblioteca-ejercicios.md` y las rutinas de ejemplo. Se pueden retocar más adelante.
 
 ## Fases
@@ -127,9 +127,11 @@ El diseño está en DECISIONES D-115 a D-136, y el detalle de cada PR, en `docs/
 
 **Lote 1 — Cimientos**
 
-- [ ] PR 3.1a — App de Android, `core/native` y la guía (en revisión)
-- [ ] PR 3.1b — Tests de flujos completos en el CI (en revisión)
-- [ ] PR 3.2 — Base de datos: entrenos
+- [x] PR 3.1a — App de Android, `core/native` y la guía
+- [x] PR 3.1b — Tests de flujos completos en el CI
+- [ ] PR 3.2 — Base de datos: entrenos (partido en dos, como preveía `docs/PROMPTS.md` §7)
+  - [ ] 3.2a — las tres tablas, subir, descartar y el flag (en revisión)
+  - [ ] 3.2b — la regla del día saltado y los días faltados
 - [ ] PR 3.3 — Base de datos: datos de salud, set-up y ajustes del cliente
 - [ ] PR 3.4 — Guardado en el móvil
 
@@ -205,6 +207,10 @@ Ideas aprobadas como ideas, no como diseño: se diseñan cuando llegue la fase (
 
 Cosas que alguien ha visto y que no tocaban en su tarea. No se hacen sin convertirlas antes en tarea.
 
+- Entrenos (PR 3.2a): el cliente solo lee los ejercicios que están en sus rutinas. Uno elegido con "Cambiar ejercicio" (D-122) que no esté en ninguna no lo podrá leer por su nombre en el historial: el PR 3.8 tiene que ampliar `is_exercise_in_my_programs` (o añadir otra política) a los ejercicios de sus entrenos.
+
+- Entrenos (PR 3.2a): si el móvil reutilizara el identificador de una serie para otro número o lado, `sync_workout` fallaría con un error de clave repetida y la subida se quedaría atascada. La app no debe hacerlo nunca; el PR 3.4 debería tener un test de ello.
+
 - `docs/ARQUITECTURA.md` §5: el ejemplo de manifest no enseña `homeCards` (PR 2.18, D-114) ni lo que recibe una pestaña de la ficha (`ClientProfileTabProps`, PR 2.14a, D-109). Es zona protegida y ninguna de las dos tareas pedía tocarla: actualizarlo cuando el propietario lo apruebe.
 
 - Tests que fallan a ratos (2026-11-15): con el ordenador cargado (dos servidores de la app abiertos), algunos tests unitarios antiguos agotan su tiempo (`SignupPage`, `JoinAfterSignup`, `ExercisePanel`) y `npm run check` falla sin que el código tenga nada mal; al repetir, pasan. Además, 1 de 5 pasadas completas de `npm run test:e2e` tuvo un fallo que no se pudo reproducir. Habría que mirar si conviene subir el límite de tiempo o bajar el número de tests a la vez.
@@ -255,6 +261,7 @@ Cosas que alguien ha visto y que no tocaban en su tarea. No se hacen sin convert
 
 Lo más nuevo, arriba.
 
+- 2026-11-17 — PR 3.2a (base de datos: entrenos): migraciones 17 y 18. Tablas `workouts`, `workout_exercises` (con su copia de lo prescrito, D-087) y `workout_sets` (una fila por serie y lado), con identificadores del móvil y RLS de solo lectura: el cliente lee los suyos, el coach los de su negocio, el dado de baja nada. `sync_workout` sube un entreno entero: no duplica, gana el cambio más reciente en cada fila, un cerrado sigue cerrado, marca "Editado" y no deja corregir pasados 7 días. `discard_workout` borra un entreno abierto. Flag `workouts` (core). La forma de medir de un ejercicio con series apuntadas tampoco cambia. Decisión D-138. 36 tests pgTAP nuevos (435 en total). Regenera `src/core/supabase/database.types.ts`.
 - 2026-11-16 — PR 3.1b (tests de flujos completos en el CI): nuevo trabajo "Tests de flujos completos" en `ci.yml`. Arranca Supabase local (sin el panel, Realtime ni funciones), escribe `.env.local` con sus valores públicos y `VITE_ALLOW_WEB_WORKOUTS=true`, instala Chromium y ejecuta `npm run test:e2e`; si falla, guarda el informe 7 días. Cumple ARQUITECTURA §13, punto 3.
 - 2026-11-16 — PR 3.1a (app de Android): proyecto `android/` con Capacitor 8.6, identificador provisional `app.athletecore.mobile`, icono propio y arranque oscuro. `npm run android:build` genera `build/athlete-core-staging.apk` contra staging; guía para el propietario en `android/README.md`. `core/native`: `isNativeApp()`, `canLogWorkouts()` y `startNativeShell()` (botón "atrás" y barra de estado que sigue la marca). `core/config`: `VITE_ALLOW_WEB_WORKOUTS`, ignorada en cualquier build. Zonas seguras (`--safe-top`, `--safe-bottom`) en las carcasas y el diálogo de asignar. Librerías `@capacitor/android` y `@capacitor/app` (D-135). Decisión D-137. 612 tests unitarios y los 91 de flujos completos en verde.
 - 2026-11-16 — Diseño de la Fase 3: decisiones D-115 a D-136. Entrenar solo en la app del móvil (la web sirve para todo lo demás); la app de Android se adelanta al PR 3.1; guardado en el móvil sin conexión (cierra P-06); apuntar sin botón de "hecha", con − y +, teclado, gris de la vez anterior y "Igual"; cronómetro con alarma con la pantalla apagada; tres reglas del día saltado; consentimiento de datos de salud, peso y medidas (P-12 cerrado en parte); lo que ve el coach; progreso, gráficas, logros y Excel; los 100 primeros coaches; ideas de negocio en `docs/referencia/ideas-de-negocio.md` y la Fase 6. El plan de 18 PR en 5 lotes, en `docs/PROMPTS.md` §7. AGENTS.md §1, ARQUITECTURA §1, §12 y §14 y README cambiados con la aprobación del propietario. Solo documentación.

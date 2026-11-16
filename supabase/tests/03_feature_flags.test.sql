@@ -20,7 +20,7 @@ insert into auth.users (id, email) values
   ('00000000-0000-4000-8000-00000000000b', 'coach-b@example.test');
 
 insert into public.features (key, kind, sunset_at) values
-  ('workouts', 'core', null),
+  ('demo_core', 'core', null),
   ('macros_calculator', 'addon', null),
   ('new_editor', 'release', '2027-06-30'),
   ('signups', 'kill_switch', null);
@@ -37,7 +37,7 @@ select set_config('t.ta', public.create_tenant('Coach A', 'test-terms')::text, t
 select is((select count(*)::int from public.tenant_effective_features),
   (select count(*)::int from public.features),
   '23a: el coach solo ve los flags de su tenant');
-select ok((select enabled from public.tenant_effective_features where feature_key = 'workouts'),
+select ok((select enabled from public.tenant_effective_features where feature_key = 'demo_core'),
   '23b: un flag core está activo');
 select ok((select enabled from public.tenant_effective_features where feature_key = 'signups'),
   '23c: un kill_switch está activo por defecto');
@@ -67,12 +67,12 @@ select ok((select enabled from public.tenant_effective_features where feature_ke
 set local role postgres;
 update public.tenant_features set expires_at = now() - interval '1 minute'
 where tenant_id = current_setting('t.ta')::uuid and feature_key = 'new_editor';
-update public.features set is_enabled = false where key = 'workouts';
+update public.features set is_enabled = false where key = 'demo_core';
 
 set local role authenticated;
 select ok(not (select enabled from public.tenant_effective_features where feature_key = 'new_editor'),
   '27a: una excepción caducada deja de estar activa');
-select ok(not (select enabled from public.tenant_effective_features where feature_key = 'workouts'),
+select ok(not (select enabled from public.tenant_effective_features where feature_key = 'demo_core'),
   '27b: el interruptor general apaga el flag para todos');
 
 set local role postgres;

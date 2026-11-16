@@ -1288,6 +1288,23 @@ Cómo añadir una: copia el formato, usa el siguiente número y no borres las an
 - **Por qué:** el propietario no es programador: un comando y un archivo que se instala como cualquier otro. Las zonas seguras y el botón "atrás" se resuelven en `core/native` y en las carcasas, sin código por plataforma.
 - **Revisar si:** se publica en Google Play (Fase 4): entonces hace falta la clave de firma de tienda, que nunca va en Git.
 
+### D-138 · Cómo se guardan los entrenos en la base de datos
+- **Fecha:** 2026-11-17
+- **Decisión:** detalles del PR 3.2 que D-118, D-119 y D-124 no fijaban.
+  - **Tres tablas, solo de lectura desde la app:** `workouts`, `workout_exercises` y `workout_sets`. Se escriben con `sync_workout` (el cliente sube el entreno entero) y `discard_workout`. Los identificadores los crea el móvil.
+  - **Gana lo más reciente, por fila:** cada ejercicio lleva `changed_at` y cada serie `recorded_at`, que pone el móvil. Al subir, una fila solo se pisa si lo que llega es más nuevo. Por eso subir dos veces lo mismo no cambia nada.
+  - **Una serie es su número y su lado** dentro del ejercicio, no su identificador: si dos móviles apuntan la serie 2, queda una fila con el último cambio.
+  - **Nada se borra al subir.** Desmarcar una serie la deja con `is_done = false`, para que también ese cambio gane o pierda por la hora. Las series sin hacer no cuentan.
+  - **Un entreno cerrado sigue cerrado**, aunque llegue tarde algo del móvil que lo tenía abierto. Si al subir cambia algo de uno cerrado, queda `edited_at` ("Editado"); pasados 7 días desde que se cerró, se rechaza (`workout_locked`). La primera subida de un entreno sí se acepta siempre, aunque el móvil haya estado una semana sin cobertura.
+  - **El móvil que lo tiene abierto** gana por `device_since` (cuándo lo tomó: al empezar o con "Seguir aquí"), no por la hora del último dato: así lo que suba con retraso el primer móvil no le quita el entreno al segundo.
+  - **Si el coach cambia la rutina**, el entreno no se pierde: si falta el bloque, el día o el ejercicio de la rutina, se guarda sin ese enlace y con su copia de lo prescrito y su número de día. La rutina sí tiene que ser del cliente.
+  - **Descartar** solo vale para un entreno abierto; uno cerrado ya es historial. Descartar algo que no está en la nube no hace nada, para que el móvil pueda repetirlo.
+  - **Varios entrenos abiertos a la vez** no los impide la base de datos: lo impide la app (D-119). Si dos móviles sin conexión empezaran dos distintos, rechazar uno sería perder datos.
+  - **Las horas del móvil** se aceptan con un día de margen sobre la del servidor, como el "hoy" de D-105.
+  - **La forma de medir de un ejercicio** tampoco cambia si tiene series apuntadas, aunque ya no esté en ninguna rutina (amplía D-072).
+- **Por qué:** lo más importante de la fase es no perder nada (D-118). Con "gana lo más reciente" y sin borrar, el orden en que lleguen las subidas da igual.
+- **Revisar si:** los relojes de los móviles dan problemas al comparar horas.
+
 ---
 
 ## Pendientes de decidir

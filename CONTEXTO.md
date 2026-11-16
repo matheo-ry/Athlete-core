@@ -22,9 +22,8 @@
 ## Dónde estamos
 
 - **Fase actual:** 3 — Entreno y progreso, en construcción (diseño en D-115 a D-137). Las Fases 1 y 2 están terminadas y fusionadas en `main`.
-- **Última tarea terminada:** PR 3.1a (app de Android, #56) y PR 3.1b (tests de flujos completos en el CI), los dos en revisión. El PR 3.1 se partió en dos por tamaño.
-- **En curso:** el propietario prueba la app en su móvil (`android/README.md`).
-- **Siguiente tarea:** **PR 3.2 — Base de datos: entrenos** (`docs/PROMPTS.md` §7), cuando estén fusionados el 3.1a y el 3.1b. En staging, todas las migraciones 1 a 16 están aplicadas y probadas.
+- **Última tarea terminada:** PR 3.2a (base de datos: entrenos), en revisión. El PR 3.2 se partió en dos por tamaño, como preveía su bloque. El 3.1a (#56) y el 3.1b (#58) están fusionados.
+- **Siguiente tarea:** **PR 3.2b — el día saltado y los días faltados, en la base de datos** (`docs/PROMPTS.md` §7, puntos 4 y 5 del PR 3.2), y después el PR 3.3. En staging están aplicadas y probadas las migraciones 1 a 16; las de entrenos, todavía no.
 
 ## Cómo será la Fase 3 (diseñada, D-115 a D-136)
 
@@ -58,7 +57,8 @@
 - **Módulo `exercises`** (PR 2.3): "Ejercicios" en el menú del coach. Lista por orden alfabético (los del catálogo, en el idioma de la app), pestañas "Activos" y "Archivados" con su número, buscador sin tildes y filtros de grupo, material y origen, todo en la app (D-091). Crear y editar (PR 2.4a): "Nuevo ejercicio", pulsar una fila o "Crear «lo escrito»" desde el buscador; panel en escritorio, pantalla entera en el móvil (D-092). Archivar, recuperar, duplicar y "Restaurar original" (PR 2.4b) en el panel del ejercicio; nunca se borra (D-093).
 - **Módulo `programs`** (PR 2.7): "Rutinas" en el menú del coach. Lista de plantillas con "Semanal" o "Ciclo de N días" y sus días de entreno, pestañas "Activas" y "Archivadas", buscador, "Nueva plantilla" (nombre y días del ciclo), renombrar, archivar y recuperar (D-097). El documento de una rutina (esquema Zod del editor) está en `model/program-document.ts`. El editor (PR 2.8a, `/coach/programs/<id>`): los días del ciclo del primer bloque, de entreno o de descanso, con nombre, subtítulo y lugar, y "Guardar cambios" de una vez (D-098). Con cambios sin guardar, avisa al salir y los guarda en el dispositivo para "Recuperar" al volver; se borran al cerrar sesión (PR 2.8b, D-099). Cada día de entreno tiene sus ejercicios en orden: añadir con el buscador de "Ejercicios" sin salir, crear uno nuevo, subir, bajar y quitar (PR 2.9a, D-100); sustituir por otro que se mide igual, nota para el cliente y etiqueta "Archivado" (PR 2.9b, D-101). En cada ejercicio se escribe lo prescrito: series, repeticiones, intensidad y descanso, con el resumen "3 × 8-12 · RIR 1 · 2:00" (PR 2.10a, D-102), y la carga en kg o lb. El dueño elige en Ajustes → "Entrenamiento" si trabaja con RIR o con RPE (PR 2.10b, D-103). Se puede duplicar un ejercicio, un día o una plantilla entera, y copiar y pegar entre rutinas (PR 2.11, D-104).
 - **Rutinas en la base de datos** (PR 2.5a y 2.5b): `programs` (sin cliente = plantilla), `program_blocks`, `program_days`, `program_day_exercises` y `program_sets`. Desde la app solo se leen: el coach, las de su negocio; el cliente, las suyas y los ejercicios que llevan. Se escriben con funciones: `save_program` guarda una rutina entera o nada (PR 2.6, D-096) y `set_program_archived` archiva y recupera plantillas. El seed trae tres plantillas: "Casa + Gym" y "Pecho / Espalda y Brazo / Pierna" en Iron Lab, y "Fuerza básica" en Norte Strength.
-- **Base de datos local** (Supabase en Docker): 16 migraciones en `supabase/migrations/` (tablas, funciones de negocio, permisos, RLS, el espacio de logos, los ejercicios, las rutinas y los flags de cada módulo); 399 tests pgTAP (`npm run db:test`); 2 coaches y 6 clientes inventados (`supabase/seed.sql`, contraseña `password123`); tipos generados en `core/supabase/database.types.ts`.
+- **Entrenos en la base de datos** (PR 3.2a): `workouts`, `workout_exercises` (con su copia de lo prescrito) y `workout_sets` (una fila por serie y lado). Desde la app solo se leen; el móvil sube un entreno entero con `sync_workout` (gana el cambio más reciente, no duplica, "Editado" y 7 días para corregir) y lo descarta con `discard_workout` (D-138). Flag `workouts`.
+- **Base de datos local** (Supabase en Docker): 18 migraciones en `supabase/migrations/` (tablas, funciones de negocio, permisos, RLS, el espacio de logos, los ejercicios, las rutinas y los flags de cada módulo); 435 tests pgTAP (`npm run db:test`); 2 coaches y 6 clientes inventados (`supabase/seed.sql`, contraseña `password123`); tipos generados en `core/supabase/database.types.ts`.
 - **Tests:** 612 unitarios (`npm run check`) y 91 de extremo a extremo contra Supabase local (`npm run test:e2e`, también en el CI).
 - **Staging** (PR 1.17): proyecto `athlete-core-staging` de Supabase (Fráncfort, plan gratuito) con las mismas tablas y datos inventados que en local. Los emails salen de verdad, por Resend, desde `no-reply@athlete-core.com`. Se prueba con `npm run dev:staging` (hace falta `.env.staging.local`; guía en `supabase/README.md`). Todavía no hay web publicada.
 - **App de Android** (PR 3.1a): proyecto `android/` con Capacitor. `npm run android:build` genera `build/athlete-core-staging.apk`, que apunta a staging; guía para el propietario en `android/README.md` (D-137). `core/native` resuelve el botón "atrás", la barra de estado y las zonas seguras (`--safe-top`, `--safe-bottom` en `src/index.css`).
@@ -74,11 +74,11 @@
 
 Los 5 más recientes, el más nuevo arriba. El historial completo está en `docs/ESTADO.md`.
 
+- 2026-11-17 — PR 3.2a: tablas de entrenos, `sync_workout` y `discard_workout`, el flag `workouts` y 36 tests pgTAP (D-138).
 - 2026-11-16 — PR 3.1b: los 91 tests de flujos completos se ejecutan en el CI contra Supabase local.
 - 2026-11-16 — PR 3.1a: app de Android con Capacitor, `npm run android:build` y guía en `android/README.md`; `isNativeApp()` y `canLogWorkouts()` en `core/native`; zonas seguras y botón "atrás" (D-137).
 - 2026-11-16 — Diseño de la Fase 3: D-115 a D-136, plan de 18 PR en `docs/PROMPTS.md` §7, ideas de negocio en `docs/referencia/ideas-de-negocio.md` y Fase 6 en ESTADO. Entrenar, solo en la app del móvil.
 - 2026-11-17 — Tests pgTAP compatibles con staging: los 399 pasan en local y en staging.
-- 2026-11-17 — PR 2.18: los inicios con rutinas: avisos para el coach y "Hoy toca" para el cliente (D-114). Cierra la Fase 2.
 
 ## A tener en cuenta ahora
 

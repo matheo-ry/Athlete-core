@@ -11,7 +11,7 @@ Nada.
 
 ## Siguiente
 
-1. El lote 5: PR 2.16 a 2.18 (`docs/PROMPTS.md` §6), empezando por el PR 2.16 — Varios bloques.
+1. PR 2.17 — Superseries y PR 2.18 — Inicio (`docs/PROMPTS.md` §6), que cierran el lote 5 y la Fase 2.
 2. El propietario aplica en staging las migraciones 8 a 16 (GUIA-GIT §9).
 3. El propietario dio por buenas, por ahora, la lista de `docs/referencia/biblioteca-ejercicios.md` y las rutinas de ejemplo. Se pueden retocar más adelante.
 
@@ -114,7 +114,7 @@ El diseño está en DECISIONES D-069 a D-088, y el detalle de cada PR, en `docs/
 
 **Lote 5 — Bloques y remates**
 
-- [ ] PR 2.16 — Varios bloques
+- [x] PR 2.16 — Varios bloques
 - [ ] PR 2.17 — Superseries
 - [ ] PR 2.18 — Inicio: avisos del coach y "Hoy toca" del cliente
 
@@ -206,6 +206,7 @@ Cosas que alguien ha visto y que no tocaban en su tarea. No se hacen sin convert
 Lo más nuevo, arriba.
 
 - 2026-11-16 — Lote 4 de la Fase 2 fusionado en `main` (#43 a #48) con el visto bueno del propietario, probado en la app. Abarca: base de datos para asignar (PR 2.12), asignar una plantilla a clientes (PR 2.13a), pestaña "Asignadas" (PR 2.13b), pestaña "Rutina" en la ficha del cliente (PR 2.14a), acciones de la rutina (PR 2.14b) y la vista de la rutina para el cliente en "Entreno" (PR 2.15).
+- 2026-11-17 — PR 2.16 (varios bloques): el editor enseña los bloques de la rutina (`model/blocks-editor.ts`, que envuelve a `editCycle`): añadir uno vacío o "Duplicar el anterior", nombre, duración con atajos (1, 2 y 4 semanas o vueltas), vueltas escritas o "Sin fecha de fin" solo en el último, ordenar, duplicar, copiar y pegar entre rutinas, y quitar con confirmación; tope de 12. El bloque abierto va en la dirección (`?block=2`). El cliente ve solo su bloque y "El siguiente bloque empieza el…". "Asignadas" y reiniciar desde un bloque ya lo soportaban (PR 2.13b y 2.14b); ahora se comprueban con una rutina de dos bloques (D-112).
 - 2026-11-16 — PR 2.15 (el cliente ve su rutina): "Entreno" en la barra del cliente (`/client/program`). Con calendario, "Hoy toca" (o "Hoy: descanso") y los días del bloque con hoy marcado; en modo lista, sus días de entreno en orden. Cada día con sus ejercicios, su resumen y la nota del coach; cada ejercicio con sus series una a una, el descanso, la nota, las instrucciones y "Ver vídeo" (fuera de la app). Estados: sin rutina y "Tu rutina empieza el…". Todo en lectura. El módulo exercises da también las instrucciones y el vídeo (`ExerciseOption`); los textos de días, ejercicios y progreso pasan a `programs/shared/` (D-111). Cierra el lote 4.
 - 2026-11-16 — PR 2.14b (las acciones de la pestaña "Rutina"): "Asignar una plantilla" (la ventana del PR 2.13 con el cliente ya elegido y un desplegable de plantillas), "Crear desde cero" (abre el editor), "Reiniciar desde una fecha" (fecha y bloque, por defecto el que iba), "Guardar como plantilla", "Terminar" y "Cancelar la próxima" (con confirmación). Con el cliente dado de baja no sale ninguna (D-110).
 - 2026-11-16 — PR 2.14a (la pestaña "Rutina", en lectura): la ficha del cliente pinta las pestañas que declaran los módulos activos en su manifest, sin importarlos (`src/core/modules`: `ClientProfileTabsProvider`, `useClientProfileTabs`, `ClientProfileTabContent`; la carcasa del coach las reparte). La pestaña "Rutina" de programs: la rutina actual con por dónde va, el modo, la fecha de inicio y los días del bloque (hoy marcado), la próxima y las anteriores; "Editar" abre el editor, que dice "Rutina de Ana" y vuelve a su ficha. Con el cliente dado de baja, sin "Editar" y con el aviso (D-109).

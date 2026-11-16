@@ -41,7 +41,7 @@ export const programDaySchema = z.object({
   exercises: z.array(programDayExerciseSchema).max(30),
 });
 
-const programBlockSchema = z.object({
+export const programBlockSchema = z.object({
   id,
   name: optionalText(40),
   cycleDays: z.number().int().min(1).max(MAX_CYCLE_DAYS),

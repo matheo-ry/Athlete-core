@@ -289,6 +289,37 @@
     "rest": "Rest between sets: {{time}}",
     "coachNote": "Note from your coach",
     "instructions": "How to do it",
-    "watchVideo": "Watch video"
+    "watchVideo": "Watch video",
+    "nextBlock": "The next block starts on {{date}}."
+  },
+  "blocks": {
+    "label": "Blocks of the program",
+    "block": "Block {{number}}",
+    "namedBlock": "Block {{number}} · {{name}}",
+    "name": "Name of block {{number}} (optional)",
+    "duration": "How long block {{number}} lasts",
+    "weeks_one": "{{count}} week",
+    "weeks_other": "{{count}} weeks",
+    "laps_one": "{{count}} round",
+    "laps_other": "{{count}} rounds",
+    "weeksLabel": "Weeks",
+    "lapsLabel": "Rounds",
+    "noEnd": "No end date",
+    "days_one": "{{count}} day in total.",
+    "days_other": "{{count}} days in total.",
+    "repeats": "It repeats until you change it.",
+    "moveUp": "Move block {{number}} earlier",
+    "moveDown": "Move block {{number}} later",
+    "remove": "Remove block {{number}}",
+    "removeConfirm": "Remove block {{number}} with all its days and exercises?",
+    "removeYes": "Yes, remove",
+    "add": "Add a block",
+    "addEmpty": "Empty block",
+    "addCopy": "Duplicate the last one",
+    "duplicate": "Duplicate block {{number}}",
+    "copy": "Copy block {{number}}",
+    "paste": "Paste block",
+    "full": "A program can have up to 12 blocks.",
+    "lastHint": "Only the last block can have no end date."
   }
 }

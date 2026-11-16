@@ -1008,6 +1008,18 @@ Cómo añadir una: copia el formato, usa el siguiente número y no borres las an
   - El cliente lee los ejercicios de sus rutinas con la política del PR 2.5b (D-072): el módulo exercises da su nombre en el idioma del cliente, sus instrucciones y su vídeo.
 - **Por qué:** el cliente abre la app y en un toque sabe qué le toca hoy; nada que aprender.
 
+### D-112 · Los bloques en el editor
+- **Fecha:** 2026-11-17
+- **Decisión:** detalles del PR 2.16 que D-075 no fijaba.
+  - **Con un solo bloque no sale la fila de bloques:** solo su duración y "Añadir bloque". Con varios, una fila de botones ("Bloque 1 · 4 semanas") elige cuál se edita; debajo, su nombre, su duración y sus acciones.
+  - **La duración** se elige con atajos de 1, 2 y 4 (semanas si el ciclo es semanal; vueltas si no), escribiendo las vueltas (1 a 52) o, solo en el último bloque, "Sin fecha de fin". Debajo dice cuántos días son.
+  - **Si un bloque sin fin deja de ser el último** (al añadir otro detrás o al moverlo), pasa a durar 4 vueltas, y el coach lo cambia si quiere. La tarea decía "el editor pide la duración": se optó por un valor por defecto a la vista en lugar de una pregunta que corta lo que se estaba haciendo.
+  - **"Duplicar el anterior"** copia el último bloque con su duración; "Bloque vacío" nace semanal y con todos los días de descanso. También se duplica cualquier bloque y se copia para pegarlo en otra rutina (con el portapapeles del PR 2.11).
+  - **Quitar un bloque pide confirmación.** El único bloque no se puede quitar.
+  - **El bloque abierto va en la dirección** (`?block=2&day=3`), como el día.
+  - **El cliente** ve solo el bloque en que va y, si hay otro detrás, "El siguiente bloque empieza el…" (D-084).
+- **Por qué:** una rutina de un bloque, que es lo normal, se edita igual que antes; los bloques solo ocupan sitio cuando se usan.
+
 ---
 
 ## Pendientes de decidir

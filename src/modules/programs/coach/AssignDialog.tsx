@@ -1,14 +1,14 @@
 import { useEffect, useId, useRef } from 'react';
+import type { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { Button } from '@/core/ui';
 
-import { AssignForm } from './AssignForm';
-
 interface AssignDialogProps {
-  template: { id: string; name: string };
+  title: string;
   onClose: () => void;
-  onAssigned: () => void;
+  /** El formulario de asignar (`AssignForm`). */
+  children: ReactNode;
 }
 
 /**
@@ -16,7 +16,7 @@ interface AssignDialogProps {
  * ordenador es una ventana centrada. Escape la cierra y, al cerrarse, el
  * foco vuelve al botón que la abrió.
  */
-export function AssignDialog({ template, onClose, onAssigned }: AssignDialogProps) {
+export function AssignDialog({ title, onClose, children }: AssignDialogProps) {
   const { t } = useTranslation();
   const titleId = useId();
   const dialog = useRef<HTMLDivElement>(null);
@@ -52,13 +52,13 @@ export function AssignDialog({ template, onClose, onAssigned }: AssignDialogProp
       >
         <div className="flex items-start justify-between gap-3">
           <h2 id={titleId} className="text-xl font-semibold break-words">
-            {t('programs.assign.title', { name: template.name })}
+            {title}
           </h2>
           <Button variant="ghost" aria-label={t('programs.assign.close')} onClick={onClose}>
             ✕
           </Button>
         </div>
-        <AssignForm template={template} onCancel={onClose} onAssigned={onAssigned} />
+        {children}
       </div>
     </div>
   );

@@ -983,6 +983,18 @@ Cómo añadir una: copia el formato, usa el siguiente número y no borres las an
   - **Cliente dado de baja:** se ven sus rutinas, sin "Editar" ni acciones, con "Reactívalo para asignarle una rutina" (D-083).
 - **Por qué:** la ficha no puede depender de programs; con el contexto, una función nueva añade su pestaña desde su manifest y nada más.
 
+### D-110 · Las acciones de la pestaña "Rutina"
+- **Fecha:** 2026-11-16
+- **Decisión:** detalles del PR 2.14b.
+  - **Los botones van debajo de la rutina actual y la próxima**, todos a la vista: "Asignar una plantilla" y "Crear desde cero" siempre; "Reiniciar desde una fecha", "Guardar como plantilla" y "Terminar" si hay rutina actual; "Cancelar la próxima" si hay próxima. Se abre uno cada vez, debajo.
+  - **"Asignar una plantilla"** es la ventana del PR 2.13 con el cliente ya elegido y un desplegable de plantillas activas, por orden alfabético.
+  - **"Crear desde cero"** pide nombre, días del ciclo (7 por defecto), fecha de inicio y modo, y abre el editor: la rutina nace con todos los días de descanso (D-105).
+  - **"Reiniciar desde una fecha"** pide la fecha (hoy por defecto) y, si hay varios bloques, el bloque (por defecto, en el que iba). Si la fecha es futura, la rutina pasa a ser "Próxima" hasta ese día.
+  - **"Guardar como plantilla"** propone el nombre de la rutina; se puede cambiar.
+  - **"Terminar" y "Cancelar la próxima" piden confirmación** y dicen qué pasa: la terminada pasa a Anteriores; la cancelada se borra.
+  - Tras cada acción, un aviso en la pestaña.
+- **Por qué:** el coach gestiona cada cliente desde su ficha sin buscar en otra pantalla.
+
 ---
 
 ## Pendientes de decidir

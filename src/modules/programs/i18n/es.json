@@ -235,5 +235,38 @@
     "daysLabel": "Días del bloque actual",
     "today": "Hoy",
     "archivedClient": "Este cliente está dado de baja. Reactívalo para asignarle una rutina."
+  },
+  "clientActions": {
+    "label": "Acciones de la rutina",
+    "assign": "Asignar una plantilla",
+    "assignTitle": "Asignar una plantilla a {{name}}",
+    "template": "Plantilla",
+    "noTemplates": "No tienes plantillas activas. Crea una en Rutinas.",
+    "create": "Crear desde cero",
+    "createSubmit": "Crear y editar",
+    "restart": "Reiniciar desde una fecha",
+    "restartSubmit": "Reiniciar",
+    "restartDate": "Reiniciar el",
+    "restartBlock": "Desde el bloque",
+    "blockOption": "Bloque {{number}}",
+    "saveAsTemplate": "Guardar como plantilla",
+    "templateName": "Nombre de la plantilla nueva",
+    "end": "Terminar",
+    "endConfirm": "¿Terminar «{{name}}»? Pasará a Anteriores y {{client}} se quedará sin rutina.",
+    "endYes": "Sí, terminar",
+    "cancelNext": "Cancelar la próxima",
+    "cancelConfirm": "¿Cancelar «{{name}}»? Aún no ha empezado, así que se borrará.",
+    "cancelYes": "Sí, cancelar",
+    "notices": {
+      "end": "Rutina terminada. Está en Anteriores.",
+      "cancel": "Próxima rutina cancelada.",
+      "restart": "Rutina reiniciada.",
+      "saveAsTemplate": "«{{name}}» guardada como plantilla. La tienes en Rutinas.",
+      "create": "Rutina creada."
+    },
+    "errors": {
+      "clientNotFound": "Este cliente ya no está activo. Recarga la página.",
+      "changed": "Esta rutina cambió mientras tanto. Recarga la página y vuelve a intentarlo."
+    }
   }
 }

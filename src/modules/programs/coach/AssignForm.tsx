@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import type { FormEvent } from 'react';
+import type { FormEvent, ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useLanguage } from '@/core/i18n';
@@ -18,6 +18,10 @@ import { ModeChoice } from './ModeChoice';
 
 interface AssignFormProps {
   template: { id: string; name: string };
+  /** Desde la ficha de un cliente (PR 2.14b): ya elegido, sin la lista. */
+  clientId?: string;
+  /** Lo que va encima, dentro del formulario: el desplegable de plantillas en la ficha. */
+  header?: ReactNode;
   onCancel: () => void;
   onAssigned: () => void;
 }
@@ -36,7 +40,7 @@ const ERRORS = {
  * Elegir clientes, fecha de inicio y modo (D-081 y D-082), y antes de
  * confirmar, el resumen: cuándo termina y a quién se le sustituye una rutina.
  */
-export function AssignForm({ template, onCancel, onAssigned }: AssignFormProps) {
+export function AssignForm({ template, clientId, header, onCancel, onAssigned }: AssignFormProps) {
   const { t } = useTranslation();
   const language = useLanguage();
   const today = useMemo(() => localToday(), []);
@@ -44,7 +48,8 @@ export function AssignForm({ template, onCancel, onAssigned }: AssignFormProps) 
   const programs = useClientPrograms();
   const document = useProgram(template.id);
   const assign = useAssignProgram();
-  const [selected, setSelected] = useState<string[]>([]);
+  const [chosen, setChosen] = useState<string[]>([]);
+  const selected = clientId === undefined ? chosen : [clientId];
   const [startsOn, setStartsOn] = useState(today);
   const [mode, setMode] = useState<ProgramMode>('calendar');
   const [problem, setProblem] = useState<string | null>(null);
@@ -114,12 +119,15 @@ export function AssignForm({ template, onCancel, onAssigned }: AssignFormProps) 
 
   return (
     <form noValidate onSubmit={submit} className="flex flex-col gap-4">
-      <ClientChoice
-        clients={clients}
-        routines={routines}
-        selected={selected}
-        onChange={setSelected}
-      />
+      {header}
+      {clientId === undefined ? (
+        <ClientChoice
+          clients={clients}
+          routines={routines}
+          selected={selected}
+          onChange={setChosen}
+        />
+      ) : null}
       <Input
         type="date"
         label={t('programs.assign.startsOn')}

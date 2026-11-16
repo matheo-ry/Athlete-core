@@ -11,8 +11,8 @@ Nada. **El lote 3 está fusionado en `main`** (PR #36 a #42, 2026-11-16), con el
 
 ## Siguiente
 
-1. PR 2.14b — Las acciones de la pestaña "Rutina" y el cliente dado de baja (`docs/PROMPTS.md` §6, PR 2.14, puntos 4 y 5).
-2. PR 2.15, que cierra el lote 4. Después, el propietario lo prueba entero.
+1. PR 2.15 — El cliente ve su rutina (`docs/PROMPTS.md` §6). Cierra el lote 4.
+2. El propietario prueba el lote 4 entero y da el visto bueno para fusionarlo (PR #43 en adelante, en orden).
 3. El propietario aplica en staging las migraciones 8 a 16 (GUIA-GIT §9). No bloquea seguir.
 4. El propietario dio por buenas, por ahora, la lista de `docs/referencia/biblioteca-ejercicios.md` y las rutinas de ejemplo. Se pueden retocar más adelante.
 
@@ -108,9 +108,9 @@ El diseño está en DECISIONES D-069 a D-088, y el detalle de cada PR, en `docs/
 - [x] PR 2.13 — Asignar a clientes y pestaña "Asignadas"
   - [x] 2.13a — el cálculo del calendario y la ventana de asignar
   - [x] 2.13b — la pestaña "Asignadas"
-- [ ] PR 2.14 — Ficha del cliente: pestaña "Rutina"
+- [x] PR 2.14 — Ficha del cliente: pestaña "Rutina"
   - [x] 2.14a — el mecanismo de pestañas y la pestaña en lectura, con "Editar"
-  - [ ] 2.14b — las acciones
+  - [x] 2.14b — las acciones
 - [ ] PR 2.15 — El cliente ve su rutina
 
 **Lote 5 — Bloques y remates**
@@ -206,6 +206,7 @@ Cosas que alguien ha visto y que no tocaban en su tarea. No se hacen sin convert
 
 Lo más nuevo, arriba.
 
+- 2026-11-16 — PR 2.14b (las acciones de la pestaña "Rutina"): "Asignar una plantilla" (la ventana del PR 2.13 con el cliente ya elegido y un desplegable de plantillas), "Crear desde cero" (abre el editor), "Reiniciar desde una fecha" (fecha y bloque, por defecto el que iba), "Guardar como plantilla", "Terminar" y "Cancelar la próxima" (con confirmación). Con el cliente dado de baja no sale ninguna (D-110).
 - 2026-11-16 — PR 2.14a (la pestaña "Rutina", en lectura): la ficha del cliente pinta las pestañas que declaran los módulos activos en su manifest, sin importarlos (`src/core/modules`: `ClientProfileTabsProvider`, `useClientProfileTabs`, `ClientProfileTabContent`; la carcasa del coach las reparte). La pestaña "Rutina" de programs: la rutina actual con por dónde va, el modo, la fecha de inicio y los días del bloque (hoy marcado), la próxima y las anteriores; "Editar" abre el editor, que dice "Rutina de Ana" y vuelve a su ficha. Con el cliente dado de baja, sin "Editar" y con el aviso (D-109).
 - 2026-11-16 — PR 2.13b (la pestaña "Asignadas"): tercera pestaña en "Rutinas", junto a "Activas" y "Archivadas". Cada cliente activo con su rutina vigente (la semana o vuelta en que va y cuándo termina, el bloque si hay varios, "Modo lista" y el aviso si ya terminó y se repite), su próxima con la fecha, o "Sin rutina". Buscador por nombre y los 4 estados (D-108).
 - 2026-11-16 — PR 2.13a (asignar una plantilla): el cálculo del calendario como lógica pura (`model/calendar.ts`: bloque, vuelta y día en que va una rutina, cuándo termina cada bloque, la semana a medias de un bloque semanal y el último bloque que se repite) y las rutinas abiertas de cada cliente (`model/assignments.ts`). "Asignar" en cada plantilla abre una ventana (a pantalla completa en el móvil): clientes activos con buscador, fecha de inicio, modo "Con calendario" o "Lista", y un resumen con cuándo empieza y termina y a quién se le sustituye la rutina (D-107). Sin la pestaña "Asignadas", que llega en el 2.13b.

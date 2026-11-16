@@ -235,5 +235,38 @@
     "daysLabel": "Days of the current block",
     "today": "Today",
     "archivedClient": "This client is archived. Reactivate them to assign a program."
+  },
+  "clientActions": {
+    "label": "Program actions",
+    "assign": "Assign a template",
+    "assignTitle": "Assign a template to {{name}}",
+    "template": "Template",
+    "noTemplates": "You don't have any active templates. Create one in Programs.",
+    "create": "Create from scratch",
+    "createSubmit": "Create and edit",
+    "restart": "Restart from a date",
+    "restartSubmit": "Restart",
+    "restartDate": "Restart on",
+    "restartBlock": "From block",
+    "blockOption": "Block {{number}}",
+    "saveAsTemplate": "Save as template",
+    "templateName": "Name of the new template",
+    "end": "End",
+    "endConfirm": "End “{{name}}”? It will move to Previous and {{client}} will have no program.",
+    "endYes": "Yes, end it",
+    "cancelNext": "Cancel the next one",
+    "cancelConfirm": "Cancel “{{name}}”? It has not started yet, so it will be deleted.",
+    "cancelYes": "Yes, cancel it",
+    "notices": {
+      "end": "Program ended. It is now in Previous.",
+      "cancel": "Next program cancelled.",
+      "restart": "Program restarted.",
+      "saveAsTemplate": "“{{name}}” saved as a template. You have it in Programs.",
+      "create": "Program created."
+    },
+    "errors": {
+      "clientNotFound": "This client is no longer active. Reload the page.",
+      "changed": "This program changed in the meantime. Reload the page and try again."
+    }
   }
 }

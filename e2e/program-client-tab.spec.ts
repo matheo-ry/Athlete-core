@@ -44,6 +44,7 @@ test('Fran, dado de baja, tiene su rutina a la vista y ninguna acción', async (
     page.getByText('This client is archived. Reactivate them to assign a program.'),
   ).toBeVisible();
   await expect(page.getByRole('link', { name: /^Edit/ })).toHaveCount(0);
+  await expect(page.getByRole('button', { name: 'Assign a template' })).toHaveCount(0);
 });
 
 test('editar la rutina de un cliente no cambia la plantilla', async ({ page }) => {
@@ -105,4 +106,63 @@ test('editar la rutina de un cliente no cambia la plantilla', async ({ page }) =
   await page.goto(`/coach/programs/${saved.id}`);
   await page.getByRole('list', { name: 'Days of the cycle' }).getByRole('button').first().click();
   await expect(page.getByText('1. Barbell hip thrust', { exact: true })).toBeVisible();
+});
+
+test('desde la ficha: crear desde cero, guardar como plantilla, terminar, asignar y reiniciar', async ({
+  page,
+}) => {
+  const business = await createTestBusiness(`E2E Acciones ${suffix()}`);
+  const clientEmail = await createJoinedClient(business.code);
+  const client = await signInApi(clientEmail, E2E_PASSWORD);
+  await signIn(page, business.coachEmail, '/login', E2E_PASSWORD);
+  await expect(page).toHaveURL(/\/coach$/);
+  await page.goto(`/coach/clients/${client.userId}`);
+
+  // Criterio 3: sin rutina; "Crear desde cero" la crea y abre el editor.
+  await expect(page.getByText("This client doesn't have a program.")).toBeVisible();
+  await page.getByRole('button', { name: 'Create from scratch' }).click();
+  await page.getByLabel('Name', { exact: true }).fill('Un día');
+  await page.getByLabel('Days in the cycle').fill('1');
+  await page.getByRole('button', { name: 'Create and edit' }).click();
+  await expect(page.getByText('Program of E2E Test')).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Un día', level: 1 })).toBeVisible();
+  await page.getByRole('link', { name: '← E2E Test' }).click();
+  await expect(page.getByText('Un día', { exact: true })).toBeVisible();
+
+  // Criterio 4: "Guardar como plantilla" crea una plantilla nueva.
+  await page.getByRole('button', { name: 'Save as template' }).click();
+  await page.getByLabel('Name of the new template').fill('Un día plantilla');
+  await page.getByRole('button', { name: 'Save', exact: true }).click();
+  await expect(page.getByRole('status')).toHaveText(
+    '“Un día plantilla” saved as a template. You have it in Programs.',
+  );
+
+  // Criterio 6: "Terminar" la deja en Anteriores y sin rutina.
+  await page.getByRole('button', { name: 'End', exact: true }).click();
+  await page.getByRole('button', { name: 'Yes, end it' }).click();
+  await expect(page.getByText("This client doesn't have a program.")).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Previous programs' })).toBeVisible();
+
+  // Asignar una plantilla con el cliente ya elegido.
+  await page.getByRole('button', { name: 'Assign a template' }).click();
+  const dialog = page.getByRole('dialog', { name: 'Assign a template to E2E Test' });
+  await expect(dialog.getByLabel('Template')).toHaveValue(/.+/);
+  await dialog.getByRole('button', { name: 'Assign to 1 client' }).click();
+  await expect(page.getByRole('status')).toHaveText('“Un día plantilla” assigned.');
+  await expect(page.getByText('Un día plantilla', { exact: true })).toBeVisible();
+
+  // Criterio 5: reiniciar dentro de 5 días: la ficha dice que empieza ese día.
+  const inFive = new Date();
+  inFive.setDate(inFive.getDate() + 5);
+  const date = `${String(inFive.getFullYear())}-${String(inFive.getMonth() + 1).padStart(2, '0')}-${String(inFive.getDate()).padStart(2, '0')}`;
+  await page.getByRole('button', { name: 'Restart from a date' }).click();
+  await page.getByLabel('Restart on').fill(date);
+  await page.getByRole('button', { name: 'Restart', exact: true }).click();
+  await expect(page.getByRole('status')).toHaveText('Program restarted.');
+  await expect(page.getByRole('heading', { name: 'Next program' })).toBeVisible();
+  await expect(page.getByText(/^Starts on /)).toBeVisible();
+
+  // La plantilla nueva está en "Rutinas".
+  await page.goto('/coach/programs');
+  await expect(page.getByRole('link', { name: 'Un día plantilla' })).toBeVisible();
 });

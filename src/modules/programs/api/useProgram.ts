@@ -19,7 +19,8 @@ export function useProgram(programId: string) {
   return useQuery({
     queryKey: programQueryKey(tenantId, programId),
     queryFn: () => fetchProgram(tenantId ?? '', programId),
-    enabled: tenantId !== null,
+    // Sin rutina elegida todavía (el desplegable de plantillas vacío), no se pide.
+    enabled: tenantId !== null && programId !== '',
     refetchOnWindowFocus: false,
   });
 }

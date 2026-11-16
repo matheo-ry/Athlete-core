@@ -21,13 +21,13 @@ export function ClientLayout() {
         <BrandMark />
         <LanguageSwitcher />
       </header>
-      {/* pb-20: deja sitio a la barra inferior fija. */}
-      <main className="mx-auto w-full max-w-xl flex-1 p-4 pb-20">
+      {/* Deja sitio a la barra inferior fija y a la de gestos del móvil. */}
+      <main className="mx-auto w-full max-w-xl flex-1 p-4 pb-[calc(5rem+var(--safe-bottom))]">
         <Outlet />
       </main>
       <nav
         aria-label={t('app.nav.label')}
-        className="border-border bg-surface fixed inset-x-0 bottom-0 flex border-t pb-[env(safe-area-inset-bottom)]"
+        className="border-border bg-surface fixed inset-x-0 bottom-0 flex border-t pb-[var(--safe-bottom)]"
       >
         {items.map((item) => (
           <ShellNavLink key={item.to} item={item} layout="bottom" />

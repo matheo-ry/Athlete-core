@@ -38,8 +38,8 @@ export function CoachLayout() {
           <BrandMark />
           <LanguageSwitcher />
         </header>
-        {/* pb-20 en móvil: deja sitio a la barra inferior fija. */}
-        <main className="flex-1 p-4 pb-20 md:p-8">
+        {/* En el móvil, deja sitio a la barra inferior fija y a la de gestos. */}
+        <main className="flex-1 p-4 pb-[calc(5rem+var(--safe-bottom))] md:p-8">
           <ClientProfileTabsProvider tabs={tabs}>
             <Outlet />
           </ClientProfileTabsProvider>
@@ -48,7 +48,7 @@ export function CoachLayout() {
 
       <nav
         aria-label={t('app.nav.label')}
-        className="border-border bg-surface fixed inset-x-0 bottom-0 flex border-t pb-[env(safe-area-inset-bottom)] md:hidden"
+        className="border-border bg-surface fixed inset-x-0 bottom-0 flex border-t pb-[var(--safe-bottom)] md:hidden"
       >
         {items.map((item) => (
           <ShellNavLink key={item.to} item={item} layout="bottom" />

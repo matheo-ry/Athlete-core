@@ -1277,6 +1277,17 @@ Cómo añadir una: copia el formato, usa el siguiente número y no borres las an
   - **Más adelante, cada uno en su fase:** fotos y check-ins, notificaciones al coach (P-07), app de escritorio para el coach, porcentaje del RM y tempo (D-076), nutrición, hábitos, pagos e importar el historial de otras apps.
 - **Por qué:** la fase ya es la más grande; cada cosa de esta lista se puede añadir después sin rehacer lo de la Fase 3.
 
+### D-137 · La app de Android de pruebas
+- **Fecha:** 2026-11-16
+- **Decisión:** cómo funciona la app de Android desde el PR 3.1:
+  - **Un solo archivo de pruebas, contra staging:** `npm run android:build` genera `build/athlete-core-staging.apk` con los valores de `.env.staging.local`. Va firmado con la clave de pruebas del ordenador que lo genera (la de Android Studio), no con una de tienda. La app nunca apunta a Supabase local: el móvil no llega a él.
+  - **Registrar entrenos en el navegador** (`VITE_ALLOW_WEB_WORKOUTS`) se ignora en **cualquier** `vite build`, no solo en el de producción: así no hace falta acordarse de quitarla y no llega a ninguna web publicada. En la app instalada da igual, porque allí siempre se puede (D-116).
+  - **Botón "atrás":** vuelve a la pantalla anterior; en la primera, la app pasa a segundo plano en vez de cerrarse (como las demás apps de Android), y no se pierde nada.
+  - **Barra de estado:** transparente sobre la app (Android 15 lo exige), con una franja del color de la cabecera debajo para que nada quede tapado. La hora y los iconos cambian a claro u oscuro con el modo de la marca del coach.
+  - **Icono provisional:** el mismo dibujo que el favicon, sobre el azul de la plataforma. El definitivo, con las tiendas (Fase 4).
+- **Por qué:** el propietario no es programador: un comando y un archivo que se instala como cualquier otro. Las zonas seguras y el botón "atrás" se resuelven en `core/native` y en las carcasas, sin código por plataforma.
+- **Revisar si:** se publica en Google Play (Fase 4): entonces hace falta la clave de firma de tienda, que nunca va en Git.
+
 ---
 
 ## Pendientes de decidir
@@ -1323,6 +1334,8 @@ Anotadas al terminar la Fase 0 (2026-11-13). Son las estables más recientes de 
 | `lucide-react` | 1.72 | Iconos |
 | `@supabase/supabase-js` | 2.119 | Cliente de Supabase (D-025) |
 | `@capacitor/core` | 8.6 | Base para empaquetar la app en móvil |
+| `@capacitor/android` | 8.6 | La app de Android (PR 3.1, D-117) |
+| `@capacitor/app` | 8.1 | El botón "atrás" de Android (PR 3.1, D-135) |
 
 **Compilación y estilos**
 
@@ -1332,7 +1345,7 @@ Anotadas al terminar la Fase 0 (2026-11-13). Son las estables más recientes de 
 | `vite` | 8.3 | Servidor de desarrollo y compilación |
 | `@vitejs/plugin-react` | 6.3 | React dentro de Vite |
 | `tailwindcss`, `@tailwindcss/vite` | 4.3 | Estilos |
-| `@capacitor/cli` | 8.6 | Herramienta de Capacitor (plataformas, en la Fase 4) |
+| `@capacitor/cli` | 8.6 | Herramienta de Capacitor (`npx cap sync`; Android desde el PR 3.1) |
 | `supabase` | 3.1 | Herramienta de Supabase (base de datos local, en la Fase 1) |
 | `@types/react`, `@types/react-dom`, `@types/node` | 19.3 / 19.3 / 24 | Tipos de TypeScript |
 
@@ -1363,3 +1376,12 @@ Anotadas al terminar la Fase 0 (2026-11-13). Son las estables más recientes de 
 
 - CI: `actions/checkout@v7` y `actions/setup-node@v7`.
 - Identificador de la app móvil en `capacitor.config.ts`: `app.athletecore.mobile`. Es **provisional**: hay que fijar el definitivo antes de publicar en las tiendas (Fase 4), porque después no se puede cambiar.
+
+**La app de Android** (PR 3.1, 2026-11-16). Las genera `npx cap add android`; se actualizan con Capacitor, nunca a mano.
+
+| Qué | Versión | Notas |
+|---|---|---|
+| Android Studio | La estable más reciente | Solo hace falta para el Java y las herramientas de Android (`android/README.md`) |
+| Gradle | 8.14 | `android/gradle/wrapper/gradle-wrapper.properties` |
+| Android Gradle Plugin | 8.13 | `android/build.gradle` |
+| SDK de Android | compila con el 36, funciona desde el 24 (Android 7) | `android/variables.gradle` |

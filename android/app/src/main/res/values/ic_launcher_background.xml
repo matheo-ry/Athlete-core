@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- El azul de la marca de la plataforma (src/index.css, brand-primary). -->
+    <color name="ic_launcher_background">#2563EB</color>
+    <!-- El fondo oscuro de la app, para que el arranque no dé un fogonazo blanco. -->
+    <color name="splash_background">#0F1115</color>
+</resources>

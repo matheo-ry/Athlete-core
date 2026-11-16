@@ -885,6 +885,20 @@ Cómo añadir una: copia el formato, usa el siguiente número y no borres las an
   - **Si la base de datos rechaza el cambio** (`exercise_in_use`; por ejemplo, "Restaurar original" de un ejercicio al que se le cambió la medida antes de usarlo), la app lo explica en vez de decir "Algo ha ido mal".
 - **Por qué:** son las opciones más sencillas que cumplen el bloque del PR. La regla la sigue garantizando la base de datos (migración 12); la pantalla solo evita el error.
 
+### D-102 · Cómo se escribe lo prescrito en un ejercicio
+- **Fecha:** 2026-11-15
+- **Decisión:** detalles del PR 2.10a que D-076 no fijaba.
+  - **El PR 2.10 se parte en dos,** como preveía su bloque: 2.10a (la línea, "Series distintas", repeticiones, intensidad, descanso y el resumen) y 2.10b (el ajuste RIR o RPE y la carga en kg o lb). Escribir segundos o metros en vez de repeticiones va ya en el 2.10a: sin eso, un ejercicio de tiempo no se podía guardar.
+  - **El editor de cada ejercicio está siempre a la vista** debajo de su nombre: número de series (desplegable de 1 a 10), repeticiones, intensidad y descanso.
+  - **Repeticiones:** un campo de texto, "8" o "8-12". Mientras lo escrito no vale ("8-"), la rutina no cambia y el campo lo dice.
+  - **Intensidad:** un desplegable con "—", los valores de la escala del coach y "Al fallo". Lo escrito con la otra escala se sigue viendo, sin convertir (D-076). Hasta el PR 2.10b, la escala es RIR.
+  - **Descanso:** minutos (0 a 10) y segundos (00, 15, 30, 45) en dos desplegables, más los atajos 1:00, 1:30, 2:00 y 3:00. "—" en minutos quiere decir sin descanso indicado.
+  - **Cambiar el número de series** copia la última serie en las nuevas y quita las del final.
+  - **"Series distintas"** despliega cada serie; se abre así si las series ya son distintas. **"Todas iguales"** copia la primera en las demás.
+  - **El resumen** (`model/prescription.ts`): "3 × 8-12 · RIR 1 · 2:00". Con series distintas, agrupa las iguales seguidas: "1 × 6-8 · RIR 1 + 2 × 10-12 · RIR 0 · 2:00". La carga se ve en la unidad del usuario ("22 lb"). Sin nada prescrito, la fila dice solo "3 series".
+- **Por qué:** una línea visible sin abrir nada es lo más rápido para el caso normal (todas las series iguales), que es como trabaja el propietario.
+- **Revisar si:** con 8 o 10 ejercicios por día la pantalla se hace larga en el móvil. Plegar el editor de cada ejercicio sería barato.
+
 ---
 
 ## Pendientes de decidir

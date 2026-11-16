@@ -112,5 +112,28 @@
     "note": "Note for “{{name}}”",
     "noteHint": "Your client will see it. Up to 500 characters.",
     "addNote": "Add a note"
+  },
+  "prescription": {
+    "label": "What to do in “{{name}}”",
+    "sets": "Sets",
+    "set": "Set {{number}}",
+    "target": {
+      "reps": "Reps",
+      "time": "Seconds",
+      "distance": "Meters"
+    },
+    "intensity": "Intensity",
+    "none": "—",
+    "failure": "To failure",
+    "restMinutes": "Rest (min)",
+    "restSeconds": "Rest (s)",
+    "restShortcuts": "Rest shortcuts for “{{name}}”",
+    "split": "Different sets",
+    "makeUniform": "All sets the same",
+    "errors": {
+      "reps": "Write a number or a range, like 8 or 8-12.",
+      "time": "Write the seconds, like 45.",
+      "distance": "Write the meters, like 400."
+    }
   }
 }

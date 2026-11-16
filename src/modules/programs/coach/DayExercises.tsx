@@ -93,6 +93,9 @@ export function DayExercises({ day, onChange }: DayExercisesProps) {
                   }
                 }}
                 onNote={(note) => onChange({ type: 'setExerciseNote', dayNumber, index, note })}
+                onPrescription={(changed) =>
+                  onChange({ type: 'setExercise', dayNumber, index, item: changed })
+                }
               />
             );
           })}

@@ -12,6 +12,7 @@ import { templateNameSchema } from '../model/program-document';
 import { describeCycle } from '../model/template-list';
 import type { TemplateSummary } from '../model/template-list';
 import { AssignDialog } from './AssignDialog';
+import { AssignForm } from './AssignForm';
 import { TEMPLATE_ACTION_ERRORS } from './template-action-errors';
 
 export type TemplateNotice = 'renamed' | 'archived' | 'unarchived' | 'duplicated' | 'assigned';
@@ -171,13 +172,18 @@ export function TemplateRow({ template, onDone }: TemplateRowProps) {
       )}
       {isAssigning ? (
         <AssignDialog
-          template={template}
+          title={t('programs.assign.title', { name: template.name })}
           onClose={() => setIsAssigning(false)}
-          onAssigned={() => {
-            setIsAssigning(false);
-            onDone('assigned', template.name);
-          }}
-        />
+        >
+          <AssignForm
+            template={template}
+            onCancel={() => setIsAssigning(false)}
+            onAssigned={() => {
+              setIsAssigning(false);
+              onDone('assigned', template.name);
+            }}
+          />
+        </AssignDialog>
       ) : null}
       {failure !== null ? (
         <p role="alert" className="text-danger text-sm font-medium">

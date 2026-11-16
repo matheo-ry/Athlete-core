@@ -10,6 +10,7 @@ import { useProgramsOfClient } from '../api/useAssignments';
 import { routineProgress, routinesByClient } from '../model/assignments';
 import type { ClientProgram } from '../model/assignments';
 import { localToday } from '../model/calendar';
+import { ClientProgramActions } from './ClientProgramActions';
 import { CurrentProgramDays } from './CurrentProgramDays';
 import { shortDate, useProgressText } from './useProgressText';
 
@@ -18,7 +19,7 @@ import { shortDate, useProgressText } from './useProgressText';
  * con por dónde va y sus días, la próxima y las anteriores. Con el cliente
  * dado de baja se ven, sin acciones (D-083).
  */
-export function ClientProgramTab({ clientId, isActive }: ClientProfileTabProps) {
+export function ClientProgramTab({ clientId, clientName, isActive }: ClientProfileTabProps) {
   const { t } = useTranslation();
   const language = useLanguage();
   const today = useMemo(() => localToday(), []);
@@ -92,6 +93,16 @@ export function ClientProgramTab({ clientId, isActive }: ClientProfileTabProps) 
           </span>
         </Card>
       )}
+
+      {isActive ? (
+        <ClientProgramActions
+          clientId={clientId}
+          clientName={clientName}
+          current={current}
+          next={next}
+          today={today}
+        />
+      ) : null}
 
       {previous.length === 0 ? null : (
         <Card className="flex flex-col gap-2">

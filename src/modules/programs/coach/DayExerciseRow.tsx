@@ -1,0 +1,135 @@
+import { useId, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+
+import { Button } from '@/core/ui';
+import type { ExerciseOption } from '@/modules/exercises';
+
+import { hasSetData } from '../model/day-exercises';
+import type { ProgramDayExercise } from '../model/program-document';
+
+const TAG = 'rounded-full px-2 py-0.5 text-xs font-semibold';
+const NOTE_MAX_LENGTH = 500;
+
+interface DayExerciseRowProps {
+  item: ProgramDayExercise;
+  position: number;
+  /** El ejercicio del negocio. Vacío mientras se cargan. */
+  exercise: ExerciseOption | undefined;
+  isFirst: boolean;
+  isLast: boolean;
+  onMove: (direction: -1 | 1) => void;
+  onRemove: () => void;
+  onReplace: () => void;
+  onNote: (note: string) => void;
+}
+
+/**
+ * Un ejercicio de un día (PR 2.9): su nombre, si está archivado y cuántas
+ * series tiene; subir, bajar, sustituir y quitar; y la nota del coach.
+ */
+export function DayExerciseRow({
+  item,
+  position,
+  exercise,
+  isFirst,
+  isLast,
+  onMove,
+  onRemove,
+  onReplace,
+  onNote,
+}: DayExerciseRowProps) {
+  const { t } = useTranslation();
+  const noteId = useId();
+  const [isConfirmingRemove, setIsConfirmingRemove] = useState(false);
+  const [isWritingNote, setIsWritingNote] = useState(false);
+  const name = exercise?.name ?? '…';
+  const showNote = isWritingNote || item.note !== null;
+
+  return (
+    <li className="border-border flex flex-col gap-2 border-b py-2 last:border-b-0">
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <span className="flex min-w-0 flex-col">
+          <span className="font-medium break-words">
+            {position}. {name}
+          </span>
+          <span className="flex flex-wrap items-center gap-2 text-sm">
+            <span className="text-muted">
+              {t('programs.editor.sets', { count: item.sets.length })}
+            </span>
+            {/* D-073: se conserva en la rutina, pero ya no sale en el buscador. */}
+            {exercise?.isArchived === true ? (
+              <span className={`${TAG} border-border text-muted border`}>
+                {t('programs.editor.archived')}
+              </span>
+            ) : null}
+          </span>
+        </span>
+        <span className="flex flex-wrap gap-1">
+          <Button
+            variant="ghost"
+            aria-label={t('programs.editor.moveUp', { name })}
+            disabled={isFirst}
+            onClick={() => onMove(-1)}
+          >
+            ↑
+          </Button>
+          <Button
+            variant="ghost"
+            aria-label={t('programs.editor.moveDown', { name })}
+            disabled={isLast}
+            onClick={() => onMove(1)}
+          >
+            ↓
+          </Button>
+          <Button
+            variant="ghost"
+            aria-label={t('programs.editor.replace', { name })}
+            disabled={exercise === undefined}
+            onClick={onReplace}
+          >
+            ⇄
+          </Button>
+          <Button
+            variant="ghost"
+            aria-label={t('programs.editor.remove', { name })}
+            onClick={() => (hasSetData(item) ? setIsConfirmingRemove(true) : onRemove())}
+          >
+            ✕
+          </Button>
+        </span>
+      </div>
+
+      {isConfirmingRemove ? (
+        <div className="border-border flex flex-col gap-2 rounded-lg border p-3">
+          <p className="text-sm">{t('programs.editor.removeConfirm', { name })}</p>
+          <div className="flex flex-wrap gap-2">
+            <Button onClick={onRemove}>{t('programs.editor.removeYes')}</Button>
+            <Button variant="ghost" onClick={() => setIsConfirmingRemove(false)}>
+              {t('programs.form.cancel')}
+            </Button>
+          </div>
+        </div>
+      ) : null}
+
+      {showNote ? (
+        <div className="flex flex-col gap-1.5">
+          <label htmlFor={noteId} className="text-sm font-medium">
+            {t('programs.editor.note', { name })}
+          </label>
+          <textarea
+            id={noteId}
+            maxLength={NOTE_MAX_LENGTH}
+            value={item.note ?? ''}
+            onChange={(event) => onNote(event.target.value)}
+            className="bg-surface text-foreground border-border focus-visible:outline-primary-readable min-h-20 rounded-lg border px-3 py-2 text-base focus-visible:outline-2 focus-visible:outline-offset-2"
+          />
+          <p className="text-muted text-sm">{t('programs.editor.noteHint')}</p>
+        </div>
+      ) : (
+        <Button variant="ghost" className="self-start" onClick={() => setIsWritingNote(true)}>
+          {t('programs.editor.addNote')}
+        </Button>
+      )}
+    </li>
+  );
+}

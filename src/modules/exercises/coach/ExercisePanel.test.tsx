@@ -11,6 +11,7 @@ import type { Exercise } from '../model/exercise-schema';
 // inventados. Las reglas de validación tienen sus tests en model/.
 const api = vi.hoisted(() => ({
   fetchExercises: vi.fn<(tenantId: string) => Promise<Exercise[]>>(),
+  isExerciseInUse: vi.fn<(id: string) => Promise<boolean>>(() => Promise.resolve(false)),
   createExercise:
     vi.fn<
       (tenantId: string, userId: string, input: ExerciseInput) => Promise<SaveExerciseResult>
@@ -162,5 +163,27 @@ describe('módulo exercises: crear y editar (PR 2.4a)', () => {
     expect(screen.queryByRole('heading', { name: 'New exercise' })).toBeNull();
     expect(screen.getByRole('heading', { name: 'Exercises' })).toBeVisible();
     expect(api.createExercise).not.toHaveBeenCalled();
+  });
+});
+
+describe('módulo exercises: un ejercicio que ya está en una rutina (PR 2.9b, D-072)', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    api.fetchExercises.mockResolvedValue([LAT_PULLDOWN]);
+    api.isExerciseInUse.mockResolvedValue(true);
+  });
+
+  it('no deja cambiar la forma de medir ni "unilateral", y dice que se duplique', async () => {
+    await renderAppAs('coach@example.test', `/coach/exercises?exercise=${LAT_PULLDOWN.id}`);
+
+    expect(
+      await screen.findByText(
+        'This exercise is already in a program. To change how it is measured, duplicate it.',
+      ),
+    ).toBeVisible();
+    expect(screen.getByRole('radio', { name: /Time/ })).toBeDisabled();
+    expect(screen.getByRole('checkbox', { name: /Unilateral/ })).toBeDisabled();
+    expect(screen.getByLabelText('Name')).toBeEnabled();
+    expect(api.isExerciseInUse).toHaveBeenCalledWith(LAT_PULLDOWN.id);
   });
 });

@@ -7,11 +7,11 @@ Este archivo lo actualiza quien termina una tarea, en el mismo Pull Request, jun
 
 ## En curso
 
-El lote 3. El PR 2.9a (rama `feat/editor-ejercicios`) está abierto. Los lotes 1 (PR 2.1 a 2.4b, #24 a #28) y 2 (PR 2.5a a 2.8b, #30 a #35) están fusionados en `main` desde el 2026-11-15; el propietario pidió hacer y fusionar el lote 2 en el mismo chat, y todavía no lo ha probado en la app.
+El lote 3. Los PR 2.9a (rama `feat/editor-ejercicios`, #36) y 2.9b (rama `feat/editor-sustituir`) están abiertos, apilados. Los lotes 1 (PR 2.1 a 2.4b, #24 a #28) y 2 (PR 2.5a a 2.8b, #30 a #35) están fusionados en `main` desde el 2026-11-15; el propietario pidió hacer y fusionar el lote 2 en el mismo chat, y todavía no lo ha probado en la app.
 
 ## Siguiente
 
-1. **PR 2.9b — Editor: sustituir, nota, archivados y bloquear la forma de medir** (`docs/PROMPTS.md` §6), apilado sobre el 2.9a. Después, los PR 2.10 y 2.11.
+1. **PR 2.10 — Editor: series y prescripción** (`docs/PROMPTS.md` §6), apilado sobre el 2.9b. Después, el PR 2.11.
 2. El propietario prueba el lote 2 en la app y revisa el cambio en `src/core/` del PR 2.8b (D-099). Si algo no le gusta, se arregla en un PR nuevo.
 3. El propietario aplica en staging las migraciones 8 a 14 (GUIA-GIT §9). No bloquea seguir.
 4. El propietario dio por buenas, por ahora, la lista de `docs/referencia/biblioteca-ejercicios.md` y las rutinas de ejemplo. Se pueden retocar más adelante.
@@ -90,9 +90,9 @@ El diseño está en DECISIONES D-069 a D-088, y el detalle de cada PR, en `docs/
 
 **Lote 3 — Rellenar la rutina**
 
-- [ ] PR 2.9 — Editor: los ejercicios de cada día (partido en dos, como preveía `docs/PROMPTS.md` §6)
+- [x] PR 2.9 — Editor: los ejercicios de cada día (partido en dos, como preveía `docs/PROMPTS.md` §6)
   - [x] 2.9a — lista, añadir con el buscador, crear sin salir, ordenar y quitar
-  - [ ] 2.9b — sustituir, nota, archivados y bloquear la forma de medir
+  - [x] 2.9b — sustituir, nota, archivados y bloquear la forma de medir
 - [ ] PR 2.10 — Editor: series y prescripción
 - [ ] PR 2.11 — Copiar y duplicar
 
@@ -153,6 +153,7 @@ La referencia es la app de apuntes del propietario (D-087). Antes de empezar se 
 
 Cosas que alguien ha visto y que no tocaban en su tarea. No se hacen sin convertirlas antes en tarea.
 
+- Tests que fallan a ratos (2026-11-15): con el ordenador cargado (dos servidores de la app abiertos), algunos tests unitarios antiguos agotan su tiempo (`SignupPage`, `JoinAfterSignup`, `ExercisePanel`) y `npm run check` falla sin que el código tenga nada mal; al repetir, pasan. Además, 1 de 5 pasadas completas de `npm run test:e2e` tuvo un fallo que no se pudo reproducir. Habría que mirar si conviene subir el límite de tiempo o bajar el número de tests a la vez.
 - En la pantalla de un código de coach que no existe (`/join`), dejar a la vista "Ya tengo cuenta" y "Soy coach", como en la primera pantalla (lo echó en falta el propietario al probar staging).
 - Los tests pgTAP en staging necesitan la contraseña de la base de datos, porque el usuario temporal de la CLI no busca en el esquema `extensions`. Se evitaría fijando el `search_path` en la cabecera de cada test.
 - Que el coach pueda elegir un código de invitación propio y fácil de recordar (D-050).
@@ -194,6 +195,8 @@ Cosas que alguien ha visto y que no tocaban en su tarea. No se hacen sin convert
 ## Registro de cambios
 
 Lo más nuevo, arriba.
+
+- 2026-11-15 — PR 2.9b (editor: sustituir, nota y archivados): "Sustituir" cambia un ejercicio por otro que se mide igual y conserva sus series, su descanso y su nota; la nota del ejercicio, que verá el cliente; la etiqueta "Archivado" en los que se archivaron después; y en el formulario de un ejercicio que está en una rutina, la forma de medir y "unilateral" quedan bloqueadas con el aviso de duplicarlo. 6 tests unitarios y 2 de extremo a extremo nuevos. Detalles en D-101.
 
 - 2026-11-15 — PR 2.9a (editor: los ejercicios de cada día): dentro de un día de entreno, sus ejercicios en orden con el total arriba; "Añadir ejercicio" con el buscador y los filtros de "Ejercicios" sin salir de la rutina (el módulo exercises lo ofrece por su `index.ts`: `ExercisePicker` y `useExerciseOptions`); "Crear «lo escrito»" sin salir; cada ejercicio nuevo entra con 3 series vacías; "Subir", "Bajar" y "Quitar" (con confirmación si tiene algo escrito). El test de fronteras ya prueba `programs` → `exercises`. 10 tests unitarios, 2 de fronteras y 3 de extremo a extremo nuevos. Detalles en D-100.
 - 2026-11-15 — Lote 2 de la Fase 2 fusionado en `main` (#30 a #35), a petición del propietario, que pidió hacerlo y fusionarlo en el mismo chat.

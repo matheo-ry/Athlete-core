@@ -104,7 +104,9 @@
       "instructionsTooLong": "Las instrucciones pueden tener como mucho 2.000 caracteres.",
       "videoUrlNotHttps": "El enlace tiene que empezar por https:// y no llevar espacios.",
       "videoUrlTooLong": "El enlace puede tener como mucho 500 caracteres."
-    }
+    },
+    "inUseHint": "Este ejercicio ya está en una rutina. Para cambiar cómo se mide, duplícalo.",
+    "inUse": "Este ejercicio ya está en una rutina, así que no puede cambiar cómo se mide. Duplícalo para cambiarlo."
   },
   "actions": {
     "duplicate": "Duplicar",

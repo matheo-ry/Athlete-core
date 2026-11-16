@@ -875,6 +875,16 @@ Cómo añadir una: copia el formato, usa el siguiente número y no borres las an
   - **Los botones de ordenar son flechas** (↑ ↓ ✕) con su nombre completo para los lectores de pantalla ("Subir: Lat pulldown"), para que quepan en una fila en el móvil.
 - **Por qué:** son las opciones más sencillas que cumplen el bloque del PR y reutilizan lo que ya conoce el coach.
 
+### D-101 · Sustituir, la nota, los archivados y el bloqueo de la forma de medir
+- **Fecha:** 2026-11-15
+- **Decisión:** detalles del PR 2.9b que D-072, D-073 y D-078 no fijaban.
+  - **"Sustituir" (⇄)** abre el mismo buscador, solo con los ejercicios activos que se miden igual. El sustituto ocupa el mismo sitio y hereda las series, el descanso y la nota.
+  - **La nota** se escribe debajo del ejercicio ("Añadir una nota"), hasta 500 caracteres. Si ya tiene nota, el campo está siempre a la vista.
+  - **Un ejercicio archivado** que ya estaba en la rutina se ve con la etiqueta "Archivado". Se puede mover, quitar y sustituir; no sale en el buscador.
+  - **En el formulario de un ejercicio que está en alguna rutina,** la forma de medir y "unilateral" quedan desactivadas, con el texto "Este ejercicio ya está en una rutina. Para cambiar cómo se mide, duplícalo". La app lo sabe contando sus apariciones en `program_day_exercises` (una consulta sin filas).
+  - **Si la base de datos rechaza el cambio** (`exercise_in_use`; por ejemplo, "Restaurar original" de un ejercicio al que se le cambió la medida antes de usarlo), la app lo explica en vez de decir "Algo ha ido mal".
+- **Por qué:** son las opciones más sencillas que cumplen el bloque del PR. La regla la sigue garantizando la base de datos (migración 12); la pantalla solo evita el error.
+
 ---
 
 ## Pendientes de decidir

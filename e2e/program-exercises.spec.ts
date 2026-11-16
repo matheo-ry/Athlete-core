@@ -94,3 +94,65 @@ test('en el móvil se añaden y se ordenan ejercicios igual', async ({ page }) =
   await expect(page.getByRole('status')).toHaveText('Changes saved.');
   await expect(items(page)).toHaveText([/^1\. Leg press/, /^2\. Lat pulldown/]);
 });
+
+test('sustituye un ejercicio conservando sus series, y uno archivado se ve con su etiqueta y no sale en el buscador', async ({
+  page,
+}) => {
+  await openPruebaMonday(page);
+  await addExercise(page, 'lat pull', 'Lat pulldown');
+  await addExercise(page, 'leg press', 'Leg press');
+
+  // Criterio 5: sustituir conserva el sitio y las 3 series.
+  await page.getByRole('button', { name: 'Replace: Lat pulldown' }).click();
+  await page.getByLabel('Search by name').fill('neutral');
+  await page
+    .getByRole('list', { name: 'Replace “Lat pulldown”' })
+    .getByRole('button', { name: /^Neutral-grip lat pulldown/ })
+    .click();
+  await expect(items(page)).toHaveText([
+    /^1\. Neutral-grip lat pulldown3 sets/,
+    /^2\. Leg press3 sets/,
+  ]);
+
+  await page.getByRole('button', { name: 'Add a note' }).first().click();
+  await page.getByLabel('Note for “Neutral-grip lat pulldown”').fill('Codos pegados');
+  await page.getByRole('button', { name: 'Save changes' }).click();
+  await expect(page.getByRole('status')).toHaveText('Changes saved.');
+  const editorUrl = page.url();
+
+  // Criterio 6: se archiva "Leg press" en Ejercicios.
+  await page.goto('/coach/exercises');
+  await page.getByLabel('Search by name').fill('leg press');
+  await page.getByRole('button', { name: /^Leg press ?Quads/ }).click();
+  await page.getByRole('button', { name: 'Archive', exact: true }).click();
+  await expect(page.getByRole('status')).toContainText('archived');
+
+  await page.goto(editorUrl);
+  await expect(items(page).nth(1)).toContainText('2. Leg press3 setsArchived');
+  await expect(page.getByLabel('Note for “Neutral-grip lat pulldown”')).toHaveValue(
+    'Codos pegados',
+  );
+  await page.getByRole('button', { name: 'Add exercise' }).click();
+  await page.getByLabel('Search by name').fill('leg press');
+  await expect(
+    page
+      .getByRole('list', { name: 'Add exercise' })
+      .getByRole('button', { name: /^Leg press ?Weight/ }),
+  ).toHaveCount(0);
+});
+
+test('un ejercicio que está en una rutina no deja cambiar la forma de medir', async ({ page }) => {
+  await signIn(page, 'coach.iron@example.com');
+  await chooseSpace(page, 'Iron Lab');
+  await page.goto('/coach/exercises');
+  await page.getByLabel('Search by name').fill('gironda');
+  await page.getByRole('button', { name: /^Remo Gironda agarre amplio/ }).click();
+
+  await expect(
+    page.getByText(
+      'This exercise is already in a program. To change how it is measured, duplicate it.',
+    ),
+  ).toBeVisible();
+  await expect(page.getByRole('radio', { name: /Time/ })).toBeDisabled();
+  await expect(page.getByRole('checkbox', { name: /Unilateral/ })).toBeDisabled();
+});

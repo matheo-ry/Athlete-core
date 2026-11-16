@@ -11,6 +11,7 @@ import type { Exercise } from '../model/exercise-schema';
 // sustituida por datos inventados.
 const api = vi.hoisted(() => ({
   fetchExercises: vi.fn<(tenantId: string) => Promise<Exercise[]>>(),
+  isExerciseInUse: vi.fn<(id: string) => Promise<boolean>>(() => Promise.resolve(false)),
   createExercise:
     vi.fn<
       (tenantId: string, userId: string, input: ExerciseInput) => Promise<SaveExerciseResult>

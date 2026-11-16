@@ -54,6 +54,30 @@ export function removeExercise(day: ProgramDay, index: number): ProgramDay {
   return { ...day, exercises: day.exercises.filter((_, position) => position !== index) };
 }
 
+/**
+ * "Sustituir" (D-078, PR 2.9b): otro ejercicio en el mismo sitio, con las
+ * mismas series, el mismo descanso y la misma nota. La pantalla solo ofrece
+ * los que se miden igual, para que lo prescrito siga teniendo sentido.
+ */
+export function replaceExercise(day: ProgramDay, index: number, exerciseId: string): ProgramDay {
+  return {
+    ...day,
+    exercises: day.exercises.map((item, position) =>
+      position === index ? { ...item, exerciseId } : item,
+    ),
+  };
+}
+
+/** La nota del coach para ese ejercicio, que verá el cliente (D-076). Vacía, sin nota. */
+export function setExerciseNote(day: ProgramDay, index: number, note: string): ProgramDay {
+  return {
+    ...day,
+    exercises: day.exercises.map((item, position) =>
+      position === index ? { ...item, note: note.trim() === '' ? null : note } : item,
+    ),
+  };
+}
+
 /** Alguna serie tiene algo escrito: quitarlo pide confirmación (PR 2.9). */
 export function hasSetData(item: ProgramDayExercise): boolean {
   return (

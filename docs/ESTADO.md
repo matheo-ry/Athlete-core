@@ -97,6 +97,8 @@ El diseño está en DECISIONES D-069 a D-088, y el detalle de cada PR, en `docs/
   - [x] 2.10a — la línea única, "Series distintas", repeticiones (o segundos, o metros), intensidad, descanso y el resumen
   - [x] 2.10b — el ajuste RIR o RPE y la carga en kg o lb
 - [x] PR 2.11 — Copiar y duplicar
+- [x] PR 2.11b — Los ejercicios del día, de uno en uno (añadido tras la prueba del propietario, D-106)
+- [x] PR 2.11c — El menú del coach y la lista de días acompañan al bajar (añadido tras la prueba del propietario)
 
 **Lote 4 — Asignar y verla como cliente**
 
@@ -198,6 +200,8 @@ Cosas que alguien ha visto y que no tocaban en su tarea. No se hacen sin convert
 
 Lo más nuevo, arriba.
 
+- 2026-11-16 — PR 2.11c (menú y días a la vista): en escritorio, el menú lateral del coach y la lista de días del editor acompañan al bajar por la página. Pedido por el propietario al probar el PR 2.11b.
+- 2026-11-16 — PR 2.11b (un ejercicio cada vez): al probar el lote 3, el propietario vio que bajar por todos los ejercicios de un día cansa. Ahora hay una fila con los números de los ejercicios y debajo solo el elegido; en el móvil se pasa al de al lado deslizando. Al añadir, duplicar, pegar o mover, se ve el ejercicio afectado (D-106).
 - 2026-11-15 — PR 2.11 (copiar y duplicar): duplicar un ejercicio; duplicar un día en otro del mismo ciclo, con confirmación si el destino tiene ejercicios; copiar un ejercicio o un día y pegarlo en otra rutina (se guarda en el dispositivo y se olvida al cerrar sesión); y duplicar una plantilla entera desde la lista ("Copia de …"). La lógica, en `model/copy.ts`. 7 tests unitarios y 2 de extremo a extremo nuevos. Detalles en D-104. Cierra el lote 3.
 
 - 2026-11-15 — PR 2.10b (editor: el ajuste RIR o RPE y la carga): "Entrenamiento" en los Ajustes del coach, solo para el dueño, para elegir RIR o RPE (se guarda en `tenants.settings`; `useTenantSettings` y `useSaveTenantSettings` en `core/tenancy`); el editor ofrece la escala elegida sin convertir lo ya escrito; y la carga objetivo, escrita en kg o lb y guardada en kg ("Lastre" en los ejercicios de peso corporal). Toca `src/core/tenancy` (lo pedía el bloque) y los textos de `src/core/i18n`. 9 tests unitarios y 2 de extremo a extremo nuevos. Detalles en D-103.

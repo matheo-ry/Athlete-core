@@ -9,7 +9,9 @@ import type { CycleEditorAction } from '../model/cycle-editor';
 import { dayCounts } from '../model/cycle-editor';
 import type { ProgramDay } from '../model/program-document';
 import { DayExerciseRow } from './DayExerciseRow';
+import { ExerciseTabs } from './ExerciseTabs';
 import { useProgramClipboard } from './useProgramClipboard';
+import { useSwipe } from './useSwipe';
 
 interface DayExercisesProps {
   day: ProgramDay;
@@ -23,6 +25,8 @@ type Picking =
 /**
  * Los ejercicios de un día de entreno, en orden (PR 2.9): el total arriba y
  * "Añadir ejercicio" con el buscador de "Ejercicios", sin salir de la rutina.
+ * Se ven de uno en uno (D-106): una fila de números y, debajo, el elegido;
+ * en el móvil también se pasa al de al lado deslizando.
  * "Sustituir" solo ofrece los que se miden igual (D-078). Todo entra en
  * "Guardar cambios".
  */
@@ -33,6 +37,20 @@ export function DayExercises({ day, onChange }: DayExercisesProps) {
   const { clipboard, copy } = useProgramClipboard();
   const counts = dayCounts(day);
   const dayNumber = day.dayNumber;
+  // Qué ejercicio se ve. Al cambiar de día se vuelve al primero.
+  const [selection, setSelection] = useState({ dayNumber, index: 0 });
+  const lastIndex = day.exercises.length - 1;
+  const selected = Math.max(
+    0,
+    Math.min(selection.dayNumber === dayNumber ? selection.index : 0, lastIndex),
+  );
+  const select = (index: number) => setSelection({ dayNumber, index });
+  const swipe = useSwipe({
+    onPrevious: () => select(Math.max(selected - 1, 0)),
+    onNext: () => select(Math.min(selected + 1, lastIndex)),
+  });
+  const item = day.exercises[selected];
+  const exercise = item === undefined ? undefined : options.byId.get(item.exerciseId);
 
   if (picking !== null) {
     return (
@@ -54,6 +72,10 @@ export function DayExercises({ day, onChange }: DayExercisesProps) {
                   exerciseId: exercise.id,
                 },
           );
+          // El recién añadido va al final: se pasa a él.
+          if (picking.kind === 'add') {
+            select(day.exercises.length);
+          }
           setPicking(null);
         }}
         onCancel={() => setPicking(null)}
@@ -67,43 +89,52 @@ export function DayExercises({ day, onChange }: DayExercisesProps) {
         {t('programs.editor.exercises', { count: counts.exercises })} ·{' '}
         {t('programs.editor.sets', { count: counts.sets })}
       </p>
-      {day.exercises.length > 0 ? (
-        <ol aria-label={t('programs.editor.exercisesLabel')} className="flex flex-col">
-          {day.exercises.map((item, index) => {
-            const exercise = options.byId.get(item.exerciseId);
-            return (
-              <DayExerciseRow
-                // Un ejercicio sin guardar todavía no tiene id.
-                key={item.id ?? `new-${String(index)}-${item.exerciseId}`}
-                item={item}
-                position={index + 1}
-                exercise={exercise}
-                isFirst={index === 0}
-                isLast={index === day.exercises.length - 1}
-                onMove={(direction) =>
-                  onChange({ type: 'moveExercise', dayNumber, index, direction })
+      {item !== undefined ? (
+        <>
+          <ExerciseTabs
+            items={day.exercises}
+            byId={options.byId}
+            selected={selected}
+            onSelect={select}
+          />
+          <div {...swipe}>
+            <DayExerciseRow
+              // Al cambiar de ejercicio se cierran la nota a medias y la confirmación.
+              key={`${String(dayNumber)}-${String(selected)}-${item.id ?? item.exerciseId}`}
+              item={item}
+              position={selected + 1}
+              exercise={exercise}
+              isFirst={selected === 0}
+              isLast={selected === lastIndex}
+              onMove={(direction) => {
+                onChange({ type: 'moveExercise', dayNumber, index: selected, direction });
+                select(selected + direction);
+              }}
+              onRemove={() => onChange({ type: 'removeExercise', dayNumber, index: selected })}
+              onReplace={() => {
+                if (exercise !== undefined) {
+                  setPicking({
+                    kind: 'replace',
+                    index: selected,
+                    name: exercise.name,
+                    measurement: exercise.measurement,
+                  });
                 }
-                onRemove={() => onChange({ type: 'removeExercise', dayNumber, index })}
-                onReplace={() => {
-                  if (exercise !== undefined) {
-                    setPicking({
-                      kind: 'replace',
-                      index,
-                      name: exercise.name,
-                      measurement: exercise.measurement,
-                    });
-                  }
-                }}
-                onNote={(note) => onChange({ type: 'setExerciseNote', dayNumber, index, note })}
-                onDuplicate={() => onChange({ type: 'duplicateExercise', dayNumber, index })}
-                onCopy={() => copy({ kind: 'exercise', item })}
-                onPrescription={(changed) =>
-                  onChange({ type: 'setExercise', dayNumber, index, item: changed })
-                }
-              />
-            );
-          })}
-        </ol>
+              }}
+              onNote={(note) =>
+                onChange({ type: 'setExerciseNote', dayNumber, index: selected, note })
+              }
+              onDuplicate={() => {
+                onChange({ type: 'duplicateExercise', dayNumber, index: selected });
+                select(selected + 1);
+              }}
+              onCopy={() => copy({ kind: 'exercise', item })}
+              onPrescription={(changed) =>
+                onChange({ type: 'setExercise', dayNumber, index: selected, item: changed })
+              }
+            />
+          </div>
+        </>
       ) : (
         <p className="text-muted text-sm">{t('programs.editor.noExercises')}</p>
       )}
@@ -118,7 +149,10 @@ export function DayExercises({ day, onChange }: DayExercisesProps) {
         <Button
           variant="ghost"
           className="self-start"
-          onClick={() => onChange({ type: 'pasteExercise', dayNumber, item: clipboard.item })}
+          onClick={() => {
+            onChange({ type: 'pasteExercise', dayNumber, item: clipboard.item });
+            select(day.exercises.length);
+          }}
         >
           {t('programs.copy.pasteExercise')}
         </Button>

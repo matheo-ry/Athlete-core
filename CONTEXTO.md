@@ -22,7 +22,7 @@
 ## Dónde estamos
 
 - **Fase actual:** 2 — Ejercicios y rutinas: lotes 1 (ejercicios) y 2 (plantillas y editor de días) fusionados en `main` el 2026-11-15; el lote 3 (rellenar la rutina) está completo, a la espera de que el propietario lo pruebe. La Fase 1 está terminada y fusionada en `main` (2026-11-14).
-- **Última tarea terminada:** PR 2.11 — Copiar y duplicar (2026-11-15), rama `feat/copiar-y-duplicar`. Cierra el lote 3: los PR 2.9a a 2.11 (#36 en adelante) están abiertos y apilados.
+- **Última tarea terminada:** PR 2.11b — Los ejercicios del día, de uno en uno (2026-11-16), rama `feat/editor-un-ejercicio`, apilado sobre el PR 2.11 (#40). El lote 3 (PR 2.9a a 2.11b, #36 en adelante) está abierto y apilado. En la rama local `db/asignar-rutinas` está empezado el PR 2.12a (migración 15, sus tests y D-105), sin subir.
 - **En curso:** nada.
 - **Siguiente tarea:** que el propietario pruebe los lotes 2 y 3 y dé el visto bueno para fusionar el lote 3 (D-068). Después, el lote 4: PR 2.12 — Base de datos: asignar (`docs/PROMPTS.md` §6). Aparte, el propietario aplica en staging las migraciones 8 a 14.
 
@@ -57,7 +57,7 @@
 - **Módulo `programs`** (PR 2.7): "Rutinas" en el menú del coach. Lista de plantillas con "Semanal" o "Ciclo de N días" y sus días de entreno, pestañas "Activas" y "Archivadas", buscador, "Nueva plantilla" (nombre y días del ciclo), renombrar, archivar y recuperar (D-097). El documento de una rutina (esquema Zod del editor) está en `model/program-document.ts`. El editor (PR 2.8a, `/coach/programs/<id>`): los días del ciclo del primer bloque, de entreno o de descanso, con nombre, subtítulo y lugar, y "Guardar cambios" de una vez (D-098). Con cambios sin guardar, avisa al salir y los guarda en el dispositivo para "Recuperar" al volver; se borran al cerrar sesión (PR 2.8b, D-099). Cada día de entreno tiene sus ejercicios en orden: añadir con el buscador de "Ejercicios" sin salir, crear uno nuevo, subir, bajar y quitar (PR 2.9a, D-100); sustituir por otro que se mide igual, nota para el cliente y etiqueta "Archivado" (PR 2.9b, D-101). En cada ejercicio se escribe lo prescrito: series, repeticiones, intensidad y descanso, con el resumen "3 × 8-12 · RIR 1 · 2:00" (PR 2.10a, D-102), y la carga en kg o lb. El dueño elige en Ajustes → "Entrenamiento" si trabaja con RIR o con RPE (PR 2.10b, D-103). Se puede duplicar un ejercicio, un día o una plantilla entera, y copiar y pegar entre rutinas (PR 2.11, D-104).
 - **Rutinas en la base de datos** (PR 2.5a y 2.5b): `programs` (sin cliente = plantilla), `program_blocks`, `program_days`, `program_day_exercises` y `program_sets`. Desde la app solo se leen: el coach, las de su negocio; el cliente, las suyas y los ejercicios que llevan. Se escriben con funciones: `save_program` guarda una rutina entera o nada (PR 2.6, D-096) y `set_program_archived` archiva y recupera plantillas. El seed trae tres plantillas: "Casa + Gym" y "Pecho / Espalda y Brazo / Pierna" en Iron Lab, y "Fuerza básica" en Norte Strength.
 - **Base de datos local** (Supabase en Docker): 14 migraciones en `supabase/migrations/` (tablas, funciones de negocio, permisos, RLS, el espacio de logos, los ejercicios, las rutinas y los flags de cada módulo); 340 tests pgTAP (`npm run db:test`); 2 coaches y 6 clientes inventados (`supabase/seed.sql`, contraseña `password123`); tipos generados en `core/supabase/database.types.ts`.
-- **Tests:** 536 unitarios (`npm run check`) y 66 de extremo a extremo contra Supabase local (`npm run test:e2e`).
+- **Tests:** 537 unitarios (`npm run check`) y 67 de extremo a extremo contra Supabase local (`npm run test:e2e`).
 - **Staging** (PR 1.17): proyecto `athlete-core-staging` de Supabase (Fráncfort, plan gratuito) con las mismas tablas y datos inventados que en local. Los emails salen de verdad, por Resend, desde `no-reply@athlete-core.com`. Se prueba con `npm run dev:staging` (hace falta `.env.staging.local`; guía en `supabase/README.md`). Todavía no hay web publicada.
 - **Módulo `_template`** para copiar (`npm run new:module <nombre>`). Solo se registra en desarrollo.
 - **Reglas que se comprueban solas:** ESLint con las fronteras de ARQUITECTURA §6, hooks de Git (formato, mensaje de commit, no subir `main`), CI con `npm run check`, y tests que vigilan las fronteras, los textos en dos idiomas y la forma fija de los módulos.
@@ -71,11 +71,11 @@
 
 Los 5 más recientes, el más nuevo arriba. El historial completo está en `docs/ESTADO.md`.
 
+- 2026-11-16 — PR 2.11c: en escritorio, el menú del coach y la lista de días del editor acompañan al bajar. Rama `feat/menu-y-dias-fijos`, apilada sobre el PR 2.11b (#41).
+- 2026-11-16 — PR 2.11b: en el editor los ejercicios de un día se ven de uno en uno, con una fila de números y deslizando en el móvil (D-106). Lo pidió el propietario al probar el lote 3.
 - 2026-11-15 — PR 2.11: copiar y duplicar ejercicios, días y plantillas (D-104). Cierra el lote 3.
 - 2026-11-15 — PR 2.10b: el ajuste RIR o RPE en los Ajustes del coach y la carga objetivo en kg o lb (D-103, toca `src/core/tenancy`).
 - 2026-11-15 — PR 2.10a: series y prescripción de cada ejercicio, con "Series distintas" y el resumen de una línea (D-102).
-- 2026-11-15 — PR 2.9b: sustituir un ejercicio, su nota, la etiqueta "Archivado" y el bloqueo de la forma de medir de un ejercicio que está en una rutina (D-101).
-- 2026-11-15 — PR 2.9a: los ejercicios de cada día, con el buscador de "Ejercicios" sin salir de la rutina (D-100). Antes, el lote 2 se fusionó en `main` (#30 a #35).
 
 ## A tener en cuenta ahora
 

@@ -19,6 +19,14 @@ const rawEnvSchema = z.object({
   // Opcional: la dirección pública de la web, para los enlaces de invitación
   // (/join?code=…). Sin ella se usa la dirección desde la que se ve la app.
   VITE_PUBLIC_APP_URL: z.preprocess(emptyToUndefined, z.url().optional()),
+  // Solo para desarrollo y tests: deja registrar entrenos en el navegador, que
+  // normalmente solo se puede en la app del móvil (DECISIONES D-116).
+  VITE_ALLOW_WEB_WORKOUTS: z.preprocess(
+    emptyToUndefined,
+    z.enum(['true', 'false']).default('false'),
+  ),
+  // Lo pone Vite: `true` en cualquier `vite build` (la web publicada o la app).
+  PROD: z.boolean().default(false),
 });
 
 export interface SupabaseEnv {
@@ -31,6 +39,11 @@ export interface AppEnv {
   supabase: SupabaseEnv;
   /** Sin la barra final. `null` si no se ha configurado. */
   publicAppUrl: string | null;
+  /**
+   * Si el navegador puede registrar entrenos. Nunca en un build de producción,
+   * aunque la variable esté puesta. Quién decide de verdad es `core/native`.
+   */
+  allowWebWorkouts: boolean;
 }
 
 export function parseEnv(raw: unknown): AppEnv {
@@ -41,12 +54,13 @@ export function parseEnv(raw: unknown): AppEnv {
     );
   }
 
-  const { VITE_APP_ENV, VITE_SUPABASE_URL, VITE_SUPABASE_PUBLISHABLE_KEY, VITE_PUBLIC_APP_URL } =
-    result.data;
+  const data = result.data;
   return {
-    appEnv: VITE_APP_ENV,
-    supabase: { url: VITE_SUPABASE_URL, publishableKey: VITE_SUPABASE_PUBLISHABLE_KEY },
-    publicAppUrl: VITE_PUBLIC_APP_URL?.replace(/\/+$/, '') ?? null,
+    appEnv: data.VITE_APP_ENV,
+    supabase: { url: data.VITE_SUPABASE_URL, publishableKey: data.VITE_SUPABASE_PUBLISHABLE_KEY },
+    publicAppUrl: data.VITE_PUBLIC_APP_URL?.replace(/\/+$/, '') ?? null,
+    // Un `.env.local` con la variable puesta no debe colarse en lo que se publica.
+    allowWebWorkouts: data.VITE_ALLOW_WEB_WORKOUTS === 'true' && !data.PROD,
   };
 }
 

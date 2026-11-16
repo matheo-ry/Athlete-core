@@ -42,7 +42,8 @@ export function AssignDialog({ title, onClose, children }: AssignDialogProps) {
   }, [onClose]);
 
   return (
-    <div className="bg-background/80 fixed inset-0 z-50 flex md:items-center md:justify-center md:p-6">
+    // En el móvil ocupa la pantalla entera: deja libres la barra de estado y la de gestos.
+    <div className="bg-background/80 fixed inset-0 z-50 flex pt-[var(--safe-top)] pb-[var(--safe-bottom)] md:items-center md:justify-center md:p-6">
       <div
         ref={dialog}
         role="dialog"

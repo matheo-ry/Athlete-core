@@ -6,7 +6,11 @@ import { OfflineBanner } from '@/core/ui';
 export function RootLayout() {
   return (
     <div className="bg-background text-foreground flex min-h-dvh flex-col">
-      <OfflineBanner />
+      {/* Franja fija bajo la barra de estado del móvil (en el ordenador mide 0):
+          así nada de la app queda debajo de la hora ni de los iconos. */}
+      <div className="bg-surface sticky top-0 z-50 pt-[var(--safe-top)]">
+        <OfflineBanner />
+      </div>
       <Outlet />
     </div>
   );

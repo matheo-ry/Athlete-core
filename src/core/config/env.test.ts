@@ -13,7 +13,28 @@ describe('parseEnv', () => {
       appEnv: 'local',
       supabase: { url: 'http://127.0.0.1:54321', publishableKey: 'example-public-key' },
       publicAppUrl: null,
+      allowWebWorkouts: false,
     });
+  });
+
+  it('registrar entrenos en el navegador solo se activa con la variable y fuera de un build', () => {
+    expect(parseEnv({ ...SUPABASE, VITE_ALLOW_WEB_WORKOUTS: 'true' }).allowWebWorkouts).toBe(true);
+    expect(parseEnv({ ...SUPABASE, VITE_ALLOW_WEB_WORKOUTS: 'false' }).allowWebWorkouts).toBe(
+      false,
+    );
+    expect(parseEnv({ ...SUPABASE, VITE_ALLOW_WEB_WORKOUTS: '' }).allowWebWorkouts).toBe(false);
+  });
+
+  it('nunca deja registrar entrenos en el navegador en un build de producción', () => {
+    expect(
+      parseEnv({ ...SUPABASE, VITE_ALLOW_WEB_WORKOUTS: 'true', PROD: true }).allowWebWorkouts,
+    ).toBe(false);
+  });
+
+  it('falla si la variable de los entrenos en el navegador no es true ni false', () => {
+    expect(() => parseEnv({ ...SUPABASE, VITE_ALLOW_WEB_WORKOUTS: 'yes' })).toThrow(
+      'VITE_ALLOW_WEB_WORKOUTS',
+    );
   });
 
   it('la dirección pública de la web es opcional y se guarda sin la barra final', () => {

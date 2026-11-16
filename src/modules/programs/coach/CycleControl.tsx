@@ -8,7 +8,7 @@ import { daysLostWhenShortening, isWeekly } from '../model/cycle-editor';
 import type { CycleEditorAction } from '../model/cycle-editor';
 import { newTemplateSchema } from '../model/program-document';
 import type { ProgramBlock } from '../model/program-document';
-import { useDayLabel } from './useDayText';
+import { useDayLabel } from '../shared/useDayText';
 
 interface CycleControlProps {
   block: ProgramBlock;

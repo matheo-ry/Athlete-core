@@ -995,6 +995,19 @@ Cómo añadir una: copia el formato, usa el siguiente número y no borres las an
   - Tras cada acción, un aviso en la pestaña.
 - **Por qué:** el coach gestiona cada cliente desde su ficha sin buscar en otra pantalla.
 
+### D-111 · "Entreno", lo que ve el cliente
+- **Fecha:** 2026-11-16
+- **Decisión:** detalles del PR 2.15 que D-084 no fijaba.
+  - **"Entreno" va justo después de "Inicio"** en la barra del cliente.
+  - **Tres niveles en la misma pantalla, con la dirección:** la rutina (`/client/program`), un día (`?day=3`) y un ejercicio (`?day=3&exercise=1`). Así "atrás" del móvil vuelve al nivel anterior y se puede compartir o recargar.
+  - **"Hoy toca"** enseña el día, su nombre, subtítulo y lugar, y cuántos ejercicios y series tiene; es un enlace al día. En un día de descanso, "Hoy: descanso".
+  - **En modo lista** solo salen los días de entreno, con su nombre (o "Día N"), sin fechas ni "Hoy toca" (D-082).
+  - **Cada serie en una línea:** "Serie 1: 6-8 · RIR 1 · 10 kg", con el resumen del PR 2.10 de esa sola serie. El descanso va debajo, una vez.
+  - **"Ver vídeo"** abre el enlace en otra pestaña, fuera de la app (D-074).
+  - **Una rutina que aún no ha empezado** (próxima o reiniciada con fecha futura) dice "Tu rutina empieza el…" con su nombre debajo.
+  - El cliente lee los ejercicios de sus rutinas con la política del PR 2.5b (D-072): el módulo exercises da su nombre en el idioma del cliente, sus instrucciones y su vídeo.
+- **Por qué:** el cliente abre la app y en un toque sabe qué le toca hoy; nada que aprender.
+
 ---
 
 ## Pendientes de decidir

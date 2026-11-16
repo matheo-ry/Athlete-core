@@ -1,6 +1,7 @@
 {
   "nav": {
-    "coach": "Rutinas"
+    "coach": "Rutinas",
+    "client": "Entreno"
   },
   "list": {
     "title": "Rutinas",
@@ -268,5 +269,26 @@
       "clientNotFound": "Este cliente ya no está activo. Recarga la página.",
       "changed": "Esta rutina cambió mientras tanto. Recarga la página y vuelve a intentarlo."
     }
+  },
+  "client": {
+    "title": "Entreno",
+    "noProgram": "Tu coach aún no te ha asignado una rutina",
+    "startsOn": "Tu rutina empieza el {{date}}",
+    "todayIs": "Hoy toca",
+    "todayRest": "Hoy: descanso",
+    "days": "Días del ciclo",
+    "trainingDays": "Tus días de entreno",
+    "daysLabel": "Días de tu rutina",
+    "backToProgram": "← Entreno",
+    "backToDay": "← Día",
+    "dayNotFound": "Este día no está en tu rutina",
+    "exerciseNotFound": "Este ejercicio no está en este día",
+    "restDay": "Día de descanso.",
+    "sets": "Series",
+    "setLine": "Serie {{number}}: {{text}}",
+    "rest": "Descanso entre series: {{time}}",
+    "coachNote": "Nota de tu coach",
+    "instructions": "Cómo se hace",
+    "watchVideo": "Ver vídeo"
   }
 }

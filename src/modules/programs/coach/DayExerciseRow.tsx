@@ -11,7 +11,7 @@ import { hasSetData } from '../model/day-exercises';
 import { targetKindOf } from '../model/prescription';
 import type { ProgramDayExercise } from '../model/program-document';
 import { PrescriptionEditor } from './PrescriptionEditor';
-import { useExerciseSummary } from './useExerciseSummary';
+import { useExerciseSummary } from '../shared/useExerciseSummary';
 
 const TAG = 'rounded-full px-2 py-0.5 text-xs font-semibold';
 const NOTE_MAX_LENGTH = 500;

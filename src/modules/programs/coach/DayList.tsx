@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { cn } from '@/core/lib';
 
 import type { ProgramBlock } from '../model/program-document';
-import { useDayLabel, useDaySummary } from './useDayText';
+import { useDayLabel, useDaySummary } from '../shared/useDayText';
 
 interface DayListProps {
   block: ProgramBlock;

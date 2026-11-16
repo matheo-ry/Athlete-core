@@ -1,6 +1,7 @@
 {
   "nav": {
-    "coach": "Programs"
+    "coach": "Programs",
+    "client": "Training"
   },
   "list": {
     "title": "Programs",
@@ -268,5 +269,26 @@
       "clientNotFound": "This client is no longer active. Reload the page.",
       "changed": "This program changed in the meantime. Reload the page and try again."
     }
+  },
+  "client": {
+    "title": "Training",
+    "noProgram": "Your coach hasn't assigned you a program yet",
+    "startsOn": "Your program starts on {{date}}",
+    "todayIs": "Today",
+    "todayRest": "Today: rest",
+    "days": "Days of the cycle",
+    "trainingDays": "Your training days",
+    "daysLabel": "Days of your program",
+    "backToProgram": "← Training",
+    "backToDay": "← Day",
+    "dayNotFound": "This day is not in your program",
+    "exerciseNotFound": "This exercise is not in this day",
+    "restDay": "Rest day.",
+    "sets": "Sets",
+    "setLine": "Set {{number}}: {{text}}",
+    "rest": "Rest between sets: {{time}}",
+    "coachNote": "Note from your coach",
+    "instructions": "How to do it",
+    "watchVideo": "Watch video"
   }
 }

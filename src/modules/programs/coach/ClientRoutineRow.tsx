@@ -4,7 +4,7 @@ import { useLanguage } from '@/core/i18n';
 
 import { routineProgress } from '../model/assignments';
 import type { ClientRoutines } from '../model/assignments';
-import { shortDate, useProgressText } from './useProgressText';
+import { shortDate, useProgressText } from '../shared/useProgressText';
 
 interface ClientRoutineRowProps {
   name: string;

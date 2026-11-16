@@ -4,7 +4,7 @@ import { cn } from '@/core/lib';
 import type { ExerciseOption } from '@/modules/exercises';
 
 import type { ProgramDayExercise } from '../model/program-document';
-import { useExerciseSummary } from './useExerciseSummary';
+import { useExerciseSummary } from '../shared/useExerciseSummary';
 
 interface ExerciseTabsProps {
   items: ProgramDayExercise[];

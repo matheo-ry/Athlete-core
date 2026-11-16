@@ -1041,6 +1041,242 @@ Cómo añadir una: copia el formato, usa el siguiente número y no borres las an
 - **Por qué:** cada inicio enseña lo que hay que hacer hoy, y una función nueva puede añadir su tarjeta desde su manifest sin tocar las carcasas.
 - **Revisar si:** el coach quiere elegir con cuántos días de margen se le avisa.
 
+### D-115 · Cómo se trabaja la Fase 3: diseño antes, 18 PR en 5 lotes
+- **Fecha:** 2026-11-16
+- **Decisión:** la Fase 3 se diseñó entera en un chat de diseño, sin código (D-115 a D-136), y su plan está en `docs/PROMPTS.md` §7. Se trabaja como la Fase 2 (D-069):
+  - **18 PR, del 3.1 al 3.18, en 5 lotes** de 3 o 4. Cada lote termina en algo que el propietario prueba en la app del móvil.
+  - **Un lote no empieza hasta que el anterior está fusionado en `main`** con el visto bueno del propietario (D-068).
+  - **Unas 300 líneas de verdad por PR**; si va a pasar de 400, se parte como dice su bloque. Lo que se genera solo (`database.types.ts`, el proyecto `android/`) no cuenta.
+  - **La base de datos va en PR propios, antes que las pantallas** (3.2 y 3.3).
+- **Por qué:** funcionó en la Fase 2: los errores de diseño se vieron con 4 PR hechos y no con 18.
+
+### D-116 · Entrenar, solo en la app del móvil
+- **Fecha:** 2026-11-16
+- **Decisión:** aclara D-001. La app sigue siendo una sola, con el mismo código, en la web, en iOS y en Android, y coaches y clientes entran en las tres. **Lo único que no se puede hacer en la web es empezar o registrar un entreno** (ni corregir uno ya guardado): eso solo se hace en la app del móvil.
+  - En la web, el cliente ve su rutina, su semana, su historial, su progreso y sus ajustes, y puede apuntar su peso corporal y sus medidas (no son un entreno). Donde en el móvil sale "Iniciar entreno", en la web sale "Para entrenar, abre la app en tu móvil".
+  - El coach usa la web y la app del móvil igual. Más adelante puede haber una app de escritorio.
+  - Si se puede registrar un entreno lo decide `core/native` (¿estamos en la app instalada?). **En desarrollo y en los tests** se puede activar en el navegador con una variable de entorno; nunca en la web publicada.
+- **Por qué:** decisión del propietario. Guardar sin conexión de forma segura y avisar del descanso con la pantalla apagada solo se puede hacer bien con la app instalada. Además, así el límite de Safari (borra lo guardado tras unos 7 días sin abrir la web, y en modo privado no guarda) no afecta a ningún entreno.
+- **Consecuencias:** se aclara en AGENTS.md §1, ARQUITECTURA §1, §12 y §14, README.md, CONTEXTO.md y ESTADO.md, con la aprobación del propietario. El propietario primero dijo "nada de web, nunca" y lo corrigió en el mismo chat: fue un error de interpretación.
+
+### D-117 · La app de Android llega en la Fase 3
+- **Fecha:** 2026-11-16
+- **Decisión:** el proyecto nativo de Android se crea en el primer PR de la Fase 3 (3.1), y el propietario instala la app en su móvil Android con un archivo que le pasa el agente. **iOS sigue en la Fase 4**, porque necesita compilarse en la nube (P-08). El propietario tiene a mano un iPhone los fines de semana para probarlo entonces.
+- **Por qué:** entrenar solo se puede en la app (D-116); sin ella, el propietario no podría probar ningún lote de la Fase 3.
+- **Consecuencias:** en ESTADO, "Proyectos nativos de Android e iOS" de la Fase 4 se queda solo en iOS. Publicar en Google Play sigue en la Fase 4.
+
+### D-118 · Guardado en el móvil, sin conexión
+- **Fecha:** 2026-11-16
+- **Decisión:** cierra P-06 para los entrenos y ajusta D-061.
+  - **Todo lo que el cliente apunta se guarda en el móvil al instante**, haya conexión o no, y se sube solo a la nube cuando la hay. No se pierde nada si la app se cierra sin querer, si se quita de la multitarea o si el móvil se apaga del todo.
+  - **Se guarda en el almacén del propio teléfono** (`@capacitor/preferences`, D-135), que el sistema no borra, y no en el del navegador.
+  - **Lo que se descarga para entrenar sin cobertura:** la rutina vigente entera y, de cada ejercicio, lo que hizo el cliente la vez anterior. Se pone al día cada vez que se abre la app con conexión, así el entreno de hoy ya está en el móvil antes de bajar al sótano.
+  - **La subida es segura de repetir:** cada entreno y cada serie llevan un identificador que crea el móvil, así subir dos veces lo mismo no lo duplica.
+  - **Mientras haya algo sin subir**, el cliente lo ve ("Pendiente de subir") y cerrar sesión pregunta antes ("Tienes entrenos sin subir. Si cierras sesión, se perderán").
+  - **Si la sesión caduca** (30 días, D-045) con datos sin subir, se quedan en el móvil y se suben al volver a entrar con la misma cuenta.
+  - **Si el coach lo dio de baja** antes de subirlos, la base de datos los rechaza y el cliente ve "No se pudo guardar: ya no tienes acceso a …".
+  - **El resto de la app** sigue con D-061: sin conexión se ve lo ya cargado y los formularios dicen "No hay conexión".
+- **Límite:** si se desinstala la app o se borran sus datos desde los ajustes del teléfono con algo sin subir, eso se pierde.
+- **Por qué:** es lo más importante de la fase y lo que más molestaba al propietario de Strong y Hevy: perder el entreno al cerrar la app o al apagarse el móvil.
+
+### D-119 · Iniciar, reanudar y cerrar un entreno
+- **Fecha:** 2026-11-16
+- **Decisión:**
+  - **Iniciar:** desde "Hoy toca" (en el inicio o en "Entreno") o desde cualquier día de la rutina. Solo hay **un entreno abierto a la vez**; para empezar otro hay que cerrar el que está abierto.
+  - **Con un entreno abierto, al abrir la app se va directo al ejercicio que toca**: el último que se tocó si le quedan series, o el siguiente con series pendientes.
+  - **Se cierra solo** cuando todos los ejercicios del día tienen todas sus series hechas, o están saltados. Sale el resumen: duración, series hechas, minilogros y récords.
+  - **"Terminar entreno"** cierra a mano en cualquier momento. **"Descartar entreno"** lo borra, con confirmación.
+  - **A las 6 horas** de la última serie apuntada, el móvil manda un recordatorio: "Tienes un entreno abierto. Termínalo, apunta lo que hiciste o marca lo que saltaste". Lo programa el propio móvil (notificación local, D-135), sin cobertura y sin servidor.
+  - **A las 12 horas** sin tocarlo se cierra solo, y al abrir la app se ve "Guardamos tu entreno del lunes".
+  - **La fecha del entreno es la del último dato cambiado**, en la zona horaria del móvil: si entrenó el lunes y lo cierra el martes, queda como entreno del lunes.
+  - **Un entreno sin ninguna serie hecha** no se guarda al cerrarlo.
+  - **El calentamiento no se apunta**: solo las series efectivas.
+- **Por qué:** así entrena el propietario: abre la app ya en el gimnasio y quiere estar en el ejercicio en un toque.
+- **Consecuencias:** la tarjeta "Hoy toca" del inicio del cliente pasa de `programs` a `workouts` (que usa a `programs`), con "Iniciar entreno" o "Continuar". En los días de "Entreno", `programs` enseña un enlace a la ruta de `workouts`, sin importar el módulo.
+
+### D-120 · Apuntar una serie
+- **Fecha:** 2026-11-16
+- **Decisión:**
+  - **Un ejercicio por pantalla**, con sus series. Se pasa al siguiente deslizando o con la fila de puntos de arriba, y desde el resumen del día.
+  - **Peso, repeticiones e intensidad**, cada uno con botones − y + grandes y, al tocar el número, con teclado. Pasos: 2,5 kg (o 5 lb), 1 repetición, 1 de RIR o 0,5 de RPE. La intensidad es RIR o RPE según el ajuste del coach (D-103), y "F" es al fallo. Los ejercicios de tiempo piden segundos y los de distancia, metros (D-072). El peso se escribe en la unidad del cliente y se guarda en kg.
+  - **No hay botón "Marcar serie hecha":** la serie **se ilumina con el color de la marca** en cuanto se cambia cualquiera de sus datos o se pulsa "Igual". Tocando una serie iluminada, se desmarca. Las no iluminadas no cuentan.
+  - **En gris, lo de la vez anterior en esa misma serie**: la última vez que hizo ese ejercicio **en ese mismo día de la rutina** (lunes con lunes), porque el mismo ejercicio puede ir pesado un día y a más repeticiones otro. Si no lo ha hecho en ese día, lo de la última vez en cualquier día; si nunca lo ha hecho, lo que prescribió el coach.
+  - **Botón "Igual"**: por defecto copia lo gris (la vez anterior en esa serie). Un ajuste del cliente, en su Perfil, lo cambia a: la serie 1 copia la vez anterior, y las siguientes copian la serie anterior de hoy. La primera vez, sin nada que copiar, no sale.
+  - **"+ Serie"** añade una serie más que las prescritas (hasta 10, D-086).
+  - **"¿Seguro?"**: si el peso cambia más de un 50 % respecto a la vez anterior ("La vez anterior fueron 35 kg"), se pregunta antes de aceptarlo.
+  - **Botones de 44 px o más**, usables con una mano y sudando.
+- **Por qué:** el propietario apunta justo después de cada serie, con el móvil en la mano unos segundos. Un botón para confirmar era un paso de más ("es un lío"). Un dato mal escrito estropeaba sus gráficas.
+
+### D-121 · Unilaterales, superseries y circuitos al entrenar
+- **Fecha:** 2026-11-16
+- **Decisión:**
+  - **Unilaterales:** cada serie tiene derecha e izquierda, cada una con su peso, repeticiones e intensidad. "Igual" copia los dos lados. El descanso arranca cuando están apuntados los dos.
+  - **Superseries y circuitos (D-113):** al apuntar una serie de un ejercicio del grupo, la app pasa al siguiente del grupo en la misma serie. El descanso arranca al acabar la ronda (la serie del último del grupo).
+- **Por qué:** el propietario apuntaba solo el lado más débil y sabía que era un error (D-072).
+
+### D-122 · Cambiar o saltar un ejercicio, notas y set-up
+- **Fecha:** 2026-11-16
+- **Decisión:**
+  - **"Cambiar ejercicio"** (máquina ocupada, otro gimnasio): elige otro ejercicio del negocio, solo para ese entreno; la rutina del coach no cambia. Lo apuntado **cuenta para el ejercicio que se hizo de verdad**, así la gráfica del original no se ensucia. El coach ve "Cambiado por …".
+  - **"Saltar ejercicio"**: lo marca como saltado. El coach lo ve.
+  - **Nota del día**, una por ejercicio en cada entreno: "Dolor de hombro, por eso tiré menos", "No había discos". Es dato de salud (D-126).
+  - **Set-up del cliente**, uno por ejercicio y compartido entre todas sus rutinas: "Asiento 2 · Agarre línea 3 · Pies juntos". Lo ve el coach, que no lo edita.
+  - **Lo del coach** se ve en el mismo sitio: las instrucciones del ejercicio (las mismas para todos sus clientes) y la nota del ejercicio en la rutina (D-076).
+- **Por qué:** por la tarde es normal encontrar la máquina ocupada; si el coach ve que un ejercicio se cambia semana tras semana (D-128), cambia la rutina. El set-up depende del gimnasio y de la máquina de cada cliente.
+
+### D-123 · El cronómetro de descanso
+- **Fecha:** 2026-11-16
+- **Decisión:**
+  - **Arranca solo con el primer cambio de una serie** (o con "Igual"). Corregir esa misma serie no lo reinicia.
+  - **Qué descanso usa:** el que puso el coach en ese ejercicio; si no puso, el del cliente en sus ajustes (2:00 de partida). Si el cliente lo cambia a mano en el entreno, vale **solo para ese entreno** (por si iba con prisa) y no se recuerda. Nunca cambia la rutina del coach.
+  - **Es de toda la app:** una barra fija siempre a la vista mientras sigue apuntando, aunque cambie de ejercicio. Se puede pausar, parar, saltar y sumar o restar 15 segundos.
+  - **Al llegar a cero:** sonido corto, vibración y una notificación, **también con la pantalla apagada o en otra app** (notificación local, D-135). El sonido de la notificación deja que el sistema baje la música un momento; se comprueba en el móvil del propietario y, si no lo hace, se anota como mejora.
+  - **La cuenta sigue bien** al volver a la app: se calcula con la hora de inicio, no contando segundos.
+  - **Ajustes del cliente** (Perfil → "Entreno"): descanso por defecto, arrancar el descanso solo (activado por defecto), sonido y vibración.
+  - Superseries, circuitos y unilaterales: D-121.
+- **Por qué:** al propietario le fallaban las notificaciones en otras apps; con la app instalada, la alarma la programa el propio móvil.
+
+### D-124 · Corregir, dos móviles y cambios del coach a mitad
+- **Fecha:** 2026-11-16
+- **Decisión:**
+  - **Corregir:** el cliente corrige un entreno cerrado desde su historial, en la app, durante **7 días**. Después queda solo para leer. El coach ve "Editado". El coach no edita los entrenos de sus clientes.
+  - **El mismo entreno en dos móviles:** un entreno abierto vive en un solo móvil. Si se abre en otro, sale "Este entreno está abierto en otro dispositivo" con "Seguir aquí". Si los dos guardaron cosas sin conexión, al subir se queda, en cada serie, el último cambio.
+  - **Si el coach cambia la rutina mientras el cliente entrena** (con o sin conexión), el entreno empezado sigue con la rutina que tenía al empezar. El cambio se ve en el siguiente entreno. El entreno guarda su propia copia de lo prescrito (D-087).
+  - **Qué ve el coach de un entreno a medias:** lo que ya se ha subido, con la marca "En curso". Lo que sigue en el móvil sin subir, no lo ve.
+- **Por qué:** es lo que hace la app de apuntes del propietario, y nada cambia a mitad de una serie.
+
+### D-125 · El día saltado: tres reglas, las elige el coach
+- **Fecha:** 2026-11-16
+- **Decisión:** completa D-082. Un día de entreno está **faltado** cuando pasa su fecha sin un entreno de ese día de la rutina. Queda apuntado siempre. El coach elige para cada cliente, en la pestaña "Rutina", una de estas reglas (por defecto, la primera):
+
+  | Regla | Qué pasa si falta el lunes |
+  |---|---|
+  | **Se pierde** | El martes toca lo del martes. Puede abrir el lunes y hacerlo igual: queda "Lunes, hecho el martes" |
+  | **Se recupera en el siguiente descanso** | El siguiente día de descanso pasa a ser "Hoy toca: Lunes (recuperar)". Si falta más de uno, se recuperan por orden |
+  | **Se mueve todo** | El martes toca lo del lunes, y el resto del calendario (y el fin de cada bloque) se retrasa un día |
+
+  - El cambio de regla vale desde el día en que se cambia; no recalcula el pasado.
+  - Una rutina **próxima** sigue empezando en su fecha, aunque la vigente se haya movido.
+  - **En modo lista**, el bloque avanza por **entrenos hechos**, no por fechas: un bloque de 4 vueltas de un ciclo con 4 días de entreno dura 16 entrenos. Cierra la duda de D-082.
+- **Por qué:** cada coach trabaja distinto: unos quieren que se recupere a costa de un descanso, otros (como el propietario con su ciclo de 8 días) mueven todo un día, y otros que se salte y ya. Cada entreno guarda su día de la rutina y su fecha, así cualquier regla nueva que pidan los coaches se puede calcular sin rehacer tablas.
+- **Consecuencias:** los días faltados se guardan en la base de datos del lado de las rutinas, así `programs` ("Hoy toca", "Asignadas", los avisos) los lee sin importar `workouts` (ARQUITECTURA §6). Los apunta la app del cliente al abrirse, con la fecha del móvil (D-105); si el cliente no abre la app, el coach no ve el retraso hasta que la abra.
+- **Revisar si:** los coaches piden otra regla. Añadirla es barato.
+
+### D-126 · Datos de salud y menores (P-12)
+- **Fecha:** 2026-11-16
+- **Decisión:** cierra P-12 para la Fase 3; la edad de los menores queda provisional.
+  - **Qué es dato de salud en esta fase:** el peso corporal, las medidas corporales y las notas del día (pueden decir "me duele el hombro"). No lo son las series, los pesos levantados, el set-up ni los logros.
+  - **Consentimiento:** se pide **una vez, al entrar por primera vez en el espacio de cada coach** (y a los clientes que ya existen, la primera vez que abran la app tras este cambio). Texto en borrador: "Tu peso, tus medidas y las notas que escribas (que pueden incluir molestias o lesiones) son solo entre tú y tu coach, para que pueda mejorar su servicio y su asesoramiento. ATHLETE CORE los guarda por encargo de tu coach y no los usa para nada más. Puedes retirar este permiso cuando quieras en tu Perfil". Botones "Acepto" y "Ahora no".
+  - Se guarda por espacio, con la fecha y la versión del texto. El coach ve si su cliente lo ha dado.
+  - **Sin consentimiento** se entrena igual, pero no se apuntan peso, medidas ni notas del día, y el lastre no se suma al peso corporal. Al intentar apuntarlos, se vuelve a pedir.
+  - **Retirarlo** (Perfil) borra el peso, las medidas y el texto de las notas del día de ese espacio, con confirmación.
+  - **Así será toda la app:** lo que llegue después (fotos, check-ins) usará este mismo consentimiento, ampliando el texto.
+  - **Menores (provisional):** la casilla de 16 años del registro no cambia (D-060) hasta tener los textos legales definitivos (Fase 4). Entonces se decide con un abogado; la propuesta es 14 años en España, 13 en el Reino Unido y EE. UU., 16 en el resto de Europa y nunca menos de 13.
+- **Por qué:** en Europa, los datos de salud piden un permiso expreso y aparte. Pedirlo una vez, al principio, molesta menos que en mitad de un entreno.
+- **Depende de un profesional:** el texto del consentimiento, la base legal y la edad de los menores los revisa un abogado junto a los textos legales de la Fase 4. Mientras, ningún usuario real entra (D-060).
+
+### D-127 · Peso corporal y medidas
+- **Fecha:** 2026-11-16
+- **Decisión:**
+  - **Peso corporal:** el cliente lo apunta cuando quiere, con fecha, en la app o en la web. Se ve el último ("85 kg · apuntado el 16 nov"), "Actualizar" y el historial con su gráfica. Se guarda en kg.
+  - **Lastre:** en los ejercicios de peso corporal se apunta el lastre (D-087) y, con consentimiento, se ve el total ("Lastre 10 · Total 95 kg"), que es el que cuenta para el RM y los récords. Sin consentimiento, solo el lastre.
+  - **Medidas:** lista fija, todas opcionales: cintura, cadera, pecho, hombros, cuello, brazo, muslo y gemelo (estos tres, derecho e izquierdo). En cm (o pulgadas si usa libras). Con fecha, historial y gráfica de cada una.
+  - **El coach** ve el peso y las medidas de sus clientes que hayan dado el consentimiento.
+  - **Sin fotos** en la Fase 3: llegan con los check-ins.
+- **Por qué:** el peso corporal sirve para la salud y el control, y hacer las mismas repeticiones pesando más es un avance. El propietario pidió un apartado de medidas.
+- **Consecuencias:** el peso y las medidas los lleva el módulo `workouts`, que los necesita para el total con lastre; `progress` los lee por su `index.ts`. El consentimiento es de cada espacio y lo usan varios módulos: va en `core/tenancy`.
+
+### D-128 · Lo que ve el coach
+- **Fecha:** 2026-11-16
+- **Decisión:**
+  - **Tarjeta "Actividad"** en su inicio, lo último arriba: "Ana terminó *Lunes* · 2 récords · cambió 1 ejercicio · 1 nota". Lo que no ha abierto va marcado. Cada línea lleva a ese entreno.
+  - **Avisos nuevos** en la tarjeta de avisos (D-114): "Sin entrenar desde hace 7 días" y "Cambió *Press horizontal* 3 veces en 4 semanas".
+  - **Pestaña "Entrenos"** en la ficha del cliente: sus entrenos, del más nuevo al más viejo, con fecha, día de la rutina, series hechas y las marcas "En curso", "Editado" y "Faltado".
+  - **Un entreno, por dentro:** cada ejercicio con sus series como en el Excel ("45×8(1) / 45×7(1)"), una flecha frente a la vez anterior, las notas del día, el set-up, lo cambiado y lo saltado, los récords y la duración.
+  - **En la misma ficha:** su peso corporal y sus medidas (D-127), y si dio el consentimiento.
+  - **Sin comentarios** del coach sobre un entreno: llegan con el chat. Entonces, "Comentar" en un entreno abre el chat con el cliente, y el cliente ve que le escribe "sobre tu entreno del lunes".
+  - Sin emails ni notificaciones al coach (P-07).
+- **Por qué:** con 15 clientes, el coach tiene que ver de un vistazo quién entrena, quién no y qué le pasa a cada uno.
+
+### D-129 · Progreso: historial, RM estimado, récords y gráficas
+- **Fecha:** 2026-11-16
+- **Decisión:**
+  - **Historial de cada ejercicio** en texto, como en la app de apuntes: "DIA 1: 45×8(1) / 45×7(1) / 45×6(0)", con fecha y una marca si hay nota. "(F)" es al fallo. Agrupado por rutina, y con las rutinas anteriores.
+  - **RM estimado:** fórmula de Epley, peso × (1 + repeticiones ÷ 30), sumando el RIR a las repeticiones (80 × 8 con RIR 2 se calcula como 80 × 10). Con RPE, RIR = 10 − RPE. **No se calcula con más de 12 repeticiones** (contando el RIR), porque deja de ser fiable. Se calcula, no se guarda: cambiar la fórmula es barato.
+  - **Récords** de cada ejercicio: peso máximo y RM estimado más alto. En los de peso corporal, con el total (D-127).
+  - **Gráficas** de cada ejercicio: peso máximo, RM estimado, volumen (peso × repeticiones) y repeticiones totales de cada entreno, con último, récord y progreso. Se elige el periodo: 4 semanas, 3 meses o todo.
+  - **El % de progreso compara el RM estimado**, no el peso suelto, del primer al último entreno del periodo. Junto a "¿Seguro?" (D-120), un dato mal escrito ya no da "−83 %".
+  - **Los ejercicios cambiados** (D-122) cuentan para el ejercicio que se hizo.
+  - Lo ve el cliente en "Progreso" (app y web) y el coach en la ficha de cada cliente.
+- **Por qué:** es lo que tiene la app de apuntes del propietario, que lo usa a diario; y en sus pruebas un solo dato mal escrito estropeaba el progreso.
+
+### D-130 · Motivación: minilogros, racha, niveles y logros
+- **Fecha:** 2026-11-16
+- **Decisión:**
+  - **Minilogro** al apuntar una serie que mejora a la misma serie de la vez anterior (el gris de D-120): más peso, o más repeticiones con el mismo peso o más. Ejemplo: antes 80×12, 80×10, 75×12; hoy 80×13 (minilogro), 80×10 (nada), 80×9 (minilogro: más peso).
+  - **Récords** (D-129) celebrados al momento y en el resumen del entreno.
+  - **Racha:** semanas seguidas completas. Una semana es completa si hizo tantos entrenos como días de entreno tenía esa semana su rutina. En modo lista, los días de entreno del ciclo repartidos por semana (un ciclo de 8 días con 5 de entreno pide 4 por semana).
+  - **Niveles** por entrenos terminados (1, 5, 10, 25, 50, 100…), con nombre. **Logros**, unos 18 (primer entreno, primera semana completa, 10, 25, 50 y 100 entrenos, primer récord, 4 y 12 semanas seguidas…). Las listas exactas, en el bloque del PR 3.17.
+  - Se calcula todo a partir de los entrenos; no hace falta guardarlo aparte.
+  - **Activado por defecto.** El dueño del negocio lo apaga en Ajustes → "Entrenamiento" (se guarda en `tenants.settings`, que solo guarda preferencias).
+  - **Sin muñeco ni mascota.**
+- **Por qué:** al propietario le motiva ver que sube; y "lo que se pueda hacer ahora, ahora". Las tarjetas de récords para Instagram van después (D-134).
+
+### D-131 · Descargar en Excel
+- **Fecha:** 2026-11-16
+- **Decisión:** en el último PR de la fase. Un archivo Excel con el formato de la app de apuntes del propietario: una hoja "Día a día" (fecha · rutina · día; cada ejercicio con sus series "45X8(1)" y la nota), una hoja por rutina (cada ejercicio con sus entrenos: día, fecha, series y nota) y una hoja "Peso corporal" (si hay consentimiento). Lo descarga el cliente con sus datos y el coach con los de cada cliente, en la app y en la web. Librería `write-excel-file` (D-135).
+- **Por qué:** el propietario lo usa y lo enseña a quien quiera; y adelanta parte de "descargar los propios datos" (D-060).
+
+### D-132 · Los 100 primeros coaches
+- **Fecha:** 2026-11-16
+- **Decisión:** completa D-016. Hasta tener 100 coaches, lo que pida un coach se valora con prioridad y con un plazo objetivo corto. **Siempre se construye para todos**: una mejora general o una función activable con un flag; nunca código para un coach concreto (AGENTS.md, regla de oro 4). A partir de los 100 coaches, las mejoras se deciden por voto general.
+- **Por qué:** los primeros coaches dicen qué falta de verdad, y atenderlos rápido es la mejor venta. Hacerlo para todos mantiene una sola base de código.
+- **Consecuencias:** no cambia AGENTS.md. El plazo concreto y si depende del plan se decide en la Fase 5, con los precios.
+
+### D-133 · La marca, para todos los planes
+- **Fecha:** 2026-11-16
+- **Decisión:** se confirma D-057: el logo, los colores y el nombre de la marca del coach están en todos los planes, sin excepción. No se cambia al fijar los precios.
+- **Por qué:** que el cliente sienta que entra en la app de su coach es el corazón del producto.
+
+### D-134 · Ideas de negocio y Fase 6
+- **Fecha:** 2026-11-16
+- **Decisión:** las ideas que salieron hablando con Gemini se guardan en `docs/referencia/ideas-de-negocio.md`, marcadas como ideas y no decisiones, con lo decidido de cada una:
+  - **Precios y planes:** en la Fase 5, después de hablar con coaches (D-017 y la pregunta 11 de D-070).
+  - **Directorio público de coaches:** sigue el no (D-053) hasta tener decenas de coaches.
+  - **Modo Alumni** (el exalumno sigue por libre, pagando, y el coach se lleva una parte): aprobado como idea. Necesita pagos y cambia D-055: después de la Fase 5. Hay que comprobar las normas de pago de Apple y Google para ese caso.
+  - **Retos gratuitos y pase para un amigo:** aprobados como idea. Duran unos días, no gastan plazas del plan y sirven para atraer y retener. Después de la Fase 5.
+  - **Tarjetas de récords para Instagram:** después de la Fase 3 (necesitan generar una imagen con la marca del coach y compartirla desde el móvil).
+  - **Chat, nutrición, hábitos, check-ins, fotos y subir vídeos:** a futuro, cada uno en su fase. **Hosting, vídeos, notificaciones y demás servicios:** se eligen en su fase.
+  - Se crea la **Fase 6 — Crecimiento** en ESTADO: Modo Alumni, retos, pase para un amigo, embajadores, tarjetas de récords y el directorio (con su condición).
+- **Por qué:** son buenas ideas para crecer, pero ninguna hace falta para validar el producto con los primeros coaches.
+
+### D-135 · Librerías de la Fase 3
+- **Fecha:** 2026-11-16
+- **Decisión:** el propietario aprueba estas librerías (AGENTS.md, regla 10):
+
+  | Librería | Para qué |
+  |---|---|
+  | `@capacitor/android` | La app de Android (D-117) |
+  | `@capacitor/local-notifications` | Alarma del descanso y recordatorio de las 6 horas, programados por el móvil |
+  | `@capacitor/haptics` | Vibración |
+  | `@capacitor/preferences` | Guardar el entreno en el almacén del teléfono (D-118) |
+  | `@capacitor/app` | Saber cuándo se vuelve a la app, para el cronómetro y la subida |
+  | `write-excel-file` | El Excel (D-131) |
+
+  - **Autorización amplia para esta fase:** el propietario autoriza además las librerías que hagan falta para construir la Fase 3. El agente que añada una la anota aquí con su porqué, antes de instalarla, y lo dice en la descripción del PR. Las versiones, en "Versiones instaladas".
+  - **Las gráficas se dibujan sin librería** (SVG propio).
+- **Por qué:** las de Capacitor son las oficiales del marco que ya usamos; `write-excel-file` es pequeña y solo escribe.
+- **Revisar si:** las gráficas se quedan cortas: entonces se propone una librería.
+
+### D-136 · Qué queda fuera de la Fase 3
+- **Fecha:** 2026-11-16
+- **Decisión:** nada de esto se construye en la Fase 3:
+  - **Fase 4:** la app de iOS, publicar en las tiendas, los textos legales definitivos (con el consentimiento y la edad de los menores de D-126), borrar la cuenta y los datos.
+  - **Con el chat:** comentar un entreno (D-128).
+  - **Fase 6:** tarjetas de récords para Instagram, Modo Alumni, retos, pase para un amigo, embajadores y directorio (D-134).
+  - **Más adelante, cada uno en su fase:** fotos y check-ins, notificaciones al coach (P-07), app de escritorio para el coach, porcentaje del RM y tempo (D-076), nutrición, hábitos, pagos e importar el historial de otras apps.
+- **Por qué:** la fase ya es la más grande; cada cosa de esta lista se puede añadir después sin rehacer lo de la Fase 3.
+
 ---
 
 ## Pendientes de decidir
@@ -1052,13 +1288,13 @@ Cómo añadir una: copia el formato, usa el siguiente número y no borres las an
 | P-03 | Hosting de la web: Vercel o Cloudflare Pages. Comprobar en ambos el coste con dos personas subiendo código y las condiciones de uso comercial | Antes de enseñar la app a coaches |
 | P-04 | **Cerrado el 2026-11-15** por D-071: un catálogo de 120 ejercicios de la plataforma y una copia para cada negocio, que el coach edita como suya | — |
 | P-05 | Pagos: proveedor para la suscripción del coach, cobros del coach a sus clientes y dónde se contrata (web o app, según las normas de las tiendas) | Fase 5 |
-| P-06 | Modo sin conexión para registrar entrenos | Tras los primeros pilotos |
+| P-06 | **Cerrado el 2026-11-16** por D-118: los entrenos se registran sin conexión en la app del móvil desde la Fase 3. El resto de la app sigue D-061 | — |
 | P-07 | Notificaciones push | Fase 4 |
 | P-08 | Servicio para compilar iOS en la nube | Fase 4 |
 | P-09 | **Cerrado el 2026-11-14.** Cómo se entra: D-035, D-038 (se verifica el email), D-039 (código por email) y D-053 (sin lista pública de coaches) | — |
 | P-10 | Servicio de avisos de errores y de caídas | Fase 4 |
 | P-11 | **Cerrado el 2026-11-14** por D-063: plan gratuito de Supabase. Se revisa antes del primer usuario real | — |
-| P-12 | Consentimiento para datos de salud (peso y medidas corporales), y desde qué edad y en qué países se admiten menores, con permiso de sus padres o sin él. El propietario quiere admitirlos (D-060) | Fase 3 |
+| P-12 | **Cerrado en parte el 2026-11-16** por D-126: consentimiento único por espacio para peso, medidas y notas. **Sigue abierto:** el texto definitivo y la edad de los menores por país, con un abogado | Fase 4, con los textos legales |
 
 ---
 

@@ -39,10 +39,12 @@
       "renamed": "Renamed to “{{name}}”.",
       "archived": "“{{name}}” archived. You can find it in Archived.",
       "unarchived": "“{{name}}” is active again.",
-      "duplicated": "“{{name}}” created."
+      "duplicated": "“{{name}}” created.",
+      "assigned": "“{{name}}” assigned."
     },
     "duplicate": "Duplicate",
-    "copyName": "Copy of {{name}}"
+    "copyName": "Copy of {{name}}",
+    "assign": "Assign"
   },
   "form": {
     "newTitle": "New template",
@@ -158,5 +160,38 @@
     "replaceConfirm_one": "{{day}} already has {{count}} exercise. It will be replaced.",
     "replaceConfirm_other": "{{day}} already has {{count}} exercises. They will be replaced.",
     "replaceYes": "Yes, replace"
+  },
+  "assign": {
+    "title": "Assign “{{name}}”",
+    "close": "Close",
+    "clients": "Clients",
+    "searchClients": "Search clients by name",
+    "noMatches": "No client matches.",
+    "noClients": "You don't have any clients yet. Share your code from Clients.",
+    "noProgram": "No program",
+    "hasProgram": "Has “{{name}}”",
+    "startsOn": "Start date",
+    "mode": "How your client sees it",
+    "modes": {
+      "calendar": "With calendar",
+      "list": "List"
+    },
+    "modeHints": {
+      "calendar": "The app shows what is on each day, counting from the start date.",
+      "list": "Training days in order, without dates. Your client goes when they can."
+    },
+    "startsLater": "Starts on {{date}}.",
+    "endsOn": "Ends on {{date}}.",
+    "repeats": "Repeats until you change it.",
+    "replacesCurrent": "{{client}} already has “{{program}}”. It will move to Previous.",
+    "replacesNext": "{{client}} already has “{{program}}” coming up. It will be replaced.",
+    "confirm_one": "Assign to {{count}} client",
+    "confirm_other": "Assign to {{count}} clients",
+    "pickClient": "Choose at least one client.",
+    "invalidDate": "Choose a date within one year from today.",
+    "errors": {
+      "clientNotFound": "One of the clients is no longer active. Close this and try again.",
+      "templateArchived": "This template is archived. Restore it to assign it."
+    }
   }
 }

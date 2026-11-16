@@ -7,12 +7,12 @@ Este archivo lo actualiza quien termina una tarea, en el mismo Pull Request, jun
 
 ## En curso
 
-Nada. **El lote 3 está completo y probado por el propietario** (2026-11-16): los PR 2.9a (#36), 2.9b (#37), 2.10a (#38), 2.10b (#39), 2.11 (#40), 2.11b (#41) y 2.11c (#42) están abiertos, apilados en ese orden, a la espera de su visto bueno para fusionar. Encima va el PR 2.12 (base de datos: asignar), que abre el lote 4. Los lotes 1 (#24 a #28) y 2 (#30 a #35) están fusionados en `main` desde el 2026-11-15.
+Nada. **El lote 3 está fusionado en `main`** (PR #36 a #42, 2026-11-16), con el visto bueno del propietario tras probarlo. **El lote 4 está empezado:** el PR 2.12 (#43, base de datos: asignar) y, apilado encima, el PR 2.13a (asignar una plantilla) están abiertos. Los lotes 1 y 2 se fusionaron el 2026-11-15.
 
 ## Siguiente
 
-1. **El propietario da el visto bueno para fusionar el lote 3** (PR #36 a #42, en orden, D-064 y D-068). Ya lo probó; de su prueba salieron los PR 2.11b y 2.11c. Que revise los cambios en `src/core/` de los PR 2.8b (D-099) y 2.10b (D-103).
-2. PR 2.13 — Asignar a clientes y pestaña "Asignadas" (`docs/PROMPTS.md` §6).
+1. PR 2.13b — La pestaña "Asignadas" (`docs/PROMPTS.md` §6, PR 2.13, puntos 4 y 5; criterios 1, 2, 6 y 7). Usa `model/calendar.ts` y `model/assignments.ts` del PR 2.13a.
+2. PR 2.14 y PR 2.15, que cierran el lote 4. Después, el propietario lo prueba entero.
 3. El propietario aplica en staging las migraciones 8 a 16 (GUIA-GIT §9). No bloquea seguir.
 4. El propietario dio por buenas, por ahora, la lista de `docs/referencia/biblioteca-ejercicios.md` y las rutinas de ejemplo. Se pueden retocar más adelante.
 
@@ -106,6 +106,8 @@ El diseño está en DECISIONES D-069 a D-088, y el detalle de cada PR, en `docs/
   - [x] 2.12a — asignar, crear vacía y las reglas de vigente y próxima, con el seed
   - [x] 2.12b — terminar, cancelar, reiniciar y guardar como plantilla
 - [ ] PR 2.13 — Asignar a clientes y pestaña "Asignadas"
+  - [x] 2.13a — el cálculo del calendario y la ventana de asignar
+  - [ ] 2.13b — la pestaña "Asignadas"
 - [ ] PR 2.14 — Ficha del cliente: pestaña "Rutina"
 - [ ] PR 2.15 — El cliente ve su rutina
 
@@ -202,6 +204,7 @@ Cosas que alguien ha visto y que no tocaban en su tarea. No se hacen sin convert
 
 Lo más nuevo, arriba.
 
+- 2026-11-16 — PR 2.13a (asignar una plantilla): el cálculo del calendario como lógica pura (`model/calendar.ts`: bloque, vuelta y día en que va una rutina, cuándo termina cada bloque, la semana a medias de un bloque semanal y el último bloque que se repite) y las rutinas abiertas de cada cliente (`model/assignments.ts`). "Asignar" en cada plantilla abre una ventana (a pantalla completa en el móvil): clientes activos con buscador, fecha de inicio, modo "Con calendario" o "Lista", y un resumen con cuándo empieza y termina y a quién se le sustituye la rutina (D-107). Sin la pestaña "Asignadas", que llega en el 2.13b.
 - 2026-11-16 — PR 2.12 (base de datos: asignar): migraciones 15 y 16. `assign_program` copia una plantilla a uno o varios clientes y `create_client_program` crea una rutina vacía; `end_program`, `cancel_next_program`, `restart_program` y `save_program_as_template` gestionan la rutina después. Las reglas de vigente y próxima van en la base de datos, "hoy" lo dice el dispositivo del coach y todo deja constancia en `audit_log` (D-105). El seed asigna rutinas a Ana, Bruno, Diego, Elena y Fran. 59 tests pgTAP nuevos (399 en total). Regenera `src/core/supabase/database.types.ts`.
 - 2026-11-16 — PR 2.11c (menú y días a la vista): en escritorio, el menú lateral del coach y la lista de días del editor acompañan al bajar por la página. Pedido por el propietario al probar el PR 2.11b.
 - 2026-11-16 — PR 2.11b (un ejercicio cada vez): al probar el lote 3, el propietario vio que bajar por todos los ejercicios de un día cansa. Ahora hay una fila con los números de los ejercicios y debajo solo el elegido; en el móvil se pasa al de al lado deslizando. Al añadir, duplicar, pegar o mover, se ve el ejercicio afectado (D-106).

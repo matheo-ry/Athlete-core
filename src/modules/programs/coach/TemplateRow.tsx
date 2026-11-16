@@ -11,9 +11,10 @@ import { useTemplateAction } from '../api/useTemplates';
 import { templateNameSchema } from '../model/program-document';
 import { describeCycle } from '../model/template-list';
 import type { TemplateSummary } from '../model/template-list';
+import { AssignDialog } from './AssignDialog';
 import { TEMPLATE_ACTION_ERRORS } from './template-action-errors';
 
-export type TemplateNotice = 'renamed' | 'archived' | 'unarchived' | 'duplicated';
+export type TemplateNotice = 'renamed' | 'archived' | 'unarchived' | 'duplicated' | 'assigned';
 
 interface TemplateRowProps {
   template: TemplateSummary;
@@ -22,13 +23,15 @@ interface TemplateRowProps {
 
 /**
  * Una plantilla: su nombre, cómo es el ciclo, cuántos días de entreno tiene y
- * cuándo se editó; con "Renombrar" y "Archivar" o "Recuperar".
+ * cuándo se editó; con "Asignar" (PR 2.13), "Renombrar" y "Archivar" o
+ * "Recuperar".
  */
 export function TemplateRow({ template, onDone }: TemplateRowProps) {
   const { t } = useTranslation();
   const language = useLanguage();
   const action = useTemplateAction();
   const [isRenaming, setIsRenaming] = useState(false);
+  const [isAssigning, setIsAssigning] = useState(false);
   const [name, setName] = useState(template.name);
   const [nameError, setNameError] = useState<string | null>(null);
   const [failure, setFailure] = useState<string | null>(null);
@@ -120,6 +123,14 @@ export function TemplateRow({ template, onDone }: TemplateRowProps) {
           <div className="flex flex-wrap gap-2">
             {isArchived ? null : (
               <Button
+                aria-label={`${t('programs.list.assign')}: ${template.name}`}
+                onClick={() => setIsAssigning(true)}
+              >
+                {t('programs.list.assign')}
+              </Button>
+            )}
+            {isArchived ? null : (
+              <Button
                 variant="secondary"
                 aria-label={`${t('programs.list.rename')}: ${template.name}`}
                 onClick={() => setIsRenaming(true)}
@@ -158,6 +169,16 @@ export function TemplateRow({ template, onDone }: TemplateRowProps) {
           </div>
         </div>
       )}
+      {isAssigning ? (
+        <AssignDialog
+          template={template}
+          onClose={() => setIsAssigning(false)}
+          onAssigned={() => {
+            setIsAssigning(false);
+            onDone('assigned', template.name);
+          }}
+        />
+      ) : null}
       {failure !== null ? (
         <p role="alert" className="text-danger text-sm font-medium">
           {failure}

@@ -1305,6 +1305,16 @@ Cómo añadir una: copia el formato, usa el siguiente número y no borres las an
 - **Por qué:** lo más importante de la fase es no perder nada (D-118). Con "gana lo más reciente" y sin borrar, el orden en que lleguen las subidas da igual.
 - **Revisar si:** los relojes de los móviles dan problemas al comparar horas.
 
+### D-139 · Cómo se guardan la regla del día saltado y los días faltados
+- **Fecha:** 2026-11-17
+- **Decisión:** detalles del PR 3.2b que D-125 no fijaba.
+  - **La regla se guarda con su historia:** `program_missed_day_rules` tiene una fila por cada cambio, con el día desde el que vale (el "hoy" del coach, D-105). Sin filas, la regla es "se pierde". Si la cambia dos veces el mismo día, vale la última.
+  - **Los días faltados** (`program_missed_days`) guardan la rutina, el día de la rutina (con su bloque y su número, por si el coach lo quita después) y la fecha. Una fecha solo se apunta una vez, y queda aunque luego se haga ese día.
+  - **Los apunta la app del cliente** con `record_missed_days`: solo días de entreno de su rutina, desde que empezó y antes de su "hoy". La base de datos no comprueba que esa fecha tocara ese día: lo calcula la app con el calendario (`programs/model/calendar.ts`).
+  - **Solo con calendario.** En modo lista no hay fechas que faltar, así que ni la regla ni los días faltados valen (`invalid_mode`). Una rutina terminada no cambia de regla.
+  - **En `audit_log`** queda `program.missed_day_rule_changed`, solo con identificadores y la regla.
+- **Por qué:** con una sola columna, cambiar de "se mueve todo" a "se pierde" borraría el retraso acumulado, y D-125 dice que el cambio no recalcula el pasado.
+
 ---
 
 ## Pendientes de decidir

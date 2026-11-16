@@ -7,14 +7,13 @@ Este archivo lo actualiza quien termina una tarea, en el mismo Pull Request, jun
 
 ## En curso
 
-**PR 3.2a — Base de datos: entrenos** (`db/entrenos`), en revisión. El PR 3.2 pasaba de 300 líneas y se ha partido como preveía su bloque: el 3.2b (regla del día saltado y días faltados) va encima.
+**PR 3.2a — Base de datos: entrenos** (`db/entrenos`, #59) y **PR 3.2b — El día saltado** (`db/dia-saltado`, encima del 3.2a), en revisión. El PR 3.2 pasaba de 300 líneas y se ha partido como preveía su bloque.
 
 ## Siguiente
 
-1. **PR 3.2b — El día saltado y los días faltados, en la base de datos** (`docs/PROMPTS.md` §7, puntos 4 y 5 del PR 3.2).
-2. Fusionar el 3.2a y el 3.2b (con el visto bueno del propietario, D-068).
-3. **PR 3.3 — Base de datos: datos de salud, set-up y ajustes del cliente.**
-4. El propietario dio por buenas, por ahora, la lista de `docs/referencia/biblioteca-ejercicios.md` y las rutinas de ejemplo. Se pueden retocar más adelante.
+1. Fusionar el 3.2a y después el 3.2b (con el visto bueno del propietario, D-068), y aplicar en staging las migraciones 17 a 19.
+2. **PR 3.3 — Base de datos: datos de salud, set-up y ajustes del cliente.**
+3. El propietario dio por buenas, por ahora, la lista de `docs/referencia/biblioteca-ejercicios.md` y las rutinas de ejemplo. Se pueden retocar más adelante.
 
 ## Fases
 
@@ -131,7 +130,7 @@ El diseño está en DECISIONES D-115 a D-136, y el detalle de cada PR, en `docs/
 - [x] PR 3.1b — Tests de flujos completos en el CI
 - [ ] PR 3.2 — Base de datos: entrenos (partido en dos, como preveía `docs/PROMPTS.md` §7)
   - [ ] 3.2a — las tres tablas, subir, descartar y el flag (en revisión)
-  - [ ] 3.2b — la regla del día saltado y los días faltados
+  - [ ] 3.2b — la regla del día saltado y los días faltados (en revisión)
 - [ ] PR 3.3 — Base de datos: datos de salud, set-up y ajustes del cliente
 - [ ] PR 3.4 — Guardado en el móvil
 
@@ -261,6 +260,7 @@ Cosas que alguien ha visto y que no tocaban en su tarea. No se hacen sin convert
 
 Lo más nuevo, arriba.
 
+- 2026-11-17 — PR 3.2b (base de datos: el día saltado): migración 19. `program_missed_day_rules` guarda la regla de cada rutina de cliente ("se pierde", "se recupera en el siguiente descanso" o "se mueve todo") con el día desde el que vale; `set_missed_day_rule` la cambia el coach y queda en `audit_log`. `program_missed_days` guarda los días que faltó, del lado de las rutinas; los apunta la app del cliente con `record_missed_days` y la fecha del móvil. Solo con calendario. Decisión D-139. 28 tests pgTAP nuevos (463 en total). Regenera `src/core/supabase/database.types.ts`.
 - 2026-11-17 — PR 3.2a (base de datos: entrenos): migraciones 17 y 18. Tablas `workouts`, `workout_exercises` (con su copia de lo prescrito, D-087) y `workout_sets` (una fila por serie y lado), con identificadores del móvil y RLS de solo lectura: el cliente lee los suyos, el coach los de su negocio, el dado de baja nada. `sync_workout` sube un entreno entero: no duplica, gana el cambio más reciente en cada fila, un cerrado sigue cerrado, marca "Editado" y no deja corregir pasados 7 días. `discard_workout` borra un entreno abierto. Flag `workouts` (core). La forma de medir de un ejercicio con series apuntadas tampoco cambia. Decisión D-138. 36 tests pgTAP nuevos (435 en total). Regenera `src/core/supabase/database.types.ts`.
 - 2026-11-16 — PR 3.1b (tests de flujos completos en el CI): nuevo trabajo "Tests de flujos completos" en `ci.yml`. Arranca Supabase local (sin el panel, Realtime ni funciones), escribe `.env.local` con sus valores públicos y `VITE_ALLOW_WEB_WORKOUTS=true`, instala Chromium y ejecuta `npm run test:e2e`; si falla, guarda el informe 7 días. Cumple ARQUITECTURA §13, punto 3.
 - 2026-11-16 — PR 3.1a (app de Android): proyecto `android/` con Capacitor 8.6, identificador provisional `app.athletecore.mobile`, icono propio y arranque oscuro. `npm run android:build` genera `build/athlete-core-staging.apk` contra staging; guía para el propietario en `android/README.md`. `core/native`: `isNativeApp()`, `canLogWorkouts()` y `startNativeShell()` (botón "atrás" y barra de estado que sigue la marca). `core/config`: `VITE_ALLOW_WEB_WORKOUTS`, ignorada en cualquier build. Zonas seguras (`--safe-top`, `--safe-bottom`) en las carcasas y el diálogo de asignar. Librerías `@capacitor/android` y `@capacitor/app` (D-135). Decisión D-137. 612 tests unitarios y los 91 de flujos completos en verde.

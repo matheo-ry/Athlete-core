@@ -21,10 +21,10 @@
 
 ## Dónde estamos
 
-- **Fase actual:** 2 — Ejercicios y rutinas: lotes 1, 2 y 3 fusionados en `main`; el lote 4 (asignar y verla como cliente) está completo, a la espera de que el propietario lo pruebe. La Fase 1 está terminada y fusionada en `main` (2026-11-14).
-- **Última tarea terminada:** PR 2.15 — El cliente ve su rutina (2026-11-16), rama `feat/rutina-del-cliente`. Cierra el lote 4: PR #43 a #47 y este, apilados en orden.
+- **Fase actual:** 2 — Ejercicios y rutinas: lotes 1, 2, 3 y 4 fusionados en `main`; lote 5 (bloques y remates) pendiente. La Fase 1 está terminada y fusionada en `main` (2026-11-14).
+- **Última tarea terminada:** Lote 4 de la Fase 2 fusionado en `main` (#43 a #48) con el visto bueno del propietario tras probarlo en la app.
 - **En curso:** nada.
-- **Siguiente tarea:** que el propietario pruebe el lote 4 y dé el visto bueno para fusionarlo (D-068); después, aplicar en staging las migraciones 8 a 16, y el lote 5: PR 2.16 (`docs/PROMPTS.md` §6).
+- **Siguiente tarea:** lote 5: PR 2.16 — Varios bloques (`docs/PROMPTS.md` §6). Aparte, aplicar en staging las migraciones 8 a 16.
 
 ## Cómo será la Fase 2 (diseñada, D-069 a D-088)
 
@@ -64,18 +64,18 @@
 
 ## Qué falta (lo próximo)
 
-- De la Fase 2: asignar las rutinas a clientes y que el cliente las vea (PR 2.12 a 2.15) y los bloques y remates (PR 2.16 a 2.18). Publicar la web (P-03) sigue pendiente.
+- De la Fase 2: el lote 5: los bloques y remates (PR 2.16 a 2.18). Publicar la web (P-03) sigue pendiente.
 - Las guardas por sesión y por rol son comodidad, no seguridad: los datos los protege el RLS.
 
 ## Últimos cambios
 
 Los 5 más recientes, el más nuevo arriba. El historial completo está en `docs/ESTADO.md`.
 
+- 2026-11-16 — Lote 4 de la Fase 2 fusionado en `main` (#43 a #48) con el visto bueno del propietario tras probarlo en la app: asignar rutinas a clientes, ficha y vista del cliente en "Entreno".
 - 2026-11-16 — PR 2.15: "Entreno" para el cliente: hoy toca, los días, cada día y cada ejercicio, en lectura (D-111). Cierra el lote 4.
 - 2026-11-16 — PR 2.14b: las acciones de la rutina de un cliente desde su ficha: asignar, crear desde cero, reiniciar, terminar, cancelar y guardar como plantilla (D-110).
 - 2026-11-16 — PR 2.14a: la pestaña "Rutina" en la ficha del cliente, en lectura, y el mecanismo de pestañas de los módulos (D-109).
 - 2026-11-16 — PR 2.13b: la pestaña "Asignadas" en "Rutinas", con la rutina de cada cliente, por dónde va y cuándo termina (D-108).
-- 2026-11-16 — PR 2.13a: "Asignar" en cada plantilla, con clientes, fecha, modo y un resumen de cuándo termina y qué se sustituye; y el cálculo del calendario (D-107).
 
 ## A tener en cuenta ahora
 

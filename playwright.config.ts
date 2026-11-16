@@ -4,8 +4,8 @@ const PORT = 5173;
 const BASE_URL = `http://localhost:${PORT}`;
 const isCI = Boolean(process.env.CI);
 
-// Tests de flujos completos (e2e/). En la Fase 0 solo hay un test de humo y se
-// ejecuta en local; entran en el CI en la Fase 3 (ARQUITECTURA §13).
+// Tests de flujos completos (e2e/), contra Supabase local. Se ejecutan en local
+// y en el CI desde el PR 3.1b (ARQUITECTURA §13, trabajo "e2e" de ci.yml).
 export default defineConfig({
   testDir: './e2e',
   fullyParallel: true,

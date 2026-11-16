@@ -4,7 +4,8 @@ name: CI
 #   * check:    formato, lint, tipos, tests y build (desde la Fase 0).
 #   * database: base de datos local, migraciones, tests de RLS, comprobación
 #               de tablas sin RLS y tipos al día (desde la Fase 1).
-# Desde la Fase 3 se añadirán los tests de flujos completos.
+#   * e2e:      tests de flujos completos (Playwright) contra Supabase local
+#               (desde la Fase 3, PR 3.1b).
 
 on:
   pull_request:
@@ -65,3 +66,52 @@ jobs:
 
       - name: Tipos de la base de datos al día
         run: npm run db:types -- --check
+
+  e2e:
+    name: Tests de flujos completos
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - name: Instalar dependencias
+        run: npm ci
+
+      - name: Instalar el navegador de los tests
+        run: npx playwright install --with-deps chromium
+
+      # Supabase local entero, menos lo que los tests no usan (el panel, los
+      # registros, Realtime y las funciones). Aplica migraciones y seed.
+      - name: Arrancar Supabase local
+        run: npx supabase start -x studio,postgres-meta,logflare,vector,realtime,imgproxy,edge-runtime,supavisor
+
+      # La app y los tests leen .env.local (e2e/supabase-helpers.ts), como en
+      # local. Son la dirección y la clave PÚBLICA de este Supabase de usar y
+      # tirar, no secretos. Con los entrenos en el navegador activados (D-116).
+      - name: Variables de la app
+        run: |
+          status="$(npx supabase status -o json)"
+          {
+            echo "VITE_APP_ENV=local"
+            echo "VITE_SUPABASE_URL=$(echo "$status" | jq -r .API_URL)"
+            echo "VITE_SUPABASE_PUBLISHABLE_KEY=$(echo "$status" | jq -r .PUBLISHABLE_KEY)"
+            echo "VITE_ALLOW_WEB_WORKOUTS=true"
+          } > .env.local
+
+      - name: Tests de flujos completos
+        run: npm run test:e2e
+
+      # Si algo falla, el informe con las trazas se descarga desde la página
+      # de esta ejecución ("Artifacts"). Solo datos inventados.
+      - name: Guardar el informe si falla
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 7

@@ -7,13 +7,14 @@ Este archivo lo actualiza quien termina una tarea, en el mismo Pull Request, jun
 
 ## En curso
 
-**PR 3.1a — App de Android** (`feat/app-android`), en revisión. El PR 3.1 pasaba de 300 líneas y se ha partido: el 3.1a trae la app de Android, `core/native` y la guía; el 3.1b, los tests de flujos completos en el CI.
+**PR 3.1a — App de Android** (`feat/app-android`, #56) y **PR 3.1b — Tests de flujos completos en el CI** (`ci/tests-e2e`, sobre el 3.1a), en revisión. El PR 3.1 pasaba de 300 líneas y se ha partido.
 
 ## Siguiente
 
 1. **El propietario prueba el PR 3.1a en su móvil** con la guía de `android/README.md` (instalar Android Studio una vez y `npm run android:build`).
-2. **PR 3.1b — Tests de flujos completos en el CI** (punto 4 del PR 3.1 en `docs/PROMPTS.md` §7; criterio 5).
-3. El propietario dio por buenas, por ahora, la lista de `docs/referencia/biblioteca-ejercicios.md` y las rutinas de ejemplo. Se pueden retocar más adelante.
+2. Fusionar el 3.1a y después el 3.1b (con el visto bueno del propietario, D-068).
+3. **PR 3.2 — Base de datos: entrenos** (`docs/PROMPTS.md` §7).
+4. El propietario dio por buenas, por ahora, la lista de `docs/referencia/biblioteca-ejercicios.md` y las rutinas de ejemplo. Se pueden retocar más adelante.
 
 ## Fases
 
@@ -127,7 +128,7 @@ El diseño está en DECISIONES D-115 a D-136, y el detalle de cada PR, en `docs/
 **Lote 1 — Cimientos**
 
 - [ ] PR 3.1a — App de Android, `core/native` y la guía (en revisión)
-- [ ] PR 3.1b — Tests de flujos completos en el CI
+- [ ] PR 3.1b — Tests de flujos completos en el CI (en revisión)
 - [ ] PR 3.2 — Base de datos: entrenos
 - [ ] PR 3.3 — Base de datos: datos de salud, set-up y ajustes del cliente
 - [ ] PR 3.4 — Guardado en el móvil
@@ -247,12 +248,14 @@ Cosas que alguien ha visto y que no tocaban en su tarea. No se hacen sin convert
 - Buscar un ejercicio del catálogo también por su nombre en el otro idioma, si los coaches lo piden (hoy solo cuenta el que se ve, D-091).
 - App de Android (PR 3.1a): en móviles con Android 7.0 y 7.1 sale todavía el icono de Capacitor (los PNG de `android/app/src/main/res/mipmap-*`); desde Android 8 sale el propio. Se cambia con el icono definitivo (Fase 4).
 - Los tests de flujos completos dejan en la consola de Vite el aviso de React "Encountered two children with the same key" (visto en el PR 3.1a; ya pasaba antes, no lo causa ese PR). Buscar qué lista repite claves.
+- En la primera ejecución del CI con los tests de flujos completos (PR 3.1b), dos pasaron solo al segundo intento: `archive.spec.ts` (dar de baja y reactivar) y `program-blocks.spec.ts` (añadir y ordenar bloques). En local pasan siempre. Si vuelven a fallar, mirar sus esperas.
 - En la app instalada, los enlaces de invitación usarían `https://localhost` si no se pone `VITE_PUBLIC_APP_URL` al generarla. Ponerla cuando haya web publicada (P-03).
 
 ## Registro de cambios
 
 Lo más nuevo, arriba.
 
+- 2026-11-16 — PR 3.1b (tests de flujos completos en el CI): nuevo trabajo "Tests de flujos completos" en `ci.yml`. Arranca Supabase local (sin el panel, Realtime ni funciones), escribe `.env.local` con sus valores públicos y `VITE_ALLOW_WEB_WORKOUTS=true`, instala Chromium y ejecuta `npm run test:e2e`; si falla, guarda el informe 7 días. Cumple ARQUITECTURA §13, punto 3.
 - 2026-11-16 — PR 3.1a (app de Android): proyecto `android/` con Capacitor 8.6, identificador provisional `app.athletecore.mobile`, icono propio y arranque oscuro. `npm run android:build` genera `build/athlete-core-staging.apk` contra staging; guía para el propietario en `android/README.md`. `core/native`: `isNativeApp()`, `canLogWorkouts()` y `startNativeShell()` (botón "atrás" y barra de estado que sigue la marca). `core/config`: `VITE_ALLOW_WEB_WORKOUTS`, ignorada en cualquier build. Zonas seguras (`--safe-top`, `--safe-bottom`) en las carcasas y el diálogo de asignar. Librerías `@capacitor/android` y `@capacitor/app` (D-135). Decisión D-137. 612 tests unitarios y los 91 de flujos completos en verde.
 - 2026-11-16 — Diseño de la Fase 3: decisiones D-115 a D-136. Entrenar solo en la app del móvil (la web sirve para todo lo demás); la app de Android se adelanta al PR 3.1; guardado en el móvil sin conexión (cierra P-06); apuntar sin botón de "hecha", con − y +, teclado, gris de la vez anterior y "Igual"; cronómetro con alarma con la pantalla apagada; tres reglas del día saltado; consentimiento de datos de salud, peso y medidas (P-12 cerrado en parte); lo que ve el coach; progreso, gráficas, logros y Excel; los 100 primeros coaches; ideas de negocio en `docs/referencia/ideas-de-negocio.md` y la Fase 6. El plan de 18 PR en 5 lotes, en `docs/PROMPTS.md` §7. AGENTS.md §1, ARQUITECTURA §1, §12 y §14 y README cambiados con la aprobación del propietario. Solo documentación.
 - 2026-11-16 — Lote 4 de la Fase 2 fusionado en `main` (#43 a #48) con el visto bueno del propietario, probado en la app. Abarca: base de datos para asignar (PR 2.12), asignar una plantilla a clientes (PR 2.13a), pestaña "Asignadas" (PR 2.13b), pestaña "Rutina" en la ficha del cliente (PR 2.14a), acciones de la rutina (PR 2.14b) y la vista de la rutina para el cliente en "Entreno" (PR 2.15).

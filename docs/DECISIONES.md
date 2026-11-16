@@ -1374,7 +1374,7 @@ Anotadas al terminar la Fase 0 (2026-11-13). Son las estables más recientes de 
 
 **Otros valores fijados en la Fase 0**
 
-- CI: `actions/checkout@v7` y `actions/setup-node@v7`.
+- CI: `actions/checkout@v7` y `actions/setup-node@v7`. Desde el PR 3.1b, `actions/upload-artifact@v7` (el informe de los tests de flujos completos si fallan) y el Chromium que trae `@playwright/test`.
 - Identificador de la app móvil en `capacitor.config.ts`: `app.athletecore.mobile`. Es **provisional**: hay que fijar el definitivo antes de publicar en las tiendas (Fase 4), porque después no se puede cambiar.
 
 **La app de Android** (PR 3.1, 2026-11-16). Las genera `npx cap add android`; se actualizan con Capacitor, nunca a mano.

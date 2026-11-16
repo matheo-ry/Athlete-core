@@ -11,5 +11,6 @@ Tests de flujos completos con Playwright: abren la app en un navegador de verdad
 - **Cuentas de prueba:** los tests que cambian una cuenta (por ejemplo, su contraseña) crean la suya con `supabase-helpers.ts` (`createConfirmedUser`) y leen los códigos de la bandeja local (`latestCode`). Así no tocan los usuarios del seed. Las cuentas `e2e-…@example.com` desaparecen con `npm run db:reset`. Quien se une a Norte Strength en un test queda dado de baja al terminar (`archiveFromNorte`), para que su plan no se llene si los tests se repiten.
 - **"Demasiados intentos":** en local todas las peticiones llegan desde la misma dirección IP. Si repites los tests muchas veces seguidas, espera 10 minutos o ejecuta `npm run db:reset` (D-065). Por eso los códigos equivocados se prueban con sesión, que cuenta por usuario.
 - **Qué no va aquí:** tests de lógica o de un componente suelto. Esos van con Vitest, junto al archivo que prueban.
-- No forman parte de `npm run check` ni del CI hasta la Fase 3.
+- **En el CI** (desde el PR 3.1b): el trabajo "Tests de flujos completos" de `.github/workflows/ci.yml` arranca Supabase local, escribe `.env.local` con sus valores y `VITE_ALLOW_WEB_WORKOUTS=true`, y ejecuta `npm run test:e2e`. Si falla, el informe se descarga desde la ejecución ("Artifacts"). No forman parte de `npm run check`.
+- **Entrenos en el navegador:** los tests de entreno necesitan `VITE_ALLOW_WEB_WORKOUTS=true` en `.env.local` (D-116).
 - Solo datos inventados.

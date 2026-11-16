@@ -17,7 +17,7 @@ export function CoachLayout() {
 
   return (
     <div className="flex flex-1 flex-col md:flex-row">
-      <aside className="border-border bg-surface hidden w-60 shrink-0 flex-col gap-6 border-r p-4 md:flex">
+      <aside className="border-border bg-surface hidden w-60 shrink-0 flex-col gap-6 border-r p-4 md:sticky md:top-0 md:flex md:h-dvh md:self-start md:overflow-y-auto">
         <BrandMark />
         <nav aria-label={t('app.nav.label')} className="flex flex-1 flex-col gap-1">
           {items.map((item) => (

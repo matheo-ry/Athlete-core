@@ -1,19 +1,25 @@
+import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Outlet } from 'react-router';
 
 import { LanguageSwitcher } from '@/core/i18n';
+import { ClientProfileTabsProvider, collectClientProfileTabs } from '@/core/modules';
 
 import { BrandMark } from '../BrandMark';
 import { ShellNavLink } from '../ShellNavLink';
+import { useActiveModules } from '../useActiveModules';
 import { useShellNav } from '../useShellNav';
 
 /**
  * Carcasa del perfil COACH: menú lateral en escritorio y barra inferior en móvil
- * (ARQUITECTURA §7). El menú sale de los manifests de los módulos activos.
+ * (ARQUITECTURA §7). El menú y las pestañas de la ficha de un cliente salen de
+ * los manifests de los módulos activos.
  */
 export function CoachLayout() {
   const { t } = useTranslation();
   const items = useShellNav('coach');
+  const modules = useActiveModules();
+  const tabs = useMemo(() => collectClientProfileTabs(modules), [modules]);
 
   return (
     <div className="flex flex-1 flex-col md:flex-row">
@@ -34,7 +40,9 @@ export function CoachLayout() {
         </header>
         {/* pb-20 en móvil: deja sitio a la barra inferior fija. */}
         <main className="flex-1 p-4 pb-20 md:p-8">
-          <Outlet />
+          <ClientProfileTabsProvider tabs={tabs}>
+            <Outlet />
+          </ClientProfileTabsProvider>
         </main>
       </div>
 

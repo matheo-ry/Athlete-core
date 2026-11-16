@@ -3,16 +3,18 @@ import { Link, useParams } from 'react-router';
 
 import { brandInitials } from '@/core/branding';
 import { useLanguage } from '@/core/i18n';
+import { useClientProfileTabs } from '@/core/modules';
 import { formatDate } from '@/core/lib';
 import { useTenancy, useTenantMembers } from '@/core/tenancy';
 import { Card, EmptyState, ErrorState, Spinner, buttonClassName } from '@/core/ui';
 
+import { ClientProfileTabs } from './ClientProfileTabs';
 import { ClientStatusActions } from './ClientStatusActions';
 
 /**
  * La ficha de un cliente (D-059): nombre, fecha de alta, estado y, para el
- * dueño, dar de baja o reactivar (D-055). Las pestañas de rutinas y progreso
- * las aportarán esos módulos (Fases 2 y 3).
+ * dueño, dar de baja o reactivar (D-055). Debajo, las pestañas que aportan
+ * los módulos activos (la "Rutina" de programs, PR 2.14), sin importarlos.
  */
 export function ClientDetailPage() {
   const { t } = useTranslation();
@@ -20,6 +22,7 @@ export function ClientDetailPage() {
   const { clientId } = useParams();
   const { role } = useTenancy();
   const members = useTenantMembers();
+  const tabs = useClientProfileTabs();
   const client = members.data?.find(
     (member) => member.userId === clientId && member.role === 'client',
   );
@@ -69,9 +72,13 @@ export function ClientDetailPage() {
 
       {role === 'owner' ? <ClientStatusActions client={client} /> : null}
 
-      <Card>
-        <p className="text-muted text-sm">{t('clients.detail.comingTabs')}</p>
-      </Card>
+      {tabs.length > 0 ? (
+        <ClientProfileTabs tabs={tabs} client={client} />
+      ) : (
+        <Card>
+          <p className="text-muted text-sm">{t('clients.detail.comingTabs')}</p>
+        </Card>
+      )}
     </section>
   );
 }

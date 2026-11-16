@@ -2,7 +2,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 import { useTenancy } from '@/core/tenancy';
 
-import { assignProgram, fetchClientPrograms } from './assignments-api';
+import { assignProgram, fetchClientPrograms, fetchProgramsOfClient } from './assignments-api';
 import type { AssignInput, AssignResult } from './assignments-api';
 
 export function clientProgramsQueryKey(tenantId: string | null) {
@@ -17,6 +17,22 @@ export function useClientPrograms() {
   return useQuery({
     queryKey: clientProgramsQueryKey(tenantId),
     queryFn: () => fetchClientPrograms(tenantId ?? ''),
+    enabled: tenantId !== null,
+  });
+}
+
+export function programsOfClientQueryKey(tenantId: string | null, clientId: string) {
+  return ['programs', 'client-programs', tenantId, clientId] as const;
+}
+
+/** Todas las rutinas de un cliente, para la pestaña "Rutina" de su ficha. */
+export function useProgramsOfClient(clientId: string) {
+  const { tenant } = useTenancy();
+  const tenantId = tenant?.id ?? null;
+
+  return useQuery({
+    queryKey: programsOfClientQueryKey(tenantId, clientId),
+    queryFn: () => fetchProgramsOfClient(tenantId ?? '', clientId),
     enabled: tenantId !== null,
   });
 }

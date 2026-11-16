@@ -7,9 +7,13 @@
 -- clientes); C, D, E, F y G, clientes; H, sin nada.
 -- =====================================================================
 begin;
+-- En staging, el usuario temporal de la CLI (cli_login_postgres) es miembro
+-- de postgres pero no asume el rol automáticamente ni tiene permisos sobre
+-- "extensions" ni "auth". Asumimos postgres y concedemos uso de "extensions"
+-- a public para que pgTAP siga disponible tras cualquier "reset role;".
+set local role postgres;
+grant usage on schema extensions to public;
 create extension if not exists pgtap with schema extensions;
--- En staging, el usuario temporal de la CLI no busca en "extensions", donde
--- vive pgTAP. Es la misma ruta de búsqueda que ya hay en local.
 set local search_path to "$user", public, extensions;
 
 select plan(40);
@@ -63,7 +67,7 @@ select is(
 );
 select set_config('t.code', (select code from public.tenant_invites where is_active), true);
 select set_config('t.branding', (select branding::text from public.tenants where id = current_setting('t.ta')::uuid), true);
-reset role;
+set local role postgres;
 
 -- ----- Vista previa sin sesión (D-051) -----
 -- Como una petición real sin sesión: sin usuario, con su dirección IP.
@@ -82,7 +86,7 @@ select is(
   'ok', 'D-050: al escribirlo no importan las mayúsculas, los espacios ni los guiones'
 );
 select is(public.preview_invite('ABCDEFG2') ->> 'status', 'invalid_code', 'D-054: un código que no existe no vale');
-reset role;
+set local role postgres;
 
 -- Un negocio suspendido: su código deja de valer, con el mismo mensaje (D-054).
 update public.tenants set status = 'suspended' where id = current_setting('t.ta')::uuid;
@@ -91,7 +95,7 @@ select is(
   public.preview_invite(current_setting('t.code')) ->> 'status',
   'invalid_code', 'D-054: el código de un negocio suspendido no vale'
 );
-reset role;
+set local role postgres;
 update public.tenants set status = 'active' where id = current_setting('t.ta')::uuid;
 
 -- ----- Tope de intentos sin sesión (D-052 y D-065): 30 equivocados por conexión -----
@@ -107,14 +111,14 @@ select is(
   public.preview_invite(current_setting('t.code')) ->> 'status',
   'rate_limited', 'D-052: tras el tope, hay que esperar (también con el código bueno)'
 );
-reset role;
+set local role postgres;
 set local request.headers to '{"x-forwarded-for":"198.51.100.9"}';
 set local role anon;
 select is(
   public.preview_invite(current_setting('t.code')) ->> 'status',
   'ok', 'D-052: otra conexión no está bloqueada'
 );
-reset role;
+set local role postgres;
 
 -- ----- Unirse: cada caso de D-054 -----
 set local role authenticated;
@@ -244,11 +248,10 @@ select is((select count(*)::int from public.tenants), 1, 'D-055: el cliente reac
 -- ----- my_spaces solo enseña los propios -----
 set local request.jwt.claims to '{"sub":"00000000-0000-4000-8000-0000000000b1","role":"authenticated"}';
 select is((select count(*)::int from public.my_spaces()), 0, 'my_spaces: quien no tiene espacios no ve ninguno');
-
-reset role;
+set local role postgres;
 set local role anon;
 select throws_ok('select * from public.my_spaces()', '42501', null, 'my_spaces: anon no puede pedirlos');
-reset role;
+set local role postgres;
 
 select * from finish();
 rollback;

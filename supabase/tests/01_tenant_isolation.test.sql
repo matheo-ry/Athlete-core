@@ -11,9 +11,15 @@
 -- Usuarios inventados: A y B son coaches; C, D, E y F, clientes.
 -- =====================================================================
 begin;
+set local role postgres;
+grant usage on schema extensions to public;
+-- En staging, el usuario temporal de la CLI (cli_login_postgres) es miembro
+-- de postgres pero no asume el rol automáticamente ni tiene permisos sobre
+-- "extensions" ni "auth". Asumimos postgres y concedemos uso de "extensions"
+-- a public para que pgTAP siga disponible tras cualquier "reset role;".
+set local role postgres;
+grant usage on schema extensions to public;
 create extension if not exists pgtap with schema extensions;
--- En staging, el usuario temporal de la CLI no busca en "extensions", donde
--- vive pgTAP. Es la misma ruta de búsqueda que ya hay en local.
 set local search_path to "$user", public, extensions;
 
 select plan(34);
@@ -54,7 +60,7 @@ set local role anon;
 select throws_ok('select 1 from public.tenants', '42501', null, '02: anon no puede leer tenants');
 select throws_ok($$ select public.create_tenant('X', 'v1') $$, '42501', null, '03: anon no puede crear un negocio');
 select is(public.preview_invite('ABCDEFG2') ->> 'status', 'invalid_code', '04: anon puede pedir la vista previa de un código (D-051), y uno falso no vale');
-reset role;
+set local role postgres;
 
 -- ----- A y B crean su negocio -----
 set local role authenticated;
@@ -195,7 +201,6 @@ select ok(
     and public.preview_invite(current_setting('t.code_a2')) ->> 'status' = 'ok',
   '22: al regenerar, el código antiguo deja de valer y el nuevo vale'
 );
-
-reset role;
+set local role postgres;
 select * from finish();
 rollback;

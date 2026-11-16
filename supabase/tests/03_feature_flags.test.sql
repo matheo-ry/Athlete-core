@@ -4,9 +4,13 @@
 -- Los flags de este test son inventados: el catálogo real empieza vacío.
 -- =====================================================================
 begin;
+-- En staging, el usuario temporal de la CLI (cli_login_postgres) es miembro
+-- de postgres pero no asume el rol automáticamente ni tiene permisos sobre
+-- "extensions" ni "auth". Asumimos postgres y concedemos uso de "extensions"
+-- a public para que pgTAP siga disponible tras cualquier "reset role;".
+set local role postgres;
+grant usage on schema extensions to public;
 create extension if not exists pgtap with schema extensions;
--- En staging, el usuario temporal de la CLI no busca en "extensions", donde
--- vive pgTAP. Es la misma ruta de búsqueda que ya hay en local.
 set local search_path to "$user", public, extensions;
 
 select plan(11);
@@ -49,7 +53,7 @@ select throws_ok($$ update public.features set is_enabled = true $$, '42501', nu
   '25: el coach no puede tocar el catálogo de flags');
 
 -- El propietario cambia el plan y da una prueba temporal (administración de datos).
-reset role;
+set local role postgres;
 update public.tenants set plan = 'pro' where id = current_setting('t.ta')::uuid;
 insert into public.tenant_features (tenant_id, feature_key, enabled, source, expires_at)
 values (current_setting('t.ta')::uuid, 'new_editor', true, 'trial', now() + interval '1 day');
@@ -60,7 +64,7 @@ select ok((select enabled from public.tenant_effective_features where feature_ke
 select ok((select enabled from public.tenant_effective_features where feature_key = 'new_editor'),
   '26b: la excepción del tenant está activa');
 
-reset role;
+set local role postgres;
 update public.tenant_features set expires_at = now() - interval '1 minute'
 where tenant_id = current_setting('t.ta')::uuid and feature_key = 'new_editor';
 update public.features set is_enabled = false where key = 'workouts';
@@ -71,6 +75,6 @@ select ok(not (select enabled from public.tenant_effective_features where featur
 select ok(not (select enabled from public.tenant_effective_features where feature_key = 'workouts'),
   '27b: el interruptor general apaga el flag para todos');
 
-reset role;
+set local role postgres;
 select * from finish();
 rollback;

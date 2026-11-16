@@ -5,9 +5,13 @@
 -- de "Coach B".
 -- =====================================================================
 begin;
+-- En staging, el usuario temporal de la CLI (cli_login_postgres) es miembro
+-- de postgres pero no asume el rol automáticamente ni tiene permisos sobre
+-- "extensions" ni "auth". Asumimos postgres y concedemos uso de "extensions"
+-- a public para que pgTAP siga disponible tras cualquier "reset role;".
+set local role postgres;
+grant usage on schema extensions to public;
 create extension if not exists pgtap with schema extensions;
--- En staging, el usuario temporal de la CLI no busca en "extensions", donde
--- vive pgTAP. Es la misma ruta de búsqueda que ya hay en local.
 set local search_path to "$user", public, extensions;
 
 select plan(14);
@@ -98,7 +102,7 @@ select throws_ok(
 );
 
 -- ----- El logo se conserva (PR 1.16) y queda anotado -----
-reset role;
+set local role postgres;
 update public.tenants
 set branding = branding || jsonb_build_object('logoPath', current_setting('t.ta') || '/logo.png')
 where id = current_setting('t.ta')::uuid;
@@ -111,8 +115,7 @@ select is(
   current_setting('t.ta') || '/logo.png',
   'cambiar los colores no quita el logo'
 );
-
-reset role;
+set local role postgres;
 select is(
   (select count(*)::int from public.audit_log
    where tenant_id = current_setting('t.ta')::uuid and action = 'tenant.brand_updated'),

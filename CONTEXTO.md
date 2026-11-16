@@ -21,10 +21,10 @@
 
 ## Dónde estamos
 
-- **Fase actual:** 2 — Ejercicios y rutinas, **construida entera**: lotes 1 a 4 fusionados en `main`; el lote 5 (bloques, superseries e inicios) está abierto, a la espera de que el propietario lo pruebe. La Fase 1 está terminada y fusionada en `main` (2026-11-14).
-- **Última tarea terminada:** PR 2.18 — Inicio: avisos del coach y "Hoy toca" del cliente (2026-11-17), rama `feat/inicio-con-rutinas`, apilada sobre el PR 2.17 (#51), que va sobre el 2.16 (#50). Toca `src/core/modules` (D-114).
+- **Fase actual:** 2 — Ejercicios y rutinas, **terminada y fusionada en `main`** (lotes 1 a 5, PR #24 a #28, #30 a #35, #36 a #42, #43 a #48, #50 a #52). La Fase 1 está terminada y fusionada en `main` (2026-11-14).
+- **Última tarea terminada:** `fix(db): compatibilidad de tests pgTAP en staging con permisos de postgres` (399 tests pasando en verde al 100% en local y en staging).
 - **En curso:** nada.
-- **Siguiente tarea:** que el propietario pruebe el lote 5 y dé el visto bueno para fusionarlo (D-068). Después, **diseñar la Fase 3** (entreno y progreso) con él; antes hay que decidir P-12 (datos de salud y menores). Aparte, aplicar en staging las migraciones 8 a 16.
+- **Siguiente tarea:** **diseñar la Fase 3** (entreno y progreso del cliente) con el propietario; antes decidir P-12 (datos de salud y menores). En staging, todas las migraciones 1 a 16 están aplicadas y probadas.
 
 ## Cómo será la Fase 2 (diseñada, D-069 a D-088)
 

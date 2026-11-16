@@ -9,9 +9,13 @@
 -- escribe en estas tablas.
 -- =====================================================================
 begin;
+-- En staging, el usuario temporal de la CLI (cli_login_postgres) es miembro
+-- de postgres pero no asume el rol automáticamente ni tiene permisos sobre
+-- "extensions" ni "auth". Asumimos postgres y concedemos uso de "extensions"
+-- a public para que pgTAP siga disponible tras cualquier "reset role;".
+set local role postgres;
+grant usage on schema extensions to public;
 create extension if not exists pgtap with schema extensions;
--- En staging, el usuario temporal de la CLI no busca en "extensions", donde
--- vive pgTAP. Es la misma ruta de búsqueda que ya hay en local.
 set local search_path to "$user", public, extensions;
 
 select plan(46);
@@ -43,7 +47,7 @@ set local request.jwt.claims to '{"sub":"00000000-0000-4000-8000-00000000000c","
 select public.join_tenant_with_code(current_setting('t.code_a'));
 set local request.jwt.claims to '{"sub":"00000000-0000-4000-8000-00000000000d","role":"authenticated"}';
 select public.join_tenant_with_code(current_setting('t.code_a'));
-reset role;
+set local role postgres;
 
 -- ----- Ejercicios propios: dos en A y uno en B -----
 create function pg_temp.add_exercise(p_key text, p_tenant uuid, p_name text) returns void
@@ -98,7 +102,7 @@ set local role anon;
 select throws_ok('select 1 from public.program_day_exercises', '42501', null,
   'sin sesión no se leen los ejercicios de un día');
 select throws_ok('select 1 from public.program_sets', '42501', null, 'sin sesión no se leen las series');
-reset role;
+set local role postgres;
 
 -- ----- Caso 15: el coach lee lo de su negocio y nadie escribe directamente -----
 set local role authenticated;
@@ -181,7 +185,7 @@ select is(
   pg_temp.affected_rows($$ update public.exercises set measurement = 'time', is_unilateral = true
      where library_key = 'plank' $$),
   1, 'D-072: uno que no está en ninguna rutina cambia sin problema');
-reset role;
+set local role postgres;
 
 -- ----- Caso 17: la clave compuesta impide mezclar negocios y rutinas -----
 select throws_ok(

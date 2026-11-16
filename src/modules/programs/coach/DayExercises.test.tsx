@@ -1,4 +1,4 @@
-import { screen, within } from '@testing-library/react';
+import { fireEvent, screen, within } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { renderAppAs } from '@/test/render-app';
@@ -99,9 +99,36 @@ describe('módulo programs: los ejercicios de cada día (PR 2.9)', () => {
 
     expect(await screen.findByText('1. Barbell row')).toBeVisible();
     expect(names()).toHaveLength(2);
-    expect(names()[0]).toMatch(/^1\. Barbell row3 sets↑↓⇄✕/);
-    expect(names()[1]).toMatch(/^2\. Lat pulldown3 sets↑↓⇄✕/);
+    expect(names()[0]).toMatch(/^1\. Barbell row3 sets$/);
+    expect(names()[1]).toMatch(/^2\. Lat pulldown3 sets$/);
     expect(screen.getByText('2 exercises · 6 sets', { selector: 'p' })).toBeVisible();
+  });
+
+  it('se ve un ejercicio cada vez: se elige por su número o deslizando (D-106)', async () => {
+    const { user } = await openMonday();
+    const first = await screen.findByText('1. Barbell row');
+    expect(screen.queryByText('2. Lat pulldown')).toBeNull();
+
+    await user.click(screen.getByRole('button', { name: /^2\. Lat pulldown/ }));
+    expect(screen.getByText('2. Lat pulldown')).toBeVisible();
+    expect(first).not.toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /^2\. Lat pulldown/ })).toHaveAttribute(
+      'aria-current',
+      'true',
+    );
+
+    // Deslizar a la derecha vuelve al anterior; a la izquierda, al siguiente.
+    const swipe = (element: HTMLElement, fromX: number, toX: number, toY = 110) => {
+      fireEvent.touchStart(element, { touches: [{ clientX: fromX, clientY: 100 }] });
+      fireEvent.touchEnd(element, { changedTouches: [{ clientX: toX, clientY: toY }] });
+    };
+    swipe(screen.getByText('2. Lat pulldown'), 100, 300);
+    expect(screen.getByText('1. Barbell row')).toBeVisible();
+    swipe(screen.getByText('1. Barbell row'), 300, 100);
+    expect(screen.getByText('2. Lat pulldown')).toBeVisible();
+    // Un gesto hacia abajo no cambia de ejercicio.
+    swipe(screen.getByText('2. Lat pulldown'), 300, 220, 400);
+    expect(screen.getByText('2. Lat pulldown')).toBeVisible();
   });
 
   it('"Añadir ejercicio" busca en los ejercicios sin salir de la rutina y lo añade con 3 series', async () => {
@@ -112,6 +139,8 @@ describe('módulo programs: los ejercicios de cada día (PR 2.9)', () => {
 
     expect(router.state.location.pathname).toBe(`/coach/programs/${ID}`);
     expect(names().at(-1)).toMatch(/^3\. Leg press3 sets/);
+    // Se pasa al recién añadido.
+    expect(screen.getByText('3. Leg press')).toBeVisible();
     expect(screen.getByText('3 exercises · 9 sets', { selector: 'p' })).toBeVisible();
     expect(screen.getByRole('button', { name: 'Save changes' })).toBeEnabled();
   });
@@ -140,12 +169,16 @@ describe('módulo programs: los ejercicios de cada día (PR 2.9)', () => {
 
   it('"Subir", "Bajar" y "Quitar" ordenan el día, y se guarda en ese orden', async () => {
     const { user } = await openMonday();
-    await user.click(await screen.findByRole('button', { name: 'Move up: Lat pulldown' }));
+    await user.click(await screen.findByRole('button', { name: /^2\. Lat pulldown/ }));
+    await user.click(screen.getByRole('button', { name: 'Move up: Lat pulldown' }));
     expect(names().map((name) => name.slice(0, 16))).toEqual([
       '1. Lat pulldown3',
       '2. Barbell row3 ',
     ]);
+    // Sigue viéndose el que se movió.
+    expect(screen.getByText('1. Lat pulldown')).toBeVisible();
 
+    await user.click(screen.getByRole('button', { name: /^2\. Barbell row/ }));
     await user.click(screen.getByRole('button', { name: 'Remove: Barbell row' }));
     expect(names()).toHaveLength(1);
     await user.click(screen.getByRole('button', { name: 'Save changes' }));
@@ -208,8 +241,8 @@ describe('módulo programs: sustituir, nota y archivados (PR 2.9b)', () => {
 
   it('la nota del ejercicio se escribe y se guarda', async () => {
     const { user } = await openMonday();
-    const row = (await screen.findByText('1. Barbell row')).closest('li') as HTMLElement;
-    await user.click(within(row).getByRole('button', { name: 'Add a note' }));
+    await screen.findByText('1. Barbell row');
+    await user.click(screen.getByRole('button', { name: 'Add a note' }));
     await user.type(screen.getByLabelText('Note for “Barbell row”'), 'Pausa arriba');
     await user.click(screen.getByRole('button', { name: 'Save changes' }));
 
@@ -226,8 +259,10 @@ describe('módulo programs: sustituir, nota y archivados (PR 2.9b)', () => {
     ]);
     const { user } = await openMonday();
 
-    const row = (await screen.findByText('2. Lat pulldown')).closest('li') as HTMLElement;
-    expect(within(row).getByText('Archived')).toBeVisible();
+    await user.click(
+      await screen.findByRole('button', { name: /^2\. Lat pulldown3 setsArchived/ }),
+    );
+    expect(screen.getAllByText('Archived').at(-1)).toBeVisible();
     await user.click(screen.getByRole('button', { name: 'Add exercise' }));
     const picker = screen.getByRole('list', { name: 'Add exercise' });
     expect(within(picker).queryByRole('button', { name: /^Lat pulldown/ })).toBeNull();

@@ -35,3 +35,11 @@ export async function addExercise(page: Page, search: string, name: string) {
 
 export const items = (page: Page) =>
   page.getByRole('list', { name: 'Exercises of the day' }).getByRole('listitem');
+
+/** Se ve un ejercicio cada vez (D-106): toca el número del que se quiere ver. */
+export async function openExercise(page: Page, position: number) {
+  await items(page)
+    .nth(position - 1)
+    .getByRole('button')
+    .click();
+}

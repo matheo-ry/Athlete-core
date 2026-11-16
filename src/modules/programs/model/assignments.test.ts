@@ -1,6 +1,11 @@
 import { describe, expect, it } from 'vitest';
 
-import { assignmentWarnings, parseClientPrograms, routinesByClient } from './assignments';
+import {
+  assignmentWarnings,
+  parseClientPrograms,
+  routineProgress,
+  routinesByClient,
+} from './assignments';
 
 const TODAY = '2026-11-16';
 
@@ -71,5 +76,51 @@ describe('assignmentWarnings', () => {
     expect(assignmentWarnings(['ana', 'bruno'], routines, '2026-11-26', TODAY)).toEqual([
       { kind: 'replacesNext', clientId: 'ana', programName: 'Fuerza' },
     ]);
+  });
+});
+
+describe('routineProgress', () => {
+  const program = (startsOn: string, blocks: { cycle_days: number; laps: number | null }[]) =>
+    parseClientPrograms([
+      {
+        ...row('p', 'ana', startsOn),
+        program_blocks: blocks.map((block, index) => ({
+          id: `b${String(index)}`,
+          position: index + 1,
+          ...block,
+        })),
+      },
+    ])[0];
+
+  it('dice el bloque, la vuelta y cuándo termina', () => {
+    const weekly = program('2026-11-09', [{ cycle_days: 7, laps: 4 }]);
+    if (weekly === undefined) throw new Error('falta la rutina');
+    expect(routineProgress(weekly, TODAY)).toEqual({
+      blockNumber: 1,
+      blockCount: 1,
+      lap: 2,
+      laps: 4,
+      isWeekly: true,
+      isRepeating: false,
+      endsOn: '2026-12-06',
+    });
+  });
+
+  it('una rutina que se repite sin fin no tiene fecha de fin; una próxima no tiene progreso', () => {
+    const endless = program('2026-11-01', [{ cycle_days: 8, laps: null }]);
+    const later = program('2026-11-30', [{ cycle_days: 8, laps: null }]);
+    if (endless === undefined || later === undefined) throw new Error('falta la rutina');
+    expect(routineProgress(endless, TODAY)).toMatchObject({
+      isWeekly: false,
+      endsOn: null,
+      laps: null,
+    });
+    expect(routineProgress(later, TODAY)).toBeNull();
+  });
+
+  it('el último bloque, terminadas sus vueltas, se marca como repetido', () => {
+    const done = program('2026-11-02', [{ cycle_days: 7, laps: 1 }]);
+    if (done === undefined) throw new Error('falta la rutina');
+    expect(routineProgress(done, TODAY)).toMatchObject({ lap: 3, isRepeating: true });
   });
 });

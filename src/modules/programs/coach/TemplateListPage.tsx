@@ -9,30 +9,33 @@ import { Button, Card, EmptyState, ErrorState, Input, Spinner } from '@/core/ui'
 import { useTemplates } from '../api/useTemplates';
 import { countByTab, visibleTemplates } from '../model/template-list';
 import type { TemplateTab } from '../model/template-list';
+import { AssignedList } from './AssignedList';
 import { NewTemplateForm } from './NewTemplateForm';
 import { TemplateRow } from './TemplateRow';
 import type { TemplateNotice } from './TemplateRow';
 
-const TABS: readonly TemplateTab[] = ['active', 'archived'];
+type Tab = TemplateTab | 'assigned';
+const TABS: readonly Tab[] = ['active', 'archived', 'assigned'];
 
 /**
  * Las plantillas del coach (PR 2.7, D-085): "Activas" y "Archivadas" con su
- * número, buscador y "Nueva plantilla". La pestaña "Asignadas" llega en el
- * PR 2.13.
+ * número, buscador y "Nueva plantilla"; y "Asignadas", la rutina de cada
+ * cliente (PR 2.13b).
  */
 export function TemplateListPage() {
   const { t } = useTranslation();
   const language = useLanguage();
   const templates = useTemplates();
   const navigate = useNavigate();
-  const [tab, setTab] = useState<TemplateTab>('active');
+  const [tab, setTab] = useState<Tab>('active');
   const [query, setQuery] = useState('');
   const [isCreating, setIsCreating] = useState(false);
   const [notice, setNotice] = useState<{ kind: TemplateNotice; name: string } | null>(null);
 
   const all = templates.data ?? [];
   const counts = countByTab(all);
-  const visible = visibleTemplates(all, tab, query, language);
+  const templateTab: TemplateTab = tab === 'archived' ? 'archived' : 'active';
+  const visible = visibleTemplates(all, templateTab, query, language);
   const showNotice = (kind: TemplateNotice, name: string) => setNotice({ kind, name });
 
   return (
@@ -68,7 +71,7 @@ export function TemplateListPage() {
         </p>
       ) : null}
 
-      <div role="group" aria-label={t('programs.list.tabsLabel')} className="flex gap-2">
+      <div role="group" aria-label={t('programs.list.tabsLabel')} className="flex flex-wrap gap-2">
         {TABS.map((option) => (
           <button
             key={option}
@@ -83,46 +86,52 @@ export function TemplateListPage() {
           >
             {t(`programs.list.tabs.${option}`)}
             {/* El espacio separa el número del nombre para los lectores de pantalla. */}{' '}
-            {templates.isSuccess ? (
+            {templates.isSuccess && option !== 'assigned' ? (
               <span className="font-semibold tabular-nums">{counts[option]}</span>
             ) : null}
           </button>
         ))}
       </div>
 
-      <Input
-        label={t('programs.list.search')}
-        type="search"
-        name="search"
-        value={query}
-        onChange={(event) => setQuery(event.target.value)}
-      />
+      {tab === 'assigned' ? <AssignedList /> : null}
 
-      <Card>
-        {templates.isPending ? <Spinner /> : null}
-        {templates.isError ? <ErrorState onRetry={() => void templates.refetch()} /> : null}
-        {templates.isSuccess && counts[tab] === 0 ? (
-          <EmptyState
-            title={t(`programs.list.${tab === 'active' ? 'empty' : 'emptyArchived'}.title`)}
-            description={t(
-              `programs.list.${tab === 'active' ? 'empty' : 'emptyArchived'}.description`,
-            )}
+      {tab === 'assigned' ? null : (
+        <>
+          <Input
+            label={t('programs.list.search')}
+            type="search"
+            name="search"
+            value={query}
+            onChange={(event) => setQuery(event.target.value)}
           />
-        ) : null}
-        {templates.isSuccess && counts[tab] > 0 && visible.length === 0 ? (
-          <EmptyState
-            title={t('programs.list.noResults.title')}
-            description={t('programs.list.noResults.description')}
-          />
-        ) : null}
-        {visible.length > 0 ? (
-          <ul>
-            {visible.map((template) => (
-              <TemplateRow key={template.id} template={template} onDone={showNotice} />
-            ))}
-          </ul>
-        ) : null}
-      </Card>
+
+          <Card>
+            {templates.isPending ? <Spinner /> : null}
+            {templates.isError ? <ErrorState onRetry={() => void templates.refetch()} /> : null}
+            {templates.isSuccess && counts[templateTab] === 0 ? (
+              <EmptyState
+                title={t(`programs.list.${tab === 'active' ? 'empty' : 'emptyArchived'}.title`)}
+                description={t(
+                  `programs.list.${tab === 'active' ? 'empty' : 'emptyArchived'}.description`,
+                )}
+              />
+            ) : null}
+            {templates.isSuccess && counts[templateTab] > 0 && visible.length === 0 ? (
+              <EmptyState
+                title={t('programs.list.noResults.title')}
+                description={t('programs.list.noResults.description')}
+              />
+            ) : null}
+            {visible.length > 0 ? (
+              <ul>
+                {visible.map((template) => (
+                  <TemplateRow key={template.id} template={template} onDone={showNotice} />
+                ))}
+              </ul>
+            ) : null}
+          </Card>
+        </>
+      )}
     </section>
   );
 }

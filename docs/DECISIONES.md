@@ -962,6 +962,17 @@ Cómo añadir una: copia el formato, usa el siguiente número y no borres las an
   - **En la semana a medias** de un bloque semanal (D-075) la vuelta es la 0 y toca el día de la semana de hoy.
 - **Por qué:** el coach decide sin salir de la lista de plantillas y ve antes de confirmar a quién le cambia algo.
 
+### D-108 · La pestaña "Asignadas"
+- **Fecha:** 2026-11-16
+- **Decisión:** detalles del PR 2.13b que D-085 no fijaba.
+  - **Es una tercera pestaña** en "Rutinas", junto a "Activas" y "Archivadas" (las de las plantillas), y sin número: así no cambia nada de lo que ya había.
+  - **Cada cliente activo, por nombre,** con su rutina vigente en una línea: el bloque ("Bloque 2 de 3", solo si hay varios), la semana o la vuelta ("Semana 2 de 4" en un bloque semanal; "Vuelta 3 de 4" en los demás; "Semana de inicio" en la semana a medias) y cuándo termina, o "Sin fecha de fin". En modo lista se añade "Modo lista".
+  - **Si el último bloque ya terminó y se repite,** en lugar de la vuelta dice "Terminada: se repite hasta que la cambies" (D-075).
+  - **La próxima,** en una segunda línea con su fecha. Si no tiene vigente, "Sin rutina" y debajo la próxima.
+  - Los clientes dados de baja no salen.
+- **Por qué:** con 15 clientes, el coach ve de un vistazo quién está a punto de quedarse sin rutina (D-085).
+- **Revisar si:** el coach quiere ordenar por "termina antes" o filtrar los que no tienen rutina.
+
 ---
 
 ## Pendientes de decidir

@@ -9,7 +9,8 @@
     "tabsLabel": "Show",
     "tabs": {
       "active": "Active",
-      "archived": "Archived"
+      "archived": "Archived",
+      "assigned": "Assigned"
     },
     "search": "Search by name",
     "weekly": "Weekly",
@@ -193,5 +194,29 @@
       "clientNotFound": "One of the clients is no longer active. Close this and try again.",
       "templateArchived": "This template is archived. Restore it to assign it."
     }
+  },
+  "assigned": {
+    "search": "Search clients by name",
+    "listLabel": "Clients and their programs",
+    "empty": {
+      "title": "You don't have any clients yet",
+      "description": "Share your code from Clients so they can join."
+    },
+    "noResults": {
+      "title": "No client matches",
+      "description": "Try another name."
+    },
+    "noProgram": "No program",
+    "block": "Block {{number}} of {{count}}",
+    "week": "Week {{lap}} of {{laps}}",
+    "weekNoEnd": "Week {{lap}}",
+    "lap": "Round {{lap}} of {{laps}}",
+    "lapNoEnd": "Round {{lap}}",
+    "firstWeek": "Starting week",
+    "endsOn": "Ends {{date}}",
+    "noEnd": "No end date",
+    "repeating": "Finished: repeating until you change it",
+    "listMode": "List mode",
+    "next": "Next: {{name}}, starts {{date}}"
   }
 }

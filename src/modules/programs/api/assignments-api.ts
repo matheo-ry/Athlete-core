@@ -26,6 +26,24 @@ export async function fetchClientPrograms(tenantId: string): Promise<ClientProgr
   return parseClientPrograms(data);
 }
 
+/** Todas las rutinas de un cliente, también las anteriores, para su ficha (PR 2.14). */
+export async function fetchProgramsOfClient(
+  tenantId: string,
+  clientId: string,
+): Promise<ClientProgram[]> {
+  const { data, error } = await getSupabaseClient()
+    .from('programs')
+    .select(
+      `id, name, client_id, starts_on, start_block_id, mode, ended_at, ${BLOCKS}(id, position, cycle_days, laps)`,
+    )
+    .eq('tenant_id', tenantId)
+    .eq('client_id', clientId);
+  if (error !== null) {
+    throw new Error(`Could not load the client's programs: ${error.code}`);
+  }
+  return parseClientPrograms(data);
+}
+
 export interface AssignInput {
   templateId: string;
   clientIds: string[];

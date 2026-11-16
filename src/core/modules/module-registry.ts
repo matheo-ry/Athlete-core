@@ -1,6 +1,11 @@
 import type { Profile } from '../tenancy';
 
-import type { ModuleManifest, ModuleNavItem, ModuleRoute } from './module-manifest';
+import type {
+  ClientProfileTab,
+  ModuleManifest,
+  ModuleNavItem,
+  ModuleRoute,
+} from './module-manifest';
 
 /** Rutas que aportan los módulos a la zona de un perfil. */
 export function collectRoutes(modules: readonly ModuleManifest[], profile: Profile): ModuleRoute[] {
@@ -13,4 +18,9 @@ export function collectNavItems(
   profile: Profile,
 ): ModuleNavItem[] {
   return modules.flatMap((module) => module.nav[profile]).sort((a, b) => a.order - b.order);
+}
+
+/** Pestañas que aportan los módulos a la ficha de un cliente. */
+export function collectClientProfileTabs(modules: readonly ModuleManifest[]): ClientProfileTab[] {
+  return modules.flatMap((module) => module.clientProfileTabs);
 }

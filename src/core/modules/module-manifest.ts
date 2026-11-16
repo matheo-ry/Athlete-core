@@ -24,11 +24,19 @@ export interface ModuleNavItem {
   order: number;
 }
 
+/** Lo que la ficha de un cliente le pasa a cada pestaña. */
+export interface ClientProfileTabProps {
+  clientId: string;
+  clientName: string;
+  /** `false` si está dado de baja: se ven sus datos, sin acciones (D-083). */
+  isActive: boolean;
+}
+
 /** Pestaña que un módulo añade a la ficha de un cliente (vista del coach). */
 export interface ClientProfileTab {
   key: string;
   labelKey: string;
-  lazy: () => Promise<{ Component: ComponentType }>;
+  lazy: () => Promise<{ Component: ComponentType<ClientProfileTabProps> }>;
 }
 
 export interface ModuleManifest {

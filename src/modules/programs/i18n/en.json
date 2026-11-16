@@ -118,7 +118,9 @@
     "archived": "Archived",
     "note": "Note for “{{name}}”",
     "noteHint": "Your client will see it. Up to 500 characters.",
-    "addNote": "Add a note"
+    "addNote": "Add a note",
+    "backToClient": "← {{name}}",
+    "clientProgram": "Program of {{name}}"
   },
   "prescription": {
     "label": "What to do in “{{name}}”",
@@ -218,5 +220,20 @@
     "repeating": "Finished: repeating until you change it",
     "listMode": "List mode",
     "next": "Next: {{name}}, starts {{date}}"
+  },
+  "clientTab": {
+    "label": "Program",
+    "current": "Current program",
+    "noProgram": "This client doesn't have a program.",
+    "edit": "Edit",
+    "editLabel": "Edit “{{name}}”",
+    "next": "Next program",
+    "startsOn": "Starts on {{date}}",
+    "startedOn": "Started {{date}}",
+    "previous": "Previous programs",
+    "previousDates": "{{start}} – {{end}}",
+    "daysLabel": "Days of the current block",
+    "today": "Today",
+    "archivedClient": "This client is archived. Reactivate them to assign a program."
   }
 }

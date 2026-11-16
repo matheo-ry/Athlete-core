@@ -60,6 +60,7 @@
     "reactivating": "Reactivating…",
     "reactivated": "{{name}} has access again.",
     "planFull": "You have no free spots. Remove another client or change your plan.",
-    "comingTabs": "Programs and progress will appear here in the next phases."
+    "comingTabs": "Programs and progress will appear here in the next phases.",
+    "tabsLabel": "Client sections"
   }
 }

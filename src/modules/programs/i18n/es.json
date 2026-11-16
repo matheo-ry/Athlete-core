@@ -118,7 +118,9 @@
     "archived": "Archivado",
     "note": "Nota para «{{name}}»",
     "noteHint": "La verá tu cliente. Hasta 500 caracteres.",
-    "addNote": "Añadir una nota"
+    "addNote": "Añadir una nota",
+    "backToClient": "← {{name}}",
+    "clientProgram": "Rutina de {{name}}"
   },
   "prescription": {
     "label": "Qué hay que hacer en «{{name}}»",
@@ -218,5 +220,20 @@
     "repeating": "Terminada: se repite hasta que la cambies",
     "listMode": "Modo lista",
     "next": "Próxima: {{name}}, empieza el {{date}}"
+  },
+  "clientTab": {
+    "label": "Rutina",
+    "current": "Rutina actual",
+    "noProgram": "Este cliente no tiene rutina.",
+    "edit": "Editar",
+    "editLabel": "Editar «{{name}}»",
+    "next": "Próxima rutina",
+    "startsOn": "Empieza el {{date}}",
+    "startedOn": "Empezó el {{date}}",
+    "previous": "Rutinas anteriores",
+    "previousDates": "{{start}} – {{end}}",
+    "daysLabel": "Días del bloque actual",
+    "today": "Hoy",
+    "archivedClient": "Este cliente está dado de baja. Reactívalo para asignarle una rutina."
   }
 }

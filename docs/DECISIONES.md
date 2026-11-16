@@ -973,6 +973,16 @@ Cómo añadir una: copia el formato, usa el siguiente número y no borres las an
 - **Por qué:** con 15 clientes, el coach ve de un vistazo quién está a punto de quedarse sin rutina (D-085).
 - **Revisar si:** el coach quiere ordenar por "termina antes" o filtrar los que no tienen rutina.
 
+### D-109 · Las pestañas de la ficha del cliente y la pestaña "Rutina"
+- **Fecha:** 2026-11-16
+- **Decisión:** detalles del PR 2.14a.
+  - **Las pestañas las reparte la carcasa del coach** con un contexto de `src/core/modules`: la ficha (módulo clients) las lee con `useClientProfileTabs()` y pinta la elegida con `ClientProfileTabContent`, sin importar ningún módulo (ARQUITECTURA §6). Cada pestaña recibe el cliente (`clientId`, `clientName`, `isActive`). Su código se carga la primera vez que se abre.
+  - **Con una sola pestaña también se ve el botón**, para que el coach sepa dónde está y para cuando llegue "Progreso" (Fase 3).
+  - **La pestaña "Rutina"** enseña la actual (nombre; por dónde va, como en "Asignadas", D-108; el modo; la fecha de inicio; y los días del bloque en que va, con el de hoy marcado si es con calendario), la próxima con su fecha y las anteriores con sus fechas, de la más reciente a la más antigua.
+  - **El editor de la rutina de un cliente** dice "Rutina de Ana" encima del nombre, y su enlace de volver lleva a la ficha de Ana.
+  - **Cliente dado de baja:** se ven sus rutinas, sin "Editar" ni acciones, con "Reactívalo para asignarle una rutina" (D-083).
+- **Por qué:** la ficha no puede depender de programs; con el contexto, una función nueva añade su pestaña desde su manifest y nada más.
+
 ---
 
 ## Pendientes de decidir

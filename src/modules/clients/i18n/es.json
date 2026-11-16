@@ -60,6 +60,7 @@
     "reactivating": "Reactivando…",
     "reactivated": "{{name}} vuelve a tener acceso.",
     "planFull": "No tienes plazas libres. Da de baja a otro cliente o cambia de plan.",
-    "comingTabs": "Las rutinas y el progreso aparecerán aquí en las próximas fases."
+    "comingTabs": "Las rutinas y el progreso aparecerán aquí en las próximas fases.",
+    "tabsLabel": "Secciones del cliente"
   }
 }

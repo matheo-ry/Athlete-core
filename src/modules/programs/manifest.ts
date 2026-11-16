@@ -35,5 +35,13 @@ export const programsModule = defineModule({
     en: () => import('./i18n/en.json'),
     es: () => import('./i18n/es.json'),
   },
-  clientProfileTabs: [],
+  // La pestaña "Rutina" de la ficha del cliente (PR 2.14, D-085).
+  clientProfileTabs: [
+    {
+      key: 'program',
+      labelKey: 'programs.clientTab.label',
+      lazy: () =>
+        import('./coach/ClientProgramTab').then((tab) => ({ Component: tab.ClientProgramTab })),
+    },
+  ],
 });

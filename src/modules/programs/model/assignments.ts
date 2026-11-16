@@ -16,6 +16,8 @@ export interface ClientProgram {
   startsOn: string;
   startBlockId: string | null;
   mode: ProgramMode;
+  /** La terminó el coach o se sustituyó: está en "Anteriores" (D-081). */
+  endedAt: string | null;
   blocks: CalendarBlock[];
 }
 
@@ -32,6 +34,8 @@ const rowSchema = z.object({
   starts_on: z.string(),
   start_block_id: z.string().nullable(),
   mode: z.enum(PROGRAM_MODES),
+  // Las rutinas abiertas se piden sin esta columna.
+  ended_at: z.string().nullable().optional(),
   program_blocks: z.array(
     z.object({
       id: z.string(),
@@ -53,6 +57,7 @@ export function parseClientPrograms(rows: unknown): ClientProgram[] {
       startsOn: row.starts_on,
       startBlockId: row.start_block_id,
       mode: row.mode,
+      endedAt: row.ended_at ?? null,
       blocks: [...row.program_blocks]
         .sort((a, b) => a.position - b.position)
         .map((block) => ({ id: block.id, cycleDays: block.cycle_days, laps: block.laps })),
@@ -69,7 +74,7 @@ export function routinesByClient(
   today: string,
 ): Map<string, ClientRoutines> {
   const byClient = new Map<string, ClientRoutines>();
-  for (const program of programs) {
+  for (const program of programs.filter((item) => item.endedAt === null)) {
     const routines = byClient.get(program.clientId) ?? { current: null, next: null };
     if (daysBetween(today, program.startsOn) > 0) {
       if (routines.next === null || program.startsOn < routines.next.startsOn) {

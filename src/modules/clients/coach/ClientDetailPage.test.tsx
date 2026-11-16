@@ -83,9 +83,10 @@ describe('dar de baja y reactivar a un cliente (PR 1.11, D-055)', () => {
     actingAs = 'coach@example.test';
 
     await user.click(screen.getByRole('button', { name: 'Reactivate' }));
-    expect(await screen.findByRole('alert')).toHaveTextContent(
-      'You have no free spots. Remove another client or change your plan.',
-    );
+    // Puede haber otros avisos en la ficha (las pestañas de otros módulos): se busca este.
+    expect(
+      await screen.findByText('You have no free spots. Remove another client or change your plan.'),
+    ).toHaveAttribute('role', 'alert');
   });
 
   it('un cliente que no existe: la ficha lo dice', async () => {

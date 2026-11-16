@@ -321,5 +321,14 @@
     "paste": "Paste block",
     "full": "A program can have up to 12 blocks.",
     "lastHint": "Only the last block can have no end date."
+  },
+  "supersets": {
+    "superset": "Superset",
+    "circuit": "Circuit",
+    "position": "{{position}} of {{size}}",
+    "group": "Group with the next one",
+    "groupLabel": "Group “{{name}}” with the next exercise",
+    "ungroup": "Ungroup",
+    "ungroupLabel": "Ungroup “{{name}}”"
   }
 }

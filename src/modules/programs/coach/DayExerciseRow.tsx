@@ -10,6 +10,7 @@ import type { ExerciseOption } from '@/modules/exercises';
 import { hasSetData } from '../model/day-exercises';
 import { targetKindOf } from '../model/prescription';
 import type { ProgramDayExercise } from '../model/program-document';
+import type { GroupInfo } from '../model/supersets';
 import { PrescriptionEditor } from './PrescriptionEditor';
 import { useExerciseSummary } from '../shared/useExerciseSummary';
 
@@ -33,6 +34,11 @@ interface DayExerciseRowProps {
   onDuplicate: () => void;
   /** Se copia para pegarlo en otro día o en otra rutina. */
   onCopy: () => void;
+  /** Si va en una superserie o un circuito (PR 2.17). */
+  group: GroupInfo | null;
+  /** "Agrupar con el siguiente"; vacío si no se puede. */
+  onGroup: (() => void) | null;
+  onUngroup: () => void;
 }
 
 /**
@@ -53,6 +59,9 @@ export function DayExerciseRow({
   onPrescription,
   onDuplicate,
   onCopy,
+  group,
+  onGroup,
+  onUngroup,
 }: DayExerciseRowProps) {
   const { t } = useTranslation();
   const noteId = useId();
@@ -75,6 +84,12 @@ export function DayExerciseRow({
             {/* El resumen de una línea (D-076). */}
             <span className="text-muted">{summary}</span>
             {/* D-073: se conserva en la rutina, pero ya no sale en el buscador. */}
+            {group === null ? null : (
+              <span className={`${TAG} bg-primary text-on-primary`}>
+                {t(`programs.supersets.${group.kind}`)} ·{' '}
+                {t('programs.supersets.position', { position: group.position, size: group.size })}
+              </span>
+            )}
             {exercise?.isArchived === true ? (
               <span className={`${TAG} border-border text-muted border`}>
                 {t('programs.editor.archived')}
@@ -144,6 +159,24 @@ export function DayExerciseRow({
         >
           {t('programs.copy.copy')}
         </Button>
+        {onGroup === null ? null : (
+          <Button
+            variant="ghost"
+            aria-label={t('programs.supersets.groupLabel', { name })}
+            onClick={onGroup}
+          >
+            {t('programs.supersets.group')}
+          </Button>
+        )}
+        {group === null ? null : (
+          <Button
+            variant="ghost"
+            aria-label={t('programs.supersets.ungroupLabel', { name })}
+            onClick={onUngroup}
+          >
+            {t('programs.supersets.ungroup')}
+          </Button>
+        )}
       </div>
 
       {/* Hasta saber cómo se mide el ejercicio no se sabe qué pedir. */}

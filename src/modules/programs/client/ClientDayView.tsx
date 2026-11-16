@@ -7,7 +7,9 @@ import { useExerciseOptions } from '@/modules/exercises';
 import type { ClientProgram } from '../model/assignments';
 import { clientBlock } from '../model/client-view';
 import type { ProgramDocument } from '../model/program-document';
+import { groupInfo } from '../model/supersets';
 import { useDayLabel } from '../shared/useDayText';
+import { GroupTag } from '../shared/GroupTag';
 import { useExerciseSummary } from '../shared/useExerciseSummary';
 
 interface ClientDayViewProps {
@@ -73,6 +75,7 @@ export function ClientDayView({ program, document, today, dayNumber }: ClientDay
                   <span className="font-medium">
                     {index + 1}. {options.byId.get(item.exerciseId)?.name ?? '…'}
                   </span>
+                  <GroupTag group={groupInfo(day, index)} />
                   <span className="text-muted text-sm">{summaryOf(item)}</span>
                   {item.note === null ? null : <span className="text-sm">{item.note}</span>}
                 </Link>

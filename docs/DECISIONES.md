@@ -1020,6 +1020,16 @@ Cómo añadir una: copia el formato, usa el siguiente número y no borres las an
   - **El cliente** ve solo el bloque en que va y, si hay otro detrás, "El siguiente bloque empieza el…" (D-084).
 - **Por qué:** una rutina de un bloque, que es lo normal, se edita igual que antes; los bloques solo ocupan sitio cuando se usan.
 
+### D-113 · Cómo se agrupan los ejercicios
+- **Fecha:** 2026-11-17
+- **Decisión:** detalles del PR 2.17 que D-077 no fijaba.
+  - **"Agrupar con el siguiente"** junta un ejercicio con el de debajo. Si alguno ya estaba en un grupo, los grupos se unen. El botón no sale en el último ejercicio ni si ya van juntos.
+  - **"Desagrupar"** suelta a todos los del grupo, no solo a ese ejercicio.
+  - **Un grupo es un tramo de ejercicios seguidos.** Tras mover, quitar, sustituir, duplicar o pegar, el día se ordena solo: un ejercicio que sale de su tramo queda suelto; un grupo de uno deja de serlo; duplicar uno agrupado mete la copia en el grupo. Los grupos se numeran por orden (hasta 15 por día).
+  - **La marca** dice el tipo y el puesto: "Superserie · 1 de 2", "Circuito · 2 de 3". En la fila de números del editor, los agrupados llevan una raya debajo.
+  - **El cliente** ve la misma marca en la lista de su día. El descanso sigue siendo el de cada ejercicio: no hay un descanso propio del grupo.
+- **Por qué:** el coach no tiene que cuidar los grupos al reordenar; la app los mantiene con sentido.
+
 ---
 
 ## Pendientes de decidir

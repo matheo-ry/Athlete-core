@@ -6,6 +6,9 @@
 -- =====================================================================
 begin;
 create extension if not exists pgtap with schema extensions;
+-- En staging, el usuario temporal de la CLI no busca en "extensions", donde
+-- vive pgTAP. Es la misma ruta de búsqueda que ya hay en local.
+set local search_path to "$user", public, extensions;
 
 select plan(14);
 

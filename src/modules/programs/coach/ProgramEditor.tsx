@@ -134,7 +134,13 @@ export function ProgramEditor({ saved, justSaved, onSaved, onReload }: ProgramEd
       </Card>
 
       <div className="flex flex-col gap-4 lg:grid lg:grid-cols-[20rem_1fr] lg:items-start lg:gap-6">
-        <Card className={cn(openDay !== null && 'hidden lg:block')}>
+        <Card
+          className={cn(
+            // En escritorio la lista de días acompaña al bajar por un día largo.
+            'lg:sticky lg:top-4 lg:max-h-[calc(100dvh-2rem)] lg:overflow-y-auto',
+            openDay !== null && 'hidden lg:block',
+          )}
+        >
           <DayList
             block={block}
             selectedDay={shownDay?.dayNumber ?? null}

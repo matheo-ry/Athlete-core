@@ -214,3 +214,21 @@ test('el editor avisa al salir sin guardar, recupera los cambios al volver y no 
   await again.getByRole('button', { name: 'Reload' }).click();
   await expect(againDays.nth(3)).toContainText('Thursday0 exercises');
 });
+
+test('en escritorio el menú y la lista de días siguen a la vista al bajar por un día largo', async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1280, height: 600 });
+  await signIn(page, 'coach.iron@example.com');
+  await chooseSpace(page, 'Iron Lab');
+  await page.goto('/coach/programs');
+  await page.getByRole('link', { name: 'Casa + Gym' }).click();
+  await expect(page.getByRole('heading', { name: 'Monday', level: 2 })).toBeVisible();
+
+  await page.getByRole('button', { name: 'Add exercise' }).scrollIntoViewIfNeeded();
+  await page.mouse.wheel(0, 2000);
+  await expect(page.getByRole('link', { name: 'Programs', exact: true })).toBeInViewport();
+  await expect(
+    page.getByRole('list', { name: 'Days of the cycle' }).getByRole('button').first(),
+  ).toBeInViewport();
+});

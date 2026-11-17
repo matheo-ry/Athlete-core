@@ -7,7 +7,15 @@ import { buttonClassName } from '@/core/ui';
 import { useExerciseOptions } from '@/modules/exercises';
 
 import { useSaveActiveWorkout } from '../api/useActiveWorkout';
-import { changeSet } from '../model/active-workout';
+import { usePreviousPerformance } from '../api/usePreviousPerformance';
+import {
+  MAX_SETS,
+  addSet,
+  changeSet,
+  copyPrevious,
+  previousSet,
+  unmarkSet,
+} from '../model/active-workout';
 import type { ActiveWorkout } from '../model/active-workout';
 import { SetEditor } from './SetEditor';
 
@@ -32,6 +40,8 @@ export function ExerciseScreen({
   const save = useSaveActiveWorkout();
   const touchStart = useRef<number | null>(null);
   const exercise = workout.exercises[position - 1];
+  const previous = usePreviousPerformance(exercise?.exerciseId ?? '', workout.dayNumber);
+  const now = () => new Date().toISOString();
   if (exercise === undefined) {
     return null;
   }
@@ -89,19 +99,42 @@ export function ExerciseScreen({
         {exercise.coachNote === null ? null : <p className="text-sm">{exercise.coachNote}</p>}
       </header>
       <ol className="flex flex-col gap-3">
-        {exercise.sets.map((set) => (
-          <SetEditor
-            key={set.id}
-            exercise={exercise}
-            set={set}
-            onChange={(patch) => {
-              save.mutate(
-                changeSet(workout, position, set.setNumber, patch, new Date().toISOString()),
-              );
-            }}
-          />
-        ))}
+        {exercise.sets.map((set) => {
+          const before = previousSet(previous, set.setNumber);
+          return (
+            <SetEditor
+              key={set.id}
+              exercise={exercise}
+              set={set}
+              previous={before}
+              onCopy={() => {
+                if (before !== null) {
+                  save.mutate(copyPrevious(workout, position, set.setNumber, before, now()));
+                }
+              }}
+              onUnmark={() => {
+                save.mutate(unmarkSet(workout, position, set.setNumber, now()));
+              }}
+              onChange={(patch) => {
+                save.mutate(
+                  changeSet(workout, position, set.setNumber, patch, new Date().toISOString()),
+                );
+              }}
+            />
+          );
+        })}
       </ol>
+      {exercise.sets.length >= MAX_SETS ? null : (
+        <button
+          type="button"
+          className={buttonClassName('secondary', 'self-start')}
+          onClick={() => {
+            save.mutate(addSet(workout, position, now(), () => crypto.randomUUID()));
+          }}
+        >
+          {t('workouts.set.add')}
+        </button>
+      )}
       <div className="flex justify-between gap-2">
         <button
           type="button"

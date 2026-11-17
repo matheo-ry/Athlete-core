@@ -102,6 +102,9 @@
     "failure": "To failure",
     "failureShort": "F",
     "decrease": "Decrease {{field}}",
-    "increase": "Increase {{field}}"
+    "increase": "Increase {{field}}",
+    "same": "Same",
+    "add": "+ Set",
+    "unmark": "Unmark set {{number}}"
   }
 }

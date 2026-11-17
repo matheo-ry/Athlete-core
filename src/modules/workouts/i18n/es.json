@@ -102,6 +102,9 @@
     "failure": "Al fallo",
     "failureShort": "F",
     "decrease": "Bajar {{field}}",
-    "increase": "Subir {{field}}"
+    "increase": "Subir {{field}}",
+    "same": "Igual",
+    "add": "+ Serie",
+    "unmark": "Desmarcar la serie {{number}}"
   }
 }

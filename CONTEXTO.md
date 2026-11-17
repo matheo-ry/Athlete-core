@@ -61,7 +61,7 @@
 - **El día saltado en la base de datos** (PR 3.2b): `program_missed_day_rules` (la regla de cada rutina de cliente, con el día desde el que vale; la cambia el coach con `set_missed_day_rule`) y `program_missed_days` (los días que faltó; los apunta la app del cliente con `record_missed_days`). Del lado de las rutinas, solo con calendario (D-139).
 - **Datos de salud en la base de datos** (PR 3.3a): `health_consents` (uno por espacio; `grant_health_consent` y `withdraw_health_consent`, que borra peso, medidas y notas del día), `body_weights` y `body_measurements`. Sin consentimiento no se escriben, ni las notas del día (D-140).
 - **Set-up y ajustes en la base de datos** (PR 3.3b): `client_exercise_setups` (uno por cliente y ejercicio), los ajustes de entreno del cliente en `profiles` (descanso, arrancar solo, sonido, vibración, "Igual") y el interruptor `achievementsEnabled` de `tenants.settings` (D-141).
-- **Base de datos local** (Supabase en Docker): 21 migraciones en `supabase/migrations/` (tablas, funciones de negocio, permisos, RLS, el espacio de logos, los ejercicios, las rutinas y los flags de cada módulo); 524 tests pgTAP (`npm run db:test`); 2 coaches y 6 clientes inventados (`supabase/seed.sql`, contraseña `password123`); tipos generados en `core/supabase/database.types.ts`.
+- **Base de datos local** (Supabase en Docker): 21 migraciones en `supabase/migrations/` (tablas, funciones de negocio, permisos, RLS, el espacio de logos, los ejercicios, las rutinas y los flags de cada módulo); 524 tests pgTAP (`npm run db:test`); 2 coaches y 6 clientes inventados (`supabase/seed.sql`, contraseña `password123`), con entrenos de varias semanas, días faltados, récords, peso y medidas para Ana, Bruno y Diego (PR 3.3c); tipos generados en `core/supabase/database.types.ts`.
 - **Tests:** 612 unitarios (`npm run check`) y 91 de extremo a extremo contra Supabase local (`npm run test:e2e`, también en el CI).
 - **Staging** (PR 1.17): proyecto `athlete-core-staging` de Supabase (Fráncfort, plan gratuito) con las mismas tablas y datos inventados que en local. Los emails salen de verdad, por Resend, desde `no-reply@athlete-core.com`. Se prueba con `npm run dev:staging` (hace falta `.env.staging.local`; guía en `supabase/README.md`). Todavía no hay web publicada.
 - **App de Android** (PR 3.1a): proyecto `android/` con Capacitor. `npm run android:build` genera `build/athlete-core-staging.apk`, que apunta a staging; guía para el propietario en `android/README.md` (D-137). `core/native` resuelve el botón "atrás", la barra de estado y las zonas seguras (`--safe-top`, `--safe-bottom` en `src/index.css`).
@@ -77,11 +77,11 @@
 
 Los 5 más recientes, el más nuevo arriba. El historial completo está en `docs/ESTADO.md`.
 
+- 2026-11-17 — PR 3.3c: entrenos inventados en el seed para Ana, Bruno y Diego, con días faltados, récords y datos de salud.
 - 2026-11-17 — Arreglo del test de flujos `program-client-tab`, que fallaba a ratos porque el `Spinner` también tiene el papel `status`. Sin cambios en `src/`.
 - 2026-11-17 — Reparto Claude/Gemini (D-142): Claude decide, hace base de datos, seguridad, `src/core/` y los PR 3.3 a 3.9 (y el 3.3c, entrenos inventados en el seed), y revisa los de Gemini; Gemini hace 3.10 a 3.18 y revisa los de Claude. Columna "Quién" y tabla de paralelo en `docs/PROMPTS.md` §7; trampas de Windows en `docs/GUIA-GIT.md` §14.
 - 2026-11-17 — Arreglo de los tests de flujos `home-cards` y `program-assign`, que solo pasaban en lunes por la semana a medias de D-075. Sin cambios en `src/`.
 - 2026-11-17 — PR 3.3b: set-up del cliente, ajustes de entreno e interruptor de logros, con 26 tests pgTAP (D-141).
-- 2026-11-17 — PR 3.3a: consentimiento de datos de salud, peso corporal y medidas, con 35 tests pgTAP (D-140).
 
 ## A tener en cuenta ahora
 

@@ -21,7 +21,7 @@ test('la ficha de Ana enseña "Casa + Gym", la semana en que va y sus días', as
   await page.goto('/coach/clients');
   await page.getByRole('link', { name: /Ana Ejemplo/ }).click();
 
-  // Criterio 1, con la rutina del seed (empezó hace 14 días: va por la semana 3).
+  // Criterio 1, con la rutina del seed (empezó hace 42 días: va por la semana 7).
   await expect(page.getByRole('button', { name: 'Program' })).toBeVisible();
   await expect(page.getByText('Casa + Gym', { exact: true })).toBeVisible();
   await expect(page.getByText(/^Week \d+ · No end date · With calendar · Started /)).toBeVisible();

@@ -45,5 +45,17 @@
     "performanceBetter": "Mejor que la vez anterior",
     "performanceWorse": "Menor que la vez anterior",
     "performanceSame": "Igual que la vez anterior"
+  },
+  "home": {
+    "activityTitle": "Actividad",
+    "noActivity": "Aún no hay entrenos de tus clientes",
+    "finishedDay": "{{clientName}} terminó {{dayName}}",
+    "records_one": "{{count}} récord",
+    "records_other": "{{count}} récords",
+    "changedExercises_one": "cambió {{count}} ejercicio",
+    "changedExercises_other": "cambió {{count}} ejercicios",
+    "notes_one": "{{count}} nota",
+    "notes_other": "{{count}} notas",
+    "newBadge": "Nuevo"
   }
 }

@@ -6,4 +6,5 @@
 - **Pestaña en la ficha del cliente:** aportada por `manifest.ts` a través de `clientProfileTabs` (D-109).
 - **Flag:** `workouts` (tipo core, activo para todos), en la migración `20261116120000_workouts.sql`.
 - **RM estimado y récords** (PR 3.15, D-129): `model/rm.ts` y `model/records.ts`, exportados en `index.ts`. Es la única fórmula de la app: `progress` y la actividad del coach la usan desde aquí.
+- **Actividad del coach** (PR 3.14, D-114, D-128): tarjeta "Actividad" en el inicio del coach (`coach/CoachActivityCard.tsx`), con la marca "Nuevo" guardada en el dispositivo.
 - **Estado:** PR 3.13 (pestaña del coach en la ficha del cliente).

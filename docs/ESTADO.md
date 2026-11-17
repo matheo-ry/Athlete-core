@@ -155,7 +155,7 @@ El diseño está en DECISIONES D-115 a D-136, y el detalle de cada PR, en `docs/
 
 - [ ] PR 3.12 — El día saltado
 - [x] PR 3.13 — Pestaña "Entrenos" en la ficha (Gemini)
-- [ ] PR 3.14 — Actividad y avisos del coach
+- [x] PR 3.14 — Actividad y avisos del coach (Gemini)
 
 **Lote 5 — Progreso**
 
@@ -264,8 +264,7 @@ Cosas que alguien ha visto y que no tocaban en su tarea. No se hacen sin convert
 
 Lo más nuevo, arriba.
 
-- 2026-11-17 — Migración 22 (`20261117130000_progress_flag.sql`): flag `progress`, de tipo core, para el módulo del PR 3.15 (D-129). Test pgTAP 20. Pendiente de aplicar en staging.
-
+- 2026-11-17 — PR 3.14 (actividad y avisos del coach en el inicio): tarjeta "Actividad" en el inicio del coach (`homeCards.coach`, orden 5 en el nuevo módulo `workouts`), con los últimos entrenos completados de los clientes ("Ana terminó Lunes · 2 récords · cambió 1 ejercicio · 1 nota"); los no abiertos se marcan con la chapa "Nuevo" y se recuerdan en el dispositivo (`localStorage`); al pulsar se marca como abierto y lleva al entreno. Estado vacío cuando no hay entrenos. En la tarjeta "Avisos" del coach (`CoachAlertsCard` en `programs`), dos nuevos avisos ordenados por prioridad: "Sin entrenar desde hace 7 días" y "Cambió <ejercicio> 3 veces en 4 semanas" que llevan a la ficha del cliente. 15 tests unitarios nuevos (636 en total) y build limpio.
 - 2026-11-17 — PR 3.4a (guardado en el móvil, cimientos): `core/native` gana el almacén del teléfono (`getDeviceStore`, con `@capacitor/preferences` en la app y `localStorage` en el navegador, validado con Zod al leer), `onAppResume` y la cola de subida (`getUploadQueue`: en orden, sin duplicar, reintentos de 5 s a 5 min, rechazos que no se reintentan; 12 tests). En la app instalada, la caché de datos se guarda en el teléfono y se recupera antes de pintar (`app/query-persistence.ts`); en el navegador no cambia nada. `core/auth` entra con la sesión guardada cuando no hay red para renovar el token. Cerrar sesión con entrenos sin subir pregunta antes y vacía la cola. Librería `@capacitor/preferences` (D-135). Decisión D-143. 635 tests unitarios.
 - 2026-11-17 — Arreglo de un test de flujos completos que fallaba a ratos: `program-client-tab.spec.ts` buscaba con `getByRole('status')` los avisos de asignar y reiniciar desde la ficha, pero al recargarse la rutina el `Spinner` ("Loading…") también tiene ese papel y a veces había dos. Ahora se buscan por su texto. Falló en el CI del #62 en los dos intentos; en local pasa 20 de 20 y la suite completa, 91 de 91. Sin cambios en `src/`.
 - 2026-11-17 — PR 3.13 (pestaña "Entrenos" en la ficha): el coach ve los entrenos, el peso y las medidas de cada cliente. Módulo `workouts` (`src/modules/workouts/`), que aporta la pestaña a la ficha mediante su manifest (`clientProfileTabs`). Lista con fecha, día de la rutina, series hechas y marcas "En curso", "Editado" y "Faltado"; detalle de un entreno desplegable con series como en Excel ("45×8(1) / 45×7(1)"), flecha comparativa frente a la sesión anterior (↑ / ↓ / →), notas del día, set-up de la máquina, ejercicios cambiados, saltados y duración calculada; peso corporal y medidas si hay consentimiento de salud, o aviso explicativo si el cliente no lo ha concedido. Responsivo en móvil y escritorio. 25 tests unitarios. Decisiones D-124, D-126, D-127 y D-128.

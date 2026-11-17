@@ -335,6 +335,8 @@
     "alertsTitle": "Rutinas que mirar",
     "allGood": "Todos tus clientes tienen rutina.",
     "noProgram": "Sin rutina",
+    "notTrained": "Sin entrenar desde hace {{days}} días",
+    "exerciseChanged": "Cambió {{exerciseName}} {{times}} veces en 4 semanas",
     "endsOn": "Termina la rutina el {{date}}",
     "repeating": "Terminada: se repite hasta que la cambies",
     "todayTitle": "Hoy toca",

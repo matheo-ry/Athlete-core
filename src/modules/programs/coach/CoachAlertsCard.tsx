@@ -7,6 +7,7 @@ import { useTenantMembers } from '@/core/tenancy';
 import { Card } from '@/core/ui';
 
 import { useClientPrograms } from '../api/useAssignments';
+import { useWorkoutAlerts } from '../api/useWorkoutAlerts';
 import { routinesByClient } from '../model/assignments';
 import { localToday } from '../model/calendar';
 import { coachAlerts } from '../model/coach-alerts';
@@ -14,10 +15,10 @@ import type { CoachAlert } from '../model/coach-alerts';
 import { shortDate } from '../shared/useProgressText';
 
 /**
- * La tarjeta de avisos del inicio del coach (PR 2.18, D-085): clientes sin
- * rutina o con la rutina a punto de acabar o ya repitiéndose. Cada línea
- * lleva a la ficha del cliente. Sin clientes todavía, no sale: de eso se
- * ocupan los primeros pasos.
+ * La tarjeta de avisos del inicio del coach (PR 2.18, D-085, D-128): clientes sin
+ * rutina, sin entrenar desde hace 7 días, con 3 cambios del mismo ejercicio,
+ * o con la rutina a punto de acabar o ya repitiéndose. Cada línea lleva a la
+ * ficha del cliente. Sin clientes todavía, no sale: de eso se ocupan los primeros pasos.
  */
 export function CoachAlertsCard() {
   const { t } = useTranslation();
@@ -25,8 +26,9 @@ export function CoachAlertsCard() {
   const today = useMemo(() => localToday(), []);
   const members = useTenantMembers();
   const programs = useClientPrograms();
+  const workoutAlerts = useWorkoutAlerts(today);
 
-  if (!members.isSuccess || !programs.isSuccess) {
+  if (!members.isSuccess || !programs.isSuccess || !workoutAlerts.isSuccess) {
     // Cargando o con error: el inicio no se llena de avisos a medias.
     return null;
   }
@@ -36,11 +38,27 @@ export function CoachAlertsCard() {
   if (clients.length === 0) {
     return null;
   }
-  const alerts = coachAlerts(clients, routinesByClient(programs.data, today), today);
-  const detail = (alert: CoachAlert) =>
-    alert.kind === 'endsSoon'
-      ? t('programs.home.endsOn', { date: shortDate(alert.endsOn, language) })
-      : t(`programs.home.${alert.kind}`);
+  const alerts = coachAlerts(
+    clients,
+    routinesByClient(programs.data, today),
+    today,
+    workoutAlerts.data,
+  );
+  const detail = (alert: CoachAlert) => {
+    switch (alert.kind) {
+      case 'endsSoon':
+        return t('programs.home.endsOn', { date: shortDate(alert.endsOn, language) });
+      case 'notTrained':
+        return t('programs.home.notTrained', { days: alert.days });
+      case 'exerciseChanged':
+        return t('programs.home.exerciseChanged', {
+          exerciseName: alert.exerciseName,
+          times: alert.times,
+        });
+      default:
+        return t(`programs.home.${alert.kind}`);
+    }
+  };
 
   return (
     <Card className="flex flex-col gap-2">

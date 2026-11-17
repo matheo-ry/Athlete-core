@@ -1326,6 +1326,14 @@ Cómo añadir una: copia el formato, usa el siguiente número y no borres las an
   - **En `audit_log`**: `health_consent.granted` (con la versión) y `health_consent.withdrawn`, solo con identificadores.
 - **Por qué:** escribir peso y medidas no tiene reglas de negocio más allá del consentimiento, que el RLS ya cubre; una función por cada cosa sería código de más.
 
+### D-141 · Cómo se guardan el set-up, los ajustes de entreno y el interruptor de logros
+- **Fecha:** 2026-11-17
+- **Decisión:** detalles del PR 3.3b que D-120, D-122, D-123 y D-130 no fijaban.
+  - **Set-up** (`client_exercise_setups`): uno por cliente y ejercicio del negocio, de 1 a 500 caracteres. El cliente lo escribe directamente (RLS) mientras siga de alta; el coach lo lee y no lo escribe.
+  - **Ajustes de entreno**, columnas de `profiles` (de la persona, valen en todos sus espacios): `default_rest_seconds` (120 de partida, de 0 a 3600 como el descanso de la rutina), `rest_autostart`, `rest_sound` y `rest_vibration` (activados) y `same_button`: `previous` (por defecto, "Igual" copia la vez anterior) o `previous_then_today` (la serie 1 copia la vez anterior y las siguientes, la serie anterior de hoy). Los cambia cada uno en el suyo; el coach los ve.
+  - **Interruptor de logros:** la clave `achievementsEnabled` de `tenants.settings`. Sin la clave, activados. La base de datos solo admite un sí o un no, y lo cambia el dueño. `achievements_enabled(tenant)` lo lee con el valor por defecto. Leerlo en la app (`parseTenantSettings`, en `core/tenancy`) llega con la pantalla de Ajustes.
+- **Por qué:** como el peso (D-140), no hay reglas de negocio más allá de quién escribe, que el RLS ya cubre.
+
 ---
 
 ## Pendientes de decidir

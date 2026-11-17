@@ -11,7 +11,7 @@ Este archivo lo actualiza quien termina una tarea, en el mismo Pull Request, jun
 
 ## Siguiente
 
-0. **PR 3.3a** (`db/salud-y-ajustes`) en revisión; después, **PR 3.3b** (set-up, ajustes y el interruptor de logros).
+0. **PR 3.3a** (`db/salud-y-ajustes`) y **PR 3.3b** (`db/setup-y-ajustes`, encima del 3.3a) en revisión. Después, **PR 3.4 — Guardado en el móvil**.
 1. Fusionar el 3.2a y después el 3.2b (con el visto bueno del propietario, D-068), y aplicar en staging las migraciones 17 a 19.
 2. **PR 3.3 — Base de datos: datos de salud, set-up y ajustes del cliente.**
 3. El propietario dio por buenas, por ahora, la lista de `docs/referencia/biblioteca-ejercicios.md` y las rutinas de ejemplo. Se pueden retocar más adelante.
@@ -134,7 +134,7 @@ El diseño está en DECISIONES D-115 a D-136, y el detalle de cada PR, en `docs/
   - [ ] 3.2b — la regla del día saltado y los días faltados (en revisión)
 - [ ] PR 3.3 — Base de datos: datos de salud, set-up y ajustes del cliente (partido en dos, como preveía `docs/PROMPTS.md` §7)
   - [ ] 3.3a — consentimiento, peso y medidas (en revisión)
-  - [ ] 3.3b — set-up, ajustes de entreno y el interruptor de logros
+  - [ ] 3.3b — set-up, ajustes de entreno y el interruptor de logros (en revisión)
 - [ ] PR 3.4 — Guardado en el móvil
 
 **Lote 2 — Apuntar**
@@ -263,6 +263,7 @@ Cosas que alguien ha visto y que no tocaban en su tarea. No se hacen sin convert
 
 Lo más nuevo, arriba.
 
+- 2026-11-17 — PR 3.3b (base de datos: set-up y ajustes): migración 21. `client_exercise_setups` (uno por cliente y ejercicio, hasta 500 caracteres; lo escribe el cliente y lo lee el coach). Ajustes de entreno en `profiles`: descanso por defecto (2:00), arrancar solo, sonido, vibración y cómo funciona "Igual". Interruptor `achievementsEnabled` en `tenants.settings` (activado sin la clave) y `achievements_enabled()`. Decisión D-141. 26 tests pgTAP nuevos (524 en total). Regenera `src/core/supabase/database.types.ts`.
 - 2026-11-17 — PR 3.3a (base de datos: datos de salud): migración 20. `health_consents` (por espacio, con fecha, versión del texto y retirada), `body_weights` y `body_measurements` (lista cerrada de D-127, con lado). Solo se escriben con el consentimiento dado (RLS y un trigger en las notas del día). `grant_health_consent` y `withdraw_health_consent`; retirarlo borra peso, medidas y notas del día, y queda en `audit_log`. El coach lee lo de sus clientes con consentimiento y no escribe. Decisión D-140. 35 tests pgTAP nuevos (498 en total). Regenera `src/core/supabase/database.types.ts`.
 - 2026-11-17 — PR 3.2b (base de datos: el día saltado): migración 19. `program_missed_day_rules` guarda la regla de cada rutina de cliente ("se pierde", "se recupera en el siguiente descanso" o "se mueve todo") con el día desde el que vale; `set_missed_day_rule` la cambia el coach y queda en `audit_log`. `program_missed_days` guarda los días que faltó, del lado de las rutinas; los apunta la app del cliente con `record_missed_days` y la fecha del móvil. Solo con calendario. Decisión D-139. 28 tests pgTAP nuevos (463 en total). Regenera `src/core/supabase/database.types.ts`.
 - 2026-11-17 — PR 3.2a (base de datos: entrenos): migraciones 17 y 18. Tablas `workouts`, `workout_exercises` (con su copia de lo prescrito, D-087) y `workout_sets` (una fila por serie y lado), con identificadores del móvil y RLS de solo lectura: el cliente lee los suyos, el coach los de su negocio, el dado de baja nada. `sync_workout` sube un entreno entero: no duplica, gana el cambio más reciente en cada fila, un cerrado sigue cerrado, marca "Editado" y no deja corregir pasados 7 días. `discard_workout` borra un entreno abierto. Flag `workouts` (core). La forma de medir de un ejercicio con series apuntadas tampoco cambia. Decisión D-138. 36 tests pgTAP nuevos (435 en total). Regenera `src/core/supabase/database.types.ts`.

@@ -167,6 +167,59 @@ export type Database = {
           },
         ];
       };
+      client_exercise_setups: {
+        Row: {
+          client_id: string;
+          created_at: string;
+          exercise_id: string;
+          id: string;
+          setup: string;
+          tenant_id: string;
+          updated_at: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          client_id: string;
+          created_at?: string;
+          exercise_id: string;
+          id?: string;
+          setup: string;
+          tenant_id: string;
+          updated_at?: string;
+        };
+        Update: {
+          client_id?: string;
+          created_at?: string;
+          exercise_id?: string;
+          id?: string;
+          setup?: string;
+          tenant_id?: string;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'client_exercise_setups_tenant_id_exercise_id_fkey';
+            columns: ['tenant_id', 'exercise_id'];
+            isOneToOne: false;
+            referencedRelation: 'exercises';
+            referencedColumns: ['tenant_id', 'id'];
+          },
+          {
+            foreignKeyName: 'client_exercise_setups_tenant_id_fkey';
+            columns: ['tenant_id'];
+            isOneToOne: false;
+            referencedRelation: 'tenant_effective_features';
+            referencedColumns: ['tenant_id'];
+          },
+          {
+            foreignKeyName: 'client_exercise_setups_tenant_id_fkey';
+            columns: ['tenant_id'];
+            isOneToOne: false;
+            referencedRelation: 'tenants';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
       exercise_library: {
         Row: {
           equipment: string;
@@ -412,8 +465,13 @@ export type Database = {
       profiles: {
         Row: {
           created_at: string;
+          default_rest_seconds: number;
           display_name: string;
           locale: string;
+          rest_autostart: boolean;
+          rest_sound: boolean;
+          rest_vibration: boolean;
+          same_button: string;
           terms_accepted_at: string | null;
           terms_version: string | null;
           user_id: string;
@@ -422,8 +480,13 @@ export type Database = {
         ComputedFields: never;
         Insert: {
           created_at?: string;
+          default_rest_seconds?: number;
           display_name?: string;
           locale?: string;
+          rest_autostart?: boolean;
+          rest_sound?: boolean;
+          rest_vibration?: boolean;
+          same_button?: string;
           terms_accepted_at?: string | null;
           terms_version?: string | null;
           user_id: string;
@@ -431,8 +494,13 @@ export type Database = {
         };
         Update: {
           created_at?: string;
+          default_rest_seconds?: number;
           display_name?: string;
           locale?: string;
+          rest_autostart?: boolean;
+          rest_sound?: boolean;
+          rest_vibration?: boolean;
+          same_button?: string;
           terms_accepted_at?: string | null;
           terms_version?: string | null;
           user_id?: string;
@@ -1360,6 +1428,7 @@ export type Database = {
     };
     Functions: {
       accept_terms: { Args: { p_version: string }; Returns: undefined };
+      achievements_enabled: { Args: { p_tenant: string }; Returns: boolean };
       archive_client: { Args: { p_tenant: string; p_user: string }; Returns: undefined };
       assign_program: {
         Args: {

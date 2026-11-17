@@ -22,8 +22,9 @@
 ## Dónde estamos
 
 - **Fase actual:** 3 — Entreno y progreso, en construcción (diseño en D-115 a D-137). Las Fases 1 y 2 están terminadas y fusionadas en `main`.
-- **Última tarea terminada:** PR 3.5a — apuntar un entreno, primera parte (D-145), en revisión. Antes, PR 3.4 — guardado en el móvil, fusionado en dos partes: 3.4a (#69) y 3.4b (#73), D-143. Antes, los PR de Gemini 3.13 (#70), 3.15 (#71, flag `progress` en #74) y 3.14 (#72). En la Fase 3 no se piden pruebas manuales PR a PR: al cerrar la fase se hace una prueba completa (PROMPTS §0).
-- **Siguiente tarea:** **PR 3.5b** — el gris de la vez anterior, "Igual", "+ Serie", desmarcar e ir directo al abrir (`docs/PROMPTS.md` §7, D-145), en `workouts`. Trabajan Claude y Gemini a la vez (D-142): quién hace cada PR, en la columna "Quién" de §7, con qué carpetas toca y si usa la base local. Gemini decide en sus PR y lo deja escrito como D-xxx "(Gemini)" (D-144). Chats en paralelo: reglas de `docs/GUIA-GIT.md` §15. En staging están aplicadas y probadas las migraciones 1 a 21.
+- **Última tarea terminada:** PR 3.5a — apuntar un entreno, primera parte (D-146), y PR 3.16 — gráficas del progreso (Gemini, D-146). Antes, PR 3.4b (#73, D-143) y reglas de chats en paralelo (D-144). En la Fase 3 no se piden pruebas manuales PR a PR: al cerrar la fase se hace una prueba completa (PROMPTS §0).
+- **Siguiente tarea:** **PR 3.5b** — el gris de la vez anterior, "Igual", "+ Serie", desmarcar e ir directo al abrir (`docs/PROMPTS.md` §7, D-146), en `workouts`. Trabajan Claude y Gemini a la vez (D-142): quién hace cada PR, en la columna "Quién" de §7, con qué carpetas toca y si usa la base local. Gemini decide en sus PR y lo deja escrito como D-xxx "(Gemini)" (D-144). Chats en paralelo: reglas de `docs/GUIA-GIT.md` §15. En staging están aplicadas y probadas las migraciones 1 a 21.
+
 
 ## Cómo será la Fase 3 (diseñada, D-115 a D-136)
 
@@ -78,11 +79,11 @@
 
 Los 5 más recientes, el más nuevo arriba. El historial completo está en `docs/ESTADO.md`.
 
-- 2026-11-17 — PR 3.5a: el cliente empieza un entreno desde "Hoy toca" o "Entreno" y apunta sus series en el móvil, guardadas al instante y en la cola (D-145).
+- 2026-11-17 — PR 3.5a: el cliente empieza un entreno desde "Hoy toca" o "Entreno" y apunta sus series en el móvil, guardadas al instante y en la cola (D-146).
+- 2026-11-17 — PR 3.16: gráficas de progreso en SVG propio sin librería (D-135). Por ejercicio: métricas, periodos, % de progreso por RM (D-129) y detalle del entreno bajo la gráfica. Peso y medidas con consentimiento (D-126, D-127). Decisión D-145 (Gemini).
 - 2026-11-17 — Solo documentación: reglas para chats en paralelo (GUIA-GIT §15) y autonomía de Gemini (D-144, sustituye en parte D-142). PROMPTS §7 dice qué carpetas toca cada PR y si usa la base local.
 - 2026-11-17 — PR 3.4b: el módulo `workouts` guarda en el móvil la rutina y la vez anterior de cada ejercicio, sube lo pendiente y avisa de los rechazos (D-143).
 - 2026-11-17 — Fusionados 3.13, 3.15 y 3.14 tras la revisión de Claude: validación Zod, errores que ya no se tragan, "DIA n" traducido y una sola fórmula de RM y récords (D-129). Flag `progress` (migración 22).
-- 2026-11-17 — PR 3.14: actividad y avisos del coach en el inicio (tarjeta de actividad con récords/cambios/notas y avisos de inactividad >= 7 días y cambios reiterados de ejercicios).
 
 ## A tener en cuenta ahora
 

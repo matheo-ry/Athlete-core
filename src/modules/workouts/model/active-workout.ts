@@ -177,7 +177,7 @@ export function setCounts(exercises: readonly ActiveExercise[]): { done: number;
   return { done, total };
 }
 
-/** Pasos de los botones − y + (D-120); segundos y metros, D-145. */
+/** Pasos de los botones − y + (D-120); segundos y metros, D-146. */
 export const STEPS = {
   kg: 2.5,
   lb: 5,
@@ -225,7 +225,7 @@ export function toSyncPayload(workout: ActiveWorkout): { [key: string]: JsonValu
       coach_note: exercise.coachNote,
       is_skipped: false,
       changed_at: exercise.changedAt,
-      // Los unilaterales se apuntan por lado desde el PR 3.8 (D-145).
+      // Los unilaterales se apuntan por lado desde el PR 3.8 (D-146).
       sets: exercise.isUnilateral
         ? []
         : exercise.sets

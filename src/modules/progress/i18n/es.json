@@ -6,6 +6,10 @@
     "label": "Progreso"
   },
   "title": "Progreso",
+  "tabs": {
+    "exercises": "Ejercicios",
+    "health": "Peso y medidas"
+  },
   "empty": {
     "title": "Aún no hay entrenos registrados",
     "description": "Cuando se completen entrenos, aquí aparecerá el historial de cada ejercicio, el RM estimado y los récords."
@@ -14,11 +18,30 @@
     "current": "Rutina actual",
     "past": "Rutina anterior"
   },
+  "period": {
+    "fourWeeks": "4 semanas",
+    "threeMonths": "3 meses",
+    "all": "Todo"
+  },
+  "metric": {
+    "estimatedRm": "RM estimado",
+    "maxWeight": "Peso máx.",
+    "volume": "Volumen",
+    "reps": "Repeticiones"
+  },
   "stats": {
     "last": "Último",
     "record": "Récord",
     "maxWeight": "Máx.",
-    "estimatedRm": "RM est."
+    "estimatedRm": "RM est.",
+    "progress": "Progreso",
+    "progressRm": "Progreso RM"
+  },
+  "chart": {
+    "title": "Gráfica",
+    "empty": "No hay suficientes datos para la gráfica",
+    "selectedSession": "Entreno seleccionado",
+    "tapHint": "Toca o desliza en la gráfica para ver cada entreno"
   },
   "history": {
     "title": "Historial",
@@ -26,5 +49,29 @@
     "showHistory": "Ver historial",
     "hideHistory": "Ocultar historial",
     "dayLabel": "DIA {{number}}"
+  },
+  "health": {
+    "title": "Evolución de peso corporal y medidas",
+    "bodyWeight": "Peso corporal",
+    "measurements": "Medidas corporales",
+    "selectMetric": "Métrica",
+    "change": "Cambio",
+    "noConsentCoach": "Tu cliente no ha dado permiso para compartir sus datos de salud.",
+    "noConsentClient": "Aún no has activado los datos de salud.",
+    "empty": "Aún no hay registros de peso o medidas.",
+    "kinds": {
+      "waist": "Cintura",
+      "hips": "Cadera",
+      "chest": "Pecho",
+      "shoulders": "Hombros",
+      "neck": "Cuello",
+      "arm": "Brazo",
+      "thigh": "Muslo",
+      "calf": "Gemelo"
+    },
+    "side": {
+      "right": "derecho",
+      "left": "izquierdo"
+    }
   }
 }

@@ -188,7 +188,7 @@ Si un secreto se sube por error: **cámbialo de inmediato** en el servicio (dalo
 git worktree add ../app-tarea-b -b feat/tarea-b
 ```
 
-- Para evitar choques, dos tareas en paralelo no deben tocar el mismo módulo.
+- Para evitar choques, sigue las reglas de chats en paralelo (§15).
 
 ## 9. Cambios en la base de datos
 
@@ -279,3 +279,14 @@ En el ordenador del proyecto la terminal es Windows PowerShell 5.1. Esto ya ha f
 - **El texto "NativeCommandError"** que PowerShell pone alrededor de la salida de `git` o `npx` no significa que haya fallado: mira el resultado real (`git status`, `git log`).
 - **Con el portátil en batería** los tests van unas 4 veces más lentos y muchos fallan por tiempo agotado. Si fallan por tiempo tests que no has tocado, mira la batería (`Get-CimInstance Win32_Battery`: `BatteryStatus` 1 = descargando, 2 = enchufado) y pide que se enchufe. Nunca `--no-verify` ni subir los tiempos de los tests. Dos servidores de desarrollo abiertos también ralentizan.
 - **Si fallan por tiempo agotado los primeros tests de muchos archivos** (y el portátil está enchufado), es que este ordenador no da abasto con todos los archivos de Vitest a la vez (usa uno por núcleo). Ejecuta con menos a la vez, también para el push: `$env:VITEST_MAX_WORKERS = '3'` en la misma ventana de PowerShell, antes de `npm run check` o `git push`. Solo cambia cuántos archivos van en paralelo: no salta ningún test ni cambia sus tiempos.
+
+## 15. Chats en paralelo
+
+Lección del 2026-11-17: tres PR crearon a la vez `src/modules/workouts` y dos chats chocaron en la base de datos local. Desde entonces:
+
+1. **Cada chat en su worktree y su rama.** Nunca dos chats en la misma rama ni en la misma carpeta de trabajo (§8).
+2. **Nunca en paralelo dos PR que creen o cambien la misma carpeta de módulo o los mismos archivos.** Si una carpeta aún no existe, la crea un solo PR y los demás esperan a que se fusione. Qué carpetas toca cada PR de la Fase 3 está en `docs/PROMPTS.md` §7.
+3. **La base de datos local es una sola** para todos los worktrees. Dos chats que necesiten `npm run db:reset`, `npm run db:test` o los tests e2e no van a la vez. Si un test falla por tiempo o por la base, se repite con el otro chat parado antes de culpar al código.
+4. **Al empezar**, el chat ejecuta `gh pr list` y `git worktree list`. Si su tarea toca archivos de otro PR abierto, lo dice y para.
+5. **Cuando se fusiona algo en `main`**, cada rama abierta integra `main` con un merge (`git fetch origin main` y `git merge origin/main`; nunca `rebase` ni `push --force`) antes de pedir revisión. En los conflictos de `CONTEXTO.md` y `docs/ESTADO.md` se conserva lo de los dos lados.
+6. **Un chat que fusiona PR avisa al propietario** de qué otras ramas abiertas quedan detrás de `main` (`gh pr list` y, para cada una, `git log --oneline <rama>..origin/main`).

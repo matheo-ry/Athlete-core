@@ -11,7 +11,7 @@ Este archivo lo actualiza quien termina una tarea, en el mismo Pull Request, jun
 
 ## Siguiente
 
-1. **PR 3.5 — Apuntar un entreno** (Claude). Claude y Gemini trabajan en paralelo según `docs/PROMPTS.md` §7 (D-142).
+1. **PR 3.5 — Apuntar un entreno** (Claude). Claude y Gemini trabajan en paralelo según `docs/PROMPTS.md` §7 (D-142, D-144) y las reglas de `docs/GUIA-GIT.md` §15.
 2. El propietario dio por buenas, por ahora, la lista de `docs/referencia/biblioteca-ejercicios.md` y las rutinas de ejemplo. Se pueden retocar más adelante.
 
 ## Fases
@@ -270,6 +270,7 @@ Cosas que alguien ha visto y que no tocaban en su tarea. No se hacen sin convert
 
 Lo más nuevo, arriba.
 
+- 2026-11-17 — Chats en paralelo y autonomía de Gemini (solo documentación). Lección del día: tres PR crearon a la vez `src/modules/workouts` y dos chats chocaron en la base local. Seis reglas nuevas en `docs/GUIA-GIT.md` §15 (worktree y rama por chat, nunca dos PR sobre la misma carpeta, base local de uno en uno, mirar `gh pr list` y `git worktree list` al empezar, integrar `main` con merge, avisar de las ramas que quedan detrás), resumidas en AGENTS.md §7. `docs/PROMPTS.md` §7 gana las columnas "Base local" y "Carpetas que toca" y una tabla de paralelos nueva. D-144: Gemini decide en sus PR, puede tocar cualquier carpeta, escribir migraciones y añadir librerías, y escribe sus D-xxx "(Gemini)"; Claude revisa antes de fusionar todo lo que toque `supabase/`, RLS o permisos. La plantilla de PR cambia "Dudas para Claude" por "Decisiones tomadas y dudas".
 - 2026-11-17 — PR 3.4b (guardado en el móvil, módulo `workouts`): amplía el módulo que creó el PR 3.13, todavía sin pantallas del cliente. Su servicio (`services`, campo nuevo y opcional del manifest que `app/` monta con sesión, D-143) descarga al abrir o volver a la app con conexión la rutina vigente (con las claves de `programs`, así "Entreno" y "Hoy toca" también funcionan sin red) y la vez anterior de cada ejercicio (D-120: mismo día de la rutina; si no, cualquiera), y la guarda en el teléfono validada con Zod. Sube la cola con `sync_workout`; `not_allowed` avisa "No se pudo guardar: ya no tienes acceso a …" y cualquier otra regla o dato no válido se rechaza sin reintentar. Al cerrar sesión se borra del teléfono todo lo del usuario (`userKey`, `removeUser`). Probado en el navegador contra la base de datos local como Ana. 653 tests unitarios.
 - 2026-11-17 — Fusionados los PR 3.13 (#70), 3.15 (#71, con el flag `progress` en #74) y 3.14 (#72), revisados por Claude. En el 3.14, la actividad del coach usa la fórmula única de RM y récords de `workouts/model` (D-129). Regla nueva: en la Fase 3 no se piden pruebas manuales PR a PR (PROMPTS §0).
 - 2026-11-17 — Migración 22 (`20261117130000_progress_flag.sql`): flag `progress`, de tipo core, para el módulo del PR 3.15 (D-129). Test pgTAP 20. Pendiente de aplicar en staging.

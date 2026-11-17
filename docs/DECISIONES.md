@@ -1336,6 +1336,7 @@ Cómo añadir una: copia el formato, usa el siguiente número y no borres las an
 
 ### D-142 · Reparto Claude/Gemini
 - **Fecha:** 2026-11-17
+- **Sustituida en parte por D-144:** Gemini ya decide en sus PR, puede tocar `supabase/` y `src/core/` y escribe sus propias D-xxx. Lo que sigue vigente de aquí es quién hace cada PR y la revisión cruzada.
 - **Decisión:** ajusta D-115. Desde el PR 3.3, la Fase 3 la hacen dos agentes con papeles distintos:
   - **Claude decide:** es el único que escribe en `docs/DECISIONES.md`. Hace la base de datos (`supabase/`), la seguridad, `src/core/` y los PR 3.3 a 3.9. **Revisa cada PR de Gemini** (plantilla §4 de `docs/PROMPTS.md`) antes de que el propietario lo fusione.
   - **Gemini revisa cada PR de Claude** con la misma plantilla, antes de fusionarlo.
@@ -1358,6 +1359,19 @@ Cómo añadir una: copia el formato, usa el siguiente número y no borres las an
   - **Arranque de la subida:** el manifest de un módulo gana un campo opcional, `services`: componentes sin pantalla que `app/` monta con la sesión iniciada, en cualquier pantalla y cualquier espacio. Cada uno puede decir con `enabled` dónde está activo; si no lo está, ni se carga su código (el de `workouts`, solo donde `canLogWorkouts()`). Hace falta porque un cliente dado de baja ya no puede entrar en ese espacio, y su cola tiene que intentarlo igual para poder avisarle (PR 3.4b). Aprobado por el propietario (toca `core/modules`).
 - **Por qué:** el criterio del PR 3.4 es abrir la app sin red, tras cerrarla del todo, y ver la rutina y el día de hoy. Con solo la rutina guardada no se llegaba a esa pantalla.
 - **Revisar si:** lo guardado en el teléfono crece mucho (la caché de un coach con muchos clientes): entonces se guarda solo lo que se elija.
+
+### D-144 · Gemini decide en sus PR y reglas para chats en paralelo
+- **Fecha:** 2026-11-17
+- **Decisión:** sustituye la parte de D-142 que limitaba a Gemini (no decidir, no tocar `supabase/` ni `src/core/`, solo Claude escribe en este archivo). El resto de D-142 sigue: quién hace cada PR (columna "Quién" de `docs/PROMPTS.md` §7) y la revisión cruzada.
+  1. **Gemini decide lo de sus PR con criterio propio:** pantallas, nombres, estructura y cómo resolver un caso no previsto. No se para a preguntar lo que puede razonar; pregunta solo lo irreversible (regla de oro 13).
+  2. **Puede tocar cualquier carpeta** (`src/core/` y `supabase/` incluidas), escribir migraciones y añadir librerías. Esta decisión es el permiso expreso que piden las reglas de oro 9 y 10 para sus PR; cada librería nueva se anota igualmente en D-135 (o en una D-xxx) con su porqué.
+  3. **Antes de decidir lee este archivo.** Si su idea contradice una decisión existente, no la cambia: la propone en el PR con el porqué y sigue lo decidido mientras tanto.
+  4. **Todo lo que decide lo deja escrito** aquí como D-xxx con "(Gemini)" en el título y su porqué, igual que Claude. Lo que el siguiente deba saber, en `docs/ESTADO.md` y `CONTEXTO.md`. En el PR, el apartado "Decisiones tomadas y dudas" (antes "Dudas para Claude").
+  5. **Siguen todas las reglas de oro.** Claude revisa antes de fusionar todo PR que toque `supabase/`, RLS o permisos. La revisión cruzada (PROMPTS §0) sigue para todos los PR.
+  6. **Si algo sale mal, se arregla en otro PR.** Equivocarse no es motivo para dejar de decidir.
+  - **Chats en paralelo** (`docs/GUIA-GIT.md` §15): cada chat en su worktree y su rama; nunca en paralelo dos PR que creen o cambien la misma carpeta de módulo o los mismos archivos; la base local es una sola (`db:reset`, `db:test` y e2e, nunca dos chats a la vez); al empezar, `gh pr list` y `git worktree list`; tras cada fusión, las ramas abiertas integran `main` con un merge; quien fusiona avisa de las ramas que quedan detrás. PROMPTS §7 dice qué carpetas toca cada PR y si usa la base local.
+- **Por qué:** decisión del propietario. Con Gemini parado a preguntar, el paralelo no avanzaba; y el 2026-11-17 tres PR crearon a la vez `src/modules/workouts` y dos chats chocaron en la base local.
+- **Revisar si:** las decisiones de Gemini chocan a menudo con las existentes o sus PR de `supabase/` necesitan muchas correcciones.
 
 ---
 

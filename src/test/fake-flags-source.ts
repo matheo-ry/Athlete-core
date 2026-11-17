@@ -4,7 +4,13 @@ import type { FlagsSource } from '@/core/flags';
  * Los flags de los módulos del producto, como en la tabla `features`. Son de
  * tipo core: activos para todos los negocios (D-019).
  */
-export const PRODUCT_FEATURES: readonly string[] = ['clients', 'exercises', 'programs', 'workouts'];
+export const PRODUCT_FEATURES: readonly string[] = [
+  'clients',
+  'exercises',
+  'programs',
+  'progress',
+  'workouts',
+];
 
 /**
  * Flags falsos para los tests. Por defecto, los del producto activos en todos

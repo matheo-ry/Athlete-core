@@ -93,7 +93,10 @@ describe('módulo exercises: crear y editar (PR 2.4a)', () => {
     expect(await screen.findByRole('status')).toHaveTextContent('“Flexiones con mochila” saved.');
     expect(rowNames()).toEqual(['Flexiones con mochila', 'Lat pulldown']);
     expect(within(screen.getByRole('list')).getByText('Custom')).toBeVisible();
-    expect(screen.queryByRole('heading', { name: 'New exercise' })).toBeNull();
+    // El panel se cierra justo después del aviso: se espera, no se da por hecho.
+    await waitFor(() => {
+      expect(screen.queryByRole('heading', { name: 'New exercise' })).toBeNull();
+    });
   });
 
   it('sin nombre ni forma de medir, o con un enlace que no es https://, no guarda y dice por qué', async () => {

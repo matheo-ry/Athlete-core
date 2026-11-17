@@ -7,14 +7,12 @@ Este archivo lo actualiza quien termina una tarea, en el mismo Pull Request, jun
 
 ## En curso
 
-- **PR 3.14 — Actividad y avisos del coach** (`feat/actividad-del-coach`), en revisión (Gemini).
-- **PR 3.3c — Entrenos inventados en el seed** (`db/seed-entrenos`), en revisión (Claude).
+- **PR 3.4 — Guardado en el móvil** (Claude), partido en dos (D-143): el **3.4a** (almacén del teléfono, cola de subida, abrir sin conexión y preguntar al cerrar sesión) está en revisión; el **3.4b** (módulo `workouts`: descargar lo necesario para entrenar y subir los entrenos) va encima, en `feat/guardado-en-el-movil-b`.
 
 ## Siguiente
 
-1. **PR 3.4 — Guardado en el móvil** (Claude). Desde ahora Claude y Gemini trabajan en paralelo según `docs/PROMPTS.md` §7 (D-142).
-2. Fusionar el **PR 3.3c** antes de que Gemini empiece el 3.12.
-3. El propietario dio por buenas, por ahora, la lista de `docs/referencia/biblioteca-ejercicios.md` y las rutinas de ejemplo. Se pueden retocar más adelante.
+1. **PR 3.4b** (Claude), y después el **PR 3.5 — Apuntar un entreno**. Claude y Gemini trabajan en paralelo según `docs/PROMPTS.md` §7 (D-142).
+2. El propietario dio por buenas, por ahora, la lista de `docs/referencia/biblioteca-ejercicios.md` y las rutinas de ejemplo. Se pueden retocar más adelante.
 
 ## Fases
 
@@ -135,8 +133,10 @@ El diseño está en DECISIONES D-115 a D-136, y el detalle de cada PR, en `docs/
 - [x] PR 3.3 — Base de datos: datos de salud, set-up y ajustes del cliente (partido en dos, como preveía `docs/PROMPTS.md` §7)
   - [x] 3.3a — consentimiento, peso y medidas
   - [x] 3.3b — set-up, ajustes de entreno y el interruptor de logros
-- [ ] PR 3.3c — Entrenos inventados en el seed (salió del bloque del 3.3, D-142)
-- [ ] PR 3.4 — Guardado en el móvil
+- [x] PR 3.3c — Entrenos inventados en el seed (salió del bloque del 3.3, D-142)
+- [ ] PR 3.4 — Guardado en el móvil (partido en dos, D-143)
+  - [ ] 3.4a — almacén del teléfono, cola de subida, abrir sin conexión y preguntar al cerrar sesión
+  - [ ] 3.4b — módulo `workouts`: descargar la rutina y lo de la vez anterior, y subir los entrenos
 
 **Lote 2 — Apuntar**
 
@@ -154,12 +154,12 @@ El diseño está en DECISIONES D-115 a D-136, y el detalle de cada PR, en `docs/
 **Lote 4 — El coach**
 
 - [ ] PR 3.12 — El día saltado
-- [ ] PR 3.13 — Pestaña "Entrenos" en la ficha
-- [x] PR 3.14 — Actividad y avisos del coach
+- [x] PR 3.13 — Pestaña "Entrenos" en la ficha (Gemini)
+- [x] PR 3.14 — Actividad y avisos del coach (Gemini)
 
 **Lote 5 — Progreso**
 
-- [ ] PR 3.15 — Módulo `progress`: historial, RM y récords
+- [x] PR 3.15 — Módulo `progress`: historial, RM y récords (D-129)
 - [ ] PR 3.16 — Gráficas
 - [ ] PR 3.17 — Minilogros, racha, niveles y logros
 - [ ] PR 3.18 — Descargar en Excel
@@ -265,7 +265,9 @@ Cosas que alguien ha visto y que no tocaban en su tarea. No se hacen sin convert
 Lo más nuevo, arriba.
 
 - 2026-11-17 — PR 3.14 (actividad y avisos del coach en el inicio): tarjeta "Actividad" en el inicio del coach (`homeCards.coach`, orden 5 en el nuevo módulo `workouts`), con los últimos entrenos completados de los clientes ("Ana terminó Lunes · 2 récords · cambió 1 ejercicio · 1 nota"); los no abiertos se marcan con la chapa "Nuevo" y se recuerdan en el dispositivo (`localStorage`); al pulsar se marca como abierto y lleva al entreno. Estado vacío cuando no hay entrenos. En la tarjeta "Avisos" del coach (`CoachAlertsCard` en `programs`), dos nuevos avisos ordenados por prioridad: "Sin entrenar desde hace 7 días" y "Cambió <ejercicio> 3 veces en 4 semanas" que llevan a la ficha del cliente. 15 tests unitarios nuevos (636 en total) y build limpio.
+- 2026-11-17 — PR 3.4a (guardado en el móvil, cimientos): `core/native` gana el almacén del teléfono (`getDeviceStore`, con `@capacitor/preferences` en la app y `localStorage` en el navegador, validado con Zod al leer), `onAppResume` y la cola de subida (`getUploadQueue`: en orden, sin duplicar, reintentos de 5 s a 5 min, rechazos que no se reintentan; 12 tests). En la app instalada, la caché de datos se guarda en el teléfono y se recupera antes de pintar (`app/query-persistence.ts`); en el navegador no cambia nada. `core/auth` entra con la sesión guardada cuando no hay red para renovar el token. Cerrar sesión con entrenos sin subir pregunta antes y vacía la cola. Librería `@capacitor/preferences` (D-135). Decisión D-143. 635 tests unitarios.
 - 2026-11-17 — Arreglo de un test de flujos completos que fallaba a ratos: `program-client-tab.spec.ts` buscaba con `getByRole('status')` los avisos de asignar y reiniciar desde la ficha, pero al recargarse la rutina el `Spinner` ("Loading…") también tiene ese papel y a veces había dos. Ahora se buscan por su texto. Falló en el CI del #62 en los dos intentos; en local pasa 20 de 20 y la suite completa, 91 de 91. Sin cambios en `src/`.
+- 2026-11-17 — PR 3.13 (pestaña "Entrenos" en la ficha): el coach ve los entrenos, el peso y las medidas de cada cliente. Módulo `workouts` (`src/modules/workouts/`), que aporta la pestaña a la ficha mediante su manifest (`clientProfileTabs`). Lista con fecha, día de la rutina, series hechas y marcas "En curso", "Editado" y "Faltado"; detalle de un entreno desplegable con series como en Excel ("45×8(1) / 45×7(1)"), flecha comparativa frente a la sesión anterior (↑ / ↓ / →), notas del día, set-up de la máquina, ejercicios cambiados, saltados y duración calculada; peso corporal y medidas si hay consentimiento de salud, o aviso explicativo si el cliente no lo ha concedido. Responsivo en móvil y escritorio. 25 tests unitarios. Decisiones D-124, D-126, D-127 y D-128.
 - 2026-11-17 — Reparto Claude/Gemini (solo documentación): decisión D-142, que ajusta D-115. Columna "Quién", tabla de paralelo y cabecera para Gemini en `docs/PROMPTS.md`; revisión cruzada en §0 (Claude revisa los PR de Gemini y Gemini los de Claude); los entrenos inventados del seed salen del bloque del 3.3 (ya hecho) y pasan a ser el PR 3.3c, de Claude; "Dudas para Claude" y "Lo que tiene que saber el siguiente" en la plantilla de PR; trampas de Windows en `docs/GUIA-GIT.md` §14; reparto resumido en AGENTS.md §7.
 - 2026-11-17 — Arreglo de dos tests de flujos completos que fallaban en el CI desde el 2026-11-17: se escribieron en lunes y daban por hecho que una rutina semanal empieza en lunes. Cualquier otro día la app hace primero la semana a medias (D-075), que es lo correcto. `home-cards.spec.ts` asigna ahora la rutina desde el lunes de esta semana (así acaba como mucho en 7 días) y `program-assign.spec.ts` acepta "Week 1 of 4" o "Starting week". Sin cambios en `src/`. 91 tests de flujos completos en verde en local.
 - 2026-11-17 — PR 3.3c (seed): Ana (6 semanas), Bruno (3 ciclos de 8 días) y Diego (5 semanas, modo lista) tienen historial de entrenos hasta ayer: 45 entrenos cerrados, con progresión de 2,5 kg cada vez que repiten un día y un récord en la última. Ana y Bruno se saltan uno de cada siete días de entreno (6 días faltados). Ana y Bruno tienen el consentimiento de salud y su peso semanal; Ana, medidas, una nota del día y un set-up; Diego, sin consentimiento. Bruno usa el otro modo de "Igual". Para tener historial, las rutinas de Ana, Bruno y Diego empiezan antes (42, 24 y 35 días). Los tests pgTAP 09 y 16 dejan de suponer que el seed no tiene entrenos.

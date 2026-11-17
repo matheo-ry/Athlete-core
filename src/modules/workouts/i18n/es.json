@@ -1,4 +1,51 @@
 {
+  "clientTab": {
+    "label": "Entrenos"
+  },
+  "health": {
+    "title": "Datos de salud",
+    "consentNotice": "Tu cliente no ha dado permiso para compartir sus datos de salud",
+    "weightTitle": "Peso corporal",
+    "measurementsTitle": "Medidas",
+    "noWeight": "Sin peso registrado",
+    "noMeasurements": "Sin medidas registradas",
+    "measuredOn": "apuntado el {{date}}"
+  },
+  "measurements": {
+    "waist": "Cintura",
+    "hips": "Cadera",
+    "chest": "Pecho",
+    "shoulders": "Hombros",
+    "neck": "Cuello",
+    "arm": "Brazo",
+    "thigh": "Muslo",
+    "calf": "Gemelo",
+    "right": "derecho",
+    "left": "izquierdo"
+  },
+  "coachTab": {
+    "title": "Entrenos",
+    "empty": "Aún no hay entrenos",
+    "unknownExercise": "Ejercicio",
+    "setsDone": "{{count}} series",
+    "setsDoneProgress": "{{done}} de {{total}} series",
+    "duration": "Duración: {{duration}}",
+    "day": "Día {{number}}",
+    "missed": "Faltado",
+    "missedDescription": "Día de entreno faltado",
+    "inProgress": "En curso",
+    "edited": "Editado",
+    "viewDetails": "Ver detalles",
+    "hideDetails": "Ocultar detalles",
+    "dayNote": "Nota del día: {{note}}",
+    "coachNote": "Nota del coach: {{note}}",
+    "setup": "Set-up: {{setup}}",
+    "skipped": "Saltado",
+    "replaced": "Cambiado por {{name}}",
+    "performanceBetter": "Mejor que la vez anterior",
+    "performanceWorse": "Menor que la vez anterior",
+    "performanceSame": "Igual que la vez anterior"
+  },
   "home": {
     "activityTitle": "Actividad",
     "noActivity": "Aún no hay entrenos de tus clientes",

@@ -197,6 +197,8 @@ Ideas aprobadas como ideas, no como diseño: se diseñan cuando llegue la fase (
 
 ## Bloqueos y dudas abiertas
 
+- **Pruebas en la Fase 3:** el propietario no prueba la app PR a PR. Al cerrar la fase se hace una prueba completa y una lista de cambios. Los agentes no le piden pruebas manuales: basta con los tests.
+
 - **El nicho es provisional** (D-070, P-02): el propietario hablará con 3–5 coaches cuando tenga la demo. Las preguntas están en D-070.
 - Resend en plan gratuito: 100 emails al día y 3.000 al mes (D-046). Hay que revisarlo antes de los pilotos.
 - Staging se pausa tras una semana sin uso (D-063). Si deja de responder, es eso: se reanuda desde el panel de Supabase con **Restore project** (guía de staging, paso 6).
@@ -209,6 +211,10 @@ Ideas aprobadas como ideas, no como diseño: se diseñan cuando llegue la fase (
 ## Ideas y deuda
 
 Cosas que alguien ha visto y que no tocaban en su tarea. No se hacen sin convertirlas antes en tarea.
+
+- Actividad del coach (PR 3.14): la marca "Nuevo" de cada entreno se guarda por dispositivo (`localStorage`). En otro ordenador o móvil, el coach vuelve a ver como nuevos los que ya abrió.
+
+- Formato de las series: la pestaña "Entrenos" (PR 3.13, `workout-format.ts`) escribe el RPE como "(@8)" y el historial de `progress` (PR 3.15) lo pasa a RIR "(2)". Hay dos funciones que formatean lo mismo; conviene dejar una y decidir la notación.
 
 - Entrenos (PR 3.2a): el cliente solo lee los ejercicios que están en sus rutinas. Uno elegido con "Cambiar ejercicio" (D-122) que no esté en ninguna no lo podrá leer por su nombre en el historial: el PR 3.8 tiene que ampliar `is_exercise_in_my_programs` (o añadir otra política) a los ejercicios de sus entrenos.
 
@@ -263,6 +269,10 @@ Cosas que alguien ha visto y que no tocaban en su tarea. No se hacen sin convert
 ## Registro de cambios
 
 Lo más nuevo, arriba.
+
+- 2026-11-17 — Fusionados los PR 3.13 (#70), 3.15 (#71, con el flag `progress` en #74) y 3.14 (#72), revisados por Claude. En el 3.14, la actividad del coach usa la fórmula única de RM y récords de `workouts/model` (D-129). Regla nueva: en la Fase 3 no se piden pruebas manuales PR a PR (PROMPTS §0).
+
+- 2026-11-17 — Migración 22 (`20261117130000_progress_flag.sql`): flag `progress`, de tipo core, para el módulo del PR 3.15 (D-129). Test pgTAP 20. Pendiente de aplicar en staging.
 
 - 2026-11-17 — PR 3.14 (actividad y avisos del coach en el inicio): tarjeta "Actividad" en el inicio del coach (`homeCards.coach`, orden 5 en el nuevo módulo `workouts`), con los últimos entrenos completados de los clientes ("Ana terminó Lunes · 2 récords · cambió 1 ejercicio · 1 nota"); los no abiertos se marcan con la chapa "Nuevo" y se recuerdan en el dispositivo (`localStorage`); al pulsar se marca como abierto y lleva al entreno. Estado vacío cuando no hay entrenos. En la tarjeta "Avisos" del coach (`CoachAlertsCard` en `programs`), dos nuevos avisos ordenados por prioridad: "Sin entrenar desde hace 7 días" y "Cambió <ejercicio> 3 veces en 4 semanas" que llevan a la ficha del cliente. 15 tests unitarios nuevos (636 en total) y build limpio.
 - 2026-11-17 — PR 3.4a (guardado en el móvil, cimientos): `core/native` gana el almacén del teléfono (`getDeviceStore`, con `@capacitor/preferences` en la app y `localStorage` en el navegador, validado con Zod al leer), `onAppResume` y la cola de subida (`getUploadQueue`: en orden, sin duplicar, reintentos de 5 s a 5 min, rechazos que no se reintentan; 12 tests). En la app instalada, la caché de datos se guarda en el teléfono y se recupera antes de pintar (`app/query-persistence.ts`); en el navegador no cambia nada. `core/auth` entra con la sesión guardada cuando no hay red para renovar el token. Cerrar sesión con entrenos sin subir pregunta antes y vacía la cola. Librería `@capacitor/preferences` (D-135). Decisión D-143. 635 tests unitarios.

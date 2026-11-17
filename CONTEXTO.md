@@ -22,8 +22,8 @@
 ## Dónde estamos
 
 - **Fase actual:** 3 — Entreno y progreso, en construcción (diseño en D-115 a D-137). Las Fases 1 y 2 están terminadas y fusionadas en `main`.
-- **Última tarea terminada:** PR 3.2a (base de datos: entrenos, #59) y PR 3.2b (el día saltado, encima del 3.2a), los dos en revisión. El PR 3.2 se partió en dos por tamaño, como preveía su bloque. El 3.1a (#56) y el 3.1b (#58) están fusionados.
-- **Siguiente tarea:** **PR 3.3 — Base de datos: datos de salud, set-up y ajustes del cliente** (`docs/PROMPTS.md` §7), cuando estén fusionados el 3.2a y el 3.2b. En staging están aplicadas y probadas las migraciones 1 a 16; las 17 a 19 (entrenos y día saltado), todavía no.
+- **Última tarea terminada:** arreglo de tres tests de flujos completos que fallaban según el día de la semana (en revisión). El PR 3.2a (#59) y el 3.2b (#60) están fusionados.
+- **Siguiente tarea:** **PR 3.3 — Base de datos: datos de salud, set-up y ajustes del cliente** (`docs/PROMPTS.md` §7). En staging están aplicadas y probadas las migraciones 1 a 16; las 17 a 19 (entrenos y día saltado), todavía no.
 
 ## Cómo será la Fase 3 (diseñada, D-115 a D-136)
 
@@ -75,11 +75,11 @@
 
 Los 5 más recientes, el más nuevo arriba. El historial completo está en `docs/ESTADO.md`.
 
+- 2026-11-17 — Arreglo: tres tests de flujos completos dependían del día de la semana (la semana a medias de D-075) o de un "Loading…" a la vez que un aviso. Ya no; la app no cambia.
 - 2026-11-17 — PR 3.2b: la regla del día saltado con su historia y los días faltados, del lado de las rutinas, y 28 tests pgTAP (D-139).
 - 2026-11-17 — PR 3.2a: tablas de entrenos, `sync_workout` y `discard_workout`, el flag `workouts` y 36 tests pgTAP (D-138).
 - 2026-11-16 — PR 3.1b: los 91 tests de flujos completos se ejecutan en el CI contra Supabase local.
 - 2026-11-16 — PR 3.1a: app de Android con Capacitor, `npm run android:build` y guía en `android/README.md`; `isNativeApp()` y `canLogWorkouts()` en `core/native`; zonas seguras y botón "atrás" (D-137).
-- 2026-11-16 — Diseño de la Fase 3: D-115 a D-136, plan de 18 PR en `docs/PROMPTS.md` §7, ideas de negocio en `docs/referencia/ideas-de-negocio.md` y Fase 6 en ESTADO. Entrenar, solo en la app del móvil.
 
 ## A tener en cuenta ahora
 

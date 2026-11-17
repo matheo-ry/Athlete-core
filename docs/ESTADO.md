@@ -7,11 +7,11 @@ Este archivo lo actualiza quien termina una tarea, en el mismo Pull Request, jun
 
 ## En curso
 
-**PR 3.2a — Base de datos: entrenos** (`db/entrenos`, #59) y **PR 3.2b — El día saltado** (`db/dia-saltado`, encima del 3.2a), en revisión. El PR 3.2 pasaba de 300 líneas y se ha partido como preveía su bloque.
+**Arreglo de tres tests de flujos completos que dependían del día** (`fix/e2e-tests-dependientes-del-dia`), en revisión. El 3.2a (#59) y el 3.2b (#60) están fusionados en `main`.
 
 ## Siguiente
 
-1. Fusionar el 3.2a y después el 3.2b (con el visto bueno del propietario, D-068), y aplicar en staging las migraciones 17 a 19.
+1. Fusionar el arreglo de los tests (con el visto bueno del propietario, D-068) y aplicar en staging las migraciones 17 a 19.
 2. **PR 3.3 — Base de datos: datos de salud, set-up y ajustes del cliente.**
 3. El propietario dio por buenas, por ahora, la lista de `docs/referencia/biblioteca-ejercicios.md` y las rutinas de ejemplo. Se pueden retocar más adelante.
 
@@ -254,12 +254,15 @@ Cosas que alguien ha visto y que no tocaban en su tarea. No se hacen sin convert
 - App de Android (PR 3.1a): en móviles con Android 7.0 y 7.1 sale todavía el icono de Capacitor (los PNG de `android/app/src/main/res/mipmap-*`); desde Android 8 sale el propio. Se cambia con el icono definitivo (Fase 4).
 - Los tests de flujos completos dejan en la consola de Vite el aviso de React "Encountered two children with the same key" (visto en el PR 3.1a; ya pasaba antes, no lo causa ese PR). Buscar qué lista repite claves.
 - En la primera ejecución del CI con los tests de flujos completos (PR 3.1b), dos pasaron solo al segundo intento: `archive.spec.ts` (dar de baja y reactivar) y `program-blocks.spec.ts` (añadir y ordenar bloques). En local pasan siempre. Si vuelven a fallar, mirar sus esperas.
+- En Windows, si la terminal está en `c:dev…` (con la `c` en minúscula), los tests unitarios fallan todos con "Vitest failed to find the runner": Vitest carga dos copias de sí mismo. Pasa en las sesiones que abren el proyecto así; desde `C:dev…` pasan. No es un fallo del código.
+- Los tests de flujos completos con fechas no deben suponer qué día es hoy: una rutina semanal que empieza otro día que el lunes empieza con la semana a medias (D-075). Para que no dependan del día, se calcula lo esperado a partir de la fecha o se empieza la rutina el lunes de esta semana. Fijar el reloj del navegador con `page.clock` no sirve con fechas lejanas: el servidor solo acepta "hoy" con un día de margen.
 - En la app instalada, los enlaces de invitación usarían `https://localhost` si no se pone `VITE_PUBLIC_APP_URL` al generarla. Ponerla cuando haya web publicada (P-03).
 
 ## Registro de cambios
 
 Lo más nuevo, arriba.
 
+- 2026-11-17 — Arreglo de tests de flujos completos que fallaban según el día. `home-cards.spec.ts` ("una rutina de una semana da aviso de que termina") y `program-assign.spec.ts` ("cambiar la plantilla no cambia la rutina del cliente") solo pasaban si la rutina empezaba en lunes (el primero, también en domingo): cualquier otro día, la semana a medias de D-075 alarga la rutina más allá de los 7 días del aviso y la fila dice "Starting week" en lugar de "Week 1". La app hace lo que dice D-075; el fallo estaba en los tests. El primero empieza ahora la rutina el lunes de esta semana y el segundo calcula lo esperado según el día. En `program-client-tab.spec.ts`, tras asignar, el "Loading…" de los días de la rutina nueva también tiene el papel `status`: el aviso se busca por su texto. Sin cambios en la app. Los 91 de flujos completos y los 612 unitarios en verde.
 - 2026-11-17 — PR 3.2b (base de datos: el día saltado): migración 19. `program_missed_day_rules` guarda la regla de cada rutina de cliente ("se pierde", "se recupera en el siguiente descanso" o "se mueve todo") con el día desde el que vale; `set_missed_day_rule` la cambia el coach y queda en `audit_log`. `program_missed_days` guarda los días que faltó, del lado de las rutinas; los apunta la app del cliente con `record_missed_days` y la fecha del móvil. Solo con calendario. Decisión D-139. 28 tests pgTAP nuevos (463 en total). Regenera `src/core/supabase/database.types.ts`.
 - 2026-11-17 — PR 3.2a (base de datos: entrenos): migraciones 17 y 18. Tablas `workouts`, `workout_exercises` (con su copia de lo prescrito, D-087) y `workout_sets` (una fila por serie y lado), con identificadores del móvil y RLS de solo lectura: el cliente lee los suyos, el coach los de su negocio, el dado de baja nada. `sync_workout` sube un entreno entero: no duplica, gana el cambio más reciente en cada fila, un cerrado sigue cerrado, marca "Editado" y no deja corregir pasados 7 días. `discard_workout` borra un entreno abierto. Flag `workouts` (core). La forma de medir de un ejercicio con series apuntadas tampoco cambia. Decisión D-138. 36 tests pgTAP nuevos (435 en total). Regenera `src/core/supabase/database.types.ts`.
 - 2026-11-16 — PR 3.1b (tests de flujos completos en el CI): nuevo trabajo "Tests de flujos completos" en `ci.yml`. Arranca Supabase local (sin el panel, Realtime ni funciones), escribe `.env.local` con sus valores públicos y `VITE_ALLOW_WEB_WORKOUTS=true`, instala Chromium y ejecuta `npm run test:e2e`; si falla, guarda el informe 7 días. Cumple ARQUITECTURA §13, punto 3.

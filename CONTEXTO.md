@@ -23,7 +23,7 @@
 
 - **Fase actual:** 3 — Entreno y progreso, en construcción (diseño en D-115 a D-137). Las Fases 1 y 2 están terminadas y fusionadas en `main`.
 - **Última tarea terminada:** arreglo de los dos tests de flujos completos que fallaban en el CI desde el 2026-11-17 (daban por hecho que hoy es lunes). Antes, el PR 3.3 (#63 y #64), fusionado.
-- **Siguiente tarea:** **PR 3.4 — Guardado en el móvil** (`docs/PROMPTS.md` §7). En staging están aplicadas y probadas las migraciones 1 a 21.
+- **Siguiente tarea:** **PR 3.4 — Guardado en el móvil** (`docs/PROMPTS.md` §7). Desde ahora trabajan Claude y Gemini a la vez (D-142): quién hace cada PR, en la columna "Quién" de §7. En staging están aplicadas y probadas las migraciones 1 a 21.
 
 ## Cómo será la Fase 3 (diseñada, D-115 a D-136)
 
@@ -77,11 +77,11 @@
 
 Los 5 más recientes, el más nuevo arriba. El historial completo está en `docs/ESTADO.md`.
 
+- 2026-11-17 — Reparto Claude/Gemini (D-142): Claude decide, hace base de datos, seguridad, `src/core/` y los PR 3.3 a 3.9 (y el 3.3c, entrenos inventados en el seed), y revisa los de Gemini; Gemini hace 3.10 a 3.18 y revisa los de Claude. Columna "Quién" y tabla de paralelo en `docs/PROMPTS.md` §7; trampas de Windows en `docs/GUIA-GIT.md` §14.
 - 2026-11-17 — Arreglo de los tests de flujos `home-cards` y `program-assign`, que solo pasaban en lunes por la semana a medias de D-075. Sin cambios en `src/`.
 - 2026-11-17 — PR 3.3b: set-up del cliente, ajustes de entreno e interruptor de logros, con 26 tests pgTAP (D-141).
 - 2026-11-17 — PR 3.3a: consentimiento de datos de salud, peso corporal y medidas, con 35 tests pgTAP (D-140).
 - 2026-11-17 — PR 3.2b: la regla del día saltado con su historia y los días faltados, del lado de las rutinas, y 28 tests pgTAP (D-139).
-- 2026-11-17 — PR 3.2a: tablas de entrenos, `sync_workout` y `discard_workout`, el flag `workouts` y 36 tests pgTAP (D-138).
 
 ## A tener en cuenta ahora
 

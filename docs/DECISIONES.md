@@ -1334,6 +1334,18 @@ Cómo añadir una: copia el formato, usa el siguiente número y no borres las an
   - **Interruptor de logros:** la clave `achievementsEnabled` de `tenants.settings`. Sin la clave, activados. La base de datos solo admite un sí o un no, y lo cambia el dueño. `achievements_enabled(tenant)` lo lee con el valor por defecto. Leerlo en la app (`parseTenantSettings`, en `core/tenancy`) llega con la pantalla de Ajustes.
 - **Por qué:** como el peso (D-140), no hay reglas de negocio más allá de quién escribe, que el RLS ya cubre.
 
+### D-142 · Reparto Claude/Gemini
+- **Fecha:** 2026-11-17
+- **Decisión:** ajusta D-115. Desde el PR 3.3, la Fase 3 la hacen dos agentes con papeles distintos:
+  - **Claude decide:** es el único que escribe en `docs/DECISIONES.md`. Hace la base de datos (`supabase/`), la seguridad, `src/core/` y los PR 3.3 a 3.9. **Revisa cada PR de Gemini** (plantilla §4 de `docs/PROMPTS.md`) antes de que el propietario lo fusione.
+  - **Gemini revisa cada PR de Claude** con la misma plantilla, antes de fusionarlo.
+  - **Gemini programa** los PR 3.10 a 3.18. No toca `supabase/` ni `src/core/` y no decide: si algo no está decidido o no encaja, lo apunta en el apartado "Dudas para Claude" del PR y sigue con lo demás.
+  - **Quién hace cada PR** está en la columna "Quién" de `docs/PROMPTS.md` §7, junto con lo que se puede hacer en paralelo.
+  - **Lo que uno deba saber del otro se escribe en el repositorio** (el PR, `CONTEXTO.md`, `docs/ESTADO.md`, `docs/GUIA-GIT.md`), no en la memoria de un chat.
+- **Por qué:** decisión del propietario, para avanzar en paralelo sin que dos agentes decidan cosas distintas sobre lo mismo. Lo delicado (aislamiento de datos, migraciones, `core/`) queda en un solo agente.
+- **Consecuencias:** AGENTS.md §7 lo resume (aprobado por el propietario). La plantilla de PR gana "Dudas para Claude" y "Lo que tiene que saber el siguiente".
+- **Revisar si:** los PR de Gemini necesitan muchas correcciones.
+
 ---
 
 ## Pendientes de decidir

@@ -11,8 +11,9 @@ Nada. El PR 3.3 (partido en 3.3a, #63, y 3.3b, #64) está fusionado, y las migra
 
 ## Siguiente
 
-1. **PR 3.4 — Guardado en el móvil.**
-2. El propietario dio por buenas, por ahora, la lista de `docs/referencia/biblioteca-ejercicios.md` y las rutinas de ejemplo. Se pueden retocar más adelante.
+1. **PR 3.4 — Guardado en el móvil** (Claude). Desde ahora Claude y Gemini trabajan en paralelo según `docs/PROMPTS.md` §7 (D-142).
+2. **PR 3.3c — Entrenos inventados en el seed** (Claude), antes de que Gemini empiece el 3.12.
+3. El propietario dio por buenas, por ahora, la lista de `docs/referencia/biblioteca-ejercicios.md` y las rutinas de ejemplo. Se pueden retocar más adelante.
 
 ## Fases
 
@@ -133,6 +134,7 @@ El diseño está en DECISIONES D-115 a D-136, y el detalle de cada PR, en `docs/
 - [x] PR 3.3 — Base de datos: datos de salud, set-up y ajustes del cliente (partido en dos, como preveía `docs/PROMPTS.md` §7)
   - [x] 3.3a — consentimiento, peso y medidas
   - [x] 3.3b — set-up, ajustes de entreno y el interruptor de logros
+- [ ] PR 3.3c — Entrenos inventados en el seed (salió del bloque del 3.3, D-142)
 - [ ] PR 3.4 — Guardado en el móvil
 
 **Lote 2 — Apuntar**
@@ -261,6 +263,7 @@ Cosas que alguien ha visto y que no tocaban en su tarea. No se hacen sin convert
 
 Lo más nuevo, arriba.
 
+- 2026-11-17 — Reparto Claude/Gemini (solo documentación): decisión D-142, que ajusta D-115. Columna "Quién", tabla de paralelo y cabecera para Gemini en `docs/PROMPTS.md`; revisión cruzada en §0 (Claude revisa los PR de Gemini y Gemini los de Claude); los entrenos inventados del seed salen del bloque del 3.3 (ya hecho) y pasan a ser el PR 3.3c, de Claude; "Dudas para Claude" y "Lo que tiene que saber el siguiente" en la plantilla de PR; trampas de Windows en `docs/GUIA-GIT.md` §14; reparto resumido en AGENTS.md §7.
 - 2026-11-17 — Arreglo de dos tests de flujos completos que fallaban en el CI desde el 2026-11-17: se escribieron en lunes y daban por hecho que una rutina semanal empieza en lunes. Cualquier otro día la app hace primero la semana a medias (D-075), que es lo correcto. `home-cards.spec.ts` asigna ahora la rutina desde el lunes de esta semana (así acaba como mucho en 7 días) y `program-assign.spec.ts` acepta "Week 1 of 4" o "Starting week". Sin cambios en `src/`. 91 tests de flujos completos en verde en local.
 - 2026-11-17 — Cierre del PR 3.3: fusionados el 3.3a (#63) y el 3.3b (#64), con el visto bueno del propietario. Aplicadas en staging las migraciones 17 a 21; `supabase test db --linked`: 524 tests, `Result: PASS`.
 - 2026-11-17 — PR 3.3b (base de datos: set-up y ajustes): migración 21. `client_exercise_setups` (uno por cliente y ejercicio, hasta 500 caracteres; lo escribe el cliente y lo lee el coach). Ajustes de entreno en `profiles`: descanso por defecto (2:00), arrancar solo, sonido, vibración y cómo funciona "Igual". Interruptor `achievementsEnabled` en `tenants.settings` (activado sin la clave) y `achievements_enabled()`. Decisión D-141. 26 tests pgTAP nuevos (524 en total). Regenera `src/core/supabase/database.types.ts`.

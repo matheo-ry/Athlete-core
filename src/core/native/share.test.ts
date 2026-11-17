@@ -1,99 +1,116 @@
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { Directory, Filesystem } from '@capacitor/filesystem';
+import { Share } from '@capacitor/share';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
+import * as platform from './platform';
 import { shareOrDownloadFile } from './share';
 
-describe('shareOrDownloadFile (D-131)', () => {
-  const originalNavigator = { ...globalThis.navigator };
+vi.mock('@capacitor/filesystem', () => ({
+  Directory: { Cache: 'CACHE' },
+  Filesystem: {
+    writeFile: vi.fn(),
+  },
+}));
 
+vi.mock('@capacitor/share', () => ({
+  Share: {
+    share: vi.fn(),
+  },
+}));
+
+describe('shareOrDownloadFile (D-131, D-149)', () => {
   beforeEach(() => {
     vi.restoreAllMocks();
   });
 
-  afterEach(() => {
-    Object.defineProperty(globalThis, 'navigator', {
-      value: originalNavigator,
-      writable: true,
-      configurable: true,
+  describe('en app nativa (Android / iOS)', () => {
+    beforeEach(() => {
+      vi.spyOn(platform, 'isNativeApp').mockReturnValue(true);
+    });
+
+    it('escribe en Directory.Cache y abre el menú de compartir con el archivo', async () => {
+      vi.mocked(Filesystem.writeFile).mockResolvedValue({
+        uri: 'file:///data/user/0/app/cache/entrenos.xlsx',
+      });
+      vi.mocked(Share.share).mockResolvedValue({} as never);
+
+      const blob = new Blob(['dummy excel content'], {
+        type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      });
+      const outcome = await shareOrDownloadFile(blob, 'entrenos.xlsx');
+
+      expect(outcome).toBe('shared');
+      expect(Filesystem.writeFile).toHaveBeenCalledWith({
+        path: 'entrenos.xlsx',
+        data: expect.any(String),
+        directory: Directory.Cache,
+      });
+      expect(Share.share).toHaveBeenCalledWith({
+        title: 'entrenos.xlsx',
+        files: ['file:///data/user/0/app/cache/entrenos.xlsx'],
+      });
+    });
+
+    it('detecta cancelación del usuario al compartir sin considerarlo fallo', async () => {
+      vi.mocked(Filesystem.writeFile).mockResolvedValue({
+        uri: 'file:///cache/entrenos.xlsx',
+      });
+      vi.mocked(Share.share).mockRejectedValue(new Error('Share canceled'));
+
+      const blob = new Blob(['test']);
+      const outcome = await shareOrDownloadFile(blob, 'entrenos.xlsx');
+
+      expect(outcome).toBe('cancelled');
+    });
+
+    it('devuelve failed si falla la escritura del archivo', async () => {
+      vi.mocked(Filesystem.writeFile).mockRejectedValue(new Error('Disk full'));
+
+      const blob = new Blob(['test']);
+      const outcome = await shareOrDownloadFile(blob, 'entrenos.xlsx');
+
+      expect(outcome).toBe('failed');
     });
   });
 
-  it('usa navigator.share si está disponible y puede compartir archivos', async () => {
-    const shareMock = vi.fn().mockResolvedValue(undefined);
-    const canShareMock = vi.fn().mockReturnValue(true);
-
-    Object.defineProperty(globalThis, 'navigator', {
-      value: {
-        ...originalNavigator,
-        share: shareMock,
-        canShare: canShareMock,
-      },
-      writable: true,
-      configurable: true,
+  describe('en web (escritorio y navegador)', () => {
+    beforeEach(() => {
+      vi.spyOn(platform, 'isNativeApp').mockReturnValue(false);
     });
 
-    const blob = new Blob(['test content'], { type: 'text/plain' });
-    const outcome = await shareOrDownloadFile(blob, 'test.txt');
+    it('descarga el archivo mediante elemento <a download>', async () => {
+      const createObjectURL = vi.fn().mockReturnValue('blob:test');
+      const revokeObjectURL = vi.fn();
+      globalThis.URL.createObjectURL = createObjectURL;
+      globalThis.URL.revokeObjectURL = revokeObjectURL;
 
-    expect(outcome).toBe('shared');
-    expect(canShareMock).toHaveBeenCalled();
-    expect(shareMock).toHaveBeenCalled();
-    const shareCall = shareMock.mock.calls[0]?.[0] as { title?: string; files?: File[] };
-    expect(shareCall.title).toBe('test.txt');
-    expect(shareCall.files?.[0]).toBeInstanceOf(File);
-  });
+      const clickMock = vi.fn();
+      vi.spyOn(document, 'createElement').mockReturnValue({
+        set href(_val: string) {},
+        set download(_val: string) {},
+        click: clickMock,
+      } as unknown as HTMLAnchorElement);
+      vi.spyOn(document.body, 'appendChild').mockImplementation(() => null as unknown as Node);
+      vi.spyOn(document.body, 'removeChild').mockImplementation(() => null as unknown as Node);
 
-  it('hace descarga por enlace si no hay navigator.share para archivos', async () => {
-    Object.defineProperty(globalThis, 'navigator', {
-      value: {
-        ...originalNavigator,
-        share: undefined,
-        canShare: undefined,
-      },
-      writable: true,
-      configurable: true,
+      const blob = new Blob(['excel data']);
+      const outcome = await shareOrDownloadFile(blob, 'entrenos.xlsx');
+
+      expect(outcome).toBe('downloaded');
+      expect(createObjectURL).toHaveBeenCalledWith(blob);
+      expect(clickMock).toHaveBeenCalled();
+      expect(revokeObjectURL).toHaveBeenCalledWith('blob:test');
     });
 
-    const createObjectURL = vi.fn().mockReturnValue('blob:test');
-    const revokeObjectURL = vi.fn();
-    globalThis.URL.createObjectURL = createObjectURL;
-    globalThis.URL.revokeObjectURL = revokeObjectURL;
+    it('devuelve failed si falla la creación del enlace o la descarga', async () => {
+      globalThis.URL.createObjectURL = vi.fn().mockImplementation(() => {
+        throw new Error('ObjectURL failed');
+      });
 
-    const clickMock = vi.fn();
-    vi.spyOn(document, 'createElement').mockReturnValue({
-      set href(_val: string) {},
-      set download(_val: string) {},
-      click: clickMock,
-    } as unknown as HTMLAnchorElement);
-    vi.spyOn(document.body, 'appendChild').mockImplementation(() => null as unknown as Node);
-    vi.spyOn(document.body, 'removeChild').mockImplementation(() => null as unknown as Node);
+      const blob = new Blob(['test']);
+      const outcome = await shareOrDownloadFile(blob, 'entrenos.xlsx');
 
-    const blob = new Blob(['excel data']);
-    const outcome = await shareOrDownloadFile(blob, 'entrenos.xlsx');
-
-    expect(outcome).toBe('downloaded');
-    expect(createObjectURL).toHaveBeenCalledWith(blob);
-    expect(clickMock).toHaveBeenCalled();
-    expect(revokeObjectURL).toHaveBeenCalledWith('blob:test');
-  });
-
-  it('detecta cancelación del usuario al compartir sin considerarlo fallo', async () => {
-    const abortErr = new DOMException('User cancelled', 'AbortError');
-    const shareMock = vi.fn().mockRejectedValue(abortErr);
-    const canShareMock = vi.fn().mockReturnValue(true);
-
-    Object.defineProperty(globalThis, 'navigator', {
-      value: {
-        ...originalNavigator,
-        share: shareMock,
-        canShare: canShareMock,
-      },
-      writable: true,
-      configurable: true,
+      expect(outcome).toBe('failed');
     });
-
-    const blob = new Blob(['test']);
-    const outcome = await shareOrDownloadFile(blob, 'test.xlsx');
-
-    expect(outcome).toBe('cancelled');
   });
 });

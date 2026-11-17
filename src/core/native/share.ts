@@ -1,6 +1,11 @@
 // Compartir un enlace o un archivo con lo que ofrezca el dispositivo. Hoy usa las
 // funciones del navegador / Web Share API; en la app móvil abre el menú nativo de
-// compartir/guardar (D-131).
+// compartir/guardar (D-131, D-149).
+
+import { Directory, Filesystem } from '@capacitor/filesystem';
+import { Share } from '@capacitor/share';
+
+import { isNativeApp } from './platform';
 
 export type ShareOutcome = 'shared' | 'copied' | 'cancelled' | 'failed';
 export type FileShareOutcome = 'shared' | 'downloaded' | 'cancelled' | 'failed';
@@ -31,27 +36,58 @@ export async function copyText(text: string): Promise<boolean> {
   }
 }
 
+async function blobToBase64(blob: Blob): Promise<string> {
+  if (typeof FileReader !== 'undefined') {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onerror = reject;
+      reader.onload = () => {
+        const dataUrl = reader.result as string;
+        const base64 = dataUrl.split(',')[1] ?? '';
+        resolve(base64);
+      };
+      reader.readAsDataURL(blob);
+    });
+  }
+  const buffer = await blob.arrayBuffer();
+  const bytes = new Uint8Array(buffer);
+  let binary = '';
+  for (let i = 0; i < bytes.byteLength; i++) {
+    binary += String.fromCharCode(bytes[i]!);
+  }
+  return btoa(binary);
+}
+
 /**
- * En el móvil abre el menú nativo de compartir/guardar si el dispositivo lo permite;
- * en la web descarga el archivo directamente en el navegador (D-131).
+ * En la app nativa (Android / iOS) escribe el archivo en la caché del dispositivo
+ * y abre el menú nativo de compartir/guardar con @capacitor/share (D-149).
+ * En la web descarga el archivo mediante un enlace temporal <a download>.
  */
 export async function shareOrDownloadFile(blob: Blob, fileName: string): Promise<FileShareOutcome> {
-  if (typeof navigator.share === 'function') {
+  if (isNativeApp()) {
     try {
-      const file = new File([blob], fileName, {
-        type: blob.type || 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      const base64Data = await blobToBase64(blob);
+      const written = await Filesystem.writeFile({
+        path: fileName,
+        data: base64Data,
+        directory: Directory.Cache,
       });
-      if (typeof navigator.canShare === 'function' && navigator.canShare({ files: [file] })) {
-        await navigator.share({
-          files: [file],
-          title: fileName,
-        });
-        return 'shared';
-      }
+
+      await Share.share({
+        title: fileName,
+        files: [written.uri],
+      });
+      return 'shared';
     } catch (error) {
-      if (error instanceof DOMException && error.name === 'AbortError') {
+      if (
+        error instanceof Error &&
+        (error.message.toLowerCase().includes('cancel') ||
+          error.message.toLowerCase().includes('abort') ||
+          error.name === 'AbortError')
+      ) {
         return 'cancelled';
       }
+      return 'failed';
     }
   }
 

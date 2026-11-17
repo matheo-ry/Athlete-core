@@ -24,6 +24,7 @@
     "title": "History",
     "note": "Note",
     "showHistory": "View history",
-    "hideHistory": "Hide history"
+    "hideHistory": "Hide history",
+    "dayLabel": "DAY {{number}}"
   }
 }

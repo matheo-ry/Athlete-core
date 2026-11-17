@@ -24,6 +24,7 @@
     "title": "Historial",
     "note": "Nota",
     "showHistory": "Ver historial",
-    "hideHistory": "Ocultar historial"
+    "hideHistory": "Ocultar historial",
+    "dayLabel": "DIA {{number}}"
   }
 }

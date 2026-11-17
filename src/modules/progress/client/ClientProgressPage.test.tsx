@@ -180,9 +180,9 @@ describe('ClientProgressPage (D-129, Criterio 1)', () => {
 
     // Historial DIA 1 … DIA 3
     const historyList = screen.getByTestId('history-ex-flexiones');
-    expect(historyList).toHaveTextContent('DIA 1: 45×8(1) / 45×7(1)');
-    expect(historyList).toHaveTextContent('DIA 2: 47.5×8(1)');
-    expect(historyList).toHaveTextContent('DIA 3: 50×8(1)');
+    expect(historyList).toHaveTextContent('DAY 1: 45×8(1) / 45×7(1)');
+    expect(historyList).toHaveTextContent('DAY 2: 47.5×8(1)');
+    expect(historyList).toHaveTextContent('DAY 3: 50×8(1)');
 
     // Marca de nota
     expect(screen.getByTestId('note-mark')).toBeVisible();

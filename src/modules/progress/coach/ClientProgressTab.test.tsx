@@ -108,6 +108,6 @@ describe('ClientProgressTab (D-129, Criterio 4)', () => {
     expect(screen.getByRole('heading', { level: 3, name: 'Flexiones con mochila' })).toBeVisible();
 
     const historyList = screen.getByTestId('history-ex-flexiones');
-    expect(historyList).toHaveTextContent('DIA 1: 45×8(1)');
+    expect(historyList).toHaveTextContent('DAY 1: 45×8(1)');
   });
 });

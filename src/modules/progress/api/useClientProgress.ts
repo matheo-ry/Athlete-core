@@ -1,5 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { useProfile } from '@/core/auth';
 import { useLanguage } from '@/core/i18n';
@@ -30,6 +31,7 @@ export interface UseClientProgressResult {
 export function useClientProgress(clientId: string | null): UseClientProgressResult {
   const { tenant } = useTenancy();
   const tenantId = tenant?.id ?? null;
+  const { t } = useTranslation();
   const language = useLanguage();
   const profile = useProfile();
   const unit: WeightUnit = profile.data?.weightUnit ?? 'kg';
@@ -73,8 +75,9 @@ export function useClientProgress(clientId: string | null): UseClientProgressRes
       currentProgramQuery.data ?? null,
       language,
       unit,
+      (n) => t('progress.history.dayLabel', { number: n }),
     );
-  }, [workoutsQuery.data, currentProgramQuery.data, exerciseOptions.byId, language, unit]);
+  }, [workoutsQuery.data, currentProgramQuery.data, exerciseOptions.byId, language, unit, t]);
 
   const refetch = async () => {
     await Promise.all([workoutsQuery.refetch(), currentProgramQuery.refetch()]);

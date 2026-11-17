@@ -1,46 +1,49 @@
+import { z } from 'zod';
+
 import type { Language } from '@/core/i18n';
 import type { WeightUnit } from '@/core/lib';
 import { fromKg } from '@/core/lib';
 import { computeExerciseRecords } from '@/modules/workouts';
 import type { ExerciseRecords } from '@/modules/workouts';
 
-export interface RawWorkoutSet {
-  id: string;
-  set_number: number;
-  side: string;
-  weight_kg: number | null;
-  reps: number | null;
-  duration_seconds: number | null;
-  distance_meters: number | null;
-  intensity_type: string | null;
-  intensity_value: number | null;
-  is_done: boolean;
-  recorded_at: string;
-}
+// Esquemas de lo que llega de Supabase: se valida en la frontera (AGENTS §4).
+export const rawWorkoutSetSchema = z.object({
+  id: z.string(),
+  set_number: z.number().int(),
+  side: z.string(),
+  weight_kg: z.number().nullable(),
+  reps: z.number().int().nullable(),
+  duration_seconds: z.number().int().nullable(),
+  distance_meters: z.number().nullable(),
+  intensity_type: z.string().nullable(),
+  intensity_value: z.number().nullable(),
+  is_done: z.boolean(),
+  recorded_at: z.string(),
+});
+export type RawWorkoutSet = z.infer<typeof rawWorkoutSetSchema>;
 
-export interface RawWorkoutExercise {
-  id: string;
-  exercise_id: string;
-  replaces_exercise_id: string | null;
-  day_note: string | null;
-  is_skipped: boolean;
-  position: number;
-  workout_sets: RawWorkoutSet[];
-}
+export const rawWorkoutExerciseSchema = z.object({
+  id: z.string(),
+  exercise_id: z.string(),
+  replaces_exercise_id: z.string().nullable(),
+  day_note: z.string().nullable(),
+  is_skipped: z.boolean(),
+  position: z.number().int(),
+  workout_sets: z.array(rawWorkoutSetSchema),
+});
+export type RawWorkoutExercise = z.infer<typeof rawWorkoutExerciseSchema>;
 
-export interface RawWorkout {
-  id: string;
-  performed_on: string;
-  started_at: string;
-  closed_at: string | null;
-  day_number: number;
-  program_id: string | null;
-  programs?: {
-    id: string;
-    name: string;
-  } | null;
-  workout_exercises: RawWorkoutExercise[];
-}
+export const rawWorkoutSchema = z.object({
+  id: z.string(),
+  performed_on: z.string(),
+  started_at: z.string(),
+  closed_at: z.string().nullable(),
+  day_number: z.number().int(),
+  program_id: z.string().nullable(),
+  programs: z.object({ id: z.string(), name: z.string() }).nullable().optional(),
+  workout_exercises: z.array(rawWorkoutExerciseSchema),
+});
+export type RawWorkout = z.infer<typeof rawWorkoutSchema>;
 
 export interface ExerciseInfo {
   id: string;
@@ -143,7 +146,9 @@ export function groupWorkoutsByProgram(
   exerciseInfoMap: ReadonlyMap<string, ExerciseInfo>,
   currentProgramId: string | null,
   language: Language,
-  unit: WeightUnit = 'kg',
+  unit: WeightUnit,
+  // El texto "DIA n" llega traducido de fuera: el modelo no escribe textos visibles.
+  dayLabel: (sessionNumber: number) => string,
 ): ProgramProgressGroup[] {
   // 1. Filtrar entrenos ordenados cronológicamente (más antiguo a más nuevo para numerar DIA 1, DIA 2...)
   const sortedWorkouts = [...workouts].sort((a, b) => {
@@ -225,7 +230,7 @@ export function groupWorkoutsByProgram(
 
       sessions.forEach((sess, idx) => {
         const sessionNumber = idx + 1;
-        const label = `DIA ${sessionNumber}`;
+        const label = dayLabel(sessionNumber);
 
         // Ordenar series de la sesión
         const doneSets = (sess.wex.workout_sets ?? [])

@@ -1,4 +1,7 @@
 import { getSupabaseClient } from '@/core/supabase';
+import { z } from 'zod';
+
+import { rawWorkoutSchema } from '../model/exercise-history';
 import type { RawWorkout } from '../model/exercise-history';
 
 const WORKOUT_COLUMNS =
@@ -29,7 +32,7 @@ export async function fetchClientWorkouts(
     throw new Error(`Could not load client workouts: ${error.code}`);
   }
 
-  return (data ?? []) as unknown as RawWorkout[];
+  return z.array(rawWorkoutSchema).parse(data);
 }
 
 /**

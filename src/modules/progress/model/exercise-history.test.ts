@@ -267,7 +267,7 @@ describe('groupWorkoutsByProgram (Criterio 1)', () => {
       ],
     ]);
 
-    const groups = groupWorkoutsByProgram(workouts, exMap, 'prog-1', 'es', 'kg');
+    const groups = groupWorkoutsByProgram(workouts, exMap, 'prog-1', 'es', 'kg', (n) => `DIA ${n}`);
 
     expect(groups).toHaveLength(1);
     const group = groups[0]!;
@@ -379,7 +379,14 @@ describe('groupWorkoutsByProgram (Criterio 1)', () => {
       ],
     ]);
 
-    const groups = groupWorkoutsByProgram(workouts, exMap, 'prog-curr', 'es', 'kg');
+    const groups = groupWorkoutsByProgram(
+      workouts,
+      exMap,
+      'prog-curr',
+      'es',
+      'kg',
+      (n) => `DIA ${n}`,
+    );
 
     expect(groups).toHaveLength(2);
     // Rutina actual va primero

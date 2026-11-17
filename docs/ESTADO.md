@@ -119,7 +119,7 @@ El diseño está en DECISIONES D-069 a D-088, y el detalle de cada PR, en `docs/
 
 ### Fase 3 — Entreno y progreso (cliente)
 
-El diseño está en DECISIONES D-115 a D-136, y el detalle de cada PR, en `docs/PROMPTS.md` §7. Son 18 PR en 5 lotes: un lote no empieza hasta que el anterior está fusionado con el visto bueno del propietario (D-115). La referencia es la app de apuntes del propietario (D-087). **Entrenar es solo en la app del móvil** (D-116).
+El diseño está en DECISIONES D-115 a D-136, y el detalle de cada PR, en `docs/PROMPTS.md` §7. Son 18 PR en 5 lotes: un lote empieza cuando el anterior está fusionado; los agentes fusionan solos salvo lo crítico (D-115, D-148). La referencia es la app de apuntes del propietario (D-087). **Entrenar es solo en la app del móvil** (D-116).
 
 - [x] Decidir cómo funciona toda la fase (D-115 a D-136), con P-06 cerrado y P-12 cerrado en parte
 
@@ -276,6 +276,10 @@ Cosas que alguien ha visto y que no tocaban en su tarea. No se hacen sin convert
 ## Registro de cambios
 
 Lo más nuevo, arriba.
+
+- 2026-11-17 — Renumerada a D-148 la decisión de que los agentes fusionan solos (PR #81): se escribió como D-147 a la vez que el #80, que ya usaba D-147 para los arreglos de la revisión del PR 3.16. Dos lecciones, en `docs/GUIA-GIT.md` §15: antes de usar un número D-xxx se miran `main` y los PR abiertos, y nunca se fusiona con el CI en rojo (el #79 se fusionó así y dejó `main` en rojo hasta el #82).
+
+- 2026-11-17 — Los agentes fusionan sin esperar al propietario (solo documentación, D-148, sustituye a D-068). Claude fusiona sus PR con el CI en verde; Gemini, los suyos con el comentario "VISTO BUENO DE CLAUDE" de su chat revisor. El propietario solo da su OK, escrito en el prompt, para lo crítico: producción, borrar datos, relajar RLS o permisos, pagos, secretos, historial de Git, reglas de oro y decisiones suyas. Chat revisor y final de los prompts de Gemini en `docs/PROMPTS.md` §0.
 
 - 2026-11-17 — Arreglo del test de flujos completos `workout-log.spec.ts` ("Ana inicia el lunes…"), rojo en `main` desde el #79: desde el PR 3.5b el primer + pone lo gris de la vez anterior (D-120, D-146), y Ana ya tiene ese lunes en el seed (0 kg de lastre), pero el test seguía esperando lo prescrito (10). Pasaba o fallaba según si lo gris llegaba antes del clic (en local, 10; en el CI, 0). Ahora espera a que salga lo gris y compara con ese valor. Sin cambios en `src/`.
 

@@ -22,7 +22,7 @@
 ## Dónde estamos
 
 - **Fase actual:** 3 — Entreno y progreso, en construcción (diseño en D-115 a D-137). Las Fases 1 y 2 están terminadas y fusionadas en `main`.
-- **Última tarea terminada:** arreglo del e2e `workout-log.spec.ts`, rojo en `main` desde el #79 (el test esperaba lo prescrito y, desde el 3.5b, el primer + pone lo gris de la vez anterior). Antes, arreglos de la revisión del PR 3.16 (D-147): accesibilidad y colores de la gráfica, zonas táctiles y lectura del peso y las medidas desde `workouts`. Antes, PR 3.5 — apuntar un entreno, fusionado en dos partes: 3.5a (#77) y 3.5b (#79), D-146. Antes, PR 3.16 — gráficas del progreso (Gemini, D-146). Antes, PR 3.4b (#73, D-143) y reglas de chats en paralelo (D-144). En la Fase 3 no se piden pruebas manuales PR a PR: al cerrar la fase se hace una prueba completa (PROMPTS §0).
+- **Última tarea terminada:** los agentes fusionan solos salvo lo crítico (D-148, solo documentación; se escribió como D-147, número que ya era del #80). Antes, arreglo del e2e `workout-log.spec.ts`, rojo en `main` desde el #79 (el test esperaba lo prescrito y, desde el 3.5b, el primer + pone lo gris de la vez anterior). Antes, arreglos de la revisión del PR 3.16 (D-147): accesibilidad y colores de la gráfica, zonas táctiles y lectura del peso y las medidas desde `workouts`. Antes, PR 3.5 — apuntar un entreno, fusionado en dos partes: 3.5a (#77) y 3.5b (#79), D-146. Antes, PR 3.16 — gráficas del progreso (Gemini, D-146). Antes, PR 3.4b (#73, D-143) y reglas de chats en paralelo (D-144). En la Fase 3 no se piden pruebas manuales PR a PR: al cerrar la fase se hace una prueba completa (PROMPTS §0).
 - **Siguiente tarea:** **PR 3.6 — Subida, cierre y resumen** (`docs/PROMPTS.md` §7), en `workouts`. Trabajan Claude y Gemini a la vez (D-142): quién hace cada PR, en la columna "Quién" de §7, con qué carpetas toca y si usa la base local. Gemini decide en sus PR y lo deja escrito como D-xxx "(Gemini)" (D-144). Chats en paralelo: reglas de `docs/GUIA-GIT.md` §15. En staging están aplicadas y probadas las migraciones 1 a 21.
 
 
@@ -79,19 +79,18 @@
 
 Los 5 más recientes, el más nuevo arriba. El historial completo está en `docs/ESTADO.md`.
 
+- 2026-11-17 — Solo documentación: los agentes fusionan sin esperar al propietario, salvo lo crítico, que pide su OK escrito en el prompt (D-148, sustituye a D-068; era D-147, número ya usado por el #80). Chat revisor de Claude y final de los prompts de Gemini en PROMPTS §0.
 - 2026-11-17 — Arreglo del e2e `workout-log.spec.ts`: espera a lo gris de la vez anterior antes de pulsar + y compara con ese valor (D-146). Sin cambios en `src/`.
 - 2026-11-17 — Arreglos de la revisión del PR 3.16 (D-147): `LineChart` sin colores hex ni textos fijos, con teclado (grupo de radio), foco visible, 44 px táctiles y desplazamiento vertical en el móvil. `progress` lee el peso y las medidas de `workouts` (D-127), solo al abrir la pestaña. Si esa carga falla, los ejercicios se siguen viendo.
 - 2026-11-17 — PR 3.5b: lo gris de la vez anterior, "Igual", desmarcar, "+ Serie" y abrir directo en el ejercicio que toca (D-146).
 - 2026-11-17 — PR 3.5a: el cliente empieza un entreno desde "Hoy toca" o "Entreno" y apunta sus series en el móvil, guardadas al instante y en la cola (D-146).
-- 2026-11-17 — PR 3.16: gráficas de progreso en SVG propio sin librería (D-135). Por ejercicio: métricas, periodos, % de progreso por RM (D-129) y detalle del entreno bajo la gráfica. Peso y medidas con consentimiento (D-126, D-127). Decisión D-145 (Gemini).
-
 
 ## A tener en cuenta ahora
 
 - El proyecto vive en `C:\dev\athlete-core`, **fuera de OneDrive** (sincronizar `node_modules` da errores).
 - Se usa **TypeScript 6**, no 7: el lint de TypeScript aún no admite la 7 (DECISIONES D-022).
 - `main` no está protegida en GitHub: hace falta GitHub Pro (GUIA-GIT §12).
-- Un agente puede fusionar PR, pero solo con el visto bueno expreso del propietario para ese lote (D-068).
+- Los agentes fusionan solos (D-148): Claude sus PR con el CI en verde; Gemini los suyos con el comentario "VISTO BUENO DE CLAUDE". El propietario solo da su OK, escrito en el prompt, para lo crítico (producción, borrar datos, relajar RLS o permisos, pagos, secretos, historial, reglas de oro).
 - Supabase en plan gratuito (D-063): la sesión de 30 días la controla la propia app, y no hay copias de seguridad recuperables. Resend gratuito: 100 emails al día.
 - **Si staging deja de responder** (la app contra staging no carga o no llegan emails), lo más probable es que Supabase lo haya pausado por pasar una semana sin uso: es normal en el plan gratuito. Se reanuda en el panel de Supabase con **Restore project**, tarda un par de minutos y no se pierde nada (`supabase/README.md`, paso 6).
 - El proyecto de staging de Supabase está conectado al repositorio de GitHub (comprobación "Supabase Preview", siempre omitida). No hace nada; se quita en el panel, Settings → Integrations.

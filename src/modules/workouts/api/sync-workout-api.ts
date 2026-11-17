@@ -1,9 +1,20 @@
+import { z } from 'zod';
+
 import { logger } from '@/core/lib';
 import type { UploadItem, UploadResult } from '@/core/native';
 import { getSupabaseClient } from '@/core/supabase';
 
 // Sube un entreno entero con `sync_workout` (D-138): se puede repetir sin
-// duplicar nada. Lo usa la cola de `core/native` (D-143).
+// duplicar nada. Lo usa la cola de `core/native` (D-143). Descartarlo va por
+// la misma cola y con el mismo identificador (D-149): así sustituye en su
+// sitio a la subida pendiente, y lo que no llegó a subir ya no sube.
+
+const discardSchema = z.object({ discard: z.literal(true) });
+
+/** Lo que se encola para descartar un entreno con `discard_workout`. */
+export function discardPayload(workoutId: string): { id: string; discard: true } {
+  return { id: workoutId, discard: true };
+}
 
 /** Lo que dice la base de datos, convertido en lo que hace la cola. Lógica pura. */
 export function uploadResultFor(error: { code: string; message: string } | null): UploadResult {
@@ -24,10 +35,15 @@ export function uploadResultFor(error: { code: string; message: string } | null)
 }
 
 export async function sendWorkout(item: UploadItem): Promise<UploadResult> {
-  const { error } = await getSupabaseClient().rpc('sync_workout', {
-    p_tenant: item.tenantId,
-    p_workout: item.payload,
-  });
+  const { error } = discardSchema.safeParse(item.payload).success
+    ? await getSupabaseClient().rpc('discard_workout', {
+        p_tenant: item.tenantId,
+        p_workout: item.id,
+      })
+    : await getSupabaseClient().rpc('sync_workout', {
+        p_tenant: item.tenantId,
+        p_workout: item.payload,
+      });
   const result = uploadResultFor(error);
   if (result === 'no_access' || result === 'invalid') {
     // Sin el entreno ni el negocio: solo el nombre de la regla y su código.

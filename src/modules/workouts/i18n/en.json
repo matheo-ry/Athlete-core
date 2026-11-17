@@ -62,7 +62,8 @@
     "noAccess": "Couldn't save: you no longer have access to {{name}}.",
     "invalid_one": "A workout couldn't be saved: it had data the app doesn't accept.",
     "invalid_other": "{{count}} workouts couldn't be saved: they had data the app doesn't accept.",
-    "dismiss": "Got it"
+    "dismiss": "Got it",
+    "pending": "Waiting to upload"
   },
   "today": {
     "title": "Today",
@@ -106,5 +107,22 @@
     "same": "Same",
     "add": "+ Set",
     "unmark": "Unmark set {{number}}"
+  },
+  "finished": {
+    "title": "Workout finished",
+    "titleCompleted": "Workout complete!",
+    "duration": "Duration",
+    "sets": "Sets done",
+    "exercises": "Exercises",
+    "exercisesValue": "{{done}} of {{total}}",
+    "done": "Back to home",
+    "allDone": "All sets done. The workout will close by itself in a few seconds.",
+    "seeSummary": "See summary"
+  },
+  "discard": {
+    "button": "Discard workout",
+    "confirm": "This workout and everything you logged will be deleted. This cannot be undone.",
+    "yes": "Yes, discard",
+    "cancel": "Cancel"
   }
 }

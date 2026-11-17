@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { uploadResultFor } from './sync-workout-api';
+import { discardPayload, uploadResultFor } from './sync-workout-api';
 
 describe('uploadResultFor', () => {
   it('sin error, está subido', () => {
@@ -22,5 +22,11 @@ describe('uploadResultFor', () => {
     expect(uploadResultFor({ code: '', message: 'TypeError: Failed to fetch' })).toBe('retry');
     expect(uploadResultFor({ code: 'PGRST301', message: 'JWT expired' })).toBe('retry');
     expect(uploadResultFor({ code: '503', message: 'Service Unavailable' })).toBe('retry');
+  });
+});
+
+describe('discardPayload', () => {
+  it('va con el mismo identificador del entreno, para sustituir su subida pendiente', () => {
+    expect(discardPayload('workout-1')).toEqual({ id: 'workout-1', discard: true });
   });
 });

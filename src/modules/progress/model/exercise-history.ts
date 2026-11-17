@@ -117,6 +117,8 @@ export interface ExerciseSessionHistory {
   hasNote: boolean;
   maxWeightKg: number | null;
   maxRm: number | null;
+  volumeKg: number;
+  totalReps: number;
 }
 
 export interface ExerciseProgressItem {
@@ -259,6 +261,13 @@ export function groupWorkoutsByProgram(
 
         const sessionRecords = computeExerciseRecords(sessionSetsForRecord);
 
+        let volumeKg = 0;
+        let totalReps = 0;
+        for (const s of doneSets) {
+          volumeKg += (s.weight_kg ?? 0) * (s.reps ?? 0);
+          totalReps += s.reps ?? 0;
+        }
+
         const dayNote = sess.wex.day_note?.trim() || null;
         history.push({
           workoutId: sess.workoutId,
@@ -271,6 +280,8 @@ export function groupWorkoutsByProgram(
           hasNote: dayNote !== null,
           maxWeightKg: sessionRecords.maxWeightKg,
           maxRm: sessionRecords.maxRm,
+          volumeKg,
+          totalReps,
         });
       });
 

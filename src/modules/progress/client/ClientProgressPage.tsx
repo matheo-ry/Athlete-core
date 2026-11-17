@@ -13,7 +13,9 @@ import { ProgressView } from '../shared/ProgressView';
 export function ClientProgressPage() {
   const { t } = useTranslation();
   const { user } = useAuth();
-  const { groups, isPending, isError, refetch, unit } = useClientProgress(user?.id ?? null);
+  const { groups, healthData, isPending, isError, refetch, unit } = useClientProgress(
+    user?.id ?? null,
+  );
 
   return (
     <section className="flex flex-col gap-4">
@@ -23,10 +25,12 @@ export function ClientProgressPage() {
 
       <ProgressView
         groups={groups}
+        healthData={healthData}
         isPending={isPending}
         isError={isError}
         onRetry={() => void refetch()}
         unit={unit}
+        isCoach={false}
       />
     </section>
   );

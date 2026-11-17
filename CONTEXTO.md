@@ -78,11 +78,11 @@
 
 Los 5 más recientes, el más nuevo arriba. El historial completo está en `docs/ESTADO.md`.
 
+- 2026-11-17 — PR 3.15: módulo progress con historial "DIA 1: 45×8(1)", RM estimado (Epley + RIR/RPE), récords y pestaña en la ficha del cliente (D-129).
 - 2026-11-17 — PR 3.13: pestaña "Entrenos" en la ficha del cliente (módulo `workouts`, aportada por su manifest en `clientProfileTabs`). Lista con fecha, día, series hechas, marcas "En curso", "Editado" y "Faltado"; detalle con formato Excel ("45×8(1) / 45×7(1)"), flecha comparativa (↑ / ↓ / →), notas del día, set-up, ejercicio cambiado, ejercicio saltado y duración; peso corporal y medidas si hay consentimiento de salud o aviso sin él (D-124, D-126, D-127, D-128). 25 tests unitarios.
 - 2026-11-17 — PR 3.4a: almacén del teléfono, cola de subida, la caché guardada en la app del móvil, abrir sin red con la sesión guardada y preguntar al cerrar sesión con algo pendiente (D-143).
 - 2026-11-17 — PR 3.3c: entrenos inventados en el seed para Ana, Bruno y Diego, con días faltados, récords y datos de salud.
 - 2026-11-17 — Arreglo del test de flujos `program-client-tab`, que fallaba a ratos porque el `Spinner` también tiene el papel `status`. Sin cambios en `src/`.
-- 2026-11-17 — Reparto Claude/Gemini (D-142): Claude decide, hace base de datos, seguridad, `src/core/` y los PR 3.3 a 3.9 (y el 3.3c, entrenos inventados en el seed), y revisa los de Gemini; Gemini hace 3.10 a 3.18 y revisa los de Claude. Columna "Quién" y tabla de paralelo en `docs/PROMPTS.md` §7; trampas de Windows en `docs/GUIA-GIT.md` §14.
 
 ## A tener en cuenta ahora
 

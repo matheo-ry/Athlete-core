@@ -30,7 +30,16 @@ export const workoutsModule = defineModule({
     },
   ],
   homeCards: {
-    coach: [],
+    coach: [
+      {
+        key: 'workouts-activity',
+        order: 5,
+        lazy: () =>
+          import('./coach/CoachActivityCard').then((card) => ({
+            Component: card.CoachActivityCard,
+          })),
+      },
+    ],
     client: [],
   },
   services: [

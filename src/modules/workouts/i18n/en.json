@@ -46,6 +46,18 @@
     "performanceWorse": "Worse than previous session",
     "performanceSame": "Same as previous session"
   },
+  "home": {
+    "activityTitle": "Activity",
+    "noActivity": "No workouts from your clients yet",
+    "finishedDay": "{{clientName}} finished {{dayName}}",
+    "records_one": "{{count}} record",
+    "records_other": "{{count}} records",
+    "changedExercises_one": "changed {{count}} exercise",
+    "changedExercises_other": "changed {{count}} exercises",
+    "notes_one": "{{count}} note",
+    "notes_other": "{{count}} notes",
+    "newBadge": "New"
+  },
   "sync": {
     "noAccess": "Couldn't save: you no longer have access to {{name}}.",
     "invalid_one": "A workout couldn't be saved: it had data the app doesn't accept.",

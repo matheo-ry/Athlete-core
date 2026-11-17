@@ -13,6 +13,9 @@ import type { Database } from './database.types';
 // Va tipado con los tipos generados de la base de datos (`npm run db:types`):
 // si una migración cambia una tabla, el código que la usa deja de compilar.
 
+/** Dónde guarda Supabase la sesión en el dispositivo. */
+export const AUTH_STORAGE_KEY = 'athlete-core.auth';
+
 let client: SupabaseClient<Database> | null = null;
 
 /** Se crea la primera vez que se pide. */
@@ -25,7 +28,7 @@ export function getSupabaseClient(): SupabaseClient<Database> {
       // Los emails llevan un código, no un enlace (D-039): no hay nada que leer
       // de la dirección al abrir la app.
       detectSessionInUrl: false,
-      storageKey: 'athlete-core.auth',
+      storageKey: AUTH_STORAGE_KEY,
     },
   });
   return client;

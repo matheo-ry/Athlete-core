@@ -2,7 +2,7 @@ import type { AuthChangeEvent as SupabaseAuthEvent, Session } from '@supabase/su
 import { z } from 'zod';
 
 import { logger } from '../../lib';
-import { getSupabaseClient } from '../../supabase';
+import { AUTH_STORAGE_KEY, getSupabaseClient } from '../../supabase';
 import { classifyAuthError, reasonForInvalidCredentials } from '../auth-errors';
 import type { EmailStatus, RawAuthError } from '../auth-errors';
 import type {
@@ -12,6 +12,7 @@ import type {
   AuthService,
   AuthUser,
 } from '../auth-types';
+import { storedSessionUser } from '../offline-session';
 import { parseProfile } from '../profile';
 import type { SignupProfile } from '../signup';
 
@@ -53,6 +54,14 @@ function failure(error: RawAuthError, action: string): { ok: false; reason: Auth
 }
 
 const OK: AuthResult = { ok: true };
+
+function readStoredSession(): string | null {
+  try {
+    return localStorage.getItem(AUTH_STORAGE_KEY);
+  } catch {
+    return null;
+  }
+}
 
 /** Los datos del registro, con los nombres que usan el trigger y las plantillas. */
 function toUserMetadata(profile: SignupProfile) {
@@ -102,6 +111,12 @@ export function createSupabaseAuthService(): AuthService {
       // Supabase avisa siempre primero con INITIAL_SESSION: así se sabe si ya
       // había sesión guardada en el dispositivo.
       const { data } = client.auth.onAuthStateChange((event, session) => {
+        if (event === 'INITIAL_SESSION' && session === null) {
+          // Sin conexión para renovar el token, la sesión sigue guardada: se
+          // entra con ella (offline-session.ts, D-118).
+          listener(storedSessionUser(readStoredSession()), 'initial');
+          return;
+        }
         listener(toUser(session), toAppEvent(event));
       });
       return () => data.subscription.unsubscribe();

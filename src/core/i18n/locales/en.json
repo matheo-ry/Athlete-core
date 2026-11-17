@@ -50,7 +50,10 @@
       "clientProfile": "Profile"
     },
     "shell": {
-      "signOut": "Sign out"
+      "signOut": "Sign out",
+      "pendingUploads": "You have workouts that haven't been uploaded. If you sign out, they will be lost.",
+      "keepSession": "Cancel",
+      "signOutAnyway": "Sign out anyway"
     },
     "login": {
       "title": "Sign in",

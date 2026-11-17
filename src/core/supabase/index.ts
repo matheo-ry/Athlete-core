@@ -1,2 +1,2 @@
-export { getSupabaseClient } from './client';
+export { AUTH_STORAGE_KEY, getSupabaseClient } from './client';
 export type { Database, Json, Tables, TablesInsert, TablesUpdate } from './database.types';

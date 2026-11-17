@@ -1346,6 +1346,19 @@ Cómo añadir una: copia el formato, usa el siguiente número y no borres las an
 - **Consecuencias:** AGENTS.md §7 lo resume (aprobado por el propietario). La plantilla de PR gana "Dudas para Claude" y "Lo que tiene que saber el siguiente".
 - **Revisar si:** los PR de Gemini necesitan muchas correcciones.
 
+### D-143 · Cómo se guarda en el móvil y cómo sube lo pendiente
+- **Fecha:** 2026-11-17
+- **Decisión:** detalles del PR 3.4 que D-118 no fijaba. El PR se parte en dos: **3.4a** (los cimientos, en `core/` y `app/`) y **3.4b** (el módulo `workouts`: descargar lo necesario para entrenar y subir los entrenos).
+  - **Lo ya cargado se guarda en el teléfono**, no solo lo de entrenar: con la app quitada de la multitarea o el móvil apagado, sin red no se podrían cargar ni los espacios, ni los flags, ni la marca, y la app se quedaría en "Cargando". En la app instalada, la caché de TanStack Query se guarda en el almacén del teléfono y se recupera antes de pintar (lo cargado hace más de 30 días se descarta). Al cerrar sesión se guarda vacía. **En el navegador no se guarda** (todo sigue igual). Aprobado por el propietario.
+  - **Abrir sin conexión con la sesión iniciada:** el token de Supabase dura una hora. Si ha caducado y no hay red para renovarlo, Supabase arranca sin sesión pero la deja guardada (solo la borra si el servidor la rechaza). Mientras siga guardada, la app entra con ella. No da acceso a nada: sin un token válido la base de datos no responde, y al volver la conexión Supabase la renueva o la cierra.
+  - **La cola de subida vive en `core/native`**, una por usuario, en el almacén del teléfono. Es genérica: cada módulo encola lo suyo con un tipo (`workout`…) y pone quién lo sube. Así cerrar sesión puede preguntar sin depender de ningún módulo.
+  - **En orden y sin duplicar:** se sube de uno en uno; si algo falla por la red, se para (lo de detrás espera) y se reintenta a los 5 s, 10 s, 20 s… hasta 5 minutos, y además al volver la conexión o a la app. Encolar otra vez lo mismo sustituye la versión anterior en su sitio. Si cambia mientras se sube, la versión nueva no se borra: se sube también.
+  - **Rechazos:** si la base de datos lo rechaza, reintentar no sirve. "Ya no tienes acceso" (`not_allowed`, el coach lo dio de baja) y cualquier otra regla o dato no válido (incluida una clave repetida, que antes habría atascado la cola) quedan marcados como rechazados, se avisa al cliente y la cola sigue con lo demás. El registro lleva solo el nombre de la regla. El aviso se olvida cuando el cliente lo lee.
+  - **Cerrar sesión con algo pendiente** pregunta antes ("Tienes entrenos sin subir. Si cierras sesión, se perderán"); al cerrar, la cola de ese usuario se vacía. Si la sesión caduca, la cola se queda y se sube al volver a entrar con la misma cuenta.
+  - **Arranque de la subida:** el manifest de un módulo gana un campo opcional, `services`: componentes sin pantalla que `app/` monta con la sesión iniciada, en cualquier pantalla y cualquier espacio. Hace falta porque un cliente dado de baja ya no puede entrar en ese espacio, y su cola tiene que intentarlo igual para poder avisarle (PR 3.4b). Aprobado por el propietario (toca `core/modules`).
+- **Por qué:** el criterio del PR 3.4 es abrir la app sin red, tras cerrarla del todo, y ver la rutina y el día de hoy. Con solo la rutina guardada no se llegaba a esa pantalla.
+- **Revisar si:** lo guardado en el teléfono crece mucho (la caché de un coach con muchos clientes): entonces se guarda solo lo que se elija.
+
 ---
 
 ## Pendientes de decidir
@@ -1393,7 +1406,8 @@ Anotadas al terminar la Fase 0 (2026-11-13). Son las estables más recientes de 
 | `@supabase/supabase-js` | 2.119 | Cliente de Supabase (D-025) |
 | `@capacitor/core` | 8.6 | Base para empaquetar la app en móvil |
 | `@capacitor/android` | 8.6 | La app de Android (PR 3.1, D-117) |
-| `@capacitor/app` | 8.1 | El botón "atrás" de Android (PR 3.1, D-135) |
+| `@capacitor/app` | 8.1 | El botón "atrás" de Android (PR 3.1, D-135) y saber cuándo se vuelve a la app (PR 3.4) |
+| `@capacitor/preferences` | 8.0 | El almacén del teléfono, que el sistema no borra (PR 3.4, D-118 y D-135) |
 
 **Compilación y estilos**
 

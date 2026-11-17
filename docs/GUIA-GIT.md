@@ -86,7 +86,7 @@ Al subir la rama se ejecuta sola otra comprobación (`npm run check`). Si falla,
 ### Paso 7. Fusionar
 
 - Se fusiona con **Squash and merge**: todos los commits del PR quedan como uno solo en `main`, con un mensaje limpio.
-- Fusiona el propietario o un agente según D-147 (§8). El colaborador junior no fusiona.
+- Fusiona el propietario o un agente según D-148 (§8). El colaborador junior no fusiona.
 - La rama se borra al fusionar.
 
 ### Paso 8. Vuelve a `main`
@@ -178,7 +178,7 @@ Si un secreto se sube por error: **cámbialo de inmediato** en el servicio (dalo
 - Un agente trabaja **en una rama y en una tarea**. Nunca en `main`.
 - **Un chat por tarea.** Cuando la tarea se fusiona, ese chat se cierra y la siguiente empieza en un chat nuevo, que se pone al día leyendo `CONTEXTO.md`.
 - Hace commit después de cada paso que funcione, con el formato de §5.
-- Fusiona solo (D-147): Claude, sus PR con el CI en verde; Gemini, los suyos con el CI en verde y el comentario "VISTO BUENO DE CLAUDE". Siempre con "Squash and merge". Lo crítico de D-147 (producción, borrar datos, relajar RLS o permisos, pagos, secretos, historial, reglas de oro) solo con el OK del propietario escrito en el prompt.
+- Fusiona solo (D-148): Claude, sus PR con el CI en verde; Gemini, los suyos con el CI en verde y el comentario "VISTO BUENO DE CLAUDE". Siempre con "Squash and merge". Lo crítico de D-148 (producción, borrar datos, relajar RLS o permisos, pagos, secretos, historial, reglas de oro) solo con el OK del propietario escrito en el prompt.
 - No borra ramas de otros y no reescribe historial (`push --force`, `rebase` sobre ramas ya subidas).
 - Al terminar: `npm run check` en verde, `git status` limpio, rama subida y PR abierto. Si no puede abrir el PR, sube la rama y deja el enlace.
 - Para abrir el PR desde la terminal, el agente escribe la plantilla rellena en un archivo temporal fuera del repositorio y usa `gh pr create --title "…" --body-file <archivo>`. No usa `--fill`, porque se salta la plantilla.

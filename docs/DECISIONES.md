@@ -465,7 +465,7 @@ Cómo añadir una: copia el formato, usa el siguiente número y no borres las an
 - **Consecuencias:** el logo (PR 1.16) también tendrá su función. Los tests de aislamiento que editaban el nombre a mano ahora editan `settings`, que sigue protegido por la misma regla de acceso.
 
 ### D-068 · Los agentes fusionan con el visto bueno del propietario
-- **Sustituida por D-147** (2026-11-17): los agentes fusionan solos, salvo lo crítico.
+- **Sustituida por D-148** (2026-11-17): los agentes fusionan solos, salvo lo crítico.
 - **Fecha:** 2026-11-14
 - **Decisión:** un agente puede fusionar Pull Requests en `main`, pero solo cuando el propietario le da el visto bueno expreso para ese PR o ese lote. Cambia la regla anterior ("los agentes no fusionan", AGENTS.md §7 y GUIA-GIT §3 y §8).
 - **Cómo se hace:** el agente no pregunta en cada cambio. Junta varios, le dice al propietario qué mirar en la app ("entra en tal pantalla y dime si te gusta") y fusiona cuando él responde que adelante, o cuando ya no queda nada por cambiar y él lo confirma. Siempre con "Squash and merge", con el CI en verde y, en una pila de PR, en orden y poniendo al día el siguiente como explica D-064.
@@ -1398,7 +1398,7 @@ Cómo añadir una: copia el formato, usa el siguiente número y no borres las an
 - **Revisar si:** en el PR 3.6 el cierre necesita otro formato de lo guardado.
   - **3.5b:** el gris sale de lo guardado en el teléfono (`previousFor`), y tras subir un entreno se vuelve a descargar al momento: así "la siguiente vez" ya ve lo de hoy. Se desmarca tocando el título de la serie iluminada ("Serie 1"), no la tarjeta entera, para no apagarla al tocar sus botones. "+ Serie" añade series extra vacías, hasta 10. "Ir directo" solo actúa una vez por arranque y solo desde el inicio del cliente; si no le quedan series a ningún ejercicio, va al resumen.
 
-### D-147 · Los agentes fusionan solos, salvo lo crítico
+### D-148 · Los agentes fusionan solos, salvo lo crítico
 - **Fecha:** 2026-11-17
 - **Decisión:** sustituye a D-068 y a la parte de D-115 y D-069 que hacía esperar el visto bueno del propietario para fusionar o empezar un lote. Aprobado por el propietario.
   - **PR de Claude:** Claude los fusiona él mismo cuando el CI está en verde y ha repasado su propio diff con la plantilla de PROMPTS §4. La revisión de Gemini a los PR de Claude pasa a ser opcional y puede hacerse después de fusionar; lo que encuentre se arregla en otro PR.

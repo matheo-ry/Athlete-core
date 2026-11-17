@@ -56,9 +56,9 @@ En la Fase 3 el propietario no prueba la app PR a PR. Al cerrar la fase se hace 
 
 ### Revisión cruzada
 
-En la Fase 3 (D-142, D-144, D-147), Claude revisa cada PR de Gemini antes de fusionarlo, con la plantilla §4, y deja un comentario que empieza por `VISTO BUENO DE CLAUDE` o `CAMBIOS PEDIDOS POR CLAUDE`. Con el visto bueno y el CI en verde, Gemini fusiona él mismo. Claude fusiona sus propios PR con el CI en verde; la revisión de Gemini a los de Claude es opcional y puede ir después. Cada uno en su chat y su worktree (GUIA-GIT §15). Nunca dos agentes escribiendo a la vez en la misma rama.
+En la Fase 3 (D-142, D-144, D-148), Claude revisa cada PR de Gemini antes de fusionarlo, con la plantilla §4, y deja un comentario que empieza por `VISTO BUENO DE CLAUDE` o `CAMBIOS PEDIDOS POR CLAUDE`. Con el visto bueno y el CI en verde, Gemini fusiona él mismo. Claude fusiona sus propios PR con el CI en verde; la revisión de Gemini a los de Claude es opcional y puede ir después. Cada uno en su chat y su worktree (GUIA-GIT §15). Nunca dos agentes escribiendo a la vez en la misma rama.
 
-### Cuándo hace falta el propietario (D-147)
+### Cuándo hace falta el propietario (D-148)
 
 Solo en lo crítico: producción, borrar datos o cambios destructivos del esquema, relajar RLS o permisos que ya existen, pagos y secretos, historial de Git, las reglas de oro y cambiar una decisión suya. Su OK tiene que venir escrito en el prompt ("tienes mi OK para …"). Si no está, el agente sigue con lo demás, lo deja como pregunta en el PR y no fusiona. Todo lo demás se fusiona sin esperarle.
 
@@ -71,12 +71,12 @@ docs/DECISIONES.md desde D-115.
 Cuando te diga "revisa el PR N": gh pr view N, gh pr diff N y
 gh pr checks N (no ejecutes npm run check: lo hace el CI). Revisa con
 la plantilla §4: reglas de oro, RLS y permisos si toca supabase/, lo
-crítico de D-147, colores fijos, textos sin i18n, any, catch vacíos,
+crítico de D-148, colores fijos, textos sin i18n, any, catch vacíos,
 que respete las D-xxx y que las suyas nuevas estén escritas. Deja UN
 comentario (gh pr comment N) que empiece por "VISTO BUENO DE CLAUDE" o
 "CAMBIOS PEDIDOS POR CLAUDE", con la lista corta de arreglos (archivo,
 qué falla, cómo) y lo menor en "Opcional". Si el PR hace algo crítico
-de D-147 sin el OK escrito del propietario, son cambios pedidos.
+de D-148 sin el OK escrito del propietario, son cambios pedidos.
 Dime el resultado en 2 líneas.
 ```
 
@@ -87,7 +87,7 @@ Al terminar, push y PR abierto, y espera la revisión de Claude. Si su
 último comentario empieza por "CAMBIOS PEDIDOS POR CLAUDE", arréglalo
 en la misma rama y avísame. Si empieza por "VISTO BUENO DE CLAUDE" y
 el CI está en verde, integra main si va detrás, fusiona con squash y
-borra la rama (D-147).
+borra la rama (D-148).
 ```
 
 ---
@@ -1981,11 +1981,11 @@ Cada chat en su worktree y su rama. Dos PR van en paralelo solo si no tocan la m
 | 3.9 con la cadena de `workouts` | Que el 3.9 no toque `workouts`; si lo necesita, entra en la cadena |
 | 3.12 con la cadena de `workouts`, desde que se fusione el 3.5 | No usar la base local a la vez (regla 3) |
 
-Gemini fusiona sus PR cuando Claude le da el visto bueno; Claude fusiona los suyos (D-147).
+Gemini fusiona sus PR cuando Claude le da el visto bueno; Claude fusiona los suyos (D-148).
 
 ### Cómo se trabaja por lotes (D-115)
 
-Igual que en la Fase 2 (§6), salvo que no se espera al propietario: un lote empieza cuando el anterior está fusionado en `main` (D-147); unas 300 líneas de verdad por PR (no cuentan `database.types.ts` ni el proyecto `android/` generado); si va a pasar de 400, se para y se parte como dice su bloque.
+Igual que en la Fase 2 (§6), salvo que no se espera al propietario: un lote empieza cuando el anterior está fusionado en `main` (D-148); unas 300 líneas de verdad por PR (no cuentan `database.types.ts` ni el proyecto `android/` generado); si va a pasar de 400, se para y se parte como dice su bloque.
 
 | Lote | Al terminar el lote, el propietario puede… |
 |---|---|

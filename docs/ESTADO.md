@@ -119,7 +119,7 @@ El diseño está en DECISIONES D-069 a D-088, y el detalle de cada PR, en `docs/
 
 ### Fase 3 — Entreno y progreso (cliente)
 
-El diseño está en DECISIONES D-115 a D-136, y el detalle de cada PR, en `docs/PROMPTS.md` §7. Son 18 PR en 5 lotes: un lote empieza cuando el anterior está fusionado; los agentes fusionan solos salvo lo crítico (D-115, D-147). La referencia es la app de apuntes del propietario (D-087). **Entrenar es solo en la app del móvil** (D-116).
+El diseño está en DECISIONES D-115 a D-136, y el detalle de cada PR, en `docs/PROMPTS.md` §7. Son 18 PR en 5 lotes: un lote empieza cuando el anterior está fusionado; los agentes fusionan solos salvo lo crítico (D-115, D-148). La referencia es la app de apuntes del propietario (D-087). **Entrenar es solo en la app del móvil** (D-116).
 
 - [x] Decidir cómo funciona toda la fase (D-115 a D-136), con P-06 cerrado y P-12 cerrado en parte
 
@@ -273,7 +273,7 @@ Cosas que alguien ha visto y que no tocaban en su tarea. No se hacen sin convert
 
 Lo más nuevo, arriba.
 
-- 2026-11-17 — Los agentes fusionan sin esperar al propietario (solo documentación, D-147, sustituye a D-068). Claude fusiona sus PR con el CI en verde; Gemini, los suyos con el comentario "VISTO BUENO DE CLAUDE" de su chat revisor. El propietario solo da su OK, escrito en el prompt, para lo crítico: producción, borrar datos, relajar RLS o permisos, pagos, secretos, historial de Git, reglas de oro y decisiones suyas. Chat revisor y final de los prompts de Gemini en `docs/PROMPTS.md` §0.
+- 2026-11-17 — Los agentes fusionan sin esperar al propietario (solo documentación, D-148, sustituye a D-068). Claude fusiona sus PR con el CI en verde; Gemini, los suyos con el comentario "VISTO BUENO DE CLAUDE" de su chat revisor. El propietario solo da su OK, escrito en el prompt, para lo crítico: producción, borrar datos, relajar RLS o permisos, pagos, secretos, historial de Git, reglas de oro y decisiones suyas. Chat revisor y final de los prompts de Gemini en `docs/PROMPTS.md` §0.
 - 2026-11-17 — PR 3.5b (apuntar un entreno, segunda parte, D-146): en gris, la vez anterior en esa serie (mismo día de la rutina o cualquiera), "Igual" para copiarla, desmarcar tocando la serie iluminada, "+ Serie" hasta 10, y al abrir la app con un entreno abierto, directo al ejercicio que toca (D-119). La vez anterior se vuelve a descargar tras subir un entreno. e2e con los criterios 4 a 7 (Bruno, en libras). Fusionados el 3.5a (#77) y el 3.5b (#79).
 
 - 2026-11-17 — PR 3.5a (apuntar un entreno, primera parte, D-146): "Hoy toca" pasa de `programs` a `workouts` con "Iniciar entreno" o "Continuar entreno" (en la web, "Para entrenar, abre la app en tu móvil"), y cada día de "Entreno" enlaza a `/client/workout`. Resumen del día con anillos "1/3" y el total "6/20 series", un ejercicio por pantalla con "Ejercicio 1 de 7", puntos y deslizar, y series con − y + y teclado (peso en la unidad del cliente, RIR o RPE del negocio y "F"). Cada cambio se guarda en el teléfono y va a la cola. "Terminar entreno" provisional (cierra a mano). Test e2e `workout-log.spec.ts`. 728 tests unitarios.

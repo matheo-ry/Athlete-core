@@ -3,12 +3,18 @@ import type { ModuleManifest } from '@/core/modules';
 import { clientsModule } from './clients';
 import { exercisesModule } from './exercises';
 import { programsModule } from './programs';
+import { workoutsModule } from './workouts';
 
 // REGISTRO DE MÓDULOS: la lista de funciones de la app. `app/` solo conoce los
 // módulos a través de esta lista. Para añadir uno: impórtalo arriba y ponlo en
 // `productModules` (ARQUITECTURA §15).
 
-const productModules: readonly ModuleManifest[] = [clientsModule, exercisesModule, programsModule];
+const productModules: readonly ModuleManifest[] = [
+  clientsModule,
+  exercisesModule,
+  programsModule,
+  workoutsModule,
+];
 
 // `_template` es un ejemplo para copiar, no una función del producto. Se importa
 // de forma condicional para que en la compilación de producción

@@ -26,7 +26,7 @@
 
 ## Dudas para Claude
 
-<!-- Gemini: lo que no estaba decidido o no encajaba, y qué hiciste mientras tanto (D-140). Si no hay, "Ninguna". -->
+<!-- Gemini: lo que no estaba decidido o no encajaba, y qué hiciste mientras tanto (D-142). Si no hay, "Ninguna". -->
 
 ## Lo que tiene que saber el siguiente
 

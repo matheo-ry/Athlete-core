@@ -1315,7 +1315,26 @@ Cómo añadir una: copia el formato, usa el siguiente número y no borres las an
   - **En `audit_log`** queda `program.missed_day_rule_changed`, solo con identificadores y la regla.
 - **Por qué:** con una sola columna, cambiar de "se mueve todo" a "se pierde" borraría el retraso acumulado, y D-125 dice que el cambio no recalcula el pasado.
 
-### D-140 · Reparto Claude/Gemini
+### D-140 · Cómo se guardan el consentimiento, el peso y las medidas
+- **Fecha:** 2026-11-17
+- **Decisión:** detalles del PR 3.3a que D-126 y D-127 no fijaban.
+  - **Consentimiento:** `health_consents`, una fila por cliente y negocio con cuándo se dio, la versión del texto (`2026-11-draft`…) y cuándo se retiró. Darlo otra vez reutiliza la fila. Solo se escribe con `grant_health_consent` y `withdraw_health_consent`, y solo lo hace el propio cliente mientras siga de alta. El coach lo lee.
+  - **Retirarlo** borra en la misma operación el peso, las medidas y el texto de las notas del día de ese espacio (el entreno y sus series se quedan).
+  - **Peso** (`body_weights`): uno por día, en kg, entre 20 y 400. **Medidas** (`body_measurements`): una por día, medida y lado, en cm; brazo, muslo y gemelo llevan lado y las demás no. El cliente los escribe directamente (RLS), sin función.
+  - **Lo comprueba la base de datos:** el RLS no deja escribir peso ni medidas sin consentimiento, y un trigger en `workout_exercises` rechaza una nota del día nueva (`health_consent_required`), porque `sync_workout` se salta el RLS.
+  - **El coach** lee peso y medidas solo mientras el consentimiento siga dado, y no los escribe.
+  - **En `audit_log`**: `health_consent.granted` (con la versión) y `health_consent.withdrawn`, solo con identificadores.
+- **Por qué:** escribir peso y medidas no tiene reglas de negocio más allá del consentimiento, que el RLS ya cubre; una función por cada cosa sería código de más.
+
+### D-141 · Cómo se guardan el set-up, los ajustes de entreno y el interruptor de logros
+- **Fecha:** 2026-11-17
+- **Decisión:** detalles del PR 3.3b que D-120, D-122, D-123 y D-130 no fijaban.
+  - **Set-up** (`client_exercise_setups`): uno por cliente y ejercicio del negocio, de 1 a 500 caracteres. El cliente lo escribe directamente (RLS) mientras siga de alta; el coach lo lee y no lo escribe.
+  - **Ajustes de entreno**, columnas de `profiles` (de la persona, valen en todos sus espacios): `default_rest_seconds` (120 de partida, de 0 a 3600 como el descanso de la rutina), `rest_autostart`, `rest_sound` y `rest_vibration` (activados) y `same_button`: `previous` (por defecto, "Igual" copia la vez anterior) o `previous_then_today` (la serie 1 copia la vez anterior y las siguientes, la serie anterior de hoy). Los cambia cada uno en el suyo; el coach los ve.
+  - **Interruptor de logros:** la clave `achievementsEnabled` de `tenants.settings`. Sin la clave, activados. La base de datos solo admite un sí o un no, y lo cambia el dueño. `achievements_enabled(tenant)` lo lee con el valor por defecto. Leerlo en la app (`parseTenantSettings`, en `core/tenancy`) llega con la pantalla de Ajustes.
+- **Por qué:** como el peso (D-140), no hay reglas de negocio más allá de quién escribe, que el RLS ya cubre.
+
+### D-142 · Reparto Claude/Gemini
 - **Fecha:** 2026-11-17
 - **Decisión:** ajusta D-115. Desde el PR 3.3, la Fase 3 la hacen dos agentes con papeles distintos:
   - **Claude decide:** es el único que escribe en `docs/DECISIONES.md`. Hace la base de datos (`supabase/`), la seguridad, `src/core/` y los PR 3.3 a 3.9. **Revisa cada PR de Gemini** (plantilla §4 de `docs/PROMPTS.md`) antes de que el propietario lo fusione.

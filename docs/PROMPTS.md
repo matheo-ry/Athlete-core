@@ -30,7 +30,7 @@ Pega esto encima de la cabecera anterior:
 
 ```
 Eres Gemini. Programas solo los PR que docs/PROMPTS.md §7 te asigna en
-la columna "Quién" (D-140). No tocas supabase/ ni src/core/ y no
+la columna "Quién" (D-142). No tocas supabase/ ni src/core/ y no
 decides: si algo no está decidido, apúntalo en "Dudas para Claude" del
 PR y sigue. Lee antes docs/GUIA-GIT.md §14 (trampas de Windows).
 ```
@@ -48,7 +48,7 @@ Si falta algo, hazlo en esta misma rama con un commit. Después dime en
 
 ### Revisión cruzada
 
-En la Fase 3 (D-140), Claude revisa cada PR de Gemini antes de fusionarlo, y Gemini revisa los de Claude, siempre con la plantilla §4. Cada uno en su chat. Nunca dos agentes escribiendo a la vez en la misma rama.
+En la Fase 3 (D-142), Claude revisa cada PR de Gemini antes de fusionarlo, y Gemini revisa los de Claude, siempre con la plantilla §4. Cada uno en su chat. Nunca dos agentes escribiendo a la vez en la misma rama.
 
 ---
 
@@ -1906,6 +1906,7 @@ El diseño está decidido en `docs/DECISIONES.md` (D-115 a D-136). Son **18 PR e
 | 1. Cimientos | 3.1 | App de Android y tests de flujos completos en el CI | `feat/app-android` | Claude |
 | | 3.2 | Base de datos: entrenos | `db/entrenos` | Claude |
 | | 3.3 | Base de datos: datos de salud, set-up y ajustes del cliente | `db/salud-y-ajustes` | Claude |
+| | 3.3c | Entrenos inventados en el seed | `db/seed-entrenos` | Claude |
 | | 3.4 | Guardado en el móvil | `feat/guardado-en-el-movil` | Claude |
 | 2. Apuntar | 3.5 | Apuntar un entreno | `feat/modulo-workouts` | Claude |
 | | 3.6 | Subida, cierre y resumen | `feat/cerrar-entreno` | Claude |
@@ -1922,7 +1923,7 @@ El diseño está decidido en `docs/DECISIONES.md` (D-115 a D-136). Son **18 PR e
 | | 3.17 | Minilogros, racha, niveles y logros | `feat/logros` | Gemini |
 | | 3.18 | Descargar en Excel | `feat/excel` | Gemini |
 
-### Qué se puede hacer en paralelo (D-140)
+### Qué se puede hacer en paralelo (D-142)
 
 Cada agente en su rama y su carpeta (GUIA-GIT §8). Nada empieza hasta que esté fusionado el 3.3.
 
@@ -1932,6 +1933,7 @@ Cada agente en su rama y su carpeta (GUIA-GIT §8). Nada empieza hasta que esté
 | 3.13 con 3.14 | 3.4 → 3.5 → 3.6 → 3.7 → 3.8 |
 | 3.18 con cualquiera | 3.8 → 3.10 |
 | 3.9 con 3.8 | 3.15 → 3.16 y 3.17 |
+| 3.3c con 3.4 a 3.9 | 3.3c → 3.12 (lo antes posible: Gemini necesita sus datos) |
 | 3.11 con 3.10 | |
 
 Gemini abre sus PR sin fusionar; Claude los revisa antes de que el propietario dé el visto bueno.
@@ -2123,9 +2125,6 @@ INCLUYE:
 7. Tests pgTAP: aislamiento de cada tabla; sin consentimiento no se
    escribe peso, medidas ni notas; retirarlo borra; el coach no
    escribe; un cliente dado de baja no lee nada.
-8. Entrenos inventados en el seed para Ana, Bruno y Diego: varias
-   semanas, con algún récord y algún día saltado, para que los PR de
-   Gemini (3.12 a 3.18) tengan datos que enseñar.
 
 NO INCLUYE: pantallas (PR 3.7, 3.9 y 3.10).
 
@@ -2138,6 +2137,29 @@ CRITERIOS DE ACEPTACIÓN:
 1. npm run db:reset y npm run db:test terminan sin errores.
 2. La descripción del PR dice qué test cubre cada regla del punto 7.
 3. La app arranca y se ve igual que antes de este PR.
+```
+
+### PR 3.3c — Entrenos inventados en el seed
+
+```
+TAREA: añadir al seed entrenos inventados para que las pantallas del
+coach y del progreso tengan datos que enseñar.
+RAMA: db/seed-entrenos
+QUIÉN: Claude. Salió del bloque del 3.3, que ya estaba hecho (D-142).
+DECISIONES: D-138 y D-139.
+ZONAS PROTEGIDAS: supabase/.
+
+INCLUYE:
+1. Entrenos inventados en el seed para Ana, Bruno y Diego: varias
+   semanas, con algún récord y algún día saltado, para que los PR de
+   Gemini (3.12 a 3.18) tengan datos que enseñar.
+
+NO INCLUYE: tablas, funciones ni pantallas nuevas.
+
+CRITERIOS DE ACEPTACIÓN:
+1. npm run db:reset y npm run db:test terminan sin errores.
+2. Los tests de flujos completos siguen en verde.
+3. Solo datos inventados.
 ```
 
 ### PR 3.4 — Guardado en el móvil

@@ -69,6 +69,157 @@ export type Database = {
           },
         ];
       };
+      body_measurements: {
+        Row: {
+          created_at: string;
+          id: string;
+          kind: string;
+          measured_on: string;
+          side: string | null;
+          tenant_id: string;
+          updated_at: string;
+          user_id: string;
+          value_cm: number;
+        };
+        ComputedFields: never;
+        Insert: {
+          created_at?: string;
+          id?: string;
+          kind: string;
+          measured_on: string;
+          side?: string | null;
+          tenant_id: string;
+          updated_at?: string;
+          user_id: string;
+          value_cm: number;
+        };
+        Update: {
+          created_at?: string;
+          id?: string;
+          kind?: string;
+          measured_on?: string;
+          side?: string | null;
+          tenant_id?: string;
+          updated_at?: string;
+          user_id?: string;
+          value_cm?: number;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'body_measurements_tenant_id_fkey';
+            columns: ['tenant_id'];
+            isOneToOne: false;
+            referencedRelation: 'tenant_effective_features';
+            referencedColumns: ['tenant_id'];
+          },
+          {
+            foreignKeyName: 'body_measurements_tenant_id_fkey';
+            columns: ['tenant_id'];
+            isOneToOne: false;
+            referencedRelation: 'tenants';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      body_weights: {
+        Row: {
+          created_at: string;
+          id: string;
+          measured_on: string;
+          tenant_id: string;
+          updated_at: string;
+          user_id: string;
+          weight_kg: number;
+        };
+        ComputedFields: never;
+        Insert: {
+          created_at?: string;
+          id?: string;
+          measured_on: string;
+          tenant_id: string;
+          updated_at?: string;
+          user_id: string;
+          weight_kg: number;
+        };
+        Update: {
+          created_at?: string;
+          id?: string;
+          measured_on?: string;
+          tenant_id?: string;
+          updated_at?: string;
+          user_id?: string;
+          weight_kg?: number;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'body_weights_tenant_id_fkey';
+            columns: ['tenant_id'];
+            isOneToOne: false;
+            referencedRelation: 'tenant_effective_features';
+            referencedColumns: ['tenant_id'];
+          },
+          {
+            foreignKeyName: 'body_weights_tenant_id_fkey';
+            columns: ['tenant_id'];
+            isOneToOne: false;
+            referencedRelation: 'tenants';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      client_exercise_setups: {
+        Row: {
+          client_id: string;
+          created_at: string;
+          exercise_id: string;
+          id: string;
+          setup: string;
+          tenant_id: string;
+          updated_at: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          client_id: string;
+          created_at?: string;
+          exercise_id: string;
+          id?: string;
+          setup: string;
+          tenant_id: string;
+          updated_at?: string;
+        };
+        Update: {
+          client_id?: string;
+          created_at?: string;
+          exercise_id?: string;
+          id?: string;
+          setup?: string;
+          tenant_id?: string;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'client_exercise_setups_tenant_id_exercise_id_fkey';
+            columns: ['tenant_id', 'exercise_id'];
+            isOneToOne: false;
+            referencedRelation: 'exercises';
+            referencedColumns: ['tenant_id', 'id'];
+          },
+          {
+            foreignKeyName: 'client_exercise_setups_tenant_id_fkey';
+            columns: ['tenant_id'];
+            isOneToOne: false;
+            referencedRelation: 'tenant_effective_features';
+            referencedColumns: ['tenant_id'];
+          },
+          {
+            foreignKeyName: 'client_exercise_setups_tenant_id_fkey';
+            columns: ['tenant_id'];
+            isOneToOne: false;
+            referencedRelation: 'tenants';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
       exercise_library: {
         Row: {
           equipment: string;
@@ -202,6 +353,55 @@ export type Database = {
         };
         Relationships: [];
       };
+      health_consents: {
+        Row: {
+          created_at: string;
+          granted_at: string;
+          id: string;
+          tenant_id: string;
+          text_version: string;
+          updated_at: string;
+          user_id: string;
+          withdrawn_at: string | null;
+        };
+        ComputedFields: never;
+        Insert: {
+          created_at?: string;
+          granted_at: string;
+          id?: string;
+          tenant_id: string;
+          text_version: string;
+          updated_at?: string;
+          user_id: string;
+          withdrawn_at?: string | null;
+        };
+        Update: {
+          created_at?: string;
+          granted_at?: string;
+          id?: string;
+          tenant_id?: string;
+          text_version?: string;
+          updated_at?: string;
+          user_id?: string;
+          withdrawn_at?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'health_consents_tenant_id_fkey';
+            columns: ['tenant_id'];
+            isOneToOne: false;
+            referencedRelation: 'tenant_effective_features';
+            referencedColumns: ['tenant_id'];
+          },
+          {
+            foreignKeyName: 'health_consents_tenant_id_fkey';
+            columns: ['tenant_id'];
+            isOneToOne: false;
+            referencedRelation: 'tenants';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
       plan_features: {
         Row: {
           feature_key: string;
@@ -265,8 +465,13 @@ export type Database = {
       profiles: {
         Row: {
           created_at: string;
+          default_rest_seconds: number;
           display_name: string;
           locale: string;
+          rest_autostart: boolean;
+          rest_sound: boolean;
+          rest_vibration: boolean;
+          same_button: string;
           terms_accepted_at: string | null;
           terms_version: string | null;
           user_id: string;
@@ -275,8 +480,13 @@ export type Database = {
         ComputedFields: never;
         Insert: {
           created_at?: string;
+          default_rest_seconds?: number;
           display_name?: string;
           locale?: string;
+          rest_autostart?: boolean;
+          rest_sound?: boolean;
+          rest_vibration?: boolean;
+          same_button?: string;
           terms_accepted_at?: string | null;
           terms_version?: string | null;
           user_id: string;
@@ -284,8 +494,13 @@ export type Database = {
         };
         Update: {
           created_at?: string;
+          default_rest_seconds?: number;
           display_name?: string;
           locale?: string;
+          rest_autostart?: boolean;
+          rest_sound?: boolean;
+          rest_vibration?: boolean;
+          same_button?: string;
           terms_accepted_at?: string | null;
           terms_version?: string | null;
           user_id?: string;
@@ -1213,6 +1428,7 @@ export type Database = {
     };
     Functions: {
       accept_terms: { Args: { p_version: string }; Returns: undefined };
+      achievements_enabled: { Args: { p_tenant: string }; Returns: boolean };
       archive_client: { Args: { p_tenant: string; p_user: string }; Returns: undefined };
       assign_program: {
         Args: {
@@ -1254,6 +1470,11 @@ export type Database = {
         Returns: undefined;
       };
       generate_invite_code: { Args: Record<PropertyKey, never>; Returns: string };
+      grant_health_consent: {
+        Args: { p_tenant: string; p_text_version: string };
+        Returns: undefined;
+      };
+      has_health_consent: { Args: { p_tenant: string; p_user: string }; Returns: boolean };
       is_exercise_in_my_programs: {
         Args: { p_exercise: string; p_tenant: string };
         Returns: boolean;
@@ -1316,6 +1537,7 @@ export type Database = {
         };
         Returns: undefined;
       };
+      withdraw_health_consent: { Args: { p_tenant: string }; Returns: undefined };
     };
     Enums: {
       [_ in never]: never;

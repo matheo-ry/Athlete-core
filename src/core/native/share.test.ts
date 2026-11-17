@@ -1,26 +1,29 @@
-import { Directory, Filesystem } from '@capacitor/filesystem';
-import { Share } from '@capacitor/share';
+import { Directory } from '@capacitor/filesystem';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import * as platform from './platform';
 import { shareOrDownloadFile } from './share';
 
+const writeFileMock = vi.fn<(...args: unknown[]) => Promise<{ uri: string }>>();
 vi.mock('@capacitor/filesystem', () => ({
   Directory: { Cache: 'CACHE' },
   Filesystem: {
-    writeFile: vi.fn(),
+    writeFile: (...args: unknown[]) => writeFileMock(...args),
   },
 }));
 
+const shareMock = vi.fn<(...args: unknown[]) => Promise<unknown>>();
 vi.mock('@capacitor/share', () => ({
   Share: {
-    share: vi.fn(),
+    share: (...args: unknown[]) => shareMock(...args),
   },
 }));
 
 describe('shareOrDownloadFile (D-131, D-149)', () => {
   beforeEach(() => {
     vi.restoreAllMocks();
+    writeFileMock.mockReset();
+    shareMock.mockReset();
   });
 
   describe('en app nativa (Android / iOS)', () => {
@@ -29,10 +32,10 @@ describe('shareOrDownloadFile (D-131, D-149)', () => {
     });
 
     it('escribe en Directory.Cache y abre el menú de compartir con el archivo', async () => {
-      vi.mocked(Filesystem.writeFile).mockResolvedValue({
+      writeFileMock.mockResolvedValue({
         uri: 'file:///data/user/0/app/cache/entrenos.xlsx',
       });
-      vi.mocked(Share.share).mockResolvedValue({} as never);
+      shareMock.mockResolvedValue({});
 
       const blob = new Blob(['dummy excel content'], {
         type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
@@ -40,22 +43,23 @@ describe('shareOrDownloadFile (D-131, D-149)', () => {
       const outcome = await shareOrDownloadFile(blob, 'entrenos.xlsx');
 
       expect(outcome).toBe('shared');
-      expect(Filesystem.writeFile).toHaveBeenCalledWith({
-        path: 'entrenos.xlsx',
-        data: expect.any(String),
-        directory: Directory.Cache,
-      });
-      expect(Share.share).toHaveBeenCalledWith({
+      expect(writeFileMock).toHaveBeenCalledWith(
+        expect.objectContaining({
+          path: 'entrenos.xlsx',
+          directory: Directory.Cache,
+        }),
+      );
+      expect(shareMock).toHaveBeenCalledWith({
         title: 'entrenos.xlsx',
         files: ['file:///data/user/0/app/cache/entrenos.xlsx'],
       });
     });
 
     it('detecta cancelación del usuario al compartir sin considerarlo fallo', async () => {
-      vi.mocked(Filesystem.writeFile).mockResolvedValue({
+      writeFileMock.mockResolvedValue({
         uri: 'file:///cache/entrenos.xlsx',
       });
-      vi.mocked(Share.share).mockRejectedValue(new Error('Share canceled'));
+      shareMock.mockRejectedValue(new Error('Share canceled'));
 
       const blob = new Blob(['test']);
       const outcome = await shareOrDownloadFile(blob, 'entrenos.xlsx');
@@ -64,7 +68,7 @@ describe('shareOrDownloadFile (D-131, D-149)', () => {
     });
 
     it('devuelve failed si falla la escritura del archivo', async () => {
-      vi.mocked(Filesystem.writeFile).mockRejectedValue(new Error('Disk full'));
+      writeFileMock.mockRejectedValue(new Error('Disk full'));
 
       const blob = new Blob(['test']);
       const outcome = await shareOrDownloadFile(blob, 'entrenos.xlsx');

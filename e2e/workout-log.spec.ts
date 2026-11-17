@@ -29,11 +29,19 @@ test('Ana inicia el lunes, apunta la serie 1 y la sigue viendo al recargar', asy
   const sets = page.getByRole('listitem', { name: /^Set \d$/ });
   await expect(sets).toHaveCount(3);
 
-  // Criterio 3: 10 kg de lastre con + (lo prescrito) y 12 repeticiones con el teclado.
+  // Criterio 3: el lastre con + y 12 repeticiones con el teclado. Ana ya hizo
+  // este día (seed), así que el primer + pone lo gris de la vez anterior, no lo
+  // prescrito (D-120, D-146). Lo gris llega después de pintar la pantalla: se
+  // espera a que salga para no pulsar antes (con lo prescrito daba 10 o 0
+  // según quién llegara primero). Con 0 kg de lastre, lo gris son solo las
+  // repeticiones ("10 (1)"); con lastre, "2.5 × 12 (1)".
   const first = sets.first();
   await expect(first).toHaveAttribute('data-done', 'false');
+  const previous = first.getByTestId('previous');
+  await expect(previous).toBeVisible();
+  const previousLoad = /^([\d.]+) × /.exec((await previous.textContent()) ?? '')?.[1] ?? '0';
   await first.getByRole('button', { name: 'Increase Added load (kg)' }).click();
-  await expect(first.getByRole('textbox', { name: 'Added load (kg)' })).toHaveValue('10');
+  await expect(first.getByRole('textbox', { name: 'Added load (kg)' })).toHaveValue(previousLoad);
   await first.getByRole('textbox', { name: 'Reps' }).fill('12');
   await first.getByRole('textbox', { name: 'Reps' }).press('Enter');
   await expect(first).toHaveAttribute('data-done', 'true');

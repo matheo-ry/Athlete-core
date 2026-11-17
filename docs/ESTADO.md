@@ -216,6 +216,7 @@ Ideas aprobadas como ideas, no como diseño: se diseñan cuando llegue la fase (
 Cosas que alguien ha visto y que no tocaban en su tarea. No se hacen sin convertirlas antes en tarea.
 
 - Medidas en pulgadas: la pestaña "Entrenos" del coach (`workouts/coach/ClientWorkoutsTab.tsx`) aún convierte con `/ 2.54` a mano. Debería usar `formatLength` de `core/lib` (D-147).
+- Pantalla del ejercicio: hasta que llega lo gris de la vez anterior (`usePreviousPerformance`), la serie enseña lo prescrito, y un toque de + en ese momento toma lo prescrito. Se nota poco en el móvil (sale del teléfono), pero se podría esperar a esa carga antes de pintar las series.
 - Consentimiento de salud en `core/tenancy` (D-127, D-147): moverlo cuando se haga la pantalla de dar y retirar el permiso.
 
 - Actividad del coach (PR 3.14): la marca "Nuevo" de cada entreno se guarda por dispositivo (`localStorage`). En otro ordenador o móvil, el coach vuelve a ver como nuevos los que ya abrió.
@@ -275,6 +276,8 @@ Cosas que alguien ha visto y que no tocaban en su tarea. No se hacen sin convert
 ## Registro de cambios
 
 Lo más nuevo, arriba.
+
+- 2026-11-17 — Arreglo del test de flujos completos `workout-log.spec.ts` ("Ana inicia el lunes…"), rojo en `main` desde el #79: desde el PR 3.5b el primer + pone lo gris de la vez anterior (D-120, D-146), y Ana ya tiene ese lunes en el seed (0 kg de lastre), pero el test seguía esperando lo prescrito (10). Pasaba o fallaba según si lo gris llegaba antes del clic (en local, 10; en el CI, 0). Ahora espera a que salga lo gris y compara con ese valor. Sin cambios en `src/`.
 
 - 2026-11-17 — Arreglos de la revisión del PR 3.16 (Claude, D-147), que se fusionó sin revisión: `LineChart` sin colores hex de reserva ni textos fijos en español; teclado con patrón de grupo de radio, foco visible y resumen para el lector de pantalla; 44 px táctiles medidos en píxeles reales; `touch-action: pan-y`; selectores `ChoiceChips` con `aria-pressed` (desaparecen las clases `surface-raised` y `primary-contrast`, que no existen en el tema); peso y medidas leídos de `workouts` (D-127) solo al abrir su pestaña y sin tumbar los ejercicios si fallan; medidas con `formatLength` de `core/lib`; con medidas y sin peso se abre la primera medida.
 

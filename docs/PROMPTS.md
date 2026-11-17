@@ -29,10 +29,14 @@ Si aún no tienes la tarea clara, pega solo las 3 primeras líneas y pregúntale
 Pega esto encima de la cabecera anterior:
 
 ```
-Eres Gemini. Programas solo los PR que docs/PROMPTS.md §7 te asigna en
-la columna "Quién" (D-142). No tocas supabase/ ni src/core/ y no
-decides: si algo no está decidido, apúntalo en "Dudas para Claude" del
-PR y sigue. Lee antes docs/GUIA-GIT.md §14 (trampas de Windows).
+Eres Gemini. Programas los PR que docs/PROMPTS.md §7 te asigna en la
+columna "Quién" (D-142, D-144). Decides con criterio propio lo de tu PR
+(pantallas, nombres, estructura, casos no previstos) y puedes tocar
+cualquier carpeta, escribir migraciones y añadir librerías. Antes lee
+docs/DECISIONES.md: si tu idea contradice una decisión, no la cambies:
+propónla en el PR con el porqué. Lo que decidas, como D-xxx "(Gemini)".
+Pregunta solo lo irreversible (regla de oro 13). Lee antes
+docs/GUIA-GIT.md §14 (trampas de Windows) y §15 (chats en paralelo).
 ```
 
 ### Antes de cerrar un chat
@@ -52,7 +56,7 @@ En la Fase 3 el propietario no prueba la app PR a PR. Al cerrar la fase se hace 
 
 ### Revisión cruzada
 
-En la Fase 3 (D-142), Claude revisa cada PR de Gemini antes de fusionarlo, y Gemini revisa los de Claude, siempre con la plantilla §4. Cada uno en su chat. Nunca dos agentes escribiendo a la vez en la misma rama.
+En la Fase 3 (D-142, D-144), Claude revisa cada PR de Gemini antes de fusionarlo (sin excepción si toca `supabase/`, RLS o permisos), y Gemini revisa los de Claude, siempre con la plantilla §4. Cada uno en su chat y su worktree (GUIA-GIT §15). Nunca dos agentes escribiendo a la vez en la misma rama.
 
 ---
 
@@ -1905,40 +1909,45 @@ CRITERIOS DE ACEPTACIÓN:
 
 El diseño está decidido en `docs/DECISIONES.md` (D-115 a D-136). Son **18 PR en 5 lotes**. Se piden **en este orden y de uno en uno**, cada uno en su chat.
 
-| Lote | PR | Qué hace | Rama | Quién |
-|---|---|---|---|---|
-| 1. Cimientos | 3.1 | App de Android y tests de flujos completos en el CI | `feat/app-android` | Claude |
-| | 3.2 | Base de datos: entrenos | `db/entrenos` | Claude |
-| | 3.3 | Base de datos: datos de salud, set-up y ajustes del cliente | `db/salud-y-ajustes` | Claude |
-| | 3.3c | Entrenos inventados en el seed | `db/seed-entrenos` | Claude |
-| | 3.4 | Guardado en el móvil | `feat/guardado-en-el-movil` | Claude |
-| 2. Apuntar | 3.5 | Apuntar un entreno | `feat/modulo-workouts` | Claude |
-| | 3.6 | Subida, cierre y resumen | `feat/cerrar-entreno` | Claude |
-| | 3.7 | Cronómetro de descanso | `feat/cronometro` | Claude |
-| 3. Completar | 3.8 | Unilaterales, grupos, cambiar y saltar | `feat/entreno-completo` | Claude |
-| | 3.9 | Consentimiento, peso corporal y medidas | `feat/peso-y-medidas` | Claude |
-| | 3.10 | Notas del día, set-up y "¿Seguro?" | `feat/notas-y-setup` | Gemini |
-| | 3.11 | Historial del cliente y corregir | `feat/historial-de-entrenos` | Gemini |
-| 4. El coach | 3.12 | El día saltado | `feat/dia-saltado` | Gemini |
-| | 3.13 | Pestaña "Entrenos" en la ficha | `feat/entrenos-en-la-ficha` | Gemini |
-| | 3.14 | Actividad y avisos del coach | `feat/actividad-del-coach` | Gemini |
-| 5. Progreso | 3.15 | Módulo `progress`: historial, RM y récords | `feat/modulo-progress` | Gemini |
-| | 3.16 | Gráficas | `feat/graficas` | Gemini |
-| | 3.17 | Minilogros, racha, niveles y logros | `feat/logros` | Gemini |
-| | 3.18 | Descargar en Excel | `feat/excel` | Gemini |
+| Lote | PR | Qué hace | Rama | Quién | Base local | Carpetas que toca |
+|---|---|---|---|---|---|---|
+| 1. Cimientos | 3.1 | App de Android y tests de flujos completos en el CI | `feat/app-android` | Claude | Sí (e2e) | `android/`, `e2e/`, `.github/`, configuración raíz · hecho |
+| | 3.2 | Base de datos: entrenos | `db/entrenos` | Claude | Sí | `supabase/` · hecho |
+| | 3.3 | Base de datos: datos de salud, set-up y ajustes del cliente | `db/salud-y-ajustes` | Claude | Sí | `supabase/` · hecho |
+| | 3.3c | Entrenos inventados en el seed | `db/seed-entrenos` | Claude | Sí | `supabase/` (seed) · hecho |
+| | 3.4 | Guardado en el móvil | `feat/guardado-en-el-movil` | Claude | Sí | `src/core/native`, `src/core/modules`, `src/app`, `workouts` · hecho |
+| 2. Apuntar | 3.5 | Apuntar un entreno | `feat/modulo-workouts` | Claude | Sí (e2e) | `workouts`, `programs` (tarjeta "Hoy toca"), `e2e/` |
+| | 3.6 | Subida, cierre y resumen | `feat/cerrar-entreno` | Claude | Sí (e2e) | `workouts`, `src/core/native` |
+| | 3.7 | Cronómetro de descanso | `feat/cronometro` | Claude | No | `workouts`, `src/core/native` |
+| 3. Completar | 3.8 | Unilaterales, grupos, cambiar y saltar | `feat/entreno-completo` | Claude | No | `workouts` |
+| | 3.9 | Consentimiento, peso corporal y medidas | `feat/peso-y-medidas` | Claude | Sí | `src/core/tenancy`, `src/app/client`, perfil y donde se apunten peso y medidas |
+| | 3.10 | Notas del día, set-up y "¿Seguro?" | `feat/notas-y-setup` | Gemini | No | `workouts` |
+| | 3.11 | Historial del cliente y corregir | `feat/historial-de-entrenos` | Gemini | No | `workouts` |
+| 4. El coach | 3.12 | El día saltado | `feat/dia-saltado` | Gemini | Sí | `programs`, quizá `supabase/` |
+| | 3.13 | Pestaña "Entrenos" en la ficha | `feat/entrenos-en-la-ficha` | Gemini | No | `workouts` · hecho |
+| | 3.14 | Actividad y avisos del coach | `feat/actividad-del-coach` | Gemini | No | `workouts`, `programs` · hecho |
+| 5. Progreso | 3.15 | Módulo `progress`: historial, RM y récords | `feat/modulo-progress` | Gemini | Sí | `progress`, `supabase/` (flag) · hecho |
+| | 3.16 | Gráficas | `feat/graficas` | Gemini | No | `progress`, quizá `src/core/ui` |
+| | 3.17 | Minilogros, racha, niveles y logros | `feat/logros` | Gemini | Sí | `workouts` (resumen), `progress`, `supabase/` si guarda logros |
+| | 3.18 | Descargar en Excel | `feat/excel` | Gemini | No | `progress` |
 
-### Qué se puede hacer en paralelo (D-142)
+"Base local": si el PR necesita `db:reset`, `db:test` o los tests e2e (además de `npm run check`). Los nombres sin ruta son módulos de `src/modules/`. Es lo previsto: si al empezar el chat ve que toca otra carpeta o necesita la base, lo dice antes de seguir (GUIA-GIT §15).
 
-Cada agente en su rama y su carpeta (GUIA-GIT §8). Nada empieza hasta que esté fusionado el 3.3.
+### Qué se puede hacer en paralelo (D-142, GUIA-GIT §15)
 
-| En paralelo | En serie (el segundo espera a que se fusione el primero) |
+Cada chat en su worktree y su rama. Dos PR van en paralelo solo si no tocan la misma carpeta de módulo ni los mismos archivos (columna "Carpetas que toca"). Los que usan la base local pueden escribir código a la vez, pero no ejecutar `db:reset`, `db:test` ni e2e a la vez. Lo que queda, a partir de `main` del 2026-11-17:
+
+| En serie (el segundo espera a que se fusione el primero) | Por qué |
 |---|---|
-| 3.4 a 3.9 (Claude) con 3.12 a 3.18 (Gemini), desde que se fusione el 3.3 | 3.3 → todos los demás |
-| 3.13 con 3.14 | 3.4 → 3.5 → 3.6 → 3.7 → 3.8 |
-| 3.18 con cualquiera | 3.8 → 3.10 |
-| 3.9 con 3.8 | 3.15 → 3.16 y 3.17 |
-| 3.3c con 3.4 a 3.9 | 3.3c → 3.12 (lo antes posible: Gemini necesita sus datos) |
-| 3.11 con 3.10 | |
+| 3.5 → 3.6 → 3.7 → 3.8 → 3.10 → 3.11 | Todos cambian `workouts` |
+| 3.16 → 3.18 (o al revés) → 3.17 | Cambian `progress`; el 3.17 también cambia `workouts`, así que va al final de las dos cadenas |
+| 3.5 → 3.12 | Los dos cambian `programs` (la tarjeta "Hoy toca") |
+
+| En paralelo | Con la condición de |
+|---|---|
+| La cadena de `workouts` (3.5 … 3.11) con 3.16 y 3.18 | Ninguna: carpetas distintas |
+| 3.9 con la cadena de `workouts` | Que el 3.9 no toque `workouts`; si lo necesita, entra en la cadena |
+| 3.12 con la cadena de `workouts`, desde que se fusione el 3.5 | No usar la base local a la vez (regla 3) |
 
 Gemini abre sus PR sin fusionar; Claude los revisa antes de que el propietario dé el visto bueno.
 
@@ -1959,7 +1968,7 @@ Igual que en la Fase 2 (§6): un lote no empieza hasta que el anterior está fus
 - Se abre con la cabecera de §0 y, debajo, el bloque del PR. Se termina como indica AGENTS.md §8.
 - **Entrenar es solo en la app del móvil (D-116).** En la web, donde saldría "Iniciar entreno", sale "Para entrenar, abre la app en tu móvil". En desarrollo y en los tests se activa en el navegador con la variable del PR 3.1.
 - **Nada se pierde (D-118):** todo lo que el cliente apunta se guarda en el móvil al instante, antes de intentar subirlo.
-- **Módulos y fronteras (ARQUITECTURA §6):** `workouts` usa `programs` y `exercises`; `progress` usa `workouts` y `exercises`. `programs` **nunca** importa `workouts`: si una pantalla de `programs` necesita llevar a un entreno, usa un enlace a la ruta de `workouts` y `useFeature('workouts')` de `core/flags`, sin importar el módulo. Si algo no encaja, el agente para y pregunta.
+- **Módulos y fronteras (ARQUITECTURA §6):** `workouts` usa `programs` y `exercises`; `progress` usa `workouts` y `exercises`. `programs` **nunca** importa `workouts`: si una pantalla de `programs` necesita llevar a un entreno, usa un enlace a la ruta de `workouts` y `useFeature('workouts')` de `core/flags`, sin importar el módulo. Si algo no encaja, el agente no rompe la frontera: lo propone en el PR con el porqué (D-144).
 - **Los PR de base de datos** llevan, en la misma migración, `tenant_id`, claves compuestas, permisos explícitos, RLS con políticas y su test de aislamiento en `supabase/tests/` (AGENTS.md §5). Terminan con los tipos regenerados (`npm run db:types`).
 - **Zonas protegidas:** cada bloque dice cuáles toca; se repite en el apartado "Zonas protegidas" del PR.
 - **Librerías:** las de D-135 están aprobadas. Si hace falta otra, se anota en D-135 con su porqué antes de instalarla y se dice en el PR.

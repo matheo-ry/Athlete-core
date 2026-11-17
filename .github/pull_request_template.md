@@ -24,9 +24,9 @@
 
 <!-- Obligatorio para el colaborador junior: 3 frases sobre cómo funciona el cambio. -->
 
-## Dudas para Claude
+## Decisiones tomadas y dudas
 
-<!-- Gemini: lo que no estaba decidido o no encajaba, y qué hiciste mientras tanto (D-142). Si no hay, "Ninguna". -->
+<!-- Lo que decidiste tú (con su D-xxx) y lo que propones cambiar de una decisión existente, con el porqué (D-144). Dudas, solo de lo irreversible. Si no hay, "Ninguna". -->
 
 ## Lo que tiene que saber el siguiente
 

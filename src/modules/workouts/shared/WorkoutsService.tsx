@@ -5,6 +5,7 @@ import { canLogWorkouts, getUploadQueue, useUploadQueue } from '@/core/native';
 import { Button } from '@/core/ui';
 
 import { useOfflineSnapshotRefresh, useUploadPending } from '../api/useWorkoutSync';
+import { useResumeOnOpen } from './useResumeOnOpen';
 
 /**
  * Lo que `workouts` hace sin pantalla mientras hay sesión (D-143): guardar en
@@ -18,8 +19,9 @@ export function WorkoutsService() {
 }
 
 function SyncForUser({ userId }: { userId: string }) {
-  useUploadPending(userId);
-  useOfflineSnapshotRefresh(userId);
+  const refreshSnapshot = useOfflineSnapshotRefresh(userId);
+  useUploadPending(userId, refreshSnapshot);
+  useResumeOnOpen();
   return <RejectedUploadsNotice userId={userId} />;
 }
 

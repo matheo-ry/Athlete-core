@@ -7,11 +7,11 @@ Este archivo lo actualiza quien termina una tarea, en el mismo Pull Request, jun
 
 ## En curso
 
-- **PR 3.5a — Apuntar un entreno** (Claude), en revisión: iniciar, resumen del día, pantalla del ejercicio y series con − y + y teclado (D-145). Sin fusionar.
+- **PR 3.5 — Apuntar un entreno** (Claude), en revisión en dos PR: 3.5a (#77) y 3.5b (encima del 3.5a), D-145. Sin fusionar.
 
 ## Siguiente
 
-1. **PR 3.5b — Apuntar un entreno, segunda parte** (Claude): el gris de la vez anterior, "Igual", "+ Serie", desmarcar e ir directo al abrir (D-145), tras fusionar el 3.5a. Claude y Gemini trabajan en paralelo según `docs/PROMPTS.md` §7 (D-142, D-144) y las reglas de `docs/GUIA-GIT.md` §15.
+1. Fusionar el 3.5a y luego el 3.5b (cambiar su base a `main`). Después, **PR 3.6 — Subida, cierre y resumen** (Claude). Claude y Gemini trabajan en paralelo según `docs/PROMPTS.md` §7 (D-142, D-144) y las reglas de `docs/GUIA-GIT.md` §15.
 2. El propietario dio por buenas, por ahora, la lista de `docs/referencia/biblioteca-ejercicios.md` y las rutinas de ejemplo. Se pueden retocar más adelante.
 
 ## Fases
@@ -142,7 +142,7 @@ El diseño está en DECISIONES D-115 a D-136, y el detalle de cada PR, en `docs/
 
 - [ ] PR 3.5 — Apuntar un entreno (partido en dos, como preveía `docs/PROMPTS.md` §7)
   - [x] 3.5a — iniciar, resumen, pantalla del ejercicio y series (en revisión)
-  - [ ] 3.5b — el gris, "Igual", "+ Serie", desmarcar e ir directo
+  - [x] 3.5b — el gris, "Igual", "+ Serie", desmarcar e ir directo (en revisión)
 - [ ] PR 3.6 — Subida, cierre y resumen
 - [ ] PR 3.7 — Cronómetro de descanso
 
@@ -271,6 +271,8 @@ Cosas que alguien ha visto y que no tocaban en su tarea. No se hacen sin convert
 ## Registro de cambios
 
 Lo más nuevo, arriba.
+
+- 2026-11-17 — PR 3.5b (apuntar un entreno, segunda parte, D-145): en gris, la vez anterior en esa serie (mismo día de la rutina o cualquiera), "Igual" para copiarla, desmarcar tocando la serie iluminada, "+ Serie" hasta 10, y al abrir la app con un entreno abierto, directo al ejercicio que toca (D-119). La vez anterior se vuelve a descargar tras subir un entreno. e2e con los criterios 4 a 7 (Bruno, en libras). 732 tests unitarios.
 
 - 2026-11-17 — PR 3.5a (apuntar un entreno, primera parte, D-145): "Hoy toca" pasa de `programs` a `workouts` con "Iniciar entreno" o "Continuar entreno" (en la web, "Para entrenar, abre la app en tu móvil"), y cada día de "Entreno" enlaza a `/client/workout`. Resumen del día con anillos "1/3" y el total "6/20 series", un ejercicio por pantalla con "Ejercicio 1 de 7", puntos y deslizar, y series con − y + y teclado (peso en la unidad del cliente, RIR o RPE del negocio y "F"). Cada cambio se guarda en el teléfono y va a la cola. "Terminar entreno" provisional (cierra a mano). Test e2e `workout-log.spec.ts`. 728 tests unitarios.
 

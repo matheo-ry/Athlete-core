@@ -3,7 +3,13 @@ import { describe, expect, it } from 'vitest';
 import type { ProgramBlock, ProgramDay } from '@/modules/programs';
 
 import {
+  MAX_SETS,
+  addSet,
   changeSet,
+  copyPrevious,
+  exerciseToResume,
+  previousSet,
+  unmarkSet,
   finishWorkout,
   prescribedReference,
   setCounts,
@@ -139,5 +145,61 @@ describe('toSyncPayload', () => {
       closed_at: '2026-11-16T09:00:00.000Z',
       close_reason: 'manual',
     });
+  });
+});
+
+describe('desmarcar, "+ Serie", "Igual" y reanudar (PR 3.5b)', () => {
+  const at = '2026-11-16T08:10:00.000Z';
+
+  it('tocar una serie iluminada la apaga y no cuenta', () => {
+    const lit = changeSet(workout(), 1, 1, { reps: 10 }, at);
+    const off = unmarkSet(lit, 1, 1, at);
+    expect(off.exercises[0]?.sets[0]).toMatchObject({ reps: 10, isDone: false });
+    expect(setCounts(off.exercises).done).toBe(0);
+  });
+
+  it('"+ Serie" añade una extra vacía, hasta 10', () => {
+    let current = workout();
+    for (let index = 0; index < 12; index += 1) {
+      current = addSet(current, 1, at, () => `extra-${String(index)}`);
+    }
+    const sets = current.exercises[0]?.sets ?? [];
+    expect(sets).toHaveLength(MAX_SETS);
+    expect(sets[3]).toMatchObject({ setNumber: 4, isExtra: true, isDone: false });
+  });
+
+  it('"Igual" copia la vez anterior en esa serie', () => {
+    const before = previousSet(
+      {
+        sets: [
+          {
+            setNumber: 1,
+            side: 'none',
+            weightKg: 10,
+            reps: 12,
+            durationSeconds: null,
+            distanceMeters: null,
+            intensityType: 'rir',
+            intensityValue: 1,
+          },
+        ],
+      },
+      1,
+    );
+    expect(before).not.toBeNull();
+    if (before === null) {
+      return;
+    }
+    const copied = copyPrevious(workout(), 1, 1, before, at);
+    expect(copied.exercises[0]?.sets[0]).toMatchObject({ weightKg: 10, reps: 12, isDone: true });
+    expect(previousSet(null, 1)).toBeNull();
+  });
+
+  it('al abrir, el último ejercicio tocado si le quedan series; si no, el siguiente', () => {
+    let current = changeSet(workout(), 2, 1, { durationSeconds: 40 }, at);
+    // El 2 (plancha) ya no tiene series pendientes: toca el 3.
+    expect(exerciseToResume(current)).toBe(3);
+    current = changeSet(current, 1, 1, { reps: 5 }, at);
+    expect(exerciseToResume(current)).toBe(1);
   });
 });

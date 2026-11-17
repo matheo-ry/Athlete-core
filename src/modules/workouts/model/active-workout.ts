@@ -288,3 +288,93 @@ export function prescribedReference(exercise: ActiveExercise, setNumber: number)
     intensityValue: set.intensityValue,
   };
 }
+
+/** Tocar una serie iluminada la apaga (D-120). Lo escrito se queda, pero no cuenta. */
+export function unmarkSet(
+  workout: ActiveWorkout,
+  position: number,
+  setNumber: number,
+  now: string,
+): ActiveWorkout {
+  return withExercise(workout, position, now, (exercise) => ({
+    ...exercise,
+    sets: exercise.sets.map((set) =>
+      set.setNumber === setNumber ? { ...set, isDone: false, recordedAt: now } : set,
+    ),
+  }));
+}
+
+/** Como mucho 10 series por ejercicio (D-086). */
+export const MAX_SETS = 10;
+
+/** "+ Serie" (D-120): una más que las prescritas, vacía, hasta 10. */
+export function addSet(
+  workout: ActiveWorkout,
+  position: number,
+  now: string,
+  newId: () => string,
+): ActiveWorkout {
+  return withExercise(workout, position, now, (exercise) =>
+    exercise.sets.length >= MAX_SETS
+      ? exercise
+      : {
+          ...exercise,
+          sets: [...exercise.sets, emptySet(newId(), exercise.sets.length + 1, true)],
+        },
+  );
+}
+
+/** Una serie de la vez anterior (sin lado, D-121 llega en el PR 3.8). */
+export interface PreviousSetValues {
+  weightKg: number | null;
+  reps: number | null;
+  durationSeconds: number | null;
+  distanceMeters: number | null;
+  intensityType: 'rir' | 'rpe' | 'failure' | null;
+  intensityValue: number | null;
+}
+
+/** La serie con ese número de la vez anterior; `null` si entonces no la hizo. */
+export function previousSet(
+  previous: { sets: readonly (PreviousSetValues & { setNumber: number; side: string })[] } | null,
+  setNumber: number,
+): PreviousSetValues | null {
+  const set = previous?.sets.find((item) => item.setNumber === setNumber && item.side === 'none');
+  return set === undefined
+    ? null
+    : {
+        weightKg: set.weightKg,
+        reps: set.reps,
+        durationSeconds: set.durationSeconds,
+        distanceMeters: set.distanceMeters,
+        intensityType: set.intensityType,
+        intensityValue: set.intensityValue,
+      };
+}
+
+/** "Igual" (D-120, forma por defecto): copia lo gris, la vez anterior en esa serie, y la ilumina. */
+export function copyPrevious(
+  workout: ActiveWorkout,
+  position: number,
+  setNumber: number,
+  previous: PreviousSetValues,
+  now: string,
+): ActiveWorkout {
+  return changeSet(workout, position, setNumber, previous, now);
+}
+
+/**
+ * El ejercicio que toca al abrir la app (D-119): el último que se tocó si le
+ * quedan series; si no, el siguiente con series pendientes (dando la vuelta);
+ * `null` si ya no queda nada (se va al resumen).
+ */
+export function exerciseToResume(workout: ActiveWorkout): number | null {
+  const count = workout.exercises.length;
+  for (let offset = 0; offset < count; offset += 1) {
+    const position = ((workout.lastExercise - 1 + offset) % count) + 1;
+    if (workout.exercises[position - 1]?.sets.some((set) => !set.isDone) === true) {
+      return position;
+    }
+  }
+  return null;
+}

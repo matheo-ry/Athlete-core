@@ -15,6 +15,11 @@ import { fetchPerformedExercises } from './performed-api';
 // (D-118). Uno por usuario y espacio: un cliente de dos coaches tiene dos.
 // Al cerrar sesión se borra con todo lo del usuario (`removeUser`).
 
+/** La misma copia, en la caché de TanStack Query, para las pantallas de entreno (PR 3.5b). */
+export function snapshotQueryKey(userId: string, tenantId: string) {
+  return ['workouts', 'snapshot', userId, tenantId] as const;
+}
+
 function snapshotKey(userId: string, tenantId: string): string {
   return userKey(userId, `workouts.snapshot.${tenantId}`);
 }
@@ -39,6 +44,7 @@ export async function refreshOfflineSnapshot(
       current === null ? [] : previousPerformances(performed, current.program.id, exerciseIds),
   };
   await getDeviceStore().write(snapshotKey(userId, tenantId), snapshot);
+  queryClient.setQueryData(snapshotQueryKey(userId, tenantId), snapshot);
   return snapshot;
 }
 

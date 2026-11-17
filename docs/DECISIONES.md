@@ -1384,6 +1384,7 @@ Cómo añadir una: copia el formato, usa el siguiente número y no borres las an
   - **"Terminar entreno"**, provisional hasta el PR 3.6: cierra a mano (`close_reason = 'manual'`), lo sube y vuelve al inicio; sin ninguna serie hecha, no se sube (D-119).
 - **Por qué:** pasa de 300 líneas; y lo provisional de "Terminar" evita dejar entrenos abiertos para siempre mientras no llega el PR 3.6.
 - **Revisar si:** en el PR 3.6 el cierre necesita otro formato de lo guardado.
+  - **3.5b:** el gris sale de lo guardado en el teléfono (`previousFor`), y tras subir un entreno se vuelve a descargar al momento: así "la siguiente vez" ya ve lo de hoy. Se desmarca tocando el título de la serie iluminada ("Serie 1"), no la tarjeta entera, para no apagarla al tocar sus botones. "+ Serie" añade series extra vacías, hasta 10. "Ir directo" solo actúa una vez por arranque y solo desde el inicio del cliente; si no le quedan series a ningún ejercicio, va al resumen.
 
 ---
 

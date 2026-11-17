@@ -1,7 +1,7 @@
 import { z } from 'zod';
 
 import { logger } from '../lib';
-import { getDeviceStore } from './device-store';
+import { getDeviceStore, userKey } from './device-store';
 import type { DeviceStore } from './device-store';
 
 // La cola de lo pendiente de subir (DECISIONES D-118). Lo que el cliente apunta
@@ -87,7 +87,7 @@ export function createUploadQueue(store: DeviceStore): UploadQueue {
   let lock: Promise<unknown> = Promise.resolve();
   const running = new Map<string, Promise<UploadRun>>();
 
-  const keyOf = (userId: string) => `upload-queue.${userId}`;
+  const keyOf = (userId: string) => userKey(userId, 'upload-queue');
   const read = async (userId: string) => (await store.read(keyOf(userId), queueSchema)) ?? [];
 
   function update(userId: string, change: (items: UploadItem[]) => UploadItem[]): Promise<void> {

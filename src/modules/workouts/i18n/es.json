@@ -1,0 +1,8 @@
+{
+  "sync": {
+    "noAccess": "No se pudo guardar: ya no tienes acceso a {{name}}.",
+    "invalid_one": "No se pudo guardar un entreno: tenía datos que la app no acepta.",
+    "invalid_other": "No se pudieron guardar {{count}} entrenos: tenían datos que la app no acepta.",
+    "dismiss": "Entendido"
+  }
+}

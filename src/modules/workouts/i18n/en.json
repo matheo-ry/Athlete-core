@@ -1,0 +1,8 @@
+{
+  "sync": {
+    "noAccess": "Couldn't save: you no longer have access to {{name}}.",
+    "invalid_one": "A workout couldn't be saved: it had data the app doesn't accept.",
+    "invalid_other": "{{count}} workouts couldn't be saved: they had data the app doesn't accept.",
+    "dismiss": "Got it"
+  }
+}

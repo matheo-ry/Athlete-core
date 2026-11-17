@@ -46,6 +46,24 @@ const rowSchema = z.object({
   ),
 });
 
+/** Una rutina ya leída, tal como se guarda en el móvil para entrenar sin conexión (D-118). */
+export const clientProgramSchema: z.ZodType<ClientProgram> = z.object({
+  id: z.string(),
+  name: z.string(),
+  clientId: z.string(),
+  startsOn: z.string(),
+  startBlockId: z.string().nullable(),
+  mode: z.enum(PROGRAM_MODES),
+  endedAt: z.string().nullable(),
+  blocks: z.array(
+    z.object({
+      id: z.string().nullable(),
+      cycleDays: z.number().int(),
+      laps: z.number().int().nullable(),
+    }),
+  ),
+});
+
 export function parseClientPrograms(rows: unknown): ClientProgram[] {
   return z
     .array(rowSchema)

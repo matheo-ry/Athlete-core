@@ -2,6 +2,8 @@ import { Outlet } from 'react-router';
 
 import { OfflineBanner } from '@/core/ui';
 
+import { ModuleServices } from './ModuleServices';
+
 /** Marco común a todas las rutas. */
 export function RootLayout() {
   return (
@@ -12,6 +14,7 @@ export function RootLayout() {
         <OfflineBanner />
       </div>
       <Outlet />
+      <ModuleServices />
     </div>
   );
 }

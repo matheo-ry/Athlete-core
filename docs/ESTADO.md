@@ -159,7 +159,7 @@ El diseño está en DECISIONES D-115 a D-136, y el detalle de cada PR, en `docs/
 
 **Lote 5 — Progreso**
 
-- [ ] PR 3.15 — Módulo `progress`: historial, RM y récords
+- [x] PR 3.15 — Módulo `progress`: historial, RM y récords (D-129)
 - [ ] PR 3.16 — Gráficas
 - [ ] PR 3.17 — Minilogros, racha, niveles y logros
 - [ ] PR 3.18 — Descargar en Excel

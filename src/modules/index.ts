@@ -3,6 +3,7 @@ import type { ModuleManifest } from '@/core/modules';
 import { clientsModule } from './clients';
 import { exercisesModule } from './exercises';
 import { programsModule } from './programs';
+import { progressModule } from './progress';
 import { workoutsModule } from './workouts';
 
 // REGISTRO DE MÓDULOS: la lista de funciones de la app. `app/` solo conoce los
@@ -13,6 +14,7 @@ const productModules: readonly ModuleManifest[] = [
   clientsModule,
   exercisesModule,
   programsModule,
+  progressModule,
   workoutsModule,
 ];
 

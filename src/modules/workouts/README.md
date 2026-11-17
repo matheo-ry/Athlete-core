@@ -9,4 +9,5 @@
 - **Tablas:** `workouts`, `workout_exercises`, `workout_sets` (solo de lectura, D-138; se escriben con `sync_workout`), `program_missed_days`, `health_consents`, `body_weights`, `body_measurements`, `client_exercise_setups`.
 - **Depende de:** `programs` y `exercises` (ARQUITECTURA §6), solo por sus `index.ts`: `useExerciseOptions` de `exercises` para los nombres de los ejercicios; `loadCurrentClientProgram` y los esquemas de la rutina de `programs`.
 - **Flag:** `workouts` (tipo core, activo para todos), en la migración `20261116120000_workouts.sql`.
-- **Estado:** PR 3.13 (pestaña del coach) y PR 3.4b (guardado en el móvil). Siguiente: apuntar un entreno (PR 3.5), que encola con `getUploadQueue().enqueue(userId, { id, kind: 'workout', tenantId, tenantName, payload })` y lee lo guardado con `readOfflineSnapshot`.
+- **RM estimado y récords** (PR 3.15, D-129): `model/rm.ts` y `model/records.ts`, exportados en `index.ts`. Es la única fórmula de la app: `progress` y la actividad del coach la usan desde aquí.
+- **Estado:** PR 3.13 (pestaña del coach), PR 3.15 (RM y récords) y PR 3.4b (guardado en el móvil). Siguiente: apuntar un entreno (PR 3.5), que encola con `getUploadQueue().enqueue(userId, { id, kind: 'workout', tenantId, tenantName, payload })` y lee lo guardado con `readOfflineSnapshot`.

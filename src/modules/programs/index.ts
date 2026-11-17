@@ -10,3 +10,9 @@ export { clientProgramSchema } from './model/assignments';
 export type { ClientProgram } from './model/assignments';
 export { programDocumentSchema } from './model/program-document';
 export type { ProgramDocument } from './model/program-document';
+
+// Para la tarjeta "Hoy toca" de `workouts` (PR 3.5, D-119).
+export { useClientToday, useDaySummary, useDayTitle } from './shared/useClientToday';
+export type { ClientToday } from './shared/useClientToday';
+export { shortDate } from './shared/useProgressText';
+export type { ProgramBlock, ProgramDay, ProgramDayExercise } from './model/program-document';

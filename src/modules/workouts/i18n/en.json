@@ -63,5 +63,48 @@
     "invalid_one": "A workout couldn't be saved: it had data the app doesn't accept.",
     "invalid_other": "{{count}} workouts couldn't be saved: they had data the app doesn't accept.",
     "dismiss": "Got it"
+  },
+  "today": {
+    "title": "Today",
+    "rest": "Today: rest",
+    "open": "Open training",
+    "listProgram": "Your program",
+    "noProgram": "Your coach hasn't assigned you a program yet",
+    "startsOn": "Your program starts on {{date}}",
+    "start": "Start workout",
+    "continue": "Continue workout",
+    "openMobileApp": "To train, open the app on your phone"
+  },
+  "workout": {
+    "title": "Today's workout",
+    "totalSets": "{{done}}/{{total}} sets",
+    "exercisesLabel": "Workout exercises",
+    "setsDone": "{{done}} of {{total}} sets done",
+    "finish": "Finish workout",
+    "toSummary": "Back to summary",
+    "exerciseOf": "Exercise {{number}} of {{count}}",
+    "goTo": "Go to exercise {{number}}",
+    "previous": "Previous",
+    "next": "Next",
+    "loadError": "Could not open the workout",
+    "noWorkout": "No open workout",
+    "toProgram": "Go to my program"
+  },
+  "set": {
+    "label": "Set {{number}}",
+    "weight": "Weight ({{unit}})",
+    "extraLoad": "Added load ({{unit}})",
+    "reps": "Reps",
+    "seconds": "Seconds",
+    "meters": "Meters",
+    "rir": "RIR",
+    "rpe": "RPE",
+    "failure": "To failure",
+    "failureShort": "F",
+    "decrease": "Decrease {{field}}",
+    "increase": "Increase {{field}}",
+    "same": "Same",
+    "add": "+ Set",
+    "unmark": "Unmark set {{number}}"
   }
 }

@@ -1384,7 +1384,20 @@ Cómo añadir una: copia el formato, usa el siguiente número y no borres las an
   - **Peso corporal y medidas corporales:** pestaña dedicada dentro de Progreso ("Peso y medidas"), con gráfica de línea de la métrica elegida (peso, cintura, cadera, brazo, etc.), estadísticas de cambio en el periodo y último valor. Respeta el consentimiento de salud (D-126): si no se ha concedido, no se muestra ningún dato.
 - **Por qué:** permite visualizar la sobrecarga progresiva y la evolución corporal de un vistazo, sin dependencias pesadas y con los colores de marca de cada coach.
 
-### D-146 · Arreglos de la revisión del PR 3.16
+### D-146 · Apuntar un entreno: detalles del PR 3.5a
+- **Fecha:** 2026-11-17
+- **Decisión:** detalles que D-119 y D-120 no fijaban. El PR 3.5 se parte en dos, como prevé PROMPTS §7: **3.5a** (iniciar, el resumen del día, la pantalla del ejercicio, las series con − y + y teclado, guardar y encolar) y **3.5b** (el gris de la vez anterior, "Igual", "+ Serie", desmarcar, ir directo al abrir y los criterios 4 a 7).
+  - **El entreno abierto** vive en el almacén del teléfono, uno por usuario y espacio (`workouts.active.<negocio>`), y cada cambio se encola entero (la cola sustituye la versión anterior). La ruta es `/client/workout`: el resumen, `?exercise=N` para un ejercicio y, sin entreno abierto, `?day=N` para empezar ese día desde "Entreno".
+  - **"Hoy toca"** es de `workouts` y usa `useClientToday` de `programs` (su `index.ts`). Con un entreno abierto dice "Continuar entreno". Desde un día de "Entreno", el enlace "Iniciar entreno" va a la ruta sin importar `workouts`.
+  - **Pasos** que D-120 no decía: 5 segundos y 10 metros. El primer toque de − o + en una serie vacía pone lo prescrito, si lo hay (luego, lo gris del 3.5b); si no, un paso desde 0. Con un rango de repeticiones, la referencia es el tope.
+  - **"F"** (al fallo) es un botón que sustituye al número de RIR o RPE.
+  - **Unilaterales:** hasta el PR 3.8 se apuntan en el móvil, pero sus series no se suben (la base de datos exige el lado, D-121).
+  - **"Terminar entreno"**, provisional hasta el PR 3.6: cierra a mano (`close_reason = 'manual'`), lo sube y vuelve al inicio; sin ninguna serie hecha, no se sube (D-119).
+- **Por qué:** pasa de 300 líneas; y lo provisional de "Terminar" evita dejar entrenos abiertos para siempre mientras no llega el PR 3.6.
+- **Revisar si:** en el PR 3.6 el cierre necesita otro formato de lo guardado.
+  - **3.5b:** el gris sale de lo guardado en el teléfono (`previousFor`), y tras subir un entreno se vuelve a descargar al momento: así "la siguiente vez" ya ve lo de hoy. Se desmarca tocando el título de la serie iluminada ("Serie 1"), no la tarjeta entera, para no apagarla al tocar sus botones. "+ Serie" añade series extra vacías, hasta 10. "Ir directo" solo actúa una vez por arranque y solo desde el inicio del cliente; si no le quedan series a ningún ejercicio, va al resumen.
+
+### D-147 · Arreglos de la revisión del PR 3.16
 - **Fecha:** 2026-11-17
 - **Decisión:** el PR 3.16 (#78) se fusionó sin revisión. La revisión posterior encontró fallos que corrige el PR `fix/progress-charts-review`. Cambia en parte D-145:
   - **`LineChart` mide su contenedor:** el `viewBox` tiene el ancho real en píxeles, así el texto (12 px) y la zona táctil de cada punto (44 px) no encogen en el móvil. Tocar en cualquier punto de la gráfica elige el punto más cercano.

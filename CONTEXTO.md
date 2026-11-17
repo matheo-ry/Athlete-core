@@ -22,8 +22,8 @@
 ## Dónde estamos
 
 - **Fase actual:** 3 — Entreno y progreso, en construcción (diseño en D-115 a D-137). Las Fases 1 y 2 están terminadas y fusionadas en `main`.
-- **Última tarea terminada:** arreglos de la revisión del PR 3.16 (D-146): accesibilidad y colores de la gráfica, zonas táctiles y lectura del peso y las medidas desde `workouts`. Antes, PR 3.16 — gráficas del progreso (Gemini, D-145). Antes, PR 3.4b (#73, D-143) y reglas de chats en paralelo (D-144). En la Fase 3 no se piden pruebas manuales PR a PR: al cerrar la fase se hace una prueba completa (PROMPTS §0).
-- **Siguiente tarea:** **PR 3.5 — Apuntar un entreno** (`docs/PROMPTS.md` §7). Amplía el módulo `workouts`, que ya existe (PR 3.13 y 3.4b). Trabajan Claude y Gemini a la vez (D-142): quién hace cada PR, en la columna "Quién" de §7, con qué carpetas toca y si usa la base local. Gemini decide en sus PR y lo deja escrito como D-xxx "(Gemini)" (D-144). Chats en paralelo: reglas de `docs/GUIA-GIT.md` §15. En staging están aplicadas y probadas las migraciones 1 a 21.
+- **Última tarea terminada:** arreglos de la revisión del PR 3.16 (D-147): accesibilidad y colores de la gráfica, zonas táctiles y lectura del peso y las medidas desde `workouts`. Antes, PR 3.5 — apuntar un entreno, fusionado en dos partes: 3.5a (#77) y 3.5b (#79), D-146. Antes, PR 3.16 — gráficas del progreso (Gemini, D-146). Antes, PR 3.4b (#73, D-143) y reglas de chats en paralelo (D-144). En la Fase 3 no se piden pruebas manuales PR a PR: al cerrar la fase se hace una prueba completa (PROMPTS §0).
+- **Siguiente tarea:** **PR 3.6 — Subida, cierre y resumen** (`docs/PROMPTS.md` §7), en `workouts`. Trabajan Claude y Gemini a la vez (D-142): quién hace cada PR, en la columna "Quién" de §7, con qué carpetas toca y si usa la base local. Gemini decide en sus PR y lo deja escrito como D-xxx "(Gemini)" (D-144). Chats en paralelo: reglas de `docs/GUIA-GIT.md` §15. En staging están aplicadas y probadas las migraciones 1 a 21.
 
 
 ## Cómo será la Fase 3 (diseñada, D-115 a D-136)
@@ -63,7 +63,7 @@
 - **Datos de salud en la base de datos** (PR 3.3a): `health_consents` (uno por espacio; `grant_health_consent` y `withdraw_health_consent`, que borra peso, medidas y notas del día), `body_weights` y `body_measurements`. Sin consentimiento no se escriben, ni las notas del día (D-140).
 - **Set-up y ajustes en la base de datos** (PR 3.3b): `client_exercise_setups` (uno por cliente y ejercicio), los ajustes de entreno del cliente en `profiles` (descanso, arrancar solo, sonido, vibración, "Igual") y el interruptor `achievementsEnabled` de `tenants.settings` (D-141).
 - **Base de datos local** (Supabase en Docker): 21 migraciones en `supabase/migrations/` (tablas, funciones de negocio, permisos, RLS, el espacio de logos, los ejercicios, las rutinas y los flags de cada módulo); 524 tests pgTAP (`npm run db:test`); 2 coaches y 6 clientes inventados (`supabase/seed.sql`, contraseña `password123`), con entrenos de varias semanas, días faltados, récords, peso y medidas para Ana, Bruno y Diego (PR 3.3c); tipos generados en `core/supabase/database.types.ts`.
-- **Tests:** 653 unitarios (`npm run check`) y 91 de extremo a extremo contra Supabase local (`npm run test:e2e`, también en el CI).
+- **Tests:** 754 unitarios (`npm run check`) y 94 de extremo a extremo contra Supabase local (`npm run test:e2e`, también en el CI).
 - **Staging** (PR 1.17): proyecto `athlete-core-staging` de Supabase (Fráncfort, plan gratuito) con las mismas tablas y datos inventados que en local. Los emails salen de verdad, por Resend, desde `no-reply@athlete-core.com`. Se prueba con `npm run dev:staging` (hace falta `.env.staging.local`; guía en `supabase/README.md`). Todavía no hay web publicada.
 - **App de Android** (PR 3.1a): proyecto `android/` con Capacitor. `npm run android:build` genera `build/athlete-core-staging.apk`, que apunta a staging; guía para el propietario en `android/README.md` (D-137). `core/native` resuelve el botón "atrás", la barra de estado y las zonas seguras (`--safe-top`, `--safe-bottom` en `src/index.css`).
 - **Guardado en el móvil** (PR 3.4a, D-143): `core/native` tiene el almacén del teléfono (`getDeviceStore`, validado con Zod al leer), `onAppResume` y la cola de subida (`getUploadQueue`: una por usuario, en orden, sin duplicar, con reintentos y rechazos). En la app instalada, lo ya cargado se guarda en el teléfono y la app abre sin red, también con el token caducado. Cerrar sesión con entrenos sin subir pregunta antes. El módulo `workouts` (PR 3.4b, sin pantallas) guarda en el teléfono la rutina vigente y la vez anterior de cada ejercicio (`readOfflineSnapshot`, `previousFor`) y sube la cola con `sync_workout`, avisando si el coach dio de baja al cliente.
@@ -79,11 +79,11 @@
 
 Los 5 más recientes, el más nuevo arriba. El historial completo está en `docs/ESTADO.md`.
 
-- 2026-11-17 — Arreglos de la revisión del PR 3.16 (D-146): `LineChart` sin colores hex ni textos fijos, con teclado (grupo de radio), foco visible, 44 px táctiles y desplazamiento vertical en el móvil. `progress` lee el peso y las medidas de `workouts` (D-127), solo al abrir la pestaña. Si esa carga falla, los ejercicios se siguen viendo.
+- 2026-11-17 — Arreglos de la revisión del PR 3.16 (D-147): `LineChart` sin colores hex ni textos fijos, con teclado (grupo de radio), foco visible, 44 px táctiles y desplazamiento vertical en el móvil. `progress` lee el peso y las medidas de `workouts` (D-127), solo al abrir la pestaña. Si esa carga falla, los ejercicios se siguen viendo.
+- 2026-11-17 — PR 3.5b: lo gris de la vez anterior, "Igual", desmarcar, "+ Serie" y abrir directo en el ejercicio que toca (D-146).
+- 2026-11-17 — PR 3.5a: el cliente empieza un entreno desde "Hoy toca" o "Entreno" y apunta sus series en el móvil, guardadas al instante y en la cola (D-146).
 - 2026-11-17 — PR 3.16: gráficas de progreso en SVG propio sin librería (D-135). Por ejercicio: métricas, periodos, % de progreso por RM (D-129) y detalle del entreno bajo la gráfica. Peso y medidas con consentimiento (D-126, D-127). Decisión D-145 (Gemini).
 - 2026-11-17 — Solo documentación: reglas para chats en paralelo (GUIA-GIT §15) y autonomía de Gemini (D-144, sustituye en parte D-142). PROMPTS §7 dice qué carpetas toca cada PR y si usa la base local.
-- 2026-11-17 — PR 3.4b: el módulo `workouts` guarda en el móvil la rutina y la vez anterior de cada ejercicio, sube lo pendiente y avisa de los rechazos (D-143).
-- 2026-11-17 — Fusionados 3.13, 3.15 y 3.14 tras la revisión de Claude: validación Zod, errores que ya no se tragan, "DIA n" traducido y una sola fórmula de RM y récords (D-129). Flag `progress` (migración 22).
 
 
 ## A tener en cuenta ahora

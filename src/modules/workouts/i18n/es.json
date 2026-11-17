@@ -63,5 +63,48 @@
     "invalid_one": "No se pudo guardar un entreno: tenía datos que la app no acepta.",
     "invalid_other": "No se pudieron guardar {{count}} entrenos: tenían datos que la app no acepta.",
     "dismiss": "Entendido"
+  },
+  "today": {
+    "title": "Hoy toca",
+    "rest": "Hoy: descanso",
+    "open": "Abrir entreno",
+    "listProgram": "Tu rutina",
+    "noProgram": "Tu coach aún no te ha asignado una rutina",
+    "startsOn": "Tu rutina empieza el {{date}}",
+    "start": "Iniciar entreno",
+    "continue": "Continuar entreno",
+    "openMobileApp": "Para entrenar, abre la app en tu móvil"
+  },
+  "workout": {
+    "title": "Entreno de hoy",
+    "totalSets": "{{done}}/{{total}} series",
+    "exercisesLabel": "Ejercicios del entreno",
+    "setsDone": "{{done}} de {{total}} series hechas",
+    "finish": "Terminar entreno",
+    "toSummary": "Volver al resumen",
+    "exerciseOf": "Ejercicio {{number}} de {{count}}",
+    "goTo": "Ir al ejercicio {{number}}",
+    "previous": "Anterior",
+    "next": "Siguiente",
+    "loadError": "No se pudo abrir el entreno",
+    "noWorkout": "No hay ningún entreno abierto",
+    "toProgram": "Ir a mi rutina"
+  },
+  "set": {
+    "label": "Serie {{number}}",
+    "weight": "Peso ({{unit}})",
+    "extraLoad": "Lastre ({{unit}})",
+    "reps": "Repeticiones",
+    "seconds": "Segundos",
+    "meters": "Metros",
+    "rir": "RIR",
+    "rpe": "RPE",
+    "failure": "Al fallo",
+    "failureShort": "F",
+    "decrease": "Bajar {{field}}",
+    "increase": "Subir {{field}}",
+    "same": "Igual",
+    "add": "+ Serie",
+    "unmark": "Desmarcar la serie {{number}}"
   }
 }

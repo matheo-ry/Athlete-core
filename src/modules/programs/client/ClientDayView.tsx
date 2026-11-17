@@ -1,6 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router';
 
+import { canLogWorkouts } from '@/core/native';
 import { Card, EmptyState, buttonClassName } from '@/core/ui';
 import { useExerciseOptions } from '@/modules/exercises';
 
@@ -64,25 +65,38 @@ export function ClientDayView({ program, document, today, dayNumber }: ClientDay
           <p>{t('programs.client.restDay')}</p>
         </Card>
       ) : (
-        <Card>
-          <ol aria-label={t('programs.editor.exercisesLabel')}>
-            {day.exercises.map((item, index) => (
-              <li key={item.id ?? index} className="border-border border-b last:border-b-0">
-                <Link
-                  to={`?day=${String(day.dayNumber)}&exercise=${String(index + 1)}`}
-                  className="hover:bg-background focus-visible:outline-primary-readable flex min-h-14 flex-col justify-center rounded-lg px-2 py-2 focus-visible:outline-2"
-                >
-                  <span className="font-medium">
-                    {index + 1}. {options.byId.get(item.exerciseId)?.name ?? '…'}
-                  </span>
-                  <GroupTag group={groupInfo(day, index)} />
-                  <span className="text-muted text-sm">{summaryOf(item)}</span>
-                  {item.note === null ? null : <span className="text-sm">{item.note}</span>}
-                </Link>
-              </li>
-            ))}
-          </ol>
-        </Card>
+        <>
+          {/* Un enlace a la ruta de `workouts`, sin importar el módulo (D-119). */}
+          {canLogWorkouts() ? (
+            <Link
+              to={`/client/workout?day=${String(day.dayNumber)}`}
+              className={buttonClassName('primary', 'self-start')}
+            >
+              {t('programs.client.startWorkout')}
+            </Link>
+          ) : (
+            <p className="text-muted text-sm">{t('programs.client.openMobileApp')}</p>
+          )}
+          <Card>
+            <ol aria-label={t('programs.editor.exercisesLabel')}>
+              {day.exercises.map((item, index) => (
+                <li key={item.id ?? index} className="border-border border-b last:border-b-0">
+                  <Link
+                    to={`?day=${String(day.dayNumber)}&exercise=${String(index + 1)}`}
+                    className="hover:bg-background focus-visible:outline-primary-readable flex min-h-14 flex-col justify-center rounded-lg px-2 py-2 focus-visible:outline-2"
+                  >
+                    <span className="font-medium">
+                      {index + 1}. {options.byId.get(item.exerciseId)?.name ?? '…'}
+                    </span>
+                    <GroupTag group={groupInfo(day, index)} />
+                    <span className="text-muted text-sm">{summaryOf(item)}</span>
+                    {item.note === null ? null : <span className="text-sm">{item.note}</span>}
+                  </Link>
+                </li>
+              ))}
+            </ol>
+          </Card>
+        </>
       )}
     </div>
   );

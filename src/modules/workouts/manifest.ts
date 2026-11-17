@@ -3,15 +3,22 @@ import { canLogWorkouts } from '@/core/native';
 
 /**
  * Módulo workouts (Fase 3): registro de entrenos por el cliente y seguimiento
- * por el coach (PR 3.13, D-109, D-124, D-126, D-127, D-128). Las pantallas del
- * cliente llegan con el PR 3.5; ya guarda en el móvil lo necesario para entrenar
+ * por el coach (PR 3.13, D-109, D-124, D-126, D-127, D-128). El cliente apunta
+ * sus entrenos en la app del móvil (PR 3.5); guarda en el móvil lo necesario para entrenar
  * sin cobertura y sube lo pendiente (PR 3.4b, D-118 y D-143).
  */
 export const workoutsModule = defineModule({
   key: 'workouts',
   routes: {
     coach: [],
-    client: [],
+    // Apuntar un entreno, solo en la app del móvil (PR 3.5, D-116, D-119 y D-120).
+    client: [
+      {
+        path: 'workout',
+        lazy: () =>
+          import('./client/WorkoutPage').then((page) => ({ Component: page.WorkoutPage })),
+      },
+    ],
   },
   nav: {
     coach: [],
@@ -40,7 +47,15 @@ export const workoutsModule = defineModule({
           })),
       },
     ],
-    client: [],
+    // "Hoy toca", con "Iniciar entreno" (D-119). Antes era de `programs`, con el mismo orden.
+    client: [
+      {
+        key: 'workouts-today',
+        order: 10,
+        lazy: () =>
+          import('./client/ClientTodayCard').then((card) => ({ Component: card.ClientTodayCard })),
+      },
+    ],
   },
   services: [
     {

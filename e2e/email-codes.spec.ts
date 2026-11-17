@@ -29,8 +29,12 @@ test('recuperar la contraseña: el email llega en el idioma de la cuenta y la co
 
   await page.getByLabel('Code').fill(code);
   await page.getByRole('button', { name: 'Continue' }).click();
-  await page.getByLabel('New password').fill('a-brand-new-password');
-  await page.getByRole('button', { name: 'Save password' }).click();
+  // Con el código ya hay sesión: la app se pone en el idioma de la cuenta
+  // (D-058). Se espera a que cambie, en vez de adivinar si llega antes o
+  // después de escribir la contraseña.
+  await expect(page.getByRole('heading', { name: 'Elige una contraseña nueva' })).toBeVisible();
+  await page.getByLabel('Contraseña nueva').fill('a-brand-new-password');
+  await page.getByRole('button', { name: 'Guardar contraseña' }).click();
 
   // Sin ningún coach todavía: la bienvenida, ya en el idioma de la cuenta (D-058).
   await expect(page.getByRole('heading', { name: 'Te damos la bienvenida' })).toBeVisible();

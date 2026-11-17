@@ -1431,6 +1431,19 @@ Cómo añadir una: copia el formato, usa el siguiente número y no borres las an
 - **Por qué:** decisión del propietario, para que los agentes avancen sin esperarle en cada PR. Él solo interviene donde un fallo no se arregla con otro PR.
 - **Revisar si:** algo fusionado sin el propietario causa un problema difícil de deshacer.
 
+### D-149 · Cerrar un entreno: detalles del PR 3.6a
+- **Fecha:** 2026-11-17
+- **Decisión:** detalles que D-118, D-119 y D-124 no fijaban. El PR 3.6 se parte en dos: **3.6a** (cierre solo, "Terminar", "Descartar", el resumen final, la fecha, "Pendiente de subir" y la rutina del entreno empezado) y **3.6b** (el recordatorio de las 6 horas con `@capacitor/local-notifications`, el cierre a las 12 horas con "Guardamos tu entreno del lunes" y los dos móviles).
+  - **Cierre solo:** con todas las series hechas, el entreno se cierra al ir al resumen o tras **20 segundos sin cambios** en la pantalla del ejercicio, que avisa con "Todas las series hechas…" y "Ver el resumen". No se cierra al instante porque tocar el peso de la última serie ya la marca como hecha, y hay que dejar tiempo para poner las repeticiones. Cada cambio vuelve a empezar la cuenta. Al abrir la app con todo hecho, se cierra enseguida. Se sube con `close_reason = 'completed'`.
+  - **El resumen final** sale en `/client/workout?finished=<id>` y solo vive en memoria: es la pantalla de justo después de cerrar. Duración del inicio al último dato cambiado (cerrarlo más tarde no la alarga), series hechas y ejercicios con alguna serie hecha. Sin ninguna serie hecha, no se guarda y se vuelve al inicio.
+  - **Descartar** pasa por la cola de subida, con el mismo identificador que el entreno: sustituye en su sitio a la subida pendiente, así que lo que no llegó a subir ya no sube, y `discard_workout` no hace nada si no está en la nube. Sin conexión, se borra en la nube al volver.
+  - **"Pendiente de subir"** sale arriba a la derecha, en cualquier pantalla, mientras haya algo en la cola sin conexión o que ya falló un intento. Con conexión, lo recién encolado sube en un momento y no se enseña, para que no parpadee en cada serie.
+  - **Arreglo:** lo que va al almacén del teléfono (el entreno abierto, guardarlo, descartarlo y lo de la vez anterior) usa `networkMode: 'always'` de TanStack Query. Con el modo por defecto, sin conexión se quedaba en pausa: lo apuntado sin cobertura no se guardaba y, al abrir la app sin red, el entreno se quedaba en "Cargando". Lo destapó el test de flujos completos del criterio 1.
+  - **La fecha** ya era la del último dato cambiado (D-119): cerrar no toca `lastChangedAt`. **La rutina del entreno empezado** tampoco cambia: el entreno guarda su copia de lo prescrito al empezar y no vuelve a leer la rutina (D-124).
+  - **Lo guardado antes del PR 3.6** se lee igual: le falta el motivo de cierre y vale `null`.
+- **Por qué:** con todo junto pasa de 400 líneas, y el 3.6b es lo que necesita la librería nueva y la parte nativa.
+- **Revisar si:** los 20 segundos se quedan cortos o largos al entrenar de verdad.
+
 ---
 
 

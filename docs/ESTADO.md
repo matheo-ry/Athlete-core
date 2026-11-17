@@ -7,11 +7,11 @@ Este archivo lo actualiza quien termina una tarea, en el mismo Pull Request, jun
 
 ## En curso
 
-- Nada de Claude. El **PR 3.5** (apuntar un entreno) está fusionado en dos partes: 3.5a (#77) y 3.5b (#79), D-146.
+- **PR 3.6a** (Claude): cierre solo, "Terminar", "Descartar", resumen final y "Pendiente de subir" (D-149).
 
 ## Siguiente
 
-1. **PR 3.6 — Subida, cierre y resumen** (Claude). Claude y Gemini trabajan en paralelo según `docs/PROMPTS.md` §7 (D-142, D-144) y las reglas de `docs/GUIA-GIT.md` §15.
+1. **PR 3.6b — Recordatorio, cierre a las 12 horas y dos móviles** (Claude, D-149): notificación local con `@capacitor/local-notifications` (`src/core/native`), "Guardamos tu entreno del lunes" y "Este entreno está abierto en otro dispositivo" con "Seguir aquí". Es el criterio 3 del PR 3.6. Claude y Gemini trabajan en paralelo según `docs/PROMPTS.md` §7 (D-142, D-144) y las reglas de `docs/GUIA-GIT.md` §15.
 2. El propietario dio por buenas, por ahora, la lista de `docs/referencia/biblioteca-ejercicios.md` y las rutinas de ejemplo. Se pueden retocar más adelante.
 
 ## Fases
@@ -143,7 +143,9 @@ El diseño está en DECISIONES D-115 a D-136, y el detalle de cada PR, en `docs/
 - [x] PR 3.5 — Apuntar un entreno (partido en dos, como preveía `docs/PROMPTS.md` §7)
   - [x] 3.5a — iniciar, resumen, pantalla del ejercicio y series
   - [x] 3.5b — el gris, "Igual", "+ Serie", desmarcar e ir directo
-- [ ] PR 3.6 — Subida, cierre y resumen
+- [ ] PR 3.6 — Subida, cierre y resumen (partido en dos, D-149)
+  - [x] 3.6a — cierre solo, "Terminar", "Descartar", resumen final y "Pendiente de subir"
+  - [ ] 3.6b — recordatorio de las 6 horas, cierre a las 12 horas y dos móviles
 - [ ] PR 3.7 — Cronómetro de descanso
 
 **Lote 3 — Completar el entreno**
@@ -276,6 +278,8 @@ Cosas que alguien ha visto y que no tocaban en su tarea. No se hacen sin convert
 ## Registro de cambios
 
 Lo más nuevo, arriba.
+
+- 2026-11-17 — PR 3.6a: el entreno se cierra solo con todas las series hechas (al ir al resumen o tras 20 s sin cambios); "Terminar entreno" lleva al resumen final (duración, series y ejercicios); "Descartar entreno" lo borra tras confirmar (por la cola, también sin conexión); y "Pendiente de subir" se ve mientras algo espera en la cola (D-149). Arreglo: sin conexión no se guardaba lo apuntado, porque TanStack Query dejaba en pausa lo que va al teléfono. Test de flujos completos nuevo, `e2e/workout-close.spec.ts`, con Diego. El 3.6b (recordatorio, 12 horas y dos móviles) queda para el siguiente PR.
 
 - 2026-11-17 — Renumerada a D-148 la decisión de que los agentes fusionan solos (PR #81): se escribió como D-147 a la vez que el #80, que ya usaba D-147 para los arreglos de la revisión del PR 3.16. Dos lecciones, en `docs/GUIA-GIT.md` §15: antes de usar un número D-xxx se miran `main` y los PR abiertos, y nunca se fusiona con el CI en rojo (el #79 se fusionó así y dejó `main` en rojo hasta el #82).
 

@@ -22,8 +22,8 @@
 ## Dónde estamos
 
 - **Fase actual:** 3 — Entreno y progreso, en construcción (diseño en D-115 a D-137). Las Fases 1 y 2 están terminadas y fusionadas en `main`.
-- **Última tarea terminada:** fusionados los PR de Gemini 3.13 (#70), 3.15 (#71, flag `progress` en #74) y 3.14 (#72). En la Fase 3 no se piden pruebas manuales PR a PR: al cerrar la fase se hace una prueba completa (PROMPTS §0).
-- **Siguiente tarea:** **PR 3.4b** — módulo `workouts`: descargar la rutina y lo de la vez anterior, y subir los entrenos (`feat/guardado-en-el-movil-b`, encima del 3.4a). Después, el 3.5. Trabajan Claude y Gemini a la vez (D-142): quién hace cada PR, en la columna "Quién" de `docs/PROMPTS.md` §7. En staging están aplicadas y probadas las migraciones 1 a 21.
+- **Última tarea terminada:** PR 3.4 — guardado en el móvil, fusionado en dos partes: 3.4a (#69) y 3.4b (#73), D-143. Antes, los PR de Gemini 3.13 (#70), 3.15 (#71, flag `progress` en #74) y 3.14 (#72). En la Fase 3 no se piden pruebas manuales PR a PR: al cerrar la fase se hace una prueba completa (PROMPTS §0).
+- **Siguiente tarea:** **PR 3.5 — Apuntar un entreno** (`docs/PROMPTS.md` §7). Amplía el módulo `workouts`, que ya existe (PR 3.13 y 3.4b). Trabajan Claude y Gemini a la vez (D-142): quién hace cada PR, en la columna "Quién" de §7. En staging están aplicadas y probadas las migraciones 1 a 21.
 
 ## Cómo será la Fase 3 (diseñada, D-115 a D-136)
 
@@ -62,10 +62,10 @@
 - **Datos de salud en la base de datos** (PR 3.3a): `health_consents` (uno por espacio; `grant_health_consent` y `withdraw_health_consent`, que borra peso, medidas y notas del día), `body_weights` y `body_measurements`. Sin consentimiento no se escriben, ni las notas del día (D-140).
 - **Set-up y ajustes en la base de datos** (PR 3.3b): `client_exercise_setups` (uno por cliente y ejercicio), los ajustes de entreno del cliente en `profiles` (descanso, arrancar solo, sonido, vibración, "Igual") y el interruptor `achievementsEnabled` de `tenants.settings` (D-141).
 - **Base de datos local** (Supabase en Docker): 21 migraciones en `supabase/migrations/` (tablas, funciones de negocio, permisos, RLS, el espacio de logos, los ejercicios, las rutinas y los flags de cada módulo); 524 tests pgTAP (`npm run db:test`); 2 coaches y 6 clientes inventados (`supabase/seed.sql`, contraseña `password123`), con entrenos de varias semanas, días faltados, récords, peso y medidas para Ana, Bruno y Diego (PR 3.3c); tipos generados en `core/supabase/database.types.ts`.
-- **Tests:** 635 unitarios (`npm run check`) y 91 de extremo a extremo contra Supabase local (`npm run test:e2e`, también en el CI).
+- **Tests:** 653 unitarios (`npm run check`) y 91 de extremo a extremo contra Supabase local (`npm run test:e2e`, también en el CI).
 - **Staging** (PR 1.17): proyecto `athlete-core-staging` de Supabase (Fráncfort, plan gratuito) con las mismas tablas y datos inventados que en local. Los emails salen de verdad, por Resend, desde `no-reply@athlete-core.com`. Se prueba con `npm run dev:staging` (hace falta `.env.staging.local`; guía en `supabase/README.md`). Todavía no hay web publicada.
 - **App de Android** (PR 3.1a): proyecto `android/` con Capacitor. `npm run android:build` genera `build/athlete-core-staging.apk`, que apunta a staging; guía para el propietario en `android/README.md` (D-137). `core/native` resuelve el botón "atrás", la barra de estado y las zonas seguras (`--safe-top`, `--safe-bottom` en `src/index.css`).
-- **Guardado en el móvil** (PR 3.4a, D-143): `core/native` tiene el almacén del teléfono (`getDeviceStore`, validado con Zod al leer), `onAppResume` y la cola de subida (`getUploadQueue`: una por usuario, en orden, sin duplicar, con reintentos y rechazos). En la app instalada, lo ya cargado se guarda en el teléfono y la app abre sin red, también con el token caducado. Cerrar sesión con entrenos sin subir pregunta antes.
+- **Guardado en el móvil** (PR 3.4a, D-143): `core/native` tiene el almacén del teléfono (`getDeviceStore`, validado con Zod al leer), `onAppResume` y la cola de subida (`getUploadQueue`: una por usuario, en orden, sin duplicar, con reintentos y rechazos). En la app instalada, lo ya cargado se guarda en el teléfono y la app abre sin red, también con el token caducado. Cerrar sesión con entrenos sin subir pregunta antes. El módulo `workouts` (PR 3.4b, sin pantallas) guarda en el teléfono la rutina vigente y la vez anterior de cada ejercicio (`readOfflineSnapshot`, `previousFor`) y sube la cola con `sync_workout`, avisando si el coach dio de baja al cliente.
 - **Módulo `_template`** para copiar (`npm run new:module <nombre>`). Solo se registra en desarrollo.
 - **Reglas que se comprueban solas:** ESLint con las fronteras de ARQUITECTURA §6, hooks de Git (formato, mensaje de commit, no subir `main`), CI con `npm run check`, la base de datos y los tests de flujos completos (desde el PR 3.1b), y tests que vigilan las fronteras, los textos en dos idiomas y la forma fija de los módulos.
 
@@ -78,11 +78,11 @@
 
 Los 5 más recientes, el más nuevo arriba. El historial completo está en `docs/ESTADO.md`.
 
+- 2026-11-17 — PR 3.4b: el módulo `workouts` guarda en el móvil la rutina y la vez anterior de cada ejercicio, sube lo pendiente y avisa de los rechazos (D-143).
 - 2026-11-17 — Fusionados 3.13, 3.15 y 3.14 tras la revisión de Claude: validación Zod, errores que ya no se tragan, "DIA n" traducido y una sola fórmula de RM y récords (D-129). Flag `progress` (migración 22).
 - 2026-11-17 — PR 3.14: actividad y avisos del coach en el inicio (tarjeta de actividad con récords/cambios/notas y avisos de inactividad >= 7 días y cambios reiterados de ejercicios).
 - 2026-11-17 — PR 3.15: módulo progress con historial "DIA 1: 45×8(1)", RM estimado (Epley + RIR/RPE), récords y pestaña en la ficha del cliente (D-129).
 - 2026-11-17 — PR 3.13: pestaña "Entrenos" en la ficha del cliente (módulo `workouts`, aportada por su manifest en `clientProfileTabs`). Lista con fecha, día, series hechas, marcas "En curso", "Editado" y "Faltado"; detalle con formato Excel ("45×8(1) / 45×7(1)"), flecha comparativa (↑ / ↓ / →), notas del día, set-up, ejercicio cambiado, ejercicio saltado y duración; peso corporal y medidas si hay consentimiento de salud o aviso sin él (D-124, D-126, D-127, D-128). 25 tests unitarios.
-- 2026-11-17 — PR 3.4a: almacén del teléfono, cola de subida, la caché guardada en la app del móvil, abrir sin red con la sesión guardada y preguntar al cerrar sesión con algo pendiente (D-143).
 
 ## A tener en cuenta ahora
 

@@ -12,6 +12,7 @@ export type {
   ModuleManifest,
   ModuleNavItem,
   ModuleRoute,
+  ModuleService,
 } from './module-manifest';
 export {
   collectClientProfileTabs,

@@ -20,12 +20,14 @@ export interface KeyValueBackend {
   get(key: string): Promise<string | null>;
   set(key: string, value: string): Promise<void>;
   remove(key: string): Promise<void>;
+  keys(): Promise<string[]>;
 }
 
 const nativeBackend: KeyValueBackend = {
   get: async (key) => (await Preferences.get({ key })).value,
   set: (key, value) => Preferences.set({ key, value }),
   remove: (key) => Preferences.remove({ key }),
+  keys: async () => (await Preferences.keys()).keys,
 };
 
 // En el navegador, en modo privado estricto, `localStorage` puede fallar: se
@@ -34,6 +36,14 @@ const browserBackend: KeyValueBackend = {
   get: (key) => Promise.resolve(safely(() => localStorage.getItem(key), null)),
   set: (key, value) => Promise.resolve(safely(() => localStorage.setItem(key, value), undefined)),
   remove: (key) => Promise.resolve(safely(() => localStorage.removeItem(key), undefined)),
+  keys: () =>
+    Promise.resolve(
+      safely(
+        () =>
+          Array.from({ length: localStorage.length }, (_, index) => localStorage.key(index) ?? ''),
+        [],
+      ),
+    ),
 };
 
 function safely<T>(action: () => T, fallback: T): T {
@@ -50,6 +60,17 @@ export interface DeviceStore {
   /** Guarda un valor que se pueda pasar a JSON. Si el teléfono falla, lo registra y devuelve `false`. */
   write(key: string, value: unknown): Promise<boolean>;
   remove(key: string): Promise<void>;
+  /** Borra todo lo de un usuario (lo guardado con `userKey`): al cerrar sesión a propósito. */
+  removeUser(userId: string): Promise<void>;
+}
+
+/**
+ * La clave de algo que es de un usuario. Todo lo personal se guarda así, para
+ * poder borrarlo entero al cerrar sesión: en un móvil compartido, otra persona
+ * no debe encontrarlo.
+ */
+export function userKey(userId: string, name: string): string {
+  return `user.${userId}.${name}`;
 }
 
 export function createDeviceStore(backend: KeyValueBackend): DeviceStore {
@@ -87,6 +108,15 @@ export function createDeviceStore(backend: KeyValueBackend): DeviceStore {
         await backend.remove(PREFIX + key);
       } catch (error) {
         logStoreError('remove', error);
+      }
+    },
+    async removeUser(userId) {
+      const prefix = PREFIX + userKey(userId, '');
+      try {
+        const keys = (await backend.keys()).filter((key) => key.startsWith(prefix));
+        await Promise.all(keys.map((key) => backend.remove(key)));
+      } catch (error) {
+        logStoreError('removeUser', error);
       }
     },
   };

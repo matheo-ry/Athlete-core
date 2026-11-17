@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 
 import { useAuth } from '@/core/auth';
 import { cn } from '@/core/lib';
-import { getUploadQueue, useUploadQueue } from '@/core/native';
+import { getDeviceStore, getUploadQueue, useUploadQueue } from '@/core/native';
 import { Button } from '@/core/ui';
 
 interface SignOutButtonProps {
@@ -28,9 +28,14 @@ export function SignOutButton({ className }: SignOutButtonProps) {
     setIsPending(true);
     setHasFailed(false);
     signOut()
-      // Lo que quedaba en la cola ya no se subirá: en un móvil compartido, otra
-      // persona no debe heredarlo.
-      .then(() => (userId === null ? undefined : getUploadQueue().clear(userId)))
+      // Lo que quedaba en la cola ya no se subirá, y nada suyo se queda en el
+      // teléfono: en un móvil compartido, otra persona no debe heredarlo.
+      .then(async () => {
+        if (userId !== null) {
+          await getUploadQueue().clear(userId);
+          await getDeviceStore().removeUser(userId);
+        }
+      })
       .catch(() => setHasFailed(true))
       .finally(() => {
         setIsPending(false);

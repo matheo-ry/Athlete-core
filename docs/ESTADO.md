@@ -7,11 +7,11 @@ Este archivo lo actualiza quien termina una tarea, en el mismo Pull Request, jun
 
 ## En curso
 
-- **PR 3.4 — Guardado en el móvil** (Claude), partido en dos (D-143): el **3.4a** (almacén del teléfono, cola de subida, abrir sin conexión y preguntar al cerrar sesión) está en revisión; el **3.4b** (módulo `workouts`: descargar lo necesario para entrenar y subir los entrenos) va encima, en `feat/guardado-en-el-movil-b`.
+- Nada de Claude. El **PR 3.4** (guardado en el móvil) está fusionado: 3.4a (#69) y 3.4b (#73), D-143. Sus criterios en el móvil (abrir sin red tras quitar la app de la multitarea y tras apagar el móvil) entran en la prueba completa al cerrar la fase (PROMPTS §0).
 
 ## Siguiente
 
-1. **PR 3.4b** (Claude), y después el **PR 3.5 — Apuntar un entreno**. Claude y Gemini trabajan en paralelo según `docs/PROMPTS.md` §7 (D-142).
+1. **PR 3.5 — Apuntar un entreno** (Claude). Claude y Gemini trabajan en paralelo según `docs/PROMPTS.md` §7 (D-142).
 2. El propietario dio por buenas, por ahora, la lista de `docs/referencia/biblioteca-ejercicios.md` y las rutinas de ejemplo. Se pueden retocar más adelante.
 
 ## Fases
@@ -134,9 +134,9 @@ El diseño está en DECISIONES D-115 a D-136, y el detalle de cada PR, en `docs/
   - [x] 3.3a — consentimiento, peso y medidas
   - [x] 3.3b — set-up, ajustes de entreno y el interruptor de logros
 - [x] PR 3.3c — Entrenos inventados en el seed (salió del bloque del 3.3, D-142)
-- [ ] PR 3.4 — Guardado en el móvil (partido en dos, D-143)
-  - [ ] 3.4a — almacén del teléfono, cola de subida, abrir sin conexión y preguntar al cerrar sesión
-  - [ ] 3.4b — módulo `workouts`: descargar la rutina y lo de la vez anterior, y subir los entrenos
+- [x] PR 3.4 — Guardado en el móvil (partido en dos, D-143)
+  - [x] 3.4a — almacén del teléfono, cola de subida, abrir sin conexión y preguntar al cerrar sesión
+  - [x] 3.4b — módulo `workouts`: descargar la rutina y lo de la vez anterior, y subir los entrenos
 
 **Lote 2 — Apuntar**
 
@@ -218,7 +218,7 @@ Cosas que alguien ha visto y que no tocaban en su tarea. No se hacen sin convert
 
 - Entrenos (PR 3.2a): el cliente solo lee los ejercicios que están en sus rutinas. Uno elegido con "Cambiar ejercicio" (D-122) que no esté en ninguna no lo podrá leer por su nombre en el historial: el PR 3.8 tiene que ampliar `is_exercise_in_my_programs` (o añadir otra política) a los ejercicios de sus entrenos.
 
-- Entrenos (PR 3.2a): si el móvil reutilizara el identificador de una serie para otro número o lado, `sync_workout` fallaría con un error de clave repetida y la subida se quedaría atascada. La app no debe hacerlo nunca; el PR 3.4 debería tener un test de ello.
+- Entrenos (PR 3.2a): si el móvil reutilizara el identificador de una serie para otro número o lado, `sync_workout` fallaría con un error de clave repetida y la subida se quedaría atascada. La app no debe hacerlo nunca; el PR 3.4 debería tener un test de ello. **Desde el PR 3.4b** una clave repetida (23505) se trata como rechazo (`invalid`) y no atasca la cola; que el móvil no repita identificadores sigue siendo cosa del PR 3.5.
 
 - `docs/ARQUITECTURA.md` §5: el ejemplo de manifest no enseña `homeCards` (PR 2.18, D-114) ni lo que recibe una pestaña de la ficha (`ClientProfileTabProps`, PR 2.14a, D-109). Es zona protegida y ninguna de las dos tareas pedía tocarla: actualizarlo cuando el propietario lo apruebe.
 
@@ -270,8 +270,8 @@ Cosas que alguien ha visto y que no tocaban en su tarea. No se hacen sin convert
 
 Lo más nuevo, arriba.
 
+- 2026-11-17 — PR 3.4b (guardado en el móvil, módulo `workouts`): amplía el módulo que creó el PR 3.13, todavía sin pantallas del cliente. Su servicio (`services`, campo nuevo y opcional del manifest que `app/` monta con sesión, D-143) descarga al abrir o volver a la app con conexión la rutina vigente (con las claves de `programs`, así "Entreno" y "Hoy toca" también funcionan sin red) y la vez anterior de cada ejercicio (D-120: mismo día de la rutina; si no, cualquiera), y la guarda en el teléfono validada con Zod. Sube la cola con `sync_workout`; `not_allowed` avisa "No se pudo guardar: ya no tienes acceso a …" y cualquier otra regla o dato no válido se rechaza sin reintentar. Al cerrar sesión se borra del teléfono todo lo del usuario (`userKey`, `removeUser`). Probado en el navegador contra la base de datos local como Ana. 653 tests unitarios.
 - 2026-11-17 — Fusionados los PR 3.13 (#70), 3.15 (#71, con el flag `progress` en #74) y 3.14 (#72), revisados por Claude. En el 3.14, la actividad del coach usa la fórmula única de RM y récords de `workouts/model` (D-129). Regla nueva: en la Fase 3 no se piden pruebas manuales PR a PR (PROMPTS §0).
-
 - 2026-11-17 — Migración 22 (`20261117130000_progress_flag.sql`): flag `progress`, de tipo core, para el módulo del PR 3.15 (D-129). Test pgTAP 20. Pendiente de aplicar en staging.
 
 - 2026-11-17 — PR 3.14 (actividad y avisos del coach en el inicio): tarjeta "Actividad" en el inicio del coach (`homeCards.coach`, orden 5 en el nuevo módulo `workouts`), con los últimos entrenos completados de los clientes ("Ana terminó Lunes · 2 récords · cambió 1 ejercicio · 1 nota"); los no abiertos se marcan con la chapa "Nuevo" y se recuerdan en el dispositivo (`localStorage`); al pulsar se marca como abierto y lleva al entreno. Estado vacío cuando no hay entrenos. En la tarjeta "Avisos" del coach (`CoachAlertsCard` en `programs`), dos nuevos avisos ordenados por prioridad: "Sin entrenar desde hace 7 días" y "Cambió <ejercicio> 3 veces en 4 semanas" que llevan a la ficha del cliente. 15 tests unitarios nuevos (636 en total) y build limpio.

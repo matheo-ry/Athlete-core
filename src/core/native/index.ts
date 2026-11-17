@@ -1,5 +1,5 @@
 export { onAppResume } from './app-resume';
-export { createDeviceStore, getDeviceStore } from './device-store';
+export { createDeviceStore, getDeviceStore, userKey } from './device-store';
 export type { DeviceStore, KeyValueBackend } from './device-store';
 export { followColorScheme, startNativeShell, statusBarStyleFor } from './native-shell';
 export { canLogWorkouts, isNativeApp } from './platform';

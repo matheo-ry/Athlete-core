@@ -47,6 +47,18 @@ export interface HomeCard {
   lazy: () => Promise<{ Component: ComponentType }>;
 }
 
+/**
+ * Lo que un módulo hace sin pantalla mientras hay sesión, en cualquier pantalla y
+ * cualquier espacio (PR 3.4, D-143): por ejemplo, subir lo pendiente. Es un
+ * componente que `app/` monta una vez; puede enseñar un aviso.
+ */
+export interface ModuleService {
+  key: string;
+  /** Si devuelve `false`, ni se carga su código (por ejemplo, en la web publicada). */
+  enabled?: () => boolean;
+  lazy: () => Promise<{ Component: ComponentType }>;
+}
+
 export interface ModuleManifest {
   /** Nombre único en snake_case. Coincide con su feature flag y con el prefijo de sus textos. */
   key: string;
@@ -56,6 +68,8 @@ export interface ModuleManifest {
   clientProfileTabs: readonly ClientProfileTab[];
   /** Lo que el módulo enseña en el inicio del coach y en el del cliente. */
   homeCards: Record<Profile, readonly HomeCard[]>;
+  /** Opcional: la mayoría de módulos no tiene. */
+  services?: readonly ModuleService[];
 }
 
 const KEY_PATTERN = /^[a-z][a-z0-9_]*$/;

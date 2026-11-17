@@ -21,6 +21,7 @@ function memoryStore() {
       data.delete(key);
       return Promise.resolve();
     },
+    keys: () => Promise.resolve([...data.keys()]),
   });
   return { store, data };
 }

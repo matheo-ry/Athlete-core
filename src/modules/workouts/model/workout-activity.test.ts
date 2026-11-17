@@ -1,7 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
 import {
-  calculateEstimatedRm,
   countNotes,
   countRecords,
   countReplacements,
@@ -9,34 +8,6 @@ import {
   markWorkoutOpened,
 } from './workout-activity';
 import type { WorkoutActivityRecord } from './workout-activity';
-
-describe('calculateEstimatedRm', () => {
-  it('50 kg x 6 reps con RIR 0 da 60 kg de RM estimado', () => {
-    const rm = calculateEstimatedRm(50, 6, 'rir', 0);
-    expect(rm).toBeCloseTo(60, 1);
-  });
-
-  it('80 kg x 8 reps con RIR 2 da 106.7 kg de RM estimado', () => {
-    const rm = calculateEstimatedRm(80, 8, 'rir', 2);
-    expect(rm).toBeCloseTo(106.67, 1);
-  });
-
-  it('con RPE 8 (RIR 2) calcula igual que con RIR', () => {
-    const rm = calculateEstimatedRm(80, 8, 'rpe', 8);
-    expect(rm).toBeCloseTo(106.67, 1);
-  });
-
-  it('no calcula RM si supera 12 repeticiones (contando RIR)', () => {
-    expect(calculateEstimatedRm(50, 13, 'rir', 0)).toBeNull();
-    expect(calculateEstimatedRm(50, 10, 'rir', 3)).toBeNull();
-  });
-
-  it('devuelve null con datos inválidos', () => {
-    expect(calculateEstimatedRm(0, 10)).toBeNull();
-    expect(calculateEstimatedRm(null, 10)).toBeNull();
-    expect(calculateEstimatedRm(50, 0)).toBeNull();
-  });
-});
 
 describe('countRecords', () => {
   const previousWorkout: WorkoutActivityRecord = {

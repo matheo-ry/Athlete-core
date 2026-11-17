@@ -1,5 +1,8 @@
 // Lógica pura de la actividad de los entrenos para el coach (PR 3.14, D-114, D-128).
 
+import { computeExerciseRecords } from './records';
+import type { SetWithRecordInput } from './records';
+
 export const OPENED_WORKOUTS_STORAGE_KEY = 'athlete_core.opened_workouts';
 
 export interface ActivitySet {
@@ -29,35 +32,21 @@ export interface WorkoutActivityRecord {
   exercises: readonly ActivityExercise[];
 }
 
-/**
- * RM estimado con la fórmula de Epley (D-129): peso × (1 + repeticiones ÷ 30).
- * Con RIR, se suma a las repeticiones; con RPE, RIR = 10 − RPE.
- * No se calcula con más de 12 repeticiones (contando el RIR), porque deja de ser fiable.
- */
-export function calculateEstimatedRm(
-  weightKg: number | null,
-  reps: number | null,
-  intensityType?: string | null,
-  intensityValue?: number | null,
-): number | null {
-  if (weightKg === null || weightKg <= 0 || reps === null || reps <= 0) {
-    return null;
-  }
-  let totalReps = reps;
-  if (intensityType === 'rir' && intensityValue !== null && intensityValue !== undefined) {
-    totalReps += intensityValue;
-  } else if (intensityType === 'rpe' && intensityValue !== null && intensityValue !== undefined) {
-    totalReps += 10 - intensityValue;
-  }
-  if (totalReps > 12) {
-    return null;
-  }
-  return weightKg * (1 + totalReps / 30);
+function toRecordInputs(sets: readonly ActivitySet[]): SetWithRecordInput[] {
+  return sets.map((set) => ({
+    weightKg: set.weightKg,
+    reps: set.reps,
+    intensityType: set.intensityType,
+    intensityValue: set.intensityValue,
+    isDone: set.isDone,
+  }));
 }
 
 /**
- * Cuenta cuántos ejercicios de un entreno han batido un récord (peso máximo o RM estimado)
- * frente a los entrenos anteriores del mismo cliente para ese ejercicio (D-128, D-129).
+ * Cuenta cuántos ejercicios de un entreno han batido un récord (peso máximo o RM
+ * estimado) frente a los entrenos anteriores del mismo cliente (D-128, D-129).
+ * Usa la fórmula única de `records.ts` y `rm.ts`. Un ejercicio que se hace por
+ * primera vez no cuenta como récord.
  */
 export function countRecords(
   workout: WorkoutActivityRecord,
@@ -69,46 +58,25 @@ export function countRecords(
     if (exercise.isSkipped) {
       continue;
     }
-    const doneSets = exercise.sets.filter((s) => s.isDone);
-    if (doneSets.length === 0) {
+    const current = computeExerciseRecords(toRecordInputs(exercise.sets));
+    if (current.maxWeightKg === null && current.maxRm === null) {
       continue;
     }
 
-    const maxWeight = Math.max(0, ...doneSets.map((s) => s.weightKg ?? 0));
-    const maxRm = Math.max(
-      0,
-      ...doneSets.map(
-        (s) => calculateEstimatedRm(s.weightKg, s.reps, s.intensityType, s.intensityValue) ?? 0,
-      ),
-    );
-
-    // Buscar si el cliente ya había hecho este ejercicio en entrenos anteriores.
-    let hadPrior = false;
-    let priorMaxWeight = 0;
-    let priorMaxRm = 0;
-
-    for (const prior of priorWorkouts) {
-      for (const priorEx of prior.exercises) {
-        if (priorEx.exerciseId === exercise.exerciseId && !priorEx.isSkipped) {
-          const priorDoneSets = priorEx.sets.filter((s) => s.isDone);
-          if (priorDoneSets.length > 0) {
-            hadPrior = true;
-            const w = Math.max(0, ...priorDoneSets.map((s) => s.weightKg ?? 0));
-            const rm = Math.max(
-              0,
-              ...priorDoneSets.map(
-                (s) =>
-                  calculateEstimatedRm(s.weightKg, s.reps, s.intensityType, s.intensityValue) ?? 0,
-              ),
-            );
-            if (w > priorMaxWeight) priorMaxWeight = w;
-            if (rm > priorMaxRm) priorMaxRm = rm;
-          }
-        }
-      }
+    const priorSets = priorWorkouts
+      .flatMap((prior) => prior.exercises)
+      .filter((priorEx) => priorEx.exerciseId === exercise.exerciseId && !priorEx.isSkipped)
+      .flatMap((priorEx) => toRecordInputs(priorEx.sets))
+      .filter((set) => set.isDone === true);
+    if (priorSets.length === 0) {
+      continue;
     }
 
-    if (hadPrior && (maxWeight > priorMaxWeight || maxRm > priorMaxRm)) {
+    const prior = computeExerciseRecords(priorSets);
+    const beatsWeight =
+      current.maxWeightKg !== null && current.maxWeightKg > (prior.maxWeightKg ?? 0);
+    const beatsRm = current.maxRm !== null && current.maxRm > (prior.maxRm ?? 0);
+    if (beatsWeight || beatsRm) {
       recordsCount += 1;
     }
   }

@@ -7,12 +7,12 @@ Este archivo lo actualiza quien termina una tarea, en el mismo Pull Request, jun
 
 ## En curso
 
-Nada. El PR 3.3 (partido en 3.3a, #63, y 3.3b, #64) está fusionado, y las migraciones 17 a 21 están aplicadas en staging con los 524 tests pgTAP en verde.
+**PR 3.3c — Entrenos inventados en el seed** (`db/seed-entrenos`), en revisión. El PR 3.3 (3.3a, #63, y 3.3b, #64) está fusionado y las migraciones 17 a 21, aplicadas en staging.
 
 ## Siguiente
 
 1. **PR 3.4 — Guardado en el móvil** (Claude). Desde ahora Claude y Gemini trabajan en paralelo según `docs/PROMPTS.md` §7 (D-142).
-2. **PR 3.3c — Entrenos inventados en el seed** (Claude), antes de que Gemini empiece el 3.12.
+2. Fusionar el **PR 3.3c** antes de que Gemini empiece el 3.12.
 3. El propietario dio por buenas, por ahora, la lista de `docs/referencia/biblioteca-ejercicios.md` y las rutinas de ejemplo. Se pueden retocar más adelante.
 
 ## Fases
@@ -266,6 +266,7 @@ Lo más nuevo, arriba.
 - 2026-11-17 — Arreglo de un test de flujos completos que fallaba a ratos: `program-client-tab.spec.ts` buscaba con `getByRole('status')` los avisos de asignar y reiniciar desde la ficha, pero al recargarse la rutina el `Spinner` ("Loading…") también tiene ese papel y a veces había dos. Ahora se buscan por su texto. Falló en el CI del #62 en los dos intentos; en local pasa 20 de 20 y la suite completa, 91 de 91. Sin cambios en `src/`.
 - 2026-11-17 — Reparto Claude/Gemini (solo documentación): decisión D-142, que ajusta D-115. Columna "Quién", tabla de paralelo y cabecera para Gemini en `docs/PROMPTS.md`; revisión cruzada en §0 (Claude revisa los PR de Gemini y Gemini los de Claude); los entrenos inventados del seed salen del bloque del 3.3 (ya hecho) y pasan a ser el PR 3.3c, de Claude; "Dudas para Claude" y "Lo que tiene que saber el siguiente" en la plantilla de PR; trampas de Windows en `docs/GUIA-GIT.md` §14; reparto resumido en AGENTS.md §7.
 - 2026-11-17 — Arreglo de dos tests de flujos completos que fallaban en el CI desde el 2026-11-17: se escribieron en lunes y daban por hecho que una rutina semanal empieza en lunes. Cualquier otro día la app hace primero la semana a medias (D-075), que es lo correcto. `home-cards.spec.ts` asigna ahora la rutina desde el lunes de esta semana (así acaba como mucho en 7 días) y `program-assign.spec.ts` acepta "Week 1 of 4" o "Starting week". Sin cambios en `src/`. 91 tests de flujos completos en verde en local.
+- 2026-11-17 — PR 3.3c (seed): Ana (6 semanas), Bruno (3 ciclos de 8 días) y Diego (5 semanas, modo lista) tienen historial de entrenos hasta ayer: 45 entrenos cerrados, con progresión de 2,5 kg cada vez que repiten un día y un récord en la última. Ana y Bruno se saltan uno de cada siete días de entreno (6 días faltados). Ana y Bruno tienen el consentimiento de salud y su peso semanal; Ana, medidas, una nota del día y un set-up; Diego, sin consentimiento. Bruno usa el otro modo de "Igual". Para tener historial, las rutinas de Ana, Bruno y Diego empiezan antes (42, 24 y 35 días). Los tests pgTAP 09 y 16 dejan de suponer que el seed no tiene entrenos.
 - 2026-11-17 — Cierre del PR 3.3: fusionados el 3.3a (#63) y el 3.3b (#64), con el visto bueno del propietario. Aplicadas en staging las migraciones 17 a 21; `supabase test db --linked`: 524 tests, `Result: PASS`.
 - 2026-11-17 — PR 3.3b (base de datos: set-up y ajustes): migración 21. `client_exercise_setups` (uno por cliente y ejercicio, hasta 500 caracteres; lo escribe el cliente y lo lee el coach). Ajustes de entreno en `profiles`: descanso por defecto (2:00), arrancar solo, sonido, vibración y cómo funciona "Igual". Interruptor `achievementsEnabled` en `tenants.settings` (activado sin la clave) y `achievements_enabled()`. Decisión D-141. 26 tests pgTAP nuevos (524 en total). Regenera `src/core/supabase/database.types.ts`.
 - 2026-11-17 — PR 3.3a (base de datos: datos de salud): migración 20. `health_consents` (por espacio, con fecha, versión del texto y retirada), `body_weights` y `body_measurements` (lista cerrada de D-127, con lado). Solo se escriben con el consentimiento dado (RLS y un trigger en las notas del día). `grant_health_consent` y `withdraw_health_consent`; retirarlo borra peso, medidas y notas del día, y queda en `audit_log`. El coach lee lo de sus clientes con consentimiento y no escribe. Decisión D-140. 35 tests pgTAP nuevos (498 en total). Regenera `src/core/supabase/database.types.ts`.

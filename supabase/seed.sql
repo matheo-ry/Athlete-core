@@ -326,7 +326,9 @@ where s.day_exercise_id = de.id and e.name = 'Flexiones con mochila';
 
 -- =====================================================================
 -- Rutinas asignadas (PR 2.12a): cada cliente con su copia de una
--- plantilla. Las fechas, relativas al día en que se carga el seed.
+-- plantilla. Las fechas, relativas al día en que se carga el seed: Ana
+-- empezó hace 6 semanas, Bruno hace 3 ciclos de 8 días y Diego hace 5
+-- semanas, para que tengan historial de entrenos (PR 3.3c).
 -- Ana: "Casa + Gym" (calendario). Bruno: "Pecho / Espalda y Brazo /
 -- Pierna" (calendario). Carla: ninguna. Diego: "Fuerza básica" en modo
 -- lista. Elena: "Fuerza básica" como próxima, para dentro de 7 días.
@@ -341,9 +343,9 @@ begin
   for v_row in
     select p.tenant_id, p.id as template_id, p.name, p.created_by, a.client_id, a.starts_on, a.mode
     from (values
-      ('Casa + Gym',                       '20000000-0000-4000-8000-000000000001'::uuid, current_date - 14, 'calendar'),
-      ('Pecho / Espalda y Brazo / Pierna', '20000000-0000-4000-8000-000000000002'::uuid, current_date - 3,  'calendar'),
-      ('Fuerza básica',                    '20000000-0000-4000-8000-000000000004'::uuid, current_date - 7,  'list'),
+      ('Casa + Gym',                       '20000000-0000-4000-8000-000000000001'::uuid, current_date - 42, 'calendar'),
+      ('Pecho / Espalda y Brazo / Pierna', '20000000-0000-4000-8000-000000000002'::uuid, current_date - 24, 'calendar'),
+      ('Fuerza básica',                    '20000000-0000-4000-8000-000000000004'::uuid, current_date - 35, 'list'),
       ('Fuerza básica',                    '20000000-0000-4000-8000-000000000005'::uuid, current_date + 7,  'calendar'),
       ('Fuerza básica',                    '20000000-0000-4000-8000-000000000006'::uuid, current_date - 60, 'calendar')
     ) as a (template_name, client_id, starts_on, mode)
@@ -355,3 +357,170 @@ begin
   end loop;
 end
 $$;
+
+
+-- =====================================================================
+-- Entrenos inventados (PR 3.3c): el historial de Ana, Bruno y Diego desde
+-- que empezaron su rutina hasta ayer, con las tablas de los PR 3.2 y 3.3.
+--   * Ana y Bruno (con calendario): hacen casi todos sus días de entreno;
+--     uno de cada siete se lo saltan y queda en program_missed_days.
+--   * Diego (modo lista): entrena tres veces por semana, sin días
+--     faltados (en modo lista no existen, D-125).
+--   * Cada vez que repiten un día suben 2,5 kg; la última vez, la primera
+--     serie sube 5 kg más: un récord.
+-- Pesos y repeticiones inventados, sin intención de realismo. Se escriben
+-- directamente: el seed no actúa como ningún usuario.
+-- =====================================================================
+
+-- Un entreno cerrado del día p_day, el día p_date. p_round es cuántas veces
+-- ha hecho ya ese día (para la progresión); p_record, si es la última.
+create function pg_temp.seed_workout(
+  p_program public.programs, p_day public.program_days, p_date date, p_round int, p_record boolean
+) returns void language plpgsql as $fn$
+declare
+  v_workout uuid := gen_random_uuid();
+  v_start   timestamptz := (p_date + time '18:00') at time zone 'utc';
+  v_minute  int := 0;
+  v_item    record;
+  v_wex     uuid;
+  v_n       int;
+  v_side    text;
+  v_kg      numeric;
+  v_reps    boolean;
+begin
+  insert into public.workouts (id, tenant_id, client_id, program_id, block_id, program_day_id, day_number,
+                               performed_on, started_at, last_changed_at, closed_at, close_reason)
+  values (v_workout, p_program.tenant_id, p_program.client_id, p_program.id, p_day.block_id, p_day.id,
+          p_day.day_number, p_date, v_start, v_start + interval '1 hour', v_start + interval '1 hour', 'manual');
+
+  for v_item in
+    select de.*, e.measurement, e.is_unilateral,
+           (select jsonb_agg(to_jsonb(ps) - 'id' - 'tenant_id' - 'program_id' - 'day_exercise_id'
+                             order by ps.position)
+            from public.program_sets ps where ps.day_exercise_id = de.id) as sets
+    from public.program_day_exercises de
+    join public.exercises e on e.id = de.exercise_id
+    where de.day_id = p_day.id order by de.position
+  loop
+    v_wex := gen_random_uuid();
+    insert into public.workout_exercises (id, tenant_id, workout_id, position, exercise_id, program_day_exercise_id,
+                                          superset_group, prescribed_sets, prescribed_rest_seconds, coach_note, changed_at)
+    values (v_wex, p_program.tenant_id, v_workout, v_item.position, v_item.exercise_id, v_item.id,
+            v_item.superset_group, coalesce(v_item.sets, '[]'), v_item.rest_seconds, v_item.note,
+            v_start + make_interval(mins => v_minute));
+    -- Un peso de partida distinto para cada ejercicio, de 20 a 60 kg.
+    v_kg := 20 + (abs(hashtext(v_item.exercise_id::text)) % 9) * 5 + 2.5 * p_round;
+    v_reps := v_item.measurement in ('weight_reps', 'bodyweight_reps');
+
+    for v_n in 1 .. jsonb_array_length(coalesce(v_item.sets, '[]')) loop
+      foreach v_side in array case when v_item.is_unilateral then array['right','left'] else array['none'] end loop
+        v_minute := v_minute + 3;
+        insert into public.workout_sets (id, tenant_id, workout_id, workout_exercise_id, set_number, side,
+                                         weight_kg, reps, duration_seconds, distance_meters,
+                                         intensity_type, intensity_value, recorded_at)
+        values (gen_random_uuid(), p_program.tenant_id, v_workout, v_wex, v_n, v_side,
+                case v_item.measurement
+                  when 'weight_reps' then v_kg + case when p_record and v_n = 1 then 5 else 0 end
+                  when 'bodyweight_reps' then 0 end,
+                case when v_reps then 11 - v_n end,
+                case when v_item.measurement = 'time' then 40 + 5 * p_round end,
+                case when v_item.measurement = 'distance' then 400 end,
+                case when v_reps then 'rir' end,
+                case when v_reps then least(v_n, 2) end,
+                v_start + make_interval(mins => v_minute));
+      end loop;
+    end loop;
+  end loop;
+end
+$fn$;
+
+do $$
+declare
+  v_program public.programs;
+  v_day     public.program_days;
+  v_cycle   int;
+  v_date    date;
+  v_count   int;
+  v_round   int;
+  v_k       int;
+  v_days    int;
+begin
+  -- Ana y Bruno: con calendario. Su único bloque no tiene fin.
+  for v_program in
+    select * from public.programs where client_id in
+      ('20000000-0000-4000-8000-000000000001', '20000000-0000-4000-8000-000000000002')
+  loop
+    select cycle_days into strict v_cycle from public.program_blocks where program_id = v_program.id;
+    v_count := 0;
+    for v_date in select d::date from generate_series(v_program.starts_on, current_date - 1, interval '1 day') d loop
+      select * into v_day from public.program_days
+      where program_id = v_program.id and kind = 'training'
+        and day_number = (v_date - v_program.starts_on) % v_cycle + 1;
+      continue when not found;
+      v_count := v_count + 1;
+      if v_count % 7 = 3 then
+        insert into public.program_missed_days (tenant_id, program_id, block_id, program_day_id, day_number, missed_on)
+        values (v_program.tenant_id, v_program.id, v_day.block_id, v_day.id, v_day.day_number, v_date);
+        continue;
+      end if;
+      select count(*) into v_round from public.workouts where program_day_id = v_day.id;
+      perform pg_temp.seed_workout(v_program, v_day, v_date, v_round, v_date + v_cycle >= current_date);
+    end loop;
+  end loop;
+
+  -- Diego: modo lista, sus días de entreno en orden, tres por semana.
+  select * into strict v_program from public.programs where client_id = '20000000-0000-4000-8000-000000000004';
+  select count(*) into v_days from public.program_days where program_id = v_program.id and kind = 'training';
+  v_k := 0;
+  loop
+    v_date := v_program.starts_on + (v_k * 7) / 3;
+    exit when v_date >= current_date;
+    select * into strict v_day from public.program_days
+    where program_id = v_program.id and kind = 'training'
+    order by day_number offset v_k % v_days limit 1;
+    select count(*) into v_round from public.workouts where program_day_id = v_day.id;
+    perform pg_temp.seed_workout(v_program, v_day, v_date, v_round,
+                                 v_program.starts_on + ((v_k + v_days) * 7) / 3 >= current_date);
+    v_k := v_k + 1;
+  end loop;
+end
+$$;
+
+-- Datos de salud y ajustes (PR 3.3): Ana y Bruno dieron el consentimiento
+-- (D-126); Diego, no, para probar la app sin él. Ana apunta su peso cada
+-- semana, algunas medidas y una nota del día; Bruno, solo su peso. Ana
+-- tiene el set-up de un ejercicio y Bruno cambia cómo funciona "Igual".
+insert into public.health_consents (tenant_id, user_id, granted_at, text_version)
+select tenant_id, client_id, starts_on, '2026-11-draft'
+from public.programs
+where client_id in ('20000000-0000-4000-8000-000000000001', '20000000-0000-4000-8000-000000000002');
+
+insert into public.body_weights (tenant_id, user_id, measured_on, weight_kg)
+select p.tenant_id, p.client_id, current_date - 7 * w,
+       case when p.client_id = '20000000-0000-4000-8000-000000000001' then 62 + 0.3 * w else 88 - 0.2 * w end
+from public.programs p, generate_series(0, 5) w
+where p.client_id in ('20000000-0000-4000-8000-000000000001', '20000000-0000-4000-8000-000000000002');
+
+insert into public.body_measurements (tenant_id, user_id, measured_on, kind, side, value_cm)
+select p.tenant_id, p.client_id, current_date - 28 * ago, m.kind, m.side, m.cm + ago
+from public.programs p,
+     (values ('waist', null, 72.0), ('hips', null, 96.0), ('arm', 'right', 29.5), ('arm', 'left', 29.0))
+       as m (kind, side, cm),
+     generate_series(0, 1) ago
+where p.client_id = '20000000-0000-4000-8000-000000000001';
+
+update public.workout_exercises set day_note = 'Molestia en el hombro, bajé un poco el peso'
+where id = (select e.id from public.workout_exercises e
+            join public.workouts w on w.id = e.workout_id
+            where w.client_id = '20000000-0000-4000-8000-000000000001'
+            order by w.performed_on desc, e.position limit 1);
+
+insert into public.client_exercise_setups (tenant_id, client_id, exercise_id, setup)
+select de.tenant_id, p.client_id, de.exercise_id, 'Asiento 3 · Agarre en la línea 2'
+from public.programs p
+join public.program_day_exercises de on de.program_id = p.id
+where p.client_id = '20000000-0000-4000-8000-000000000001'
+order by de.position limit 1;
+
+update public.profiles set same_button = 'previous_then_today'
+where user_id = '20000000-0000-4000-8000-000000000002';

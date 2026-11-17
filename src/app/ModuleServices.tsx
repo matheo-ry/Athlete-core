@@ -11,9 +11,9 @@ import { registeredModules } from '@/modules';
 // depende de los flags del espacio activo: un cliente dado de baja ya no puede
 // entrar en ese espacio, y lo suyo tiene que intentar subirse igual para
 // poder avisarle. Cada módulo decide dentro qué hace en cada espacio.
-const SERVICES: readonly ModuleService[] = registeredModules.flatMap(
-  (module) => module.services ?? [],
-);
+const SERVICES: readonly ModuleService[] = registeredModules
+  .flatMap((module) => module.services ?? [])
+  .filter((service) => service.enabled?.() ?? true);
 
 /** Monta los servicios de los módulos mientras hay sesión. */
 export function ModuleServices() {

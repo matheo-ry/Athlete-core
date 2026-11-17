@@ -54,6 +54,8 @@ export interface HomeCard {
  */
 export interface ModuleService {
   key: string;
+  /** Si devuelve `false`, ni se carga su código (por ejemplo, en la web publicada). */
+  enabled?: () => boolean;
   lazy: () => Promise<{ Component: ComponentType }>;
 }
 

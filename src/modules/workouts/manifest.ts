@@ -1,4 +1,5 @@
 import { defineModule } from '@/core/modules';
+import { canLogWorkouts } from '@/core/native';
 
 // Ficha del módulo. La clave ('workouts') es también su feature flag y el
 // prefijo de sus textos (`workouts.…`). Todavía sin pantallas: llegan con el
@@ -17,6 +18,8 @@ export const workoutsModule = defineModule({
   services: [
     {
       key: 'workouts-sync',
+      // Solo donde se puede entrenar (D-116): en la web publicada no hay nada que guardar ni subir.
+      enabled: canLogWorkouts,
       lazy: () =>
         import('./shared/WorkoutsService').then((service) => ({
           Component: service.WorkoutsService,

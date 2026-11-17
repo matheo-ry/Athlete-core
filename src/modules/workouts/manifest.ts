@@ -1,5 +1,9 @@
 import { defineModule } from '@/core/modules';
 
+/**
+ * Módulo workouts (Fase 3): registro de entrenos por el cliente y seguimiento
+ * por el coach (PR 3.13, D-109, D-124, D-126, D-127, D-128).
+ */
 export const workoutsModule = defineModule({
   key: 'workouts',
   routes: {
@@ -14,6 +18,16 @@ export const workoutsModule = defineModule({
     en: () => import('./i18n/en.json'),
     es: () => import('./i18n/es.json'),
   },
-  clientProfileTabs: [],
-  homeCards: { coach: [], client: [] },
+  clientProfileTabs: [
+    {
+      key: 'workouts',
+      labelKey: 'workouts.clientTab.label',
+      lazy: () =>
+        import('./coach/ClientWorkoutsTab').then((tab) => ({ Component: tab.ClientWorkoutsTab })),
+    },
+  ],
+  homeCards: {
+    coach: [],
+    client: [],
+  },
 });

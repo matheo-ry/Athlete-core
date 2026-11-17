@@ -50,7 +50,10 @@
       "clientProfile": "Perfil"
     },
     "shell": {
-      "signOut": "Cerrar sesión"
+      "signOut": "Cerrar sesión",
+      "pendingUploads": "Tienes entrenos sin subir. Si cierras sesión, se perderán.",
+      "keepSession": "Cancelar",
+      "signOutAnyway": "Cerrar sesión igualmente"
     },
     "login": {
       "title": "Entrar",

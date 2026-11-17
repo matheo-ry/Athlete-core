@@ -4,6 +4,7 @@ import { clientsModule } from './clients';
 import { exercisesModule } from './exercises';
 import { programsModule } from './programs';
 import { progressModule } from './progress';
+import { workoutsModule } from './workouts';
 
 // REGISTRO DE MÓDULOS: la lista de funciones de la app. `app/` solo conoce los
 // módulos a través de esta lista. Para añadir uno: impórtalo arriba y ponlo en
@@ -14,6 +15,7 @@ const productModules: readonly ModuleManifest[] = [
   exercisesModule,
   programsModule,
   progressModule,
+  workoutsModule,
 ];
 
 // `_template` es un ejemplo para copiar, no una función del producto. Se importa

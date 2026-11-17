@@ -1,5 +1,13 @@
+import { z } from 'zod';
+
 import { getSupabaseClient } from '@/core/supabase';
 
+import {
+  bodyMeasurementSchema,
+  bodyWeightSchema,
+  missedDaySchema,
+  workoutRecordSchema,
+} from '../model/workout-types';
 import type {
   BodyMeasurementRecord,
   BodyWeightRecord,
@@ -50,18 +58,21 @@ export async function fetchClientWorkouts(
   }
 
   // Ordenar los ejercicios por su posición y las series por set_number
-  return (data as WorkoutRecord[]).map((workout) => ({
-    ...workout,
-    workout_exercises: [...(workout.workout_exercises ?? [])]
-      .sort((a, b) => a.position - b.position)
-      .map((we) => ({
-        ...we,
-        workout_sets: [...(we.workout_sets ?? [])].sort((a, b) => {
-          if (a.set_number !== b.set_number) return a.set_number - b.set_number;
-          return a.side.localeCompare(b.side);
-        }),
-      })),
-  }));
+  return z
+    .array(workoutRecordSchema)
+    .parse(data)
+    .map((workout) => ({
+      ...workout,
+      workout_exercises: [...(workout.workout_exercises ?? [])]
+        .sort((a, b) => a.position - b.position)
+        .map((we) => ({
+          ...we,
+          workout_sets: [...(we.workout_sets ?? [])].sort((a, b) => {
+            if (a.set_number !== b.set_number) return a.set_number - b.set_number;
+            return a.side.localeCompare(b.side);
+          }),
+        })),
+    }));
 }
 
 /** Días faltados por el cliente en sus rutinas. */
@@ -75,7 +86,10 @@ export async function fetchClientMissedDays(
     .eq('tenant_id', tenantId)
     .eq('client_id', clientId);
 
-  if (clientPrograms.error !== null || !clientPrograms.data || clientPrograms.data.length === 0) {
+  if (clientPrograms.error !== null) {
+    throw new Error(`Could not load client programs: ${clientPrograms.error.code}`);
+  }
+  if (clientPrograms.data.length === 0) {
     return [];
   }
 
@@ -92,7 +106,7 @@ export async function fetchClientMissedDays(
     throw new Error(`Could not load missed days: ${error.code}`);
   }
 
-  return data;
+  return z.array(missedDaySchema).parse(data);
 }
 
 /** Datos de salud del cliente si dio el consentimiento (D-126, D-127). */
@@ -107,6 +121,11 @@ export async function fetchClientHealthData(
     .eq('user_id', clientId)
     .is('withdrawn_at', null)
     .maybeSingle();
+
+  // Un fallo no puede leerse como "sin consentimiento": se propaga y la pestaña muestra el error.
+  if (consentRes.error !== null) {
+    throw new Error(`Could not load health consent: ${consentRes.error.code}`);
+  }
 
   const hasConsent = Boolean(
     consentRes.data !== null && consentRes.data.granted_at && consentRes.data.withdrawn_at === null,
@@ -131,10 +150,17 @@ export async function fetchClientHealthData(
       .order('measured_on', { ascending: false }),
   ]);
 
+  if (weightsRes.error !== null) {
+    throw new Error(`Could not load body weights: ${weightsRes.error.code}`);
+  }
+  if (measurementsRes.error !== null) {
+    throw new Error(`Could not load body measurements: ${measurementsRes.error.code}`);
+  }
+
   return {
     hasConsent: true,
-    weights: weightsRes.data ?? [],
-    measurements: measurementsRes.data ?? [],
+    weights: z.array(bodyWeightSchema).parse(weightsRes.data),
+    measurements: z.array(bodyMeasurementSchema).parse(measurementsRes.data),
   };
 }
 
@@ -164,8 +190,8 @@ export async function fetchProgramDays(tenantId: string): Promise<ProgramDayInfo
     .eq('tenant_id', tenantId);
 
   if (error !== null) {
-    return [];
+    throw new Error(`Could not load program days: ${error.code}`);
   }
 
-  return data ?? [];
+  return data;
 }

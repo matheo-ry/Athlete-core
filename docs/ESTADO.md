@@ -14,7 +14,7 @@ Este archivo lo actualiza quien termina una tarea, en el mismo Pull Request, jun
 1. **PR 3.4 — Guardado en el móvil** (Claude).
 2. **PR 3.14 — Actividad y avisos del coach** (Gemini).
 3. Fusionar el **PR 3.3c** antes de que Gemini empiece el 3.12.
-3. El propietario dio por buenas, por ahora, la lista de `docs/referencia/biblioteca-ejercicios.md` y las rutinas de ejemplo. Se pueden retocar más adelante.
+4. El propietario dio por buenas, por ahora, la lista de `docs/referencia/biblioteca-ejercicios.md` y las rutinas de ejemplo. Se pueden retocar más adelante.
 
 ## Fases
 

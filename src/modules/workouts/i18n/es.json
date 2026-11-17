@@ -26,6 +26,7 @@
   "coachTab": {
     "title": "Entrenos",
     "empty": "Aún no hay entrenos",
+    "unknownExercise": "Ejercicio",
     "setsDone": "{{count}} series",
     "setsDoneProgress": "{{done}} de {{total}} series",
     "duration": "Duración: {{duration}}",

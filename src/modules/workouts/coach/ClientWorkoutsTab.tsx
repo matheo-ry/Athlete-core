@@ -193,7 +193,7 @@ export function ClientWorkoutsTab({ clientId }: ClientProfileTabProps) {
                     <div className="flex flex-col gap-1">
                       <div className="flex items-center gap-2">
                         <span className="font-semibold text-base">{dayName}</span>
-                        <span className="rounded bg-amber-500/10 text-amber-600 px-2 py-0.5 text-xs font-semibold">
+                        <span className="rounded bg-accent/10 text-accent px-2 py-0.5 text-xs font-semibold">
                           {t('workouts.coachTab.missed')}
                         </span>
                       </div>
@@ -266,7 +266,7 @@ export function ClientWorkoutsTab({ clientId }: ClientProfileTabProps) {
                     <div className="flex flex-col gap-3 pt-3 border-t border-border">
                       {workout.workout_exercises.map((we) => {
                         const opt = exerciseOptions.byId.get(we.exercise_id);
-                        const exName = opt?.name ?? 'Ejercicio';
+                        const exName = opt?.name ?? t('workouts.coachTab.unknownExercise');
                         const replacedOpt = we.replaces_exercise_id
                           ? exerciseOptions.byId.get(we.replaces_exercise_id)
                           : null;
@@ -304,9 +304,9 @@ export function ClientWorkoutsTab({ clientId }: ClientProfileTabProps) {
                                 <span
                                   className={`text-sm font-bold ${
                                     arrow === 'up'
-                                      ? 'text-emerald-500'
+                                      ? 'text-primary-readable'
                                       : arrow === 'down'
-                                        ? 'text-amber-500'
+                                        ? 'text-danger'
                                         : 'text-muted'
                                   }`}
                                   aria-label={

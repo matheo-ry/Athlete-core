@@ -7,11 +7,11 @@ Este archivo lo actualiza quien termina una tarea, en el mismo Pull Request, jun
 
 ## En curso
 
-- **PR 3.4 — Guardado en el móvil** (Claude), partido en dos (D-143): el **3.4a** (almacén del teléfono, cola de subida, abrir sin conexión y preguntar al cerrar sesión) está en revisión; el **3.4b** (módulo `workouts`: descargar lo necesario para entrenar y subir los entrenos) va encima, en `feat/guardado-en-el-movil-b`.
+- **PR 3.4 — Guardado en el móvil** (Claude), partido en dos (D-143): el **3.4a** (#69, almacén del teléfono, cola de subida, abrir sin conexión y preguntar al cerrar sesión) y el **3.4b** (módulo `workouts`: descargar lo necesario para entrenar y subir los entrenos), encima del 3.4a, están en revisión. Falta que el propietario lo pruebe en el móvil (criterios 1 y 2).
 
 ## Siguiente
 
-1. **PR 3.4b** (Claude), y después el **PR 3.5 — Apuntar un entreno**. Claude y Gemini trabajan en paralelo según `docs/PROMPTS.md` §7 (D-142).
+1. **PR 3.5 — Apuntar un entreno** (Claude), cuando se fusione el 3.4. Claude y Gemini trabajan en paralelo según `docs/PROMPTS.md` §7 (D-142).
 2. **PR 3.3c — Entrenos inventados en el seed** (Claude), antes de que Gemini empiece el 3.12.
 3. El propietario dio por buenas, por ahora, la lista de `docs/referencia/biblioteca-ejercicios.md` y las rutinas de ejemplo. Se pueden retocar más adelante.
 
@@ -213,7 +213,7 @@ Cosas que alguien ha visto y que no tocaban en su tarea. No se hacen sin convert
 
 - Entrenos (PR 3.2a): el cliente solo lee los ejercicios que están en sus rutinas. Uno elegido con "Cambiar ejercicio" (D-122) que no esté en ninguna no lo podrá leer por su nombre en el historial: el PR 3.8 tiene que ampliar `is_exercise_in_my_programs` (o añadir otra política) a los ejercicios de sus entrenos.
 
-- Entrenos (PR 3.2a): si el móvil reutilizara el identificador de una serie para otro número o lado, `sync_workout` fallaría con un error de clave repetida y la subida se quedaría atascada. La app no debe hacerlo nunca; el PR 3.4 debería tener un test de ello.
+- Entrenos (PR 3.2a): si el móvil reutilizara el identificador de una serie para otro número o lado, `sync_workout` fallaría con un error de clave repetida y la subida se quedaría atascada. La app no debe hacerlo nunca; el PR 3.4 debería tener un test de ello. **Desde el PR 3.4b** una clave repetida (23505) se trata como rechazo (`invalid`) y no atasca la cola; que el móvil no repita identificadores sigue siendo cosa del PR 3.5.
 
 - `docs/ARQUITECTURA.md` §5: el ejemplo de manifest no enseña `homeCards` (PR 2.18, D-114) ni lo que recibe una pestaña de la ficha (`ClientProfileTabProps`, PR 2.14a, D-109). Es zona protegida y ninguna de las dos tareas pedía tocarla: actualizarlo cuando el propietario lo apruebe.
 
@@ -265,6 +265,7 @@ Cosas que alguien ha visto y que no tocaban en su tarea. No se hacen sin convert
 
 Lo más nuevo, arriba.
 
+- 2026-11-17 — PR 3.4b (guardado en el móvil, módulo `workouts`): el módulo nace sin pantallas. Su servicio (`services`, campo nuevo y opcional del manifest que `app/` monta con sesión, D-143) descarga al abrir o volver a la app con conexión la rutina vigente (con las claves de `programs`, así "Entreno" y "Hoy toca" también funcionan sin red) y la vez anterior de cada ejercicio (D-120: mismo día de la rutina; si no, cualquiera), y la guarda en el teléfono validada con Zod. Sube la cola con `sync_workout`; `not_allowed` avisa "No se pudo guardar: ya no tienes acceso a …" y cualquier otra regla o dato no válido se rechaza sin reintentar. Al cerrar sesión se borra del teléfono todo lo del usuario (`userKey`, `removeUser`). Probado en el navegador contra la base de datos local como Ana. 653 tests unitarios.
 - 2026-11-17 — PR 3.4a (guardado en el móvil, cimientos): `core/native` gana el almacén del teléfono (`getDeviceStore`, con `@capacitor/preferences` en la app y `localStorage` en el navegador, validado con Zod al leer), `onAppResume` y la cola de subida (`getUploadQueue`: en orden, sin duplicar, reintentos de 5 s a 5 min, rechazos que no se reintentan; 12 tests). En la app instalada, la caché de datos se guarda en el teléfono y se recupera antes de pintar (`app/query-persistence.ts`); en el navegador no cambia nada. `core/auth` entra con la sesión guardada cuando no hay red para renovar el token. Cerrar sesión con entrenos sin subir pregunta antes y vacía la cola. Librería `@capacitor/preferences` (D-135). Decisión D-143. 635 tests unitarios.
 
 - 2026-11-17 — Arreglo de un test de flujos completos que fallaba a ratos: `program-client-tab.spec.ts` buscaba con `getByRole('status')` los avisos de asignar y reiniciar desde la ficha, pero al recargarse la rutina el `Spinner` ("Loading…") también tiene ese papel y a veces había dos. Ahora se buscan por su texto. Falló en el CI del #62 en los dos intentos; en local pasa 20 de 20 y la suite completa, 91 de 91. Sin cambios en `src/`.

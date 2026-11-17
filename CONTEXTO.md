@@ -22,8 +22,8 @@
 ## Dónde estamos
 
 - **Fase actual:** 3 — Entreno y progreso, en construcción (diseño en D-115 a D-137). Las Fases 1 y 2 están terminadas y fusionadas en `main`.
-- **Última tarea terminada:** PR 3.4a — guardado en el móvil, los cimientos (en revisión; D-143). El PR 3.4 se partió en dos.
-- **Siguiente tarea:** **PR 3.4b** — módulo `workouts`: descargar la rutina y lo de la vez anterior, y subir los entrenos (`feat/guardado-en-el-movil-b`, encima del 3.4a). Después, el 3.5. Trabajan Claude y Gemini a la vez (D-142): quién hace cada PR, en la columna "Quién" de `docs/PROMPTS.md` §7. En staging están aplicadas y probadas las migraciones 1 a 21.
+- **Última tarea terminada:** PR 3.4 — guardado en el móvil, partido en 3.4a (#69) y 3.4b (D-143), los dos en revisión. Falta la prueba del propietario en el móvil.
+- **Siguiente tarea:** **PR 3.5 — Apuntar un entreno** (`docs/PROMPTS.md` §7), cuando se fusione el 3.4. Trabajan Claude y Gemini a la vez (D-142): quién hace cada PR, en la columna "Quién" de §7. En staging están aplicadas y probadas las migraciones 1 a 21.
 
 ## Cómo será la Fase 3 (diseñada, D-115 a D-136)
 
@@ -62,10 +62,10 @@
 - **Datos de salud en la base de datos** (PR 3.3a): `health_consents` (uno por espacio; `grant_health_consent` y `withdraw_health_consent`, que borra peso, medidas y notas del día), `body_weights` y `body_measurements`. Sin consentimiento no se escriben, ni las notas del día (D-140).
 - **Set-up y ajustes en la base de datos** (PR 3.3b): `client_exercise_setups` (uno por cliente y ejercicio), los ajustes de entreno del cliente en `profiles` (descanso, arrancar solo, sonido, vibración, "Igual") y el interruptor `achievementsEnabled` de `tenants.settings` (D-141).
 - **Base de datos local** (Supabase en Docker): 21 migraciones en `supabase/migrations/` (tablas, funciones de negocio, permisos, RLS, el espacio de logos, los ejercicios, las rutinas y los flags de cada módulo); 524 tests pgTAP (`npm run db:test`); 2 coaches y 6 clientes inventados (`supabase/seed.sql`, contraseña `password123`); tipos generados en `core/supabase/database.types.ts`.
-- **Tests:** 635 unitarios (`npm run check`) y 91 de extremo a extremo contra Supabase local (`npm run test:e2e`, también en el CI).
+- **Tests:** 653 unitarios (`npm run check`) y 91 de extremo a extremo contra Supabase local (`npm run test:e2e`, también en el CI).
 - **Staging** (PR 1.17): proyecto `athlete-core-staging` de Supabase (Fráncfort, plan gratuito) con las mismas tablas y datos inventados que en local. Los emails salen de verdad, por Resend, desde `no-reply@athlete-core.com`. Se prueba con `npm run dev:staging` (hace falta `.env.staging.local`; guía en `supabase/README.md`). Todavía no hay web publicada.
 - **App de Android** (PR 3.1a): proyecto `android/` con Capacitor. `npm run android:build` genera `build/athlete-core-staging.apk`, que apunta a staging; guía para el propietario en `android/README.md` (D-137). `core/native` resuelve el botón "atrás", la barra de estado y las zonas seguras (`--safe-top`, `--safe-bottom` en `src/index.css`).
-- **Guardado en el móvil** (PR 3.4a, D-143): `core/native` tiene el almacén del teléfono (`getDeviceStore`, validado con Zod al leer), `onAppResume` y la cola de subida (`getUploadQueue`: una por usuario, en orden, sin duplicar, con reintentos y rechazos). En la app instalada, lo ya cargado se guarda en el teléfono y la app abre sin red, también con el token caducado. Cerrar sesión con entrenos sin subir pregunta antes.
+- **Guardado en el móvil** (PR 3.4a, D-143): `core/native` tiene el almacén del teléfono (`getDeviceStore`, validado con Zod al leer), `onAppResume` y la cola de subida (`getUploadQueue`: una por usuario, en orden, sin duplicar, con reintentos y rechazos). En la app instalada, lo ya cargado se guarda en el teléfono y la app abre sin red, también con el token caducado. Cerrar sesión con entrenos sin subir pregunta antes. El módulo `workouts` (PR 3.4b, sin pantallas) guarda en el teléfono la rutina vigente y la vez anterior de cada ejercicio (`readOfflineSnapshot`, `previousFor`) y sube la cola con `sync_workout`, avisando si el coach dio de baja al cliente.
 - **Módulo `_template`** para copiar (`npm run new:module <nombre>`). Solo se registra en desarrollo.
 - **Reglas que se comprueban solas:** ESLint con las fronteras de ARQUITECTURA §6, hooks de Git (formato, mensaje de commit, no subir `main`), CI con `npm run check`, la base de datos y los tests de flujos completos (desde el PR 3.1b), y tests que vigilan las fronteras, los textos en dos idiomas y la forma fija de los módulos.
 
@@ -78,6 +78,7 @@
 
 Los 5 más recientes, el más nuevo arriba. El historial completo está en `docs/ESTADO.md`.
 
+- 2026-11-17 — PR 3.4b: módulo `workouts` sin pantallas que guarda en el móvil la rutina y la vez anterior de cada ejercicio, sube lo pendiente y avisa de los rechazos (D-143).
 - 2026-11-17 — PR 3.4a: almacén del teléfono, cola de subida, la caché guardada en la app del móvil, abrir sin red con la sesión guardada y preguntar al cerrar sesión con algo pendiente (D-143).
 - 2026-11-17 — Arreglo del test de flujos `program-client-tab`, que fallaba a ratos porque el `Spinner` también tiene el papel `status`. Sin cambios en `src/`.
 - 2026-11-17 — Reparto Claude/Gemini (D-142): Claude decide, hace base de datos, seguridad, `src/core/` y los PR 3.3 a 3.9 (y el 3.3c, entrenos inventados en el seed), y revisa los de Gemini; Gemini hace 3.10 a 3.18 y revisa los de Claude. Columna "Quién" y tabla de paralelo en `docs/PROMPTS.md` §7; trampas de Windows en `docs/GUIA-GIT.md` §14.

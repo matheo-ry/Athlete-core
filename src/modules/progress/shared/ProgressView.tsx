@@ -1,10 +1,14 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { useLanguage } from '@/core/i18n';
 import type { WeightUnit } from '@/core/lib';
-import { EmptyState, ErrorState, Spinner } from '@/core/ui';
+import { useTenancy } from '@/core/tenancy';
+import { Button, EmptyState, ErrorState, Icon, Spinner } from '@/core/ui';
+import { fetchClientHealthData, type ClientHealthData } from '@/modules/workouts';
 
-import type { ProgramProgressGroup } from '../model/exercise-history';
+import type { ProgramProgressGroup, RawWorkout } from '../model/exercise-history';
+import { exportWorkoutsToExcel } from '../model/export-excel';
 import { ChoiceChips } from './ChoiceChips';
 import { ExerciseProgressCard } from './ExerciseProgressCard';
 import { HealthProgressSection } from './HealthProgressSection';
@@ -12,6 +16,9 @@ import { HealthProgressSection } from './HealthProgressSection';
 export interface ProgressViewProps {
   clientId: string | null;
   groups: ProgramProgressGroup[];
+  rawWorkouts?: RawWorkout[];
+  exerciseOptionsById?: Map<string, { name: string; measurement: string; isUnilateral: boolean }>;
+  clientName?: string;
   isPending: boolean;
   isError: boolean;
   onRetry?: () => void;
@@ -25,6 +32,9 @@ type ProgressTab = 'exercises' | 'health';
 export function ProgressView({
   clientId,
   groups,
+  rawWorkouts = [],
+  exerciseOptionsById = new Map(),
+  clientName,
   isPending,
   isError,
   onRetry,
@@ -33,15 +43,43 @@ export function ProgressView({
   isCoach = false,
 }: ProgressViewProps) {
   const { t } = useTranslation();
+  const language = useLanguage();
+  const { tenant } = useTenancy();
   const [activeTab, setActiveTab] = useState<ProgressTab>('exercises');
+  const [isExporting, setIsExporting] = useState(false);
 
   const hasAnyExercise = groups.some((g) => g.exercises.length > 0);
 
+  const handleExportExcel = async () => {
+    if (isExporting) return;
+    setIsExporting(true);
+    try {
+      let healthData: ClientHealthData | null = null;
+      if (clientId && tenant?.id) {
+        try {
+          healthData = await fetchClientHealthData(tenant.id, clientId);
+        } catch {
+          // Si falla la salud, se exporta el Excel sin hoja de peso
+        }
+      }
+
+      await exportWorkoutsToExcel({
+        workouts: rawWorkouts,
+        exerciseOptionsById,
+        healthData,
+        unit,
+        language,
+        clientName,
+      });
+    } finally {
+      setIsExporting(false);
+    }
+  };
+
   return (
     <div className="flex flex-col gap-6">
-      {/* Ejercicios o Peso y medidas. Cada pestaña trata sus propios estados:
-          un fallo en una no esconde la otra. */}
-      <div className="border-b border-border pb-2">
+      {/* Ejercicios o Peso y medidas + Botón Descargar Excel (D-131) */}
+      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border pb-2">
         <ChoiceChips
           label={t('progress.title')}
           options={[
@@ -52,6 +90,20 @@ export function ProgressView({
           onChange={setActiveTab}
           testIdPrefix="tab"
         />
+
+        <Button
+          type="button"
+          variant="secondary"
+          onClick={() => void handleExportExcel()}
+          disabled={isExporting}
+          data-testid="download-excel-btn"
+          className="min-h-11 inline-flex items-center gap-2 text-sm font-medium"
+        >
+          <Icon name="download" className="size-4" />
+          <span>
+            {isExporting ? t('progress.excel.downloading') : t('progress.excel.download')}
+          </span>
+        </Button>
       </div>
 
       {activeTab === 'health' ? (

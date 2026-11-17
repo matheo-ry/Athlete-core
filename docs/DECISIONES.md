@@ -1413,6 +1413,19 @@ Cómo añadir una: copia el formato, usa el siguiente número y no borres las an
 
 ---
 
+### D-148 · Descargar entrenos en Excel (Gemini)
+- **Fecha:** 2026-11-17
+- **Decisión:** detalles del PR 3.18 (D-131, D-135):
+  - **Librería y entorno:** `write-excel-file` (D-135) importada desde el subpath `/universal` (`write-excel-file/universal`), compatible con Vite y Node en modo ESM estricto.
+  - **Compartición / Descarga móvil vs web:** función `shareOrDownloadFile` en `src/core/native/share.ts`. En la app móvil (o navegadores móviles compatibles con `navigator.share` / File API) abre la hoja nativa para compartir o guardar en el dispositivo; en escritorio web genera la descarga directa mediante un enlace temporal `<a>` con atributo `download`.
+  - **Estructura y hojas del Excel:**
+    1. **Hoja "Día a día" (o "Daily"):** registro cronológico inverso de las sesiones completadas. Cabecera con Fecha, Rutina (programa) y Día prescrito, seguido de una columna por cada ejercicio de la sesión. En cada celda de ejercicio se resume la serie con el formato compacto de la app de notas del propietario `45X8(1)` (peso x reps (rir o rpe)), y notas del ejercicio si las hubiera.
+    2. **Una hoja por rutina ("Rutina - <Nombre>"):** columnas para Fecha, Día y cada ejercicio prescrito o registrado en esa rutina, con el formato de series en cada fecha. Los nombres de hoja se sanitizan (máximo 31 caracteres y eliminación de caracteres prohibidos en Excel `\ / ? * [ ] :`).
+    3. **Hoja "Peso corporal" (o "Body weight"):** exporta el historial de peso corporal solo si el cliente ha otorgado consentimiento explícito de salud (D-126). Si no hay consentimiento o no hay registros, la hoja se omite totalmente.
+- **Por qué:** formato idéntico al de la app de apuntes del propietario, listo para compartir y analizar en Excel, respetando la privacidad y consentimiento de salud (D-126).
+
+---
+
 
 ## Pendientes de decidir
 
@@ -1461,6 +1474,7 @@ Anotadas al terminar la Fase 0 (2026-11-13). Son las estables más recientes de 
 | `@capacitor/android` | 8.6 | La app de Android (PR 3.1, D-117) |
 | `@capacitor/app` | 8.1 | El botón "atrás" de Android (PR 3.1, D-135) y saber cuándo se vuelve a la app (PR 3.4) |
 | `@capacitor/preferences` | 8.0 | El almacén del teléfono, que el sistema no borra (PR 3.4, D-118 y D-135) |
+| `write-excel-file` | 4.1 | Exportar entrenos en Excel (PR 3.18, D-131, D-135, D-148) |
 
 **Compilación y estilos**
 

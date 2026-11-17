@@ -1,18 +1,17 @@
 # ESTADO DEL PROYECTO
 
 **Última actualización:** 2026-11-17
-**Fase actual:** 3 — Entreno y progreso, en construcción (diseño en D-115 a D-137). La Fase 2 terminó y se fusionó entera en `main`.
+**Fase actual:** 3 — Entreno y progreso (✅ completada con el PR 3.18; lista para Fase 4 — Pilotos). La Fase 2 terminó y se fusionó entera en `main`.
 
 Este archivo lo actualiza quien termina una tarea, en el mismo Pull Request, junto con `CONTEXTO.md` (que resume este en una página).
 
 ## En curso
 
-- Nada de Claude. El **PR 3.5** (apuntar un entreno) está fusionado en dos partes: 3.5a (#77) y 3.5b (#79), D-146.
+- Nada. PR 3.18 completado (Gemini, D-131, D-135, D-148). Cierra la Fase 3.
 
 ## Siguiente
 
-1. **PR 3.6 — Subida, cierre y resumen** (Claude). Claude y Gemini trabajan en paralelo según `docs/PROMPTS.md` §7 (D-142, D-144) y las reglas de `docs/GUIA-GIT.md` §15.
-2. El propietario dio por buenas, por ahora, la lista de `docs/referencia/biblioteca-ejercicios.md` y las rutinas de ejemplo. Se pueden retocar más adelante.
+1. **Fase 4 — Pilotos** (proyecto nativo de iOS, publicar en tiendas, textos legales y pruebas con coaches piloto).
 
 ## Fases
 
@@ -165,7 +164,7 @@ El diseño está en DECISIONES D-115 a D-136, y el detalle de cada PR, en `docs/
 - [x] PR 3.16 — Gráficas (Gemini), con los arreglos de su revisión (D-147)
 - [ ] PR 3.17 — Minilogros, racha, niveles y logros
 
-- [ ] PR 3.18 — Descargar en Excel
+- [x] PR 3.18 — Descargar en Excel (Gemini, D-131, D-135, D-148)
 
 ### Fase 4 — Pilotos
 
@@ -277,8 +276,8 @@ Cosas que alguien ha visto y que no tocaban en su tarea. No se hacen sin convert
 
 Lo más nuevo, arriba.
 
+- 2026-11-17 — PR 3.18 (descargar en Excel): exportación de entrenos en archivo .xlsx con `write-excel-file/universal` (D-135, D-148). Hoja "Día a día" cronológica inversa (fecha, rutina, día, ejercicios y series 45X8(1)), una hoja por rutina con la evolución de sus ejercicios a lo largo del tiempo, y hoja opcional "Peso corporal" solo si el cliente ha dado consentimiento de salud (D-126). Disponible en la sección Progreso del cliente y en la ficha del cliente para el coach. En web descarga directa y en móvil apertura de compartir/guardar (`core/native/share`). Cierra la Fase 3.
 - 2026-11-17 — Arreglo del test de flujos completos `workout-log.spec.ts` ("Ana inicia el lunes…"), rojo en `main` desde el #79: desde el PR 3.5b el primer + pone lo gris de la vez anterior (D-120, D-146), y Ana ya tiene ese lunes en el seed (0 kg de lastre), pero el test seguía esperando lo prescrito (10). Pasaba o fallaba según si lo gris llegaba antes del clic (en local, 10; en el CI, 0). Ahora espera a que salga lo gris y compara con ese valor. Sin cambios en `src/`.
-
 - 2026-11-17 — Arreglos de la revisión del PR 3.16 (Claude, D-147), que se fusionó sin revisión: `LineChart` sin colores hex de reserva ni textos fijos en español; teclado con patrón de grupo de radio, foco visible y resumen para el lector de pantalla; 44 px táctiles medidos en píxeles reales; `touch-action: pan-y`; selectores `ChoiceChips` con `aria-pressed` (desaparecen las clases `surface-raised` y `primary-contrast`, que no existen en el tema); peso y medidas leídos de `workouts` (D-127) solo al abrir su pestaña y sin tumbar los ejercicios si fallan; medidas con `formatLength` de `core/lib`; con medidas y sin peso se abre la primera medida.
 
 - 2026-11-17 — PR 3.5b (apuntar un entreno, segunda parte, D-146): en gris, la vez anterior en esa serie (mismo día de la rutina o cualquiera), "Igual" para copiarla, desmarcar tocando la serie iluminada, "+ Serie" hasta 10, y al abrir la app con un entreno abierto, directo al ejercicio que toca (D-119). La vez anterior se vuelve a descargar tras subir un entreno. e2e con los criterios 4 a 7 (Bruno, en libras). Fusionados el 3.5a (#77) y el 3.5b (#79).

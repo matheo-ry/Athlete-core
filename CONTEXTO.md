@@ -21,9 +21,9 @@
 
 ## Dónde estamos
 
-- **Fase actual:** 3 — Entreno y progreso, en construcción (diseño en D-115 a D-137). Las Fases 1 y 2 están terminadas y fusionadas en `main`.
-- **Última tarea terminada:** arreglo del e2e `workout-log.spec.ts`, rojo en `main` desde el #79 (el test esperaba lo prescrito y, desde el 3.5b, el primer + pone lo gris de la vez anterior). Antes, arreglos de la revisión del PR 3.16 (D-147): accesibilidad y colores de la gráfica, zonas táctiles y lectura del peso y las medidas desde `workouts`. Antes, PR 3.5 — apuntar un entreno, fusionado en dos partes: 3.5a (#77) y 3.5b (#79), D-146. Antes, PR 3.16 — gráficas del progreso (Gemini, D-146). Antes, PR 3.4b (#73, D-143) y reglas de chats en paralelo (D-144). En la Fase 3 no se piden pruebas manuales PR a PR: al cerrar la fase se hace una prueba completa (PROMPTS §0).
-- **Siguiente tarea:** **PR 3.6 — Subida, cierre y resumen** (`docs/PROMPTS.md` §7), en `workouts`. Trabajan Claude y Gemini a la vez (D-142): quién hace cada PR, en la columna "Quién" de §7, con qué carpetas toca y si usa la base local. Gemini decide en sus PR y lo deja escrito como D-xxx "(Gemini)" (D-144). Chats en paralelo: reglas de `docs/GUIA-GIT.md` §15. En staging están aplicadas y probadas las migraciones 1 a 21.
+- **Fase actual:** 3 — Entreno y progreso (✅ completada con el PR 3.18; lista para Fase 4 — Pilotos). Las Fases 1 y 2 están terminadas y fusionadas en `main`.
+- **Última tarea terminada:** PR 3.18 — descargar los entrenos en Excel (Gemini, D-131, D-135, D-148). Antes, arreglo del e2e `workout-log.spec.ts` (#82), arreglos de la revisión del PR 3.16 (Claude, D-147) y PR 3.5 (3.5a #77 y 3.5b #79, D-146). Cierra la Fase 3.
+- **Siguiente tarea:** **Fase 4 — Pilotos** (proyecto nativo de iOS, publicar en tiendas, textos legales y pruebas con coaches piloto). En staging están aplicadas y probadas las migraciones 1 a 21.
 
 
 ## Cómo será la Fase 3 (diseñada, D-115 a D-136)
@@ -79,12 +79,11 @@
 
 Los 5 más recientes, el más nuevo arriba. El historial completo está en `docs/ESTADO.md`.
 
+- 2026-11-17 — PR 3.18: descargar entrenos en Excel (.xlsx) con write-excel-file (D-131, D-135, D-148). Hoja "Día a día", una hoja por rutina y "Peso corporal" si hay consentimiento (D-126). Cierra la Fase 3.
 - 2026-11-17 — Arreglo del e2e `workout-log.spec.ts`: espera a lo gris de la vez anterior antes de pulsar + y compara con ese valor (D-146). Sin cambios en `src/`.
 - 2026-11-17 — Arreglos de la revisión del PR 3.16 (D-147): `LineChart` sin colores hex ni textos fijos, con teclado (grupo de radio), foco visible, 44 px táctiles y desplazamiento vertical en el móvil. `progress` lee el peso y las medidas de `workouts` (D-127), solo al abrir la pestaña. Si esa carga falla, los ejercicios se siguen viendo.
 - 2026-11-17 — PR 3.5b: lo gris de la vez anterior, "Igual", desmarcar, "+ Serie" y abrir directo en el ejercicio que toca (D-146).
 - 2026-11-17 — PR 3.5a: el cliente empieza un entreno desde "Hoy toca" o "Entreno" y apunta sus series en el móvil, guardadas al instante y en la cola (D-146).
-- 2026-11-17 — PR 3.16: gráficas de progreso en SVG propio sin librería (D-135). Por ejercicio: métricas, periodos, % de progreso por RM (D-129) y detalle del entreno bajo la gráfica. Peso y medidas con consentimiento (D-126, D-127). Decisión D-145 (Gemini).
-
 
 ## A tener en cuenta ahora
 

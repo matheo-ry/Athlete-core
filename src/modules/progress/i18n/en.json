@@ -79,5 +79,18 @@
   },
   "exercise": {
     "unilateral": "Unilateral"
+  },
+  "excel": {
+    "download": "Download Excel",
+    "downloading": "Downloading…",
+    "date": "Date",
+    "routine": "Routine",
+    "day": "Day",
+    "exercise": "Exercise",
+    "sets": "Sets",
+    "note": "Note",
+    "bodyWeight": "Body weight",
+    "skipped": "Skipped",
+    "noRoutine": "No routine"
   }
 }

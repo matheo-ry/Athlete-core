@@ -22,8 +22,8 @@
 ## Dónde estamos
 
 - **Fase actual:** 3 — Entreno y progreso, en construcción (diseño en D-115 a D-137). Las Fases 1 y 2 están terminadas y fusionadas en `main`.
-- **Última tarea terminada:** PR 3.2a (base de datos: entrenos, #59) y PR 3.2b (el día saltado, encima del 3.2a), los dos en revisión. El PR 3.2 se partió en dos por tamaño, como preveía su bloque. El 3.1a (#56) y el 3.1b (#58) están fusionados.
-- **Siguiente tarea:** **PR 3.4 — Guardado en el móvil** (`docs/PROMPTS.md` §7), cuando estén fusionados el 3.3a y el 3.3b (en revisión; el 3.3 se partió en dos por tamaño).
+- **Última tarea terminada:** PR 3.3 (datos de salud, set-up y ajustes del cliente), partido en 3.3a (#63) y 3.3b (#64), los dos fusionados. El 3.2a y el 3.2b, también.
+- **Siguiente tarea:** **PR 3.4 — Guardado en el móvil** (`docs/PROMPTS.md` §7). En staging están aplicadas y probadas las migraciones 1 a 21. Ojo: dos tests de flujos completos fallan en el CI desde el 2026-11-17 sin relación con la base de datos (ESTADO, "Ideas y deuda").
 
 ## Cómo será la Fase 3 (diseñada, D-115 a D-136)
 

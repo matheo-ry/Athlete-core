@@ -7,13 +7,12 @@ Este archivo lo actualiza quien termina una tarea, en el mismo Pull Request, jun
 
 ## En curso
 
-**PR 3.2a — Base de datos: entrenos** (`db/entrenos`, #59) y **PR 3.2b — El día saltado** (`db/dia-saltado`, encima del 3.2a), en revisión. El PR 3.2 pasaba de 300 líneas y se ha partido como preveía su bloque.
+Nada. El PR 3.3 (partido en 3.3a, #63, y 3.3b, #64) está fusionado, y las migraciones 17 a 21 están aplicadas en staging con los 524 tests pgTAP en verde.
 
 ## Siguiente
 
-0. **PR 3.3a** (`db/salud-y-ajustes`) y **PR 3.3b** (`db/setup-y-ajustes`, encima del 3.3a) en revisión. Después, **PR 3.4 — Guardado en el móvil**.
-1. Fusionar el 3.2a y después el 3.2b (con el visto bueno del propietario, D-068), y aplicar en staging las migraciones 17 a 19.
-2. **PR 3.3 — Base de datos: datos de salud, set-up y ajustes del cliente.**
+1. **PR 3.4 — Guardado en el móvil.**
+2. Arreglar los dos tests de flujos completos que fallan en el CI desde el 2026-11-17 (ver "Ideas y deuda").
 3. El propietario dio por buenas, por ahora, la lista de `docs/referencia/biblioteca-ejercicios.md` y las rutinas de ejemplo. Se pueden retocar más adelante.
 
 ## Fases
@@ -129,12 +128,12 @@ El diseño está en DECISIONES D-115 a D-136, y el detalle de cada PR, en `docs/
 
 - [x] PR 3.1a — App de Android, `core/native` y la guía
 - [x] PR 3.1b — Tests de flujos completos en el CI
-- [ ] PR 3.2 — Base de datos: entrenos (partido en dos, como preveía `docs/PROMPTS.md` §7)
-  - [ ] 3.2a — las tres tablas, subir, descartar y el flag (en revisión)
-  - [ ] 3.2b — la regla del día saltado y los días faltados (en revisión)
-- [ ] PR 3.3 — Base de datos: datos de salud, set-up y ajustes del cliente (partido en dos, como preveía `docs/PROMPTS.md` §7)
-  - [ ] 3.3a — consentimiento, peso y medidas (en revisión)
-  - [ ] 3.3b — set-up, ajustes de entreno y el interruptor de logros (en revisión)
+- [x] PR 3.2 — Base de datos: entrenos (partido en dos, como preveía `docs/PROMPTS.md` §7)
+  - [x] 3.2a — las tres tablas, subir, descartar y el flag
+  - [x] 3.2b — la regla del día saltado y los días faltados
+- [x] PR 3.3 — Base de datos: datos de salud, set-up y ajustes del cliente (partido en dos, como preveía `docs/PROMPTS.md` §7)
+  - [x] 3.3a — consentimiento, peso y medidas
+  - [x] 3.3b — set-up, ajustes de entreno y el interruptor de logros
 - [ ] PR 3.4 — Guardado en el móvil
 
 **Lote 2 — Apuntar**
@@ -209,6 +208,7 @@ Ideas aprobadas como ideas, no como diseño: se diseñan cuando llegue la fase (
 
 Cosas que alguien ha visto y que no tocaban en su tarea. No se hacen sin convertirlas antes en tarea.
 
+- **CI en rojo (tests de flujos completos):** desde el 2026-11-17 fallan siempre `e2e/home-cards.spec.ts` ("una rutina de una semana da aviso de que termina") y `e2e/program-assign.spec.ts` ("después de asignar, cambiar la plantilla…"): esperan "Week…" y "Program ends" y sale "Starting week". Ya fallaba en `main` con el #60, sin cambios en `src/`; parece que dependen de la fecha o del día de la semana en que se ejecutan.
 - Entrenos (PR 3.2a): el cliente solo lee los ejercicios que están en sus rutinas. Uno elegido con "Cambiar ejercicio" (D-122) que no esté en ninguna no lo podrá leer por su nombre en el historial: el PR 3.8 tiene que ampliar `is_exercise_in_my_programs` (o añadir otra política) a los ejercicios de sus entrenos.
 
 - Entrenos (PR 3.2a): si el móvil reutilizara el identificador de una serie para otro número o lado, `sync_workout` fallaría con un error de clave repetida y la subida se quedaría atascada. La app no debe hacerlo nunca; el PR 3.4 debería tener un test de ello.
@@ -263,6 +263,7 @@ Cosas que alguien ha visto y que no tocaban en su tarea. No se hacen sin convert
 
 Lo más nuevo, arriba.
 
+- 2026-11-17 — Cierre del PR 3.3: fusionados el 3.3a (#63) y el 3.3b (#64), con el visto bueno del propietario. Aplicadas en staging las migraciones 17 a 21; `supabase test db --linked`: 524 tests, `Result: PASS`.
 - 2026-11-17 — PR 3.3b (base de datos: set-up y ajustes): migración 21. `client_exercise_setups` (uno por cliente y ejercicio, hasta 500 caracteres; lo escribe el cliente y lo lee el coach). Ajustes de entreno en `profiles`: descanso por defecto (2:00), arrancar solo, sonido, vibración y cómo funciona "Igual". Interruptor `achievementsEnabled` en `tenants.settings` (activado sin la clave) y `achievements_enabled()`. Decisión D-141. 26 tests pgTAP nuevos (524 en total). Regenera `src/core/supabase/database.types.ts`.
 - 2026-11-17 — PR 3.3a (base de datos: datos de salud): migración 20. `health_consents` (por espacio, con fecha, versión del texto y retirada), `body_weights` y `body_measurements` (lista cerrada de D-127, con lado). Solo se escriben con el consentimiento dado (RLS y un trigger en las notas del día). `grant_health_consent` y `withdraw_health_consent`; retirarlo borra peso, medidas y notas del día, y queda en `audit_log`. El coach lee lo de sus clientes con consentimiento y no escribe. Decisión D-140. 35 tests pgTAP nuevos (498 en total). Regenera `src/core/supabase/database.types.ts`.
 - 2026-11-17 — PR 3.2b (base de datos: el día saltado): migración 19. `program_missed_day_rules` guarda la regla de cada rutina de cliente ("se pierde", "se recupera en el siguiente descanso" o "se mueve todo") con el día desde el que vale; `set_missed_day_rule` la cambia el coach y queda en `audit_log`. `program_missed_days` guarda los días que faltó, del lado de las rutinas; los apunta la app del cliente con `record_missed_days` y la fecha del móvil. Solo con calendario. Decisión D-139. 28 tests pgTAP nuevos (463 en total). Regenera `src/core/supabase/database.types.ts`.

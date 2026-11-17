@@ -162,7 +162,7 @@ El diseño está en DECISIONES D-115 a D-136, y el detalle de cada PR, en `docs/
 **Lote 5 — Progreso**
 
 - [x] PR 3.15 — Módulo `progress`: historial, RM y récords (D-129)
-- [x] PR 3.16 — Gráficas (Gemini)
+- [x] PR 3.16 — Gráficas (Gemini), con los arreglos de su revisión (D-147)
 - [ ] PR 3.17 — Minilogros, racha, niveles y logros
 
 - [ ] PR 3.18 — Descargar en Excel
@@ -214,6 +214,9 @@ Ideas aprobadas como ideas, no como diseño: se diseñan cuando llegue la fase (
 ## Ideas y deuda
 
 Cosas que alguien ha visto y que no tocaban en su tarea. No se hacen sin convertirlas antes en tarea.
+
+- Medidas en pulgadas: la pestaña "Entrenos" del coach (`workouts/coach/ClientWorkoutsTab.tsx`) aún convierte con `/ 2.54` a mano. Debería usar `formatLength` de `core/lib` (D-147).
+- Consentimiento de salud en `core/tenancy` (D-127, D-147): moverlo cuando se haga la pantalla de dar y retirar el permiso.
 
 - Actividad del coach (PR 3.14): la marca "Nuevo" de cada entreno se guarda por dispositivo (`localStorage`). En otro ordenador o móvil, el coach vuelve a ver como nuevos los que ya abrió.
 
@@ -272,6 +275,8 @@ Cosas que alguien ha visto y que no tocaban en su tarea. No se hacen sin convert
 ## Registro de cambios
 
 Lo más nuevo, arriba.
+
+- 2026-11-17 — Arreglos de la revisión del PR 3.16 (Claude, D-147), que se fusionó sin revisión: `LineChart` sin colores hex de reserva ni textos fijos en español; teclado con patrón de grupo de radio, foco visible y resumen para el lector de pantalla; 44 px táctiles medidos en píxeles reales; `touch-action: pan-y`; selectores `ChoiceChips` con `aria-pressed` (desaparecen las clases `surface-raised` y `primary-contrast`, que no existen en el tema); peso y medidas leídos de `workouts` (D-127) solo al abrir su pestaña y sin tumbar los ejercicios si fallan; medidas con `formatLength` de `core/lib`; con medidas y sin peso se abre la primera medida.
 
 - 2026-11-17 — PR 3.5b (apuntar un entreno, segunda parte, D-146): en gris, la vez anterior en esa serie (mismo día de la rutina o cualquiera), "Igual" para copiarla, desmarcar tocando la serie iluminada, "+ Serie" hasta 10, y al abrir la app con un entreno abierto, directo al ejercicio que toca (D-119). La vez anterior se vuelve a descargar tras subir un entreno. e2e con los criterios 4 a 7 (Bruno, en libras). Fusionados el 3.5a (#77) y el 3.5b (#79).
 

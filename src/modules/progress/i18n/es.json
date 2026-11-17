@@ -19,15 +19,19 @@
     "past": "Rutina anterior"
   },
   "period": {
+    "label": "Periodo",
     "fourWeeks": "4 semanas",
     "threeMonths": "3 meses",
     "all": "Todo"
   },
   "metric": {
+    "label": "Métrica",
     "estimatedRm": "RM estimado",
     "maxWeight": "Peso máx.",
     "volume": "Volumen",
-    "reps": "Repeticiones"
+    "reps": "Repeticiones",
+    "repsCount_one": "{{count}} rep",
+    "repsCount_other": "{{count}} reps"
   },
   "stats": {
     "last": "Último",
@@ -54,7 +58,6 @@
     "title": "Evolución de peso corporal y medidas",
     "bodyWeight": "Peso corporal",
     "measurements": "Medidas corporales",
-    "selectMetric": "Métrica",
     "change": "Cambio",
     "noConsentCoach": "Tu cliente no ha dado permiso para compartir sus datos de salud.",
     "noConsentClient": "Aún no has activado los datos de salud.",
@@ -73,5 +76,8 @@
       "right": "derecho",
       "left": "izquierdo"
     }
+  },
+  "exercise": {
+    "unilateral": "Unilateral"
   }
 }

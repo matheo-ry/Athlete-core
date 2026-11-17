@@ -1,6 +1,6 @@
 import type { Language } from '@/core/i18n';
 import type { WeightUnit } from '@/core/lib';
-import { fromKg, formatWeight } from '@/core/lib';
+import { formatLength, formatWeight, fromCm, fromKg } from '@/core/lib';
 import type { ChartPoint } from '@/core/ui';
 
 import type { ExerciseSessionHistory } from './exercise-history';
@@ -66,12 +66,14 @@ export function calculateRmProgressPercentage(
 
 /**
  * Construye los puntos para la gráfica de línea de un ejercicio según la métrica elegida.
+ * `formatReps` llega traducido desde la pantalla: `model/` no usa i18n.
  */
 export function buildExerciseChartPoints(
   sessions: readonly ExerciseSessionHistory[],
   metric: ExerciseChartMetric,
   unit: WeightUnit,
   language: Language,
+  formatReps: (count: number) => string,
 ): ChartPoint<ExerciseSessionHistory>[] {
   return sessions.map((s) => {
     let value = 0;
@@ -98,7 +100,7 @@ export function buildExerciseChartPoints(
       }
       case 'reps': {
         value = s.totalReps;
-        formattedValue = `${s.totalReps} ${language === 'en' ? 'reps' : 'rep'}`;
+        formattedValue = formatReps(s.totalReps);
         break;
       }
     }
@@ -172,20 +174,15 @@ export interface MeasurementRecordInput {
 export function buildMeasurementChartPoints(
   measurements: readonly MeasurementRecordInput[],
   unit: WeightUnit,
+  language: Language,
 ): ChartPoint<MeasurementRecordInput>[] {
   const sorted = [...measurements].sort((a, b) => a.measured_on.localeCompare(b.measured_on));
 
-  return sorted.map((m) => {
-    const isLb = unit === 'lb';
-    const val = isLb ? Number((m.value_cm / 2.54).toFixed(1)) : m.value_cm;
-    const unitLabel = isLb ? 'in' : 'cm';
-
-    return {
-      id: m.id,
-      date: m.measured_on,
-      value: val,
-      formattedValue: `${val} ${unitLabel}`,
-      raw: m,
-    };
-  });
+  return sorted.map((m) => ({
+    id: m.id,
+    date: m.measured_on,
+    value: Math.round(fromCm(m.value_cm, unit) * 10) / 10,
+    formattedValue: formatLength(m.value_cm, unit, language),
+    raw: m,
+  }));
 }

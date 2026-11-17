@@ -109,7 +109,13 @@ export async function fetchClientMissedDays(
   return z.array(missedDaySchema).parse(data);
 }
 
-/** Datos de salud del cliente si dio el consentimiento (D-126, D-127). */
+/**
+ * Datos de salud del cliente si dio el consentimiento (D-126, D-127).
+ * Mirar aquí el consentimiento es solo para saber qué pantalla enseñar: la
+ * protección real son las políticas de body_weights y body_measurements
+ * (migración 20261117110000_health_data.sql), que sin consentimiento no dejan
+ * al coach leer nada.
+ */
 export async function fetchClientHealthData(
   tenantId: string,
   clientId: string,

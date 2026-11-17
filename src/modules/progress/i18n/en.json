@@ -19,15 +19,19 @@
     "past": "Previous routine"
   },
   "period": {
+    "label": "Period",
     "fourWeeks": "4 weeks",
     "threeMonths": "3 months",
     "all": "All time"
   },
   "metric": {
+    "label": "Metric",
     "estimatedRm": "Estimated 1RM",
     "maxWeight": "Max weight",
     "volume": "Volume",
-    "reps": "Reps"
+    "reps": "Reps",
+    "repsCount_one": "{{count}} rep",
+    "repsCount_other": "{{count}} reps"
   },
   "stats": {
     "last": "Last",
@@ -54,7 +58,6 @@
     "title": "Body weight and measurements evolution",
     "bodyWeight": "Body weight",
     "measurements": "Body measurements",
-    "selectMetric": "Metric",
     "change": "Change",
     "noConsentCoach": "Your client has not given permission to share health data.",
     "noConsentClient": "You haven't enabled health data yet.",
@@ -73,5 +76,8 @@
       "right": "right",
       "left": "left"
     }
+  },
+  "exercise": {
+    "unilateral": "Unilateral"
   }
 }

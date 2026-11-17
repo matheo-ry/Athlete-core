@@ -22,7 +22,7 @@
 ## Dónde estamos
 
 - **Fase actual:** 3 — Entreno y progreso, en construcción (diseño en D-115 a D-137). Las Fases 1 y 2 están terminadas y fusionadas en `main`.
-- **Última tarea terminada:** arreglo del test de flujos `program-client-tab` que fallaba a ratos (dos `status` en pantalla a la vez). Antes, el reparto Claude/Gemini (#62, D-142) y el arreglo de los tests que dependían del día (#66).
+- **Última tarea terminada:** PR 3.14 — Actividad y avisos del coach en el inicio (`feat/actividad-del-coach`). Antes, el PR 3.3c (seed de entrenos) y el arreglo del test de flujos `program-client-tab`.
 - **Siguiente tarea:** **PR 3.4 — Guardado en el móvil** (`docs/PROMPTS.md` §7). Desde ahora trabajan Claude y Gemini a la vez (D-142): quién hace cada PR, en la columna "Quién" de §7. En staging están aplicadas y probadas las migraciones 1 a 21.
 
 ## Cómo será la Fase 3 (diseñada, D-115 a D-136)
@@ -77,11 +77,11 @@
 
 Los 5 más recientes, el más nuevo arriba. El historial completo está en `docs/ESTADO.md`.
 
+- 2026-11-17 — PR 3.14: actividad y avisos del coach en el inicio (tarjeta de actividad con récords/cambios/notas y avisos de inactividad >= 7 días y cambios reiterados de ejercicios).
 - 2026-11-17 — PR 3.3c: entrenos inventados en el seed para Ana, Bruno y Diego, con días faltados, récords y datos de salud.
 - 2026-11-17 — Arreglo del test de flujos `program-client-tab`, que fallaba a ratos porque el `Spinner` también tiene el papel `status`. Sin cambios en `src/`.
 - 2026-11-17 — Reparto Claude/Gemini (D-142): Claude decide, hace base de datos, seguridad, `src/core/` y los PR 3.3 a 3.9 (y el 3.3c, entrenos inventados en el seed), y revisa los de Gemini; Gemini hace 3.10 a 3.18 y revisa los de Claude. Columna "Quién" y tabla de paralelo en `docs/PROMPTS.md` §7; trampas de Windows en `docs/GUIA-GIT.md` §14.
 - 2026-11-17 — Arreglo de los tests de flujos `home-cards` y `program-assign`, que solo pasaban en lunes por la semana a medias de D-075. Sin cambios en `src/`.
-- 2026-11-17 — PR 3.3b: set-up del cliente, ajustes de entreno e interruptor de logros, con 26 tests pgTAP (D-141).
 
 ## A tener en cuenta ahora
 

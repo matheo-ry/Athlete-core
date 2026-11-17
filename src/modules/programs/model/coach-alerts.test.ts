@@ -61,4 +61,40 @@ describe('coachAlerts', () => {
     );
     expect(coachAlerts([{ userId: 'carla', displayName: 'carla' }], upcoming, TODAY)).toEqual([]);
   });
+
+  it('avisa de cliente sin entrenar desde hace 7 días (D-128)', () => {
+    const [ana] = CLIENTS;
+    if (ana === undefined) throw new Error('falta clienta');
+    const workoutAlerts = new Map([
+      ['ana', { daysSinceLastWorkout: 7, exerciseReplacement: null }],
+    ]);
+
+    expect(coachAlerts([ana], routines, TODAY, workoutAlerts)).toEqual([
+      { kind: 'notTrained', clientId: 'ana', clientName: 'ana', days: 7 },
+    ]);
+  });
+
+  it('avisa de cliente que cambió el mismo ejercicio 3 veces en 4 semanas (D-128)', () => {
+    const [ana] = CLIENTS;
+    if (ana === undefined) throw new Error('falta clienta');
+    const workoutAlerts = new Map([
+      [
+        'ana',
+        {
+          daysSinceLastWorkout: 2,
+          exerciseReplacement: { exerciseName: 'Press horizontal', times: 3 },
+        },
+      ],
+    ]);
+
+    expect(coachAlerts([ana], routines, TODAY, workoutAlerts)).toEqual([
+      {
+        kind: 'exerciseChanged',
+        clientId: 'ana',
+        clientName: 'ana',
+        exerciseName: 'Press horizontal',
+        times: 3,
+      },
+    ]);
+  });
 });

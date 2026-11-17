@@ -1,0 +1,14 @@
+{
+  "home": {
+    "activityTitle": "Activity",
+    "noActivity": "No workouts from your clients yet",
+    "finishedDay": "{{clientName}} finished {{dayName}}",
+    "records_one": "{{count}} record",
+    "records_other": "{{count}} records",
+    "changedExercises_one": "changed {{count}} exercise",
+    "changedExercises_other": "changed {{count}} exercises",
+    "notes_one": "{{count}} note",
+    "notes_other": "{{count}} notes",
+    "newBadge": "New"
+  }
+}

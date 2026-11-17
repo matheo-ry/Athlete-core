@@ -7,7 +7,8 @@ Este archivo lo actualiza quien termina una tarea, en el mismo Pull Request, jun
 
 ## En curso
 
-**PR 3.3c — Entrenos inventados en el seed** (`db/seed-entrenos`), en revisión. El PR 3.3 (3.3a, #63, y 3.3b, #64) está fusionado y las migraciones 17 a 21, aplicadas en staging.
+- **PR 3.14 — Actividad y avisos del coach** (`feat/actividad-del-coach`), en revisión (Gemini).
+- **PR 3.3c — Entrenos inventados en el seed** (`db/seed-entrenos`), en revisión (Claude).
 
 ## Siguiente
 
@@ -154,7 +155,7 @@ El diseño está en DECISIONES D-115 a D-136, y el detalle de cada PR, en `docs/
 
 - [ ] PR 3.12 — El día saltado
 - [ ] PR 3.13 — Pestaña "Entrenos" en la ficha
-- [ ] PR 3.14 — Actividad y avisos del coach
+- [x] PR 3.14 — Actividad y avisos del coach
 
 **Lote 5 — Progreso**
 
@@ -263,6 +264,7 @@ Cosas que alguien ha visto y que no tocaban en su tarea. No se hacen sin convert
 
 Lo más nuevo, arriba.
 
+- 2026-11-17 — PR 3.14 (actividad y avisos del coach en el inicio): tarjeta "Actividad" en el inicio del coach (`homeCards.coach`, orden 5 en el nuevo módulo `workouts`), con los últimos entrenos completados de los clientes ("Ana terminó Lunes · 2 récords · cambió 1 ejercicio · 1 nota"); los no abiertos se marcan con la chapa "Nuevo" y se recuerdan en el dispositivo (`localStorage`); al pulsar se marca como abierto y lleva al entreno. Estado vacío cuando no hay entrenos. En la tarjeta "Avisos" del coach (`CoachAlertsCard` en `programs`), dos nuevos avisos ordenados por prioridad: "Sin entrenar desde hace 7 días" y "Cambió <ejercicio> 3 veces en 4 semanas" que llevan a la ficha del cliente. 15 tests unitarios nuevos (636 en total) y build limpio.
 - 2026-11-17 — Arreglo de un test de flujos completos que fallaba a ratos: `program-client-tab.spec.ts` buscaba con `getByRole('status')` los avisos de asignar y reiniciar desde la ficha, pero al recargarse la rutina el `Spinner` ("Loading…") también tiene ese papel y a veces había dos. Ahora se buscan por su texto. Falló en el CI del #62 en los dos intentos; en local pasa 20 de 20 y la suite completa, 91 de 91. Sin cambios en `src/`.
 - 2026-11-17 — Reparto Claude/Gemini (solo documentación): decisión D-142, que ajusta D-115. Columna "Quién", tabla de paralelo y cabecera para Gemini en `docs/PROMPTS.md`; revisión cruzada en §0 (Claude revisa los PR de Gemini y Gemini los de Claude); los entrenos inventados del seed salen del bloque del 3.3 (ya hecho) y pasan a ser el PR 3.3c, de Claude; "Dudas para Claude" y "Lo que tiene que saber el siguiente" en la plantilla de PR; trampas de Windows en `docs/GUIA-GIT.md` §14; reparto resumido en AGENTS.md §7.
 - 2026-11-17 — Arreglo de dos tests de flujos completos que fallaban en el CI desde el 2026-11-17: se escribieron en lunes y daban por hecho que una rutina semanal empieza en lunes. Cualquier otro día la app hace primero la semana a medias (D-075), que es lo correcto. `home-cards.spec.ts` asigna ahora la rutina desde el lunes de esta semana (así acaba como mucho en 7 días) y `program-assign.spec.ts` acepta "Week 1 of 4" o "Starting week". Sin cambios en `src/`. 91 tests de flujos completos en verde en local.

@@ -335,6 +335,8 @@
     "alertsTitle": "Programs to look at",
     "allGood": "All your clients have a program.",
     "noProgram": "No program",
+    "notTrained": "Has not trained for {{days}} days",
+    "exerciseChanged": "Changed {{exerciseName}} {{times}} times in 4 weeks",
     "endsOn": "Program ends {{date}}",
     "repeating": "Finished: repeating until you change it",
     "todayTitle": "Today",

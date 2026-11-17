@@ -86,7 +86,7 @@ Al subir la rama se ejecuta sola otra comprobación (`npm run check`). Si falla,
 ### Paso 7. Fusionar
 
 - Se fusiona con **Squash and merge**: todos los commits del PR quedan como uno solo en `main`, con un mensaje limpio.
-- Fusiona el propietario, o un agente cuando el propietario le da el visto bueno expreso para ese PR o ese lote de PR (D-068). El colaborador junior no fusiona.
+- Fusiona el propietario o un agente según D-148 (§8). El colaborador junior no fusiona.
 - La rama se borra al fusionar.
 
 ### Paso 8. Vuelve a `main`
@@ -178,7 +178,7 @@ Si un secreto se sube por error: **cámbialo de inmediato** en el servicio (dalo
 - Un agente trabaja **en una rama y en una tarea**. Nunca en `main`.
 - **Un chat por tarea.** Cuando la tarea se fusiona, ese chat se cierra y la siguiente empieza en un chat nuevo, que se pone al día leyendo `CONTEXTO.md`.
 - Hace commit después de cada paso que funcione, con el formato de §5.
-- Fusiona un PR solo con el visto bueno expreso del propietario (D-068): junta varios cambios, le dice qué mirar en la app y espera su "adelante". Un visto bueno vale para los PR que nombra, no para los siguientes. Siempre con "Squash and merge" y con el CI en verde.
+- Fusiona solo (D-148): Claude, sus PR con el CI en verde; Gemini, los suyos con el CI en verde y el comentario "VISTO BUENO DE CLAUDE". Siempre con "Squash and merge". Lo crítico de D-148 (producción, borrar datos, relajar RLS o permisos, pagos, secretos, historial, reglas de oro) solo con el OK del propietario escrito en el prompt.
 - No borra ramas de otros y no reescribe historial (`push --force`, `rebase` sobre ramas ya subidas).
 - Al terminar: `npm run check` en verde, `git status` limpio, rama subida y PR abierto. Si no puede abrir el PR, sube la rama y deja el enlace.
 - Para abrir el PR desde la terminal, el agente escribe la plantilla rellena en un archivo temporal fuera del repositorio y usa `gh pr create --title "…" --body-file <archivo>`. No usa `--fill`, porque se salta la plantilla.
@@ -290,3 +290,5 @@ Lección del 2026-11-17: tres PR crearon a la vez `src/modules/workouts` y dos c
 4. **Al empezar**, el chat ejecuta `gh pr list` y `git worktree list`. Si su tarea toca archivos de otro PR abierto, lo dice y para.
 5. **Cuando se fusiona algo en `main`**, cada rama abierta integra `main` con un merge (`git fetch origin main` y `git merge origin/main`; nunca `rebase` ni `push --force`) antes de pedir revisión. En los conflictos de `CONTEXTO.md` y `docs/ESTADO.md` se conserva lo de los dos lados.
 6. **Un chat que fusiona PR avisa al propietario** de qué otras ramas abiertas quedan detrás de `main` (`gh pr list` y, para cada una, `git log --oneline <rama>..origin/main`).
+7. **Antes de usar un número D-xxx** (o P-xx), mira el último de `docs/DECISIONES.md` en `origin/main` y los de los PR abiertos (`gh pr list`, `gh pr diff <n>`). Si al integrar `main` el número ya está usado, renumera el tuyo en todos los archivos donde aparece. Lección del 2026-11-17: el #80 y el #81 usaron los dos D-147.
+8. **Nunca se fusiona con el CI en rojo**, aunque el fallo parezca de otro PR o un test inestable: primero se arregla o se explica en un PR propio. Lección del 2026-11-17: el #79 se fusionó con un e2e en rojo y `main` quedó en rojo hasta el #82.

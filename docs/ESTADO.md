@@ -1,17 +1,18 @@
 # ESTADO DEL PROYECTO
 
 **Última actualización:** 2026-11-17
-**Fase actual:** 3 — Entreno y progreso (✅ completada con el PR 3.18; lista para Fase 4 — Pilotos). La Fase 2 terminó y se fusionó entera en `main`.
+**Fase actual:** 3 — Entreno y progreso, en construcción (diseño en D-115 a D-137). La Fase 2 terminó y se fusionó entera en `main`.
 
 Este archivo lo actualiza quien termina una tarea, en el mismo Pull Request, junto con `CONTEXTO.md` (que resume este en una página).
 
 ## En curso
 
-- Nada. PR 3.18 completado (Gemini, D-131, D-135, D-148). Cierra la Fase 3.
+- Nada de Claude. El **PR 3.5** (apuntar un entreno) está fusionado en dos partes: 3.5a (#77) y 3.5b (#79), D-146.
 
 ## Siguiente
 
-1. **Fase 4 — Pilotos** (proyecto nativo de iOS, publicar en tiendas, textos legales y pruebas con coaches piloto).
+1. **PR 3.6 — Subida, cierre y resumen** (Claude). Claude y Gemini trabajan en paralelo según `docs/PROMPTS.md` §7 (D-142, D-144) y las reglas de `docs/GUIA-GIT.md` §15.
+2. El propietario dio por buenas, por ahora, la lista de `docs/referencia/biblioteca-ejercicios.md` y las rutinas de ejemplo. Se pueden retocar más adelante.
 
 ## Fases
 
@@ -118,7 +119,7 @@ El diseño está en DECISIONES D-069 a D-088, y el detalle de cada PR, en `docs/
 
 ### Fase 3 — Entreno y progreso (cliente)
 
-El diseño está en DECISIONES D-115 a D-136, y el detalle de cada PR, en `docs/PROMPTS.md` §7. Son 18 PR en 5 lotes: un lote no empieza hasta que el anterior está fusionado con el visto bueno del propietario (D-115). La referencia es la app de apuntes del propietario (D-087). **Entrenar es solo en la app del móvil** (D-116).
+El diseño está en DECISIONES D-115 a D-136, y el detalle de cada PR, en `docs/PROMPTS.md` §7. Son 18 PR en 5 lotes: un lote empieza cuando el anterior está fusionado; los agentes fusionan solos salvo lo crítico (D-115, D-148). La referencia es la app de apuntes del propietario (D-087). **Entrenar es solo en la app del móvil** (D-116).
 
 - [x] Decidir cómo funciona toda la fase (D-115 a D-136), con P-06 cerrado y P-12 cerrado en parte
 
@@ -164,7 +165,7 @@ El diseño está en DECISIONES D-115 a D-136, y el detalle de cada PR, en `docs/
 - [x] PR 3.16 — Gráficas (Gemini), con los arreglos de su revisión (D-147)
 - [ ] PR 3.17 — Minilogros, racha, niveles y logros
 
-- [x] PR 3.18 — Descargar en Excel (Gemini, D-131, D-135, D-148)
+- [x] PR 3.18 — Descargar en Excel (Gemini, D-131, D-135, D-149)
 
 ### Fase 4 — Pilotos
 
@@ -276,7 +277,9 @@ Cosas que alguien ha visto y que no tocaban en su tarea. No se hacen sin convert
 
 Lo más nuevo, arriba.
 
-- 2026-11-17 — PR 3.18 (descargar en Excel): exportación de entrenos en archivo .xlsx con `write-excel-file/universal` (D-135, D-148). Hoja "Día a día" cronológica inversa (fecha, rutina, día, ejercicios y series 45X8(1)), una hoja por rutina con la evolución de sus ejercicios a lo largo del tiempo, y hoja opcional "Peso corporal" solo si el cliente ha dado consentimiento de salud (D-126). Disponible en la sección Progreso del cliente y en la ficha del cliente para el coach. En web descarga directa y en móvil apertura de compartir/guardar (`core/native/share`). Cierra la Fase 3.
+- 2026-11-17 — PR 3.18 (descargar en Excel): exportación de entrenos en archivo .xlsx con `write-excel-file/universal` (D-135, D-149). Hoja "Día a día" cronológica inversa (fecha, rutina, día, ejercicios y series 45X8(1)), una hoja por rutina con la evolución de sus ejercicios a lo largo del tiempo, y hoja opcional "Peso corporal" solo si el cliente ha dado consentimiento de salud (D-126). Disponible en la sección Progreso del cliente y en la ficha del cliente para el coach. En web descarga directa y en móvil apertura de compartir/guardar (`core/native/share`).
+- 2026-11-17 — Renumerada a D-148 la decisión de que los agentes fusionan solos (PR #81): se escribió como D-147 a la vez que el #80, que ya usaba D-147 para los arreglos de la revisión del PR 3.16. Dos lecciones, en `docs/GUIA-GIT.md` §15: antes de usar un número D-xxx se miran `main` y los PR abiertos, y nunca se fusiona con el CI en rojo (el #79 se fusionó así y dejó `main` en rojo hasta el #82).
+- 2026-11-17 — Los agentes fusionan sin esperar al propietario (solo documentación, D-148, sustituye a D-068). Claude fusiona sus PR con el CI en verde; Gemini, los suyos con el comentario "VISTO BUENO DE CLAUDE" de su chat revisor. El propietario solo da su OK, escrito en el prompt, para lo crítico: producción, borrar datos, relajar RLS o permisos, pagos, secretos, historial de Git, reglas de oro y decisiones suyas. Chat revisor y final de los prompts de Gemini en `docs/PROMPTS.md` §0.
 - 2026-11-17 — Arreglo del test de flujos completos `workout-log.spec.ts` ("Ana inicia el lunes…"), rojo en `main` desde el #79: desde el PR 3.5b el primer + pone lo gris de la vez anterior (D-120, D-146), y Ana ya tiene ese lunes en el seed (0 kg de lastre), pero el test seguía esperando lo prescrito (10). Pasaba o fallaba según si lo gris llegaba antes del clic (en local, 10; en el CI, 0). Ahora espera a que salga lo gris y compara con ese valor. Sin cambios en `src/`.
 - 2026-11-17 — Arreglos de la revisión del PR 3.16 (Claude, D-147), que se fusionó sin revisión: `LineChart` sin colores hex de reserva ni textos fijos en español; teclado con patrón de grupo de radio, foco visible y resumen para el lector de pantalla; 44 px táctiles medidos en píxeles reales; `touch-action: pan-y`; selectores `ChoiceChips` con `aria-pressed` (desaparecen las clases `surface-raised` y `primary-contrast`, que no existen en el tema); peso y medidas leídos de `workouts` (D-127) solo al abrir su pestaña y sin tumbar los ejercicios si fallan; medidas con `formatLength` de `core/lib`; con medidas y sin peso se abre la primera medida.
 

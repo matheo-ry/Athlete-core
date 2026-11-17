@@ -6,6 +6,10 @@
     "label": "Progress"
   },
   "title": "Progress",
+  "tabs": {
+    "exercises": "Exercises",
+    "health": "Weight & measurements"
+  },
   "empty": {
     "title": "No workouts recorded yet",
     "description": "When workouts are completed, you will see your exercise history, estimated 1RM, and personal records here."
@@ -14,11 +18,30 @@
     "current": "Current routine",
     "past": "Previous routine"
   },
+  "period": {
+    "fourWeeks": "4 weeks",
+    "threeMonths": "3 months",
+    "all": "All time"
+  },
+  "metric": {
+    "estimatedRm": "Estimated 1RM",
+    "maxWeight": "Max weight",
+    "volume": "Volume",
+    "reps": "Reps"
+  },
   "stats": {
     "last": "Last",
     "record": "Record",
     "maxWeight": "Max",
-    "estimatedRm": "Est. 1RM"
+    "estimatedRm": "Est. 1RM",
+    "progress": "Progress",
+    "progressRm": "1RM progress"
+  },
+  "chart": {
+    "title": "Chart",
+    "empty": "Not enough data for the chart",
+    "selectedSession": "Selected workout",
+    "tapHint": "Tap or drag on the chart to inspect each workout"
   },
   "history": {
     "title": "History",
@@ -26,5 +49,29 @@
     "showHistory": "View history",
     "hideHistory": "Hide history",
     "dayLabel": "DAY {{number}}"
+  },
+  "health": {
+    "title": "Body weight and measurements evolution",
+    "bodyWeight": "Body weight",
+    "measurements": "Body measurements",
+    "selectMetric": "Metric",
+    "change": "Change",
+    "noConsentCoach": "Your client has not given permission to share health data.",
+    "noConsentClient": "You haven't enabled health data yet.",
+    "empty": "No weight or measurement records yet.",
+    "kinds": {
+      "waist": "Waist",
+      "hips": "Hips",
+      "chest": "Chest",
+      "shoulders": "Shoulders",
+      "neck": "Neck",
+      "arm": "Arm",
+      "thigh": "Thigh",
+      "calf": "Calf"
+    },
+    "side": {
+      "right": "right",
+      "left": "left"
+    }
   }
 }

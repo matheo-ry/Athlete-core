@@ -7,11 +7,11 @@ Este archivo lo actualiza quien termina una tarea, en el mismo Pull Request, jun
 
 ## En curso
 
-- **PR 3.5 — Apuntar un entreno** (Claude), en revisión en dos PR: 3.5a (#77) y 3.5b (encima del 3.5a), D-145. Sin fusionar.
+- Nada de Claude. El **PR 3.5** (apuntar un entreno) está fusionado en dos partes: 3.5a (#77) y 3.5b (#79), D-146.
 
 ## Siguiente
 
-1. Fusionar el 3.5a y luego el 3.5b (cambiar su base a `main`). Después, **PR 3.6 — Subida, cierre y resumen** (Claude). Claude y Gemini trabajan en paralelo según `docs/PROMPTS.md` §7 (D-142, D-144) y las reglas de `docs/GUIA-GIT.md` §15.
+1. **PR 3.6 — Subida, cierre y resumen** (Claude). Claude y Gemini trabajan en paralelo según `docs/PROMPTS.md` §7 (D-142, D-144) y las reglas de `docs/GUIA-GIT.md` §15.
 2. El propietario dio por buenas, por ahora, la lista de `docs/referencia/biblioteca-ejercicios.md` y las rutinas de ejemplo. Se pueden retocar más adelante.
 
 ## Fases
@@ -140,9 +140,9 @@ El diseño está en DECISIONES D-115 a D-136, y el detalle de cada PR, en `docs/
 
 **Lote 2 — Apuntar**
 
-- [ ] PR 3.5 — Apuntar un entreno (partido en dos, como preveía `docs/PROMPTS.md` §7)
-  - [x] 3.5a — iniciar, resumen, pantalla del ejercicio y series (en revisión)
-  - [x] 3.5b — el gris, "Igual", "+ Serie", desmarcar e ir directo (en revisión)
+- [x] PR 3.5 — Apuntar un entreno (partido en dos, como preveía `docs/PROMPTS.md` §7)
+  - [x] 3.5a — iniciar, resumen, pantalla del ejercicio y series
+  - [x] 3.5b — el gris, "Igual", "+ Serie", desmarcar e ir directo
 - [ ] PR 3.6 — Subida, cierre y resumen
 - [ ] PR 3.7 — Cronómetro de descanso
 
@@ -162,8 +162,9 @@ El diseño está en DECISIONES D-115 a D-136, y el detalle de cada PR, en `docs/
 **Lote 5 — Progreso**
 
 - [x] PR 3.15 — Módulo `progress`: historial, RM y récords (D-129)
-- [ ] PR 3.16 — Gráficas
+- [x] PR 3.16 — Gráficas (Gemini)
 - [ ] PR 3.17 — Minilogros, racha, niveles y logros
+
 - [ ] PR 3.18 — Descargar en Excel
 
 ### Fase 4 — Pilotos
@@ -220,7 +221,7 @@ Cosas que alguien ha visto y que no tocaban en su tarea. No se hacen sin convert
 
 - Entrenos (PR 3.2a): el cliente solo lee los ejercicios que están en sus rutinas. Uno elegido con "Cambiar ejercicio" (D-122) que no esté en ninguna no lo podrá leer por su nombre en el historial: el PR 3.8 tiene que ampliar `is_exercise_in_my_programs` (o añadir otra política) a los ejercicios de sus entrenos.
 
-- Entrenos (PR 3.2a): si el móvil reutilizara el identificador de una serie para otro número o lado, `sync_workout` fallaría con un error de clave repetida y la subida se quedaría atascada. La app no debe hacerlo nunca; el PR 3.4 debería tener un test de ello. **Desde el PR 3.4b** una clave repetida (23505) se trata como rechazo (`invalid`) y no atasca la cola; que el móvil no repita identificadores sigue siendo cosa del PR 3.5.
+- Entrenos (PR 3.2a): si el móvil reutilizara el identificador de una serie para otro número o lado, `sync_workout` fallaría con un error de clave repetida y la subida se quedaría atascada. La app no debe hacerlo nunca; el PR 3.4 debería tener un test de ello. **Desde el PR 3.4b** una clave repetida (23505) se trata como rechazo (`invalid`) y no atasca la cola; desde el PR 3.5a cada serie tiene su identificador (`crypto.randomUUID`) desde que empieza el entreno y no se reutiliza.
 
 - `docs/ARQUITECTURA.md` §5: el ejemplo de manifest no enseña `homeCards` (PR 2.18, D-114) ni lo que recibe una pestaña de la ficha (`ClientProfileTabProps`, PR 2.14a, D-109). Es zona protegida y ninguna de las dos tareas pedía tocarla: actualizarlo cuando el propietario lo apruebe.
 
@@ -272,11 +273,12 @@ Cosas que alguien ha visto y que no tocaban en su tarea. No se hacen sin convert
 
 Lo más nuevo, arriba.
 
-- 2026-11-17 — PR 3.5b (apuntar un entreno, segunda parte, D-145): en gris, la vez anterior en esa serie (mismo día de la rutina o cualquiera), "Igual" para copiarla, desmarcar tocando la serie iluminada, "+ Serie" hasta 10, y al abrir la app con un entreno abierto, directo al ejercicio que toca (D-119). La vez anterior se vuelve a descargar tras subir un entreno. e2e con los criterios 4 a 7 (Bruno, en libras). 732 tests unitarios.
+- 2026-11-17 — PR 3.5b (apuntar un entreno, segunda parte, D-146): en gris, la vez anterior en esa serie (mismo día de la rutina o cualquiera), "Igual" para copiarla, desmarcar tocando la serie iluminada, "+ Serie" hasta 10, y al abrir la app con un entreno abierto, directo al ejercicio que toca (D-119). La vez anterior se vuelve a descargar tras subir un entreno. e2e con los criterios 4 a 7 (Bruno, en libras). Fusionados el 3.5a (#77) y el 3.5b (#79).
 
-- 2026-11-17 — PR 3.5a (apuntar un entreno, primera parte, D-145): "Hoy toca" pasa de `programs` a `workouts` con "Iniciar entreno" o "Continuar entreno" (en la web, "Para entrenar, abre la app en tu móvil"), y cada día de "Entreno" enlaza a `/client/workout`. Resumen del día con anillos "1/3" y el total "6/20 series", un ejercicio por pantalla con "Ejercicio 1 de 7", puntos y deslizar, y series con − y + y teclado (peso en la unidad del cliente, RIR o RPE del negocio y "F"). Cada cambio se guarda en el teléfono y va a la cola. "Terminar entreno" provisional (cierra a mano). Test e2e `workout-log.spec.ts`. 728 tests unitarios.
-
+- 2026-11-17 — PR 3.5a (apuntar un entreno, primera parte, D-146): "Hoy toca" pasa de `programs` a `workouts` con "Iniciar entreno" o "Continuar entreno" (en la web, "Para entrenar, abre la app en tu móvil"), y cada día de "Entreno" enlaza a `/client/workout`. Resumen del día con anillos "1/3" y el total "6/20 series", un ejercicio por pantalla con "Ejercicio 1 de 7", puntos y deslizar, y series con − y + y teclado (peso en la unidad del cliente, RIR o RPE del negocio y "F"). Cada cambio se guarda en el teléfono y va a la cola. "Terminar entreno" provisional (cierra a mano). Test e2e `workout-log.spec.ts`. 728 tests unitarios.
+- 2026-11-17 — PR 3.16 (gráficas de progreso, módulo `progress` y `src/core/ui`, Gemini): componente `LineChart` en SVG interactivo sin dependencias (D-135). Por ejercicio: selector de métricas (RM estimado, peso máximo, volumen y repeticiones), selector de periodo temporal (4 semanas, 3 meses, todo), cálculo del % de progreso por RM (D-129) y detalle del entreno seleccionado con series y notas al pulsar puntos de la gráfica. Pestaña "Peso y medidas" con gráfica de peso corporal y medidas disponible si hay consentimiento de salud (D-126, D-127). Decisión D-145 (Gemini).
 - 2026-11-17 — Chats en paralelo y autonomía de Gemini (solo documentación). Lección del día: tres PR crearon a la vez `src/modules/workouts` y dos chats chocaron en la base local. Seis reglas nuevas en `docs/GUIA-GIT.md` §15 (worktree y rama por chat, nunca dos PR sobre la misma carpeta, base local de uno en uno, mirar `gh pr list` y `git worktree list` al empezar, integrar `main` con merge, avisar de las ramas que quedan detrás), resumidas en AGENTS.md §7. `docs/PROMPTS.md` §7 gana las columnas "Base local" y "Carpetas que toca" y una tabla de paralelos nueva. D-144: Gemini decide en sus PR, puede tocar cualquier carpeta, escribir migraciones y añadir librerías, y escribe sus D-xxx "(Gemini)"; Claude revisa antes de fusionar todo lo que toque `supabase/`, RLS o permisos. La plantilla de PR cambia "Dudas para Claude" por "Decisiones tomadas y dudas".
+
 - 2026-11-17 — PR 3.4b (guardado en el móvil, módulo `workouts`): amplía el módulo que creó el PR 3.13, todavía sin pantallas del cliente. Su servicio (`services`, campo nuevo y opcional del manifest que `app/` monta con sesión, D-143) descarga al abrir o volver a la app con conexión la rutina vigente (con las claves de `programs`, así "Entreno" y "Hoy toca" también funcionan sin red) y la vez anterior de cada ejercicio (D-120: mismo día de la rutina; si no, cualquiera), y la guarda en el teléfono validada con Zod. Sube la cola con `sync_workout`; `not_allowed` avisa "No se pudo guardar: ya no tienes acceso a …" y cualquier otra regla o dato no válido se rechaza sin reintentar. Al cerrar sesión se borra del teléfono todo lo del usuario (`userKey`, `removeUser`). Probado en el navegador contra la base de datos local como Ana. 653 tests unitarios.
 - 2026-11-17 — Fusionados los PR 3.13 (#70), 3.15 (#71, con el flag `progress` en #74) y 3.14 (#72), revisados por Claude. En el 3.14, la actividad del coach usa la fórmula única de RM y récords de `workouts/model` (D-129). Regla nueva: en la Fase 3 no se piden pruebas manuales PR a PR (PROMPTS §0).
 - 2026-11-17 — Migración 22 (`20261117130000_progress_flag.sql`): flag `progress`, de tipo core, para el módulo del PR 3.15 (D-129). Test pgTAP 20. Pendiente de aplicar en staging.

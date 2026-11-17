@@ -1373,7 +1373,18 @@ Cómo añadir una: copia el formato, usa el siguiente número y no borres las an
 - **Por qué:** decisión del propietario. Con Gemini parado a preguntar, el paralelo no avanzaba; y el 2026-11-17 tres PR crearon a la vez `src/modules/workouts` y dos chats chocaron en la base local.
 - **Revisar si:** las decisiones de Gemini chocan a menudo con las existentes o sus PR de `supabase/` necesitan muchas correcciones.
 
-### D-145 · Apuntar un entreno: detalles del PR 3.5a
+### D-145 · Gráficas del progreso, sin librería (Gemini)
+- **Fecha:** 2026-11-17
+- **Decisión:** detalles del PR 3.16 que D-127, D-129 y D-135 no fijaban:
+  - **Componente `LineChart` en `src/core/ui`:** SVG puro sin librerías externas (D-135), reutilizable y responsive (`viewBox`). Puntos con área táctil amplia (40 px) para pantallas táctiles de móvil, interacción con toque, arrastre o cursor mostrando tooltip con valor y fecha, línea indicadora vertical y accesibilidad por teclado (`role="button"`, `aria-label`).
+  - **Métricas por ejercicio:** 4 métricas seleccionables (RM estimado, peso máximo, volumen total y repeticiones totales).
+  - **Periodos temporales:** 4 semanas (`4w`), 3 meses (`3m`) y Todo (`all`). Al filtrar, las estadísticas y la gráfica se recalculan de inmediato.
+  - **% de progreso por RM:** compara el RM estimado del primer entreno del periodo con el del último (D-129). Si se cambia de "4 semanas" a "Todo", cambia para reflejar la evolución desde el principio o en el último mes.
+  - **Detalle del entreno seleccionado:** debajo de la gráfica se muestran el día, fecha, series en formato textual y nota del día del punto seleccionado o del último entreno.
+  - **Peso corporal y medidas corporales:** pestaña dedicada dentro de Progreso ("Peso y medidas"), con gráfica de línea de la métrica elegida (peso, cintura, cadera, brazo, etc.), estadísticas de cambio en el periodo y último valor. Respeta el consentimiento de salud (D-126): si no se ha concedido, no se muestra ningún dato.
+- **Por qué:** permite visualizar la sobrecarga progresiva y la evolución corporal de un vistazo, sin dependencias pesadas y con los colores de marca de cada coach.
+
+### D-146 · Apuntar un entreno: detalles del PR 3.5a
 - **Fecha:** 2026-11-17
 - **Decisión:** detalles que D-119 y D-120 no fijaban. El PR 3.5 se parte en dos, como prevé PROMPTS §7: **3.5a** (iniciar, el resumen del día, la pantalla del ejercicio, las series con − y + y teclado, guardar y encolar) y **3.5b** (el gris de la vez anterior, "Igual", "+ Serie", desmarcar, ir directo al abrir y los criterios 4 a 7).
   - **El entreno abierto** vive en el almacén del teléfono, uno por usuario y espacio (`workouts.active.<negocio>`), y cada cambio se encola entero (la cola sustituye la versión anterior). La ruta es `/client/workout`: el resumen, `?exercise=N` para un ejercicio y, sin entreno abierto, `?day=N` para empezar ese día desde "Entreno".
@@ -1387,6 +1398,7 @@ Cómo añadir una: copia el formato, usa el siguiente número y no borres las an
   - **3.5b:** el gris sale de lo guardado en el teléfono (`previousFor`), y tras subir un entreno se vuelve a descargar al momento: así "la siguiente vez" ya ve lo de hoy. Se desmarca tocando el título de la serie iluminada ("Serie 1"), no la tarjeta entera, para no apagarla al tocar sus botones. "+ Serie" añade series extra vacías, hasta 10. "Ir directo" solo actúa una vez por arranque y solo desde el inicio del cliente; si no le quedan series a ningún ejercicio, va al resumen.
 
 ---
+
 
 ## Pendientes de decidir
 

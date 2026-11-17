@@ -10,6 +10,7 @@ const api = vi.hoisted(() => ({
   fetchClientWorkouts: vi.fn<(tenantId: string, clientId: string) => Promise<RawWorkout[]>>(),
   fetchCurrentClientProgramId:
     vi.fn<(tenantId: string, clientId: string) => Promise<string | null>>(),
+  fetchClientHealthData: vi.fn(),
 }));
 vi.mock('../api/progress-api', () => api);
 
@@ -33,7 +34,13 @@ async function anaUserId(): Promise<string> {
 describe('ClientProgressTab (D-129, Criterio 4)', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    api.fetchClientHealthData.mockResolvedValue({
+      hasConsent: false,
+      weights: [],
+      measurements: [],
+    });
     assignments.fetchProgramsOfClient.mockResolvedValue([]);
+
     exercisesApi.fetchExercises.mockResolvedValue([
       {
         id: 'ex-flexiones',

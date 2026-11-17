@@ -1,184 +1,73 @@
-import { useId, useMemo, useState } from 'react';
+import { useId, useMemo, useRef, useState } from 'react';
+import type { KeyboardEvent, PointerEvent } from 'react';
+import { useTranslation } from 'react-i18next';
+
+import { ChartBackdrop } from './ChartBackdrop';
+import { ChartTooltip } from './ChartTooltip';
+import {
+  computeChartGeometry,
+  keyboardTargetIndex,
+  nearestPointIndex,
+} from './line-chart-geometry';
+import { useElementWidth } from './useElementWidth';
 
 export interface ChartPoint<T = unknown> {
   id?: string;
-  date: string; // "YYYY-MM-DD" o fecha legible
+  /** Fecha "YYYY-MM-DD"; se muestra con `formatDateLabel`. */
+  date: string;
   value: number;
-  label?: string; // Etiqueta opcional del punto (ej. "DIA 1")
-  formattedValue?: string; // Ej. "85 kg", "106,7 kg"
-  raw?: T; // Objeto de origen (ej. ExerciseSessionHistory)
+  /** Etiqueta opcional del punto (por ejemplo, "DÍA 1"). */
+  label?: string;
+  /** Valor ya formateado ("85 kg"). */
+  formattedValue?: string;
+  raw?: T;
 }
 
 export interface LineChartProps<T = unknown> {
   data: readonly ChartPoint<T>[];
+  /** Nombre de la gráfica para el lector de pantalla (obligatorio: viene traducido). */
+  ariaLabel: string;
   selectedPointId?: string | null;
   onSelectPoint?: (point: ChartPoint<T>) => void;
-  formatValue?: (val: number) => string;
-  formatDateLabel?: (dateStr: string) => string;
+  formatValue?: (value: number) => string;
+  formatDateLabel?: (date: string) => string;
   emptyMessage?: string;
-  height?: number;
-  ariaLabel?: string;
 }
 
-const VIEW_WIDTH = 500;
-const VIEW_HEIGHT = 220;
-const PADDING = {
-  top: 30,
-  right: 25,
-  bottom: 35,
-  left: 50,
-};
+const CHART_HEIGHT = 220;
+// Ancho mientras no se ha medido el contenedor (y en los tests, sin ResizeObserver).
+const FALLBACK_WIDTH = 500;
+// Radio de la zona táctil de cada punto: 22 px reales = 44 px de diámetro (AGENTS §4).
+const HIT_RADIUS = 22;
+
+const pointKey = (point: ChartPoint<unknown>, index: number) => point.id ?? `#${index}`;
 
 export function LineChart<T = unknown>({
   data,
+  ariaLabel,
   selectedPointId,
   onSelectPoint,
   formatValue = (v) => v.toString(),
   formatDateLabel = (d) => d,
   emptyMessage,
-  ariaLabel = 'Gráfica de progreso',
 }: LineChartProps<T>) {
+  const { t } = useTranslation();
   const gradientId = useId();
+  const [containerRef, width] = useElementWidth<HTMLDivElement>(FALLBACK_WIDTH);
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
+  const [focusedIndex, setFocusedIndex] = useState<number | null>(null);
+  const [internalSelectedKey, setInternalSelectedKey] = useState<string | null>(null);
+  const pointRefs = useRef<Array<SVGGElement | null>>([]);
 
-  const plotWidth = VIEW_WIDTH - PADDING.left - PADDING.right;
-  const plotHeight = VIEW_HEIGHT - PADDING.top - PADDING.bottom;
-
-  // Cálculo de escalas y coordenadas
-  const { points, yTicks } = useMemo(() => {
-    if (data.length === 0) {
-      return { points: [], yTicks: [], minVal: 0, maxVal: 0 };
-    }
-
-    const values = data.map((d) => d.value);
-    let min = Math.min(...values);
-    let max = Math.max(...values);
-
-    if (min === max) {
-      min = min > 0 ? min * 0.9 : min - 1;
-      max = max > 0 ? max * 1.1 : max + 1;
-    } else {
-      const padding = (max - min) * 0.12;
-      min = Math.max(0, min - padding);
-      max = max + padding;
-    }
-
-    // 3 marcas en el eje Y (abajo, centro, arriba)
-    const mid = (min + max) / 2;
-    const ticks = [
-      { value: min, y: PADDING.top + plotHeight },
-      { value: mid, y: PADDING.top + plotHeight / 2 },
-      { value: max, y: PADDING.top },
-    ];
-
-    const computedPoints = data.map((item, index) => {
-      const x =
-        data.length === 1
-          ? PADDING.left + plotWidth / 2
-          : PADDING.left + (index / (data.length - 1)) * plotWidth;
-
-      const yRatio = (item.value - min) / (max - min);
-      const y = PADDING.top + plotHeight - yRatio * plotHeight;
-
-      return {
-        ...item,
-        originalIndex: index,
-        x,
-        y,
-      };
-    });
-
-    return {
-      points: computedPoints,
-      yTicks: ticks,
-      minVal: min,
-      maxVal: max,
-    };
-  }, [data, plotWidth, plotHeight]);
-
-  // Rutas SVG
-  const pathD = useMemo(() => {
-    if (points.length <= 1) return '';
-    return points.reduce((acc, pt, i) => `${acc} ${i === 0 ? 'M' : 'L'} ${pt.x} ${pt.y}`, '');
-  }, [points]);
-
-  const areaD = useMemo(() => {
-    if (points.length <= 1) return '';
-    const bottomY = PADDING.top + plotHeight;
-    const firstX = points[0]!.x;
-    const lastX = points[points.length - 1]!.x;
-    return `${pathD} L ${lastX} ${bottomY} L ${firstX} ${bottomY} Z`;
-  }, [pathD, points, plotHeight]);
-
-  // Determinar punto activo (hover o seleccionado)
-  const activeIndex = useMemo(() => {
-    if (hoveredIndex !== null) return hoveredIndex;
-    if (selectedPointId) {
-      const idx = points.findIndex((p) => (p.id ? p.id === selectedPointId : false));
-      if (idx !== -1) return idx;
-    }
-    // Por defecto, resaltar el último punto
-    return points.length - 1;
-  }, [hoveredIndex, selectedPointId, points]);
-
-  const activePoint = points[activeIndex] ?? points[points.length - 1];
-
-  // Manejo de deslizamiento / puntero para tocar o arrastrar
-  const handlePointerMove = (e: React.PointerEvent<SVGSVGElement>) => {
-    const rect = e.currentTarget.getBoundingClientRect();
-    const clientX = e.clientX - rect.left;
-    const svgX = (clientX / rect.width) * VIEW_WIDTH;
-
-    // Buscar punto más cercano por coordenada X
-    let closestIndex = 0;
-    let closestDist = Infinity;
-    points.forEach((pt, idx) => {
-      const dist = Math.abs(pt.x - svgX);
-      if (dist < closestDist) {
-        closestDist = dist;
-        closestIndex = idx;
-      }
-    });
-
-    setHoveredIndex(closestIndex);
-  };
-
-  const handlePointerLeave = () => {
-    setHoveredIndex(null);
-  };
-
-  const handlePointSelect = (pt: (typeof points)[0]) => {
-    if (onSelectPoint) {
-      onSelectPoint(pt);
-    }
-  };
-
-  // Etiquetas del eje X (primer punto, último, y opcionalmente punto medio si hay >= 4)
-  const xLabels = useMemo<
-    Array<{ x: number; text: string; anchor: 'start' | 'middle' | 'end' }>
-  >(() => {
-    if (points.length === 0) return [];
-    if (points.length === 1) {
-      return [{ x: points[0]!.x, text: formatDateLabel(points[0]!.date), anchor: 'middle' }];
-    }
-    const result: Array<{ x: number; text: string; anchor: 'start' | 'middle' | 'end' }> = [
-      { x: points[0]!.x, text: formatDateLabel(points[0]!.date), anchor: 'start' },
-      {
-        x: points[points.length - 1]!.x,
-        text: formatDateLabel(points[points.length - 1]!.date),
-        anchor: 'end',
-      },
-    ];
-    if (points.length >= 4) {
-      const midIdx = Math.floor(points.length / 2);
-      result.splice(1, 0, {
-        x: points[midIdx]!.x,
-        text: formatDateLabel(points[midIdx]!.date),
-        anchor: 'middle',
-      });
-    }
-    return result;
-  }, [points, formatDateLabel]);
+  const geometry = useMemo(
+    () =>
+      computeChartGeometry(
+        data.map((d) => d.value),
+        width,
+        CHART_HEIGHT,
+      ),
+    [data, width],
+  );
 
   if (data.length === 0) {
     return (
@@ -186,179 +75,157 @@ export function LineChart<T = unknown>({
         className="flex h-44 w-full items-center justify-center rounded-lg border border-dashed border-border p-4 text-center text-sm text-muted"
         data-testid="chart-empty"
       >
-        {emptyMessage ?? 'No hay datos disponibles para mostrar la gráfica'}
+        {emptyMessage ?? t('core.ui.chart.empty')}
       </div>
     );
   }
 
-  // Posición del tooltip asegurando que no se salga de los márgenes
-  const tooltipX = activePoint
-    ? Math.max(70, Math.min(VIEW_WIDTH - 70, activePoint.x))
-    : VIEW_WIDTH / 2;
-  const tooltipY = activePoint
-    ? activePoint.y - 18 < PADDING.top
-      ? activePoint.y + 28
-      : activePoint.y - 14
-    : PADDING.top;
+  const wantedKey = selectedPointId ?? internalSelectedKey;
+  const foundIndex = data.findIndex((p, i) => pointKey(p, i) === wantedKey);
+  // Sin selección, el último punto (lo más reciente).
+  const selectedIndex = foundIndex === -1 ? data.length - 1 : foundIndex;
+  const activeIndex = hoveredIndex ?? focusedIndex ?? selectedIndex;
+  const activePoint = data[activeIndex];
+  const activePlot = geometry.points[activeIndex];
+
+  const valueText = (p: ChartPoint<T>) => p.formattedValue ?? formatValue(p.value);
+
+  const select = (index: number) => {
+    const point = data[index];
+    if (point === undefined) return;
+    setInternalSelectedKey(pointKey(point, index));
+    onSelectPoint?.(point);
+  };
+
+  const pointerIndex = (e: PointerEvent<SVGSVGElement>): number | null => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    if (rect.width === 0) return null;
+    return nearestPointIndex(geometry.points, ((e.clientX - rect.left) / rect.width) * width);
+  };
+
+  const handlePointerMove = (e: PointerEvent<SVGSVGElement>) => {
+    const index = pointerIndex(e);
+    if (index !== null) setHoveredIndex(index);
+  };
+
+  // Con el dedo, tocar en cualquier parte elige el punto más cercano: así la
+  // zona táctil es toda la columna del punto, no solo su círculo.
+  const handlePointerUp = (e: PointerEvent<SVGSVGElement>) => {
+    if (e.pointerType === 'mouse') return;
+    const index = pointerIndex(e);
+    if (index !== null) select(index);
+  };
+
+  // Patrón de grupo de radio: un solo punto en el orden de tabulación y las
+  // flechas mueven el foco y la selección (no decenas de paradas de Tab).
+  const handleKeyDown = (e: KeyboardEvent<SVGGElement>, index: number) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      select(index);
+      return;
+    }
+    const target = keyboardTargetIndex(e.key, index, data.length);
+    if (target === null) return;
+    e.preventDefault();
+    select(target);
+    pointRefs.current[target]?.focus();
+  };
+
+  const first = data[0]!;
+  const last = data[data.length - 1]!;
 
   return (
-    <div className="relative w-full select-none" data-testid="line-chart-container">
+    <div
+      ref={containerRef}
+      className="relative w-full select-none"
+      data-testid="line-chart-container"
+    >
+      <p className="sr-only">
+        {t('core.ui.chart.summary', {
+          count: data.length,
+          first: `${valueText(first)} (${formatDateLabel(first.date)})`,
+          last: `${valueText(last)} (${formatDateLabel(last.date)})`,
+        })}
+      </p>
       <svg
-        viewBox={`0 0 ${VIEW_WIDTH} ${VIEW_HEIGHT}`}
-        className="w-full h-auto overflow-visible touch-none"
+        viewBox={`0 0 ${width} ${CHART_HEIGHT}`}
+        width="100%"
+        height={CHART_HEIGHT}
+        className="block overflow-visible touch-pan-y"
         onPointerMove={handlePointerMove}
-        onPointerLeave={handlePointerLeave}
-        role="region"
+        onPointerUp={handlePointerUp}
+        onPointerLeave={() => setHoveredIndex(null)}
+        onPointerCancel={() => setHoveredIndex(null)}
+        role="radiogroup"
         aria-label={ariaLabel}
       >
-        <defs>
-          <linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="var(--color-primary)" stopOpacity="0.25" />
-            <stop offset="100%" stopColor="var(--color-primary)" stopOpacity="0.0" />
-          </linearGradient>
-        </defs>
+        <ChartBackdrop
+          geometry={geometry}
+          width={width}
+          height={CHART_HEIGHT}
+          gradientId={gradientId}
+          activePlot={activePlot}
+          dates={data.map((d) => d.date)}
+          formatValue={formatValue}
+          formatDateLabel={formatDateLabel}
+        />
 
-        {/* Líneas horizontales de guía y etiquetas Y */}
-        {yTicks.map((tick, i) => (
-          <g key={i} className="text-xs">
-            <line
-              x1={PADDING.left}
-              y1={tick.y}
-              x2={VIEW_WIDTH - PADDING.right}
-              y2={tick.y}
-              stroke="var(--color-border)"
-              strokeDasharray="3 3"
-              strokeOpacity="0.6"
-            />
-            <text
-              x={PADDING.left - 8}
-              y={tick.y + 4}
-              textAnchor="end"
-              fill="currentColor"
-              className="text-[11px] fill-muted font-mono"
-            >
-              {formatValue(Math.round(tick.value * 10) / 10)}
-            </text>
-          </g>
-        ))}
-
-        {/* Área rellena bajo la curva */}
-        {areaD ? <path d={areaD} fill={`url(#${gradientId})`} /> : null}
-
-        {/* Línea principal trazada */}
-        {pathD ? (
-          <path
-            d={pathD}
-            fill="none"
-            stroke="var(--color-primary)"
-            strokeWidth="3"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-        ) : null}
-
-        {/* Línea vertical indicadora del punto activo */}
-        {activePoint ? (
-          <line
-            x1={activePoint.x}
-            y1={PADDING.top}
-            x2={activePoint.x}
-            y2={PADDING.top + plotHeight}
-            stroke="var(--color-primary)"
-            strokeWidth="1.5"
-            strokeDasharray="2 2"
-            strokeOpacity="0.5"
-          />
-        ) : null}
-
-        {/* Puntos y áreas interactivas de toque */}
-        {points.map((pt, index) => {
+        {data.map((point, index) => {
+          const plot = geometry.points[index]!;
           const isActive = index === activeIndex;
-          const isSelected =
-            pt.id != null ? pt.id === selectedPointId : index === points.length - 1;
-
+          const isSelected = index === selectedIndex;
           return (
             <g
-              key={pt.id ?? `${pt.date}-${index}`}
-              className="cursor-pointer"
-              onClick={() => handlePointSelect(pt)}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter' || e.key === ' ') {
-                  e.preventDefault();
-                  handlePointSelect(pt);
-                }
+              key={pointKey(point, index)}
+              ref={(node) => {
+                pointRefs.current[index] = node;
               }}
-              tabIndex={0}
-              role="button"
-              aria-label={`${pt.label ? `${pt.label}: ` : ''}${pt.formattedValue ?? formatValue(pt.value)} (${pt.date})`}
+              className="cursor-pointer outline-none"
+              role="radio"
+              aria-checked={isSelected}
+              aria-label={[point.label, valueText(point), formatDateLabel(point.date)]
+                .filter(Boolean)
+                .join(', ')}
+              tabIndex={isSelected ? 0 : -1}
+              onClick={() => select(index)}
+              onKeyDown={(e) => handleKeyDown(e, index)}
+              onFocus={() => setFocusedIndex(index)}
+              onBlur={() => setFocusedIndex(null)}
               data-testid={`chart-point-${index}`}
             >
-              {/* Área invisible grande para facilitar el toque táctil (diámetro 40px) */}
-              <circle cx={pt.x} cy={pt.y} r="20" fill="transparent" />
-
-              {/* Punto visible */}
+              <circle cx={plot.x} cy={plot.y} r={HIT_RADIUS} fill="transparent" />
+              {focusedIndex === index ? (
+                <circle
+                  cx={plot.x}
+                  cy={plot.y}
+                  r={11}
+                  fill="none"
+                  className="stroke-primary-readable"
+                  strokeWidth={2}
+                  data-testid="chart-focus-ring"
+                />
+              ) : null}
               <circle
-                cx={pt.x}
-                cy={pt.y}
+                cx={plot.x}
+                cy={plot.y}
                 r={isActive ? 6 : isSelected ? 5 : 4}
-                fill={isActive ? 'var(--color-primary)' : 'var(--color-surface, #ffffff)'}
-                stroke="var(--color-primary)"
+                className={isActive ? 'fill-primary stroke-primary' : 'fill-surface stroke-primary'}
                 strokeWidth={isActive ? 3 : 2}
-                className="transition-all duration-150"
               />
             </g>
           );
         })}
 
-        {/* Tooltip dentro del SVG que muestra valor y fecha del punto activo */}
-        {activePoint ? (
-          <g
-            transform={`translate(${tooltipX}, ${tooltipY})`}
-            className="pointer-events-none transition-all duration-100"
-            data-testid="chart-tooltip"
-          >
-            {/* Fondo del tooltip */}
-            <rect
-              x="-60"
-              y="-12"
-              width="120"
-              height="24"
-              rx="6"
-              fill="var(--color-surface, #1e293b)"
-              stroke="var(--color-border, #475569)"
-              strokeWidth="1"
-              filter="drop-shadow(0 2px 4px rgba(0,0,0,0.15))"
-            />
-            {/* Texto del tooltip */}
-            <text
-              x="0"
-              y="4"
-              textAnchor="middle"
-              className="text-[11px] font-medium fill-foreground"
-            >
-              <tspan className="font-bold">
-                {activePoint.formattedValue ?? formatValue(activePoint.value)}
-              </tspan>
-              <tspan fill="var(--color-muted, #94a3b8)">
-                {' '}
-                · {formatDateLabel(activePoint.date)}
-              </tspan>
-            </text>
-          </g>
+        {activePoint && activePlot ? (
+          <ChartTooltip
+            x={activePlot.x}
+            y={activePlot.y}
+            chartWidth={width}
+            plotTop={geometry.plotTop}
+            value={valueText(activePoint)}
+            date={formatDateLabel(activePoint.date)}
+          />
         ) : null}
-
-        {/* Eje X: Etiquetas de fechas */}
-        {xLabels.map((lbl, i) => (
-          <text
-            key={i}
-            x={lbl.x}
-            y={VIEW_HEIGHT - 10}
-            textAnchor={lbl.anchor}
-            className="text-[11px] fill-muted font-sans"
-          >
-            {lbl.text}
-          </text>
-        ))}
       </svg>
     </div>
   );

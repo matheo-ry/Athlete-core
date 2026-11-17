@@ -1,6 +1,16 @@
 import { describe, expect, it } from 'vitest';
 
-import { defaultWeightUnitFor, formatWeight, fromKg, kgToLb, lbToKg, toKg } from './units';
+import {
+  defaultWeightUnitFor,
+  formatLength,
+  formatWeight,
+  fromCm,
+  fromKg,
+  kgToLb,
+  lbToKg,
+  lengthUnitFor,
+  toKg,
+} from './units';
 
 describe('defaultWeightUnitFor (D-058)', () => {
   it('libras solo en inglés de EE. UU.', () => {
@@ -58,5 +68,19 @@ describe('formatWeight', () => {
 
   it('usa el separador decimal del idioma', () => {
     expect(formatWeight(102.5, 'kg', 'es')).toBe('102,5 kg');
+  });
+});
+
+describe('medidas: fromCm / formatLength', () => {
+  it('en kg se queda en cm', () => {
+    expect(lengthUnitFor('kg')).toBe('cm');
+    expect(fromCm(80, 'kg')).toBe(80);
+    expect(formatLength(80.5, 'kg', 'es')).toBe('80,5 cm');
+  });
+
+  it('en lb pasa a pulgadas', () => {
+    expect(lengthUnitFor('lb')).toBe('in');
+    expect(fromCm(2.54, 'lb')).toBeCloseTo(1, 6);
+    expect(formatLength(80, 'lb', 'en')).toBe('31.5 in');
   });
 });

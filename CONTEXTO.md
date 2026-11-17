@@ -22,7 +22,7 @@
 ## Dónde estamos
 
 - **Fase actual:** 3 — Entreno y progreso, en construcción (diseño en D-115 a D-137). Las Fases 1 y 2 están terminadas y fusionadas en `main`.
-- **Última tarea terminada:** PR 3.16 — gráficas del progreso (Gemini, D-145). Antes, PR 3.4b (#73, D-143) y reglas de chats en paralelo (D-144). En la Fase 3 no se piden pruebas manuales PR a PR: al cerrar la fase se hace una prueba completa (PROMPTS §0).
+- **Última tarea terminada:** arreglos de la revisión del PR 3.16 (D-146): accesibilidad y colores de la gráfica, zonas táctiles y lectura del peso y las medidas desde `workouts`. Antes, PR 3.16 — gráficas del progreso (Gemini, D-145). Antes, PR 3.4b (#73, D-143) y reglas de chats en paralelo (D-144). En la Fase 3 no se piden pruebas manuales PR a PR: al cerrar la fase se hace una prueba completa (PROMPTS §0).
 - **Siguiente tarea:** **PR 3.5 — Apuntar un entreno** (`docs/PROMPTS.md` §7). Amplía el módulo `workouts`, que ya existe (PR 3.13 y 3.4b). Trabajan Claude y Gemini a la vez (D-142): quién hace cada PR, en la columna "Quién" de §7, con qué carpetas toca y si usa la base local. Gemini decide en sus PR y lo deja escrito como D-xxx "(Gemini)" (D-144). Chats en paralelo: reglas de `docs/GUIA-GIT.md` §15. En staging están aplicadas y probadas las migraciones 1 a 21.
 
 
@@ -79,11 +79,11 @@
 
 Los 5 más recientes, el más nuevo arriba. El historial completo está en `docs/ESTADO.md`.
 
+- 2026-11-17 — Arreglos de la revisión del PR 3.16 (D-146): `LineChart` sin colores hex ni textos fijos, con teclado (grupo de radio), foco visible, 44 px táctiles y desplazamiento vertical en el móvil. `progress` lee el peso y las medidas de `workouts` (D-127), solo al abrir la pestaña. Si esa carga falla, los ejercicios se siguen viendo.
 - 2026-11-17 — PR 3.16: gráficas de progreso en SVG propio sin librería (D-135). Por ejercicio: métricas, periodos, % de progreso por RM (D-129) y detalle del entreno bajo la gráfica. Peso y medidas con consentimiento (D-126, D-127). Decisión D-145 (Gemini).
 - 2026-11-17 — Solo documentación: reglas para chats en paralelo (GUIA-GIT §15) y autonomía de Gemini (D-144, sustituye en parte D-142). PROMPTS §7 dice qué carpetas toca cada PR y si usa la base local.
 - 2026-11-17 — PR 3.4b: el módulo `workouts` guarda en el móvil la rutina y la vez anterior de cada ejercicio, sube lo pendiente y avisa de los rechazos (D-143).
 - 2026-11-17 — Fusionados 3.13, 3.15 y 3.14 tras la revisión de Claude: validación Zod, errores que ya no se tragan, "DIA n" traducido y una sola fórmula de RM y récords (D-129). Flag `progress` (migración 22).
-- 2026-11-17 — PR 3.14: actividad y avisos del coach en el inicio (tarjeta de actividad con récords/cambios/notas y avisos de inactividad >= 7 días y cambios reiterados de ejercicios).
 
 
 ## A tener en cuenta ahora

@@ -11,7 +11,12 @@
       "errorDescription": "We couldn't load this. Please try again.",
       "retry": "Try again",
       "showPassword": "Show password",
-      "hidePassword": "Hide password"
+      "hidePassword": "Hide password",
+      "chart": {
+        "empty": "Not enough data for the chart yet",
+        "summary_one": "1 point: {{first}}",
+        "summary_other": "{{count}} points, from {{first}} to {{last}}"
+      }
     },
     "network": {
       "offline": "No connection"

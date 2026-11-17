@@ -10,9 +10,15 @@ const api = vi.hoisted(() => ({
   fetchClientWorkouts: vi.fn<(tenantId: string, clientId: string) => Promise<RawWorkout[]>>(),
   fetchCurrentClientProgramId:
     vi.fn<(tenantId: string, clientId: string) => Promise<string | null>>(),
-  fetchClientHealthData: vi.fn(),
 }));
 vi.mock('../api/progress-api', () => api);
+
+// El peso y las medidas los carga el módulo workouts (D-127).
+const healthApi = vi.hoisted(() => ({ fetchClientHealthData: vi.fn() }));
+vi.mock('@/modules/workouts/api/workouts-coach-api', async (importOriginal) => ({
+  ...(await importOriginal<Record<string, unknown>>()),
+  ...healthApi,
+}));
 
 const exercisesApi = vi.hoisted(() => ({
   fetchExercises: vi.fn(),
@@ -34,7 +40,7 @@ async function anaUserId(): Promise<string> {
 describe('ClientProgressTab (D-129, Criterio 4)', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    api.fetchClientHealthData.mockResolvedValue({
+    healthApi.fetchClientHealthData.mockResolvedValue({
       hasConsent: false,
       weights: [],
       measurements: [],

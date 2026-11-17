@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next';
 
 import { useAuth } from '@/core/auth';
-import { getUploadQueue, useUploadQueue } from '@/core/native';
+import { canLogWorkouts, getUploadQueue, useUploadQueue } from '@/core/native';
 import { Button } from '@/core/ui';
 
 import { useOfflineSnapshotRefresh, useUploadPending } from '../api/useWorkoutSync';
@@ -9,11 +9,12 @@ import { useOfflineSnapshotRefresh, useUploadPending } from '../api/useWorkoutSy
 /**
  * Lo que `workouts` hace sin pantalla mientras hay sesión (D-143): guardar en
  * el móvil lo necesario para entrenar sin cobertura y subir lo pendiente. Si la
- * base de datos rechaza algo, lo avisa (D-118).
+ * base de datos rechaza algo, lo avisa (D-118). Solo donde se puede entrenar
+ * (`canLogWorkouts`, D-116): en la web publicada no hay nada que guardar ni subir.
  */
 export function WorkoutsService() {
   const { user } = useAuth();
-  return user === null ? null : <SyncForUser userId={user.id} />;
+  return user === null || !canLogWorkouts() ? null : <SyncForUser userId={user.id} />;
 }
 
 function SyncForUser({ userId }: { userId: string }) {

@@ -148,7 +148,11 @@ test('desde la ficha: crear desde cero, guardar como plantilla, terminar, asigna
   const dialog = page.getByRole('dialog', { name: 'Assign a template to E2E Test' });
   await expect(dialog.getByLabel('Template')).toHaveValue(/.+/);
   await dialog.getByRole('button', { name: 'Assign to 1 client' }).click();
-  await expect(page.getByRole('status')).toHaveText('“Un día plantilla” assigned.');
+  // Mientras se cargan los días de la rutina nueva, el "Loading…" (Spinner)
+  // también tiene el papel status: el aviso se busca por su texto.
+  await expect(page.getByRole('status').filter({ hasText: 'assigned' })).toHaveText(
+    '“Un día plantilla” assigned.',
+  );
   await expect(page.getByText('Un día plantilla', { exact: true })).toBeVisible();
 
   // Criterio 5: reiniciar dentro de 5 días: la ficha dice que empieza ese día.
@@ -158,7 +162,9 @@ test('desde la ficha: crear desde cero, guardar como plantilla, terminar, asigna
   await page.getByRole('button', { name: 'Restart from a date' }).click();
   await page.getByLabel('Restart on').fill(date);
   await page.getByRole('button', { name: 'Restart', exact: true }).click();
-  await expect(page.getByRole('status')).toHaveText('Program restarted.');
+  await expect(page.getByRole('status').filter({ hasText: 'restarted' })).toHaveText(
+    'Program restarted.',
+  );
   await expect(page.getByRole('heading', { name: 'Next program' })).toBeVisible();
   await expect(page.getByText(/^Starts on /)).toBeVisible();
 

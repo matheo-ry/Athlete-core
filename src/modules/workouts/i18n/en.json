@@ -1,4 +1,51 @@
 {
+  "clientTab": {
+    "label": "Workouts"
+  },
+  "health": {
+    "title": "Health data",
+    "consentNotice": "Your client has not given permission to share health data",
+    "weightTitle": "Body weight",
+    "measurementsTitle": "Body measurements",
+    "noWeight": "No weight recorded",
+    "noMeasurements": "No measurements recorded",
+    "measuredOn": "recorded on {{date}}"
+  },
+  "measurements": {
+    "waist": "Waist",
+    "hips": "Hips",
+    "chest": "Chest",
+    "shoulders": "Shoulders",
+    "neck": "Neck",
+    "arm": "Arm",
+    "thigh": "Thigh",
+    "calf": "Calf",
+    "right": "right",
+    "left": "left"
+  },
+  "coachTab": {
+    "title": "Workouts",
+    "empty": "No workouts yet",
+    "unknownExercise": "Exercise",
+    "setsDone": "{{count}} sets",
+    "setsDoneProgress": "{{done}} of {{total}} sets",
+    "duration": "Duration: {{duration}}",
+    "day": "Day {{number}}",
+    "missed": "Missed",
+    "missedDescription": "Missed training day",
+    "inProgress": "In progress",
+    "edited": "Edited",
+    "viewDetails": "View details",
+    "hideDetails": "Hide details",
+    "dayNote": "Day note: {{note}}",
+    "coachNote": "Coach note: {{note}}",
+    "setup": "Set-up: {{setup}}",
+    "skipped": "Skipped",
+    "replaced": "Replaced by {{name}}",
+    "performanceBetter": "Better than previous session",
+    "performanceWorse": "Worse than previous session",
+    "performanceSame": "Same as previous session"
+  },
   "sync": {
     "noAccess": "Couldn't save: you no longer have access to {{name}}.",
     "invalid_one": "A workout couldn't be saved: it had data the app doesn't accept.",

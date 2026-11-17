@@ -1,20 +1,38 @@
 import { defineModule } from '@/core/modules';
 import { canLogWorkouts } from '@/core/native';
 
-// Ficha del módulo. La clave ('workouts') es también su feature flag y el
-// prefijo de sus textos (`workouts.…`). Todavía sin pantallas: llegan con el
-// PR 3.5. Por ahora guarda en el móvil lo necesario para entrenar sin
-// cobertura y sube lo pendiente (PR 3.4b, D-118 y D-143).
+/**
+ * Módulo workouts (Fase 3): registro de entrenos por el cliente y seguimiento
+ * por el coach (PR 3.13, D-109, D-124, D-126, D-127, D-128). Las pantallas del
+ * cliente llegan con el PR 3.5; ya guarda en el móvil lo necesario para entrenar
+ * sin cobertura y sube lo pendiente (PR 3.4b, D-118 y D-143).
+ */
 export const workoutsModule = defineModule({
   key: 'workouts',
-  routes: { coach: [], client: [] },
-  nav: { coach: [], client: [] },
+  routes: {
+    coach: [],
+    client: [],
+  },
+  nav: {
+    coach: [],
+    client: [],
+  },
   i18n: {
     en: () => import('./i18n/en.json'),
     es: () => import('./i18n/es.json'),
   },
-  clientProfileTabs: [],
-  homeCards: { coach: [], client: [] },
+  clientProfileTabs: [
+    {
+      key: 'workouts',
+      labelKey: 'workouts.clientTab.label',
+      lazy: () =>
+        import('./coach/ClientWorkoutsTab').then((tab) => ({ Component: tab.ClientWorkoutsTab })),
+    },
+  ],
+  homeCards: {
+    coach: [],
+    client: [],
+  },
   services: [
     {
       key: 'workouts-sync',

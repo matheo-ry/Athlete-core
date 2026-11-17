@@ -22,8 +22,8 @@
 ## Dónde estamos
 
 - **Fase actual:** 3 — Entreno y progreso, en construcción (diseño en D-115 a D-137). Las Fases 1 y 2 están terminadas y fusionadas en `main`.
-- **Última tarea terminada:** PR 3.4 — guardado en el móvil, partido en 3.4a (#69) y 3.4b (D-143), los dos en revisión. Falta la prueba del propietario en el móvil.
-- **Siguiente tarea:** **PR 3.5 — Apuntar un entreno** (`docs/PROMPTS.md` §7), cuando se fusione el 3.4. Trabajan Claude y Gemini a la vez (D-142): quién hace cada PR, en la columna "Quién" de §7. En staging están aplicadas y probadas las migraciones 1 a 21.
+- **Última tarea terminada:** PR 3.4 — guardado en el móvil, fusionado en dos partes: 3.4a (#69) y 3.4b (#73), D-143. Falta la prueba del propietario en el móvil.
+- **Siguiente tarea:** **PR 3.5 — Apuntar un entreno** (`docs/PROMPTS.md` §7). Amplía el módulo `workouts`, que ya existe (PR 3.13 y 3.4b). Trabajan Claude y Gemini a la vez (D-142): quién hace cada PR, en la columna "Quién" de §7. En staging están aplicadas y probadas las migraciones 1 a 21.
 
 ## Cómo será la Fase 3 (diseñada, D-115 a D-136)
 
@@ -78,11 +78,11 @@
 
 Los 5 más recientes, el más nuevo arriba. El historial completo está en `docs/ESTADO.md`.
 
-- 2026-11-17 — PR 3.4b: módulo `workouts` sin pantallas que guarda en el móvil la rutina y la vez anterior de cada ejercicio, sube lo pendiente y avisa de los rechazos (D-143).
+- 2026-11-17 — PR 3.4b: el módulo `workouts` guarda en el móvil la rutina y la vez anterior de cada ejercicio, sube lo pendiente y avisa de los rechazos (D-143).
+- 2026-11-17 — PR 3.13: pestaña "Entrenos" en la ficha del cliente (módulo `workouts`, aportada por su manifest en `clientProfileTabs`). Lista con fecha, día, series hechas, marcas "En curso", "Editado" y "Faltado"; detalle con formato Excel ("45×8(1) / 45×7(1)"), flecha comparativa (↑ / ↓ / →), notas del día, set-up, ejercicio cambiado, ejercicio saltado y duración; peso corporal y medidas si hay consentimiento de salud o aviso sin él (D-124, D-126, D-127, D-128). 25 tests unitarios.
 - 2026-11-17 — PR 3.4a: almacén del teléfono, cola de subida, la caché guardada en la app del móvil, abrir sin red con la sesión guardada y preguntar al cerrar sesión con algo pendiente (D-143).
 - 2026-11-17 — PR 3.3c: entrenos inventados en el seed para Ana, Bruno y Diego, con días faltados, récords y datos de salud.
 - 2026-11-17 — Arreglo del test de flujos `program-client-tab`, que fallaba a ratos porque el `Spinner` también tiene el papel `status`. Sin cambios en `src/`.
-- 2026-11-17 — Reparto Claude/Gemini (D-142): Claude decide, hace base de datos, seguridad, `src/core/` y los PR 3.3 a 3.9 (y el 3.3c, entrenos inventados en el seed), y revisa los de Gemini; Gemini hace 3.10 a 3.18 y revisa los de Claude. Columna "Quién" y tabla de paralelo en `docs/PROMPTS.md` §7; trampas de Windows en `docs/GUIA-GIT.md` §14.
 
 ## A tener en cuenta ahora
 

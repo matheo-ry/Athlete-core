@@ -9,6 +9,8 @@ export { Icon } from './Icon';
 export { ICONS } from './icon-registry';
 export type { IconName } from './icon-registry';
 export { Input } from './Input';
+export { LineChart } from './LineChart';
+export type { ChartPoint, LineChartProps } from './LineChart';
 export { OfflineBanner } from './OfflineBanner';
 export { PasswordInput } from './PasswordInput';
 export { Spinner } from './Spinner';

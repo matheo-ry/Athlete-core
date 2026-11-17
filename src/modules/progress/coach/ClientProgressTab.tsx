@@ -8,15 +8,17 @@ import { ProgressView } from '../shared/ProgressView';
  * El coach ve lo mismo que el cliente en /client/progress (Criterio 4).
  */
 export function ClientProgressTab({ clientId }: ClientProfileTabProps) {
-  const { groups, isPending, isError, refetch, unit } = useClientProgress(clientId);
+  const { groups, healthData, isPending, isError, refetch, unit } = useClientProgress(clientId);
 
   return (
     <ProgressView
       groups={groups}
+      healthData={healthData}
       isPending={isPending}
       isError={isError}
       onRetry={() => void refetch()}
       unit={unit}
+      isCoach={true}
     />
   );
 }

@@ -8,7 +8,12 @@ import type { WeightUnit } from '@/core/lib';
 import { useTenancy } from '@/core/tenancy';
 import { useExerciseOptions } from '@/modules/exercises';
 
-import { fetchClientWorkouts, fetchCurrentClientProgramId } from './progress-api';
+import {
+  fetchClientHealthData,
+  fetchClientWorkouts,
+  fetchCurrentClientProgramId,
+} from './progress-api';
+import type { ClientHealthData } from './progress-api';
 import { groupWorkoutsByProgram } from '../model/exercise-history';
 import type { ExerciseInfo, ProgramProgressGroup } from '../model/exercise-history';
 
@@ -20,8 +25,13 @@ export function currentProgramQueryKey(tenantId: string | null, clientId: string
   return ['progress', 'current-program', tenantId, clientId] as const;
 }
 
+export function healthDataQueryKey(tenantId: string | null, clientId: string | null) {
+  return ['progress', 'health-data', tenantId, clientId] as const;
+}
+
 export interface UseClientProgressResult {
   groups: ProgramProgressGroup[];
+  healthData: ClientHealthData | null;
   isPending: boolean;
   isError: boolean;
   refetch: () => Promise<unknown>;
@@ -49,10 +59,23 @@ export function useClientProgress(clientId: string | null): UseClientProgressRes
     enabled: tenantId !== null && clientId !== null,
   });
 
-  const isPending =
-    workoutsQuery.isPending || currentProgramQuery.isPending || exerciseOptions.isPending;
+  const healthQuery = useQuery({
+    queryKey: healthDataQueryKey(tenantId, clientId),
+    queryFn: () => fetchClientHealthData(tenantId ?? '', clientId ?? ''),
+    enabled: tenantId !== null && clientId !== null,
+  });
 
-  const isError = workoutsQuery.isError || currentProgramQuery.isError || exerciseOptions.isError;
+  const isPending =
+    workoutsQuery.isPending ||
+    currentProgramQuery.isPending ||
+    exerciseOptions.isPending ||
+    healthQuery.isPending;
+
+  const isError =
+    workoutsQuery.isError ||
+    currentProgramQuery.isError ||
+    exerciseOptions.isError ||
+    healthQuery.isError;
 
   const groups = useMemo(() => {
     if (!workoutsQuery.data) {
@@ -80,11 +103,16 @@ export function useClientProgress(clientId: string | null): UseClientProgressRes
   }, [workoutsQuery.data, currentProgramQuery.data, exerciseOptions.byId, language, unit, t]);
 
   const refetch = async () => {
-    await Promise.all([workoutsQuery.refetch(), currentProgramQuery.refetch()]);
+    await Promise.all([
+      workoutsQuery.refetch(),
+      currentProgramQuery.refetch(),
+      healthQuery.refetch(),
+    ]);
   };
 
   return {
     groups,
+    healthData: healthQuery.data ?? null,
     isPending,
     isError,
     refetch,

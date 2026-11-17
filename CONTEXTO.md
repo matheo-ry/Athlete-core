@@ -23,7 +23,7 @@
 
 - **Fase actual:** 3 — Entreno y progreso, en construcción (diseño en D-115 a D-137). Las Fases 1 y 2 están terminadas y fusionadas en `main`.
 - **Última tarea terminada:** PR 3.2a (base de datos: entrenos, #59) y PR 3.2b (el día saltado, encima del 3.2a), los dos en revisión. El PR 3.2 se partió en dos por tamaño, como preveía su bloque. El 3.1a (#56) y el 3.1b (#58) están fusionados.
-- **Siguiente tarea:** **PR 3.3b — set-up, ajustes de entreno y el interruptor de logros** (puntos 3 a 5 del bloque del PR 3.3 en `docs/PROMPTS.md` §7). El 3.3a (consentimiento, peso y medidas) está en revisión. En staging están aplicadas y probadas las migraciones 1 a 16; las 17 a 19 (entrenos y día saltado), todavía no.
+- **Siguiente tarea:** **PR 3.4 — Guardado en el móvil** (`docs/PROMPTS.md` §7), cuando estén fusionados el 3.3a y el 3.3b (en revisión; el 3.3 se partió en dos por tamaño).
 
 ## Cómo será la Fase 3 (diseñada, D-115 a D-136)
 
@@ -60,7 +60,8 @@
 - **Entrenos en la base de datos** (PR 3.2a): `workouts`, `workout_exercises` (con su copia de lo prescrito) y `workout_sets` (una fila por serie y lado). Desde la app solo se leen; el móvil sube un entreno entero con `sync_workout` (gana el cambio más reciente, no duplica, "Editado" y 7 días para corregir) y lo descarta con `discard_workout` (D-138). Flag `workouts`.
 - **El día saltado en la base de datos** (PR 3.2b): `program_missed_day_rules` (la regla de cada rutina de cliente, con el día desde el que vale; la cambia el coach con `set_missed_day_rule`) y `program_missed_days` (los días que faltó; los apunta la app del cliente con `record_missed_days`). Del lado de las rutinas, solo con calendario (D-139).
 - **Datos de salud en la base de datos** (PR 3.3a): `health_consents` (uno por espacio; `grant_health_consent` y `withdraw_health_consent`, que borra peso, medidas y notas del día), `body_weights` y `body_measurements`. Sin consentimiento no se escriben, ni las notas del día (D-140).
-- **Base de datos local** (Supabase en Docker): 20 migraciones en `supabase/migrations/` (tablas, funciones de negocio, permisos, RLS, el espacio de logos, los ejercicios, las rutinas y los flags de cada módulo); 498 tests pgTAP (`npm run db:test`); 2 coaches y 6 clientes inventados (`supabase/seed.sql`, contraseña `password123`); tipos generados en `core/supabase/database.types.ts`.
+- **Set-up y ajustes en la base de datos** (PR 3.3b): `client_exercise_setups` (uno por cliente y ejercicio), los ajustes de entreno del cliente en `profiles` (descanso, arrancar solo, sonido, vibración, "Igual") y el interruptor `achievementsEnabled` de `tenants.settings` (D-141).
+- **Base de datos local** (Supabase en Docker): 21 migraciones en `supabase/migrations/` (tablas, funciones de negocio, permisos, RLS, el espacio de logos, los ejercicios, las rutinas y los flags de cada módulo); 524 tests pgTAP (`npm run db:test`); 2 coaches y 6 clientes inventados (`supabase/seed.sql`, contraseña `password123`); tipos generados en `core/supabase/database.types.ts`.
 - **Tests:** 612 unitarios (`npm run check`) y 91 de extremo a extremo contra Supabase local (`npm run test:e2e`, también en el CI).
 - **Staging** (PR 1.17): proyecto `athlete-core-staging` de Supabase (Fráncfort, plan gratuito) con las mismas tablas y datos inventados que en local. Los emails salen de verdad, por Resend, desde `no-reply@athlete-core.com`. Se prueba con `npm run dev:staging` (hace falta `.env.staging.local`; guía en `supabase/README.md`). Todavía no hay web publicada.
 - **App de Android** (PR 3.1a): proyecto `android/` con Capacitor. `npm run android:build` genera `build/athlete-core-staging.apk`, que apunta a staging; guía para el propietario en `android/README.md` (D-137). `core/native` resuelve el botón "atrás", la barra de estado y las zonas seguras (`--safe-top`, `--safe-bottom` en `src/index.css`).
@@ -76,10 +77,10 @@
 
 Los 5 más recientes, el más nuevo arriba. El historial completo está en `docs/ESTADO.md`.
 
+- 2026-11-17 — PR 3.3b: set-up del cliente, ajustes de entreno e interruptor de logros, con 26 tests pgTAP (D-141).
 - 2026-11-17 — PR 3.3a: consentimiento de datos de salud, peso corporal y medidas, con 35 tests pgTAP (D-140).
 - 2026-11-17 — PR 3.2b: la regla del día saltado con su historia y los días faltados, del lado de las rutinas, y 28 tests pgTAP (D-139).
 - 2026-11-17 — PR 3.2a: tablas de entrenos, `sync_workout` y `discard_workout`, el flag `workouts` y 36 tests pgTAP (D-138).
-- 2026-11-16 — PR 3.1b: los 91 tests de flujos completos se ejecutan en el CI contra Supabase local.
 - 2026-11-16 — PR 3.1a: app de Android con Capacitor, `npm run android:build` y guía en `android/README.md`; `isNativeApp()` y `canLogWorkouts()` en `core/native`; zonas seguras y botón "atrás" (D-137).
 
 ## A tener en cuenta ahora

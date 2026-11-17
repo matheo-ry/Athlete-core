@@ -48,7 +48,7 @@ Si falta algo, hazlo en esta misma rama con un commit. Después dime en
 
 ### Revisión cruzada
 
-En la Fase 3, Claude revisa cada PR de Gemini con la plantilla §4 antes de fusionarlo (D-140). Cada uno en su chat. Nunca dos agentes escribiendo a la vez en la misma rama.
+En la Fase 3 (D-140), Claude revisa cada PR de Gemini antes de fusionarlo, y Gemini revisa los de Claude, siempre con la plantilla §4. Cada uno en su chat. Nunca dos agentes escribiendo a la vez en la misma rama.
 
 ---
 

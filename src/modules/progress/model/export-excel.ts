@@ -1,147 +1,64 @@
 import writeXlsxFile from 'write-excel-file/universal';
 
-import type { Language } from '@/core/i18n';
 import type { WeightUnit } from '@/core/lib';
 import { fromKg } from '@/core/lib';
-import { shareOrDownloadFile } from '@/core/native';
-import type { FileShareOutcome } from '@/core/native';
+import { shareOrDownloadFile, type FileShareOutcome } from '@/core/native';
 
-import type { RawWorkout, RawWorkoutSet } from './exercise-history';
+import type { RawWorkout } from './exercise-history';
+import {
+  buildExcelFileName,
+  deduplicateSheetNames,
+  formatWorkoutExerciseSets,
+  type ExcelHealthData,
+  type ExcelRow,
+  type ExcelSheet,
+  type ExcelTranslations,
+} from './excel-format';
 
-export interface ExcelHealthData {
-  hasConsent: boolean;
-  weights: Array<{
-    id?: string;
-    measured_on: string;
-    weight_kg: number;
-  }>;
-}
-
-export type ExcelCellValue = string | number | boolean | Date | null | undefined;
-
-export interface ExcelCellObject {
-  value?: ExcelCellValue;
-  type?: StringConstructor | NumberConstructor | BooleanConstructor | DateConstructor;
-  fontWeight?: 'bold';
-  align?: 'left' | 'center' | 'right';
-  format?: string;
-}
-
-export type ExcelCell = ExcelCellObject | ExcelCellValue;
-export type ExcelRow = ExcelCell[];
-
-export interface ExcelSheetColumn {
-  width?: number;
-}
-
-export interface ExcelSheet {
-  sheet?: string;
-  columns?: ExcelSheetColumn[];
-  data: ExcelRow[];
-}
+// Re-export types and helpers for callers
+export * from './excel-format';
 
 export interface ExcelExportOptions {
   workouts: RawWorkout[];
   exerciseOptionsById: Map<string, { name: string; measurement: string; isUnilateral: boolean }>;
   healthData: ExcelHealthData | null;
-  language: Language;
+  translations: ExcelTranslations;
   unit: WeightUnit;
   clientName?: string;
 }
 
 /**
- * Formatea una serie para Excel con el formato "45X8(1)" (D-131).
- */
-export function formatSetTextForExcel(
-  set: RawWorkoutSet,
-  measurement: string,
-  isUnilateral: boolean,
-  language: Language,
-  unit: WeightUnit = 'kg',
-): string {
-  let sidePrefix = '';
-  if (isUnilateral) {
-    if (set.side === 'right') {
-      sidePrefix = language === 'en' ? 'R: ' : 'D: ';
-    } else if (set.side === 'left') {
-      sidePrefix = language === 'en' ? 'L: ' : 'I: ';
-    }
-  }
-
-  let intensityText = '';
-  if (set.intensity_type === 'failure') {
-    intensityText = '(F)';
-  } else if (set.intensity_type === 'rir' && set.intensity_value != null) {
-    intensityText = `(${set.intensity_value})`;
-  } else if (set.intensity_type === 'rpe' && set.intensity_value != null) {
-    const rir = Math.max(0, 10 - set.intensity_value);
-    intensityText = `(${rir})`;
-  } else if (set.intensity_value != null) {
-    intensityText = `(${set.intensity_value})`;
-  }
-
-  if (measurement === 'time') {
-    const dur = set.duration_seconds ?? 0;
-    return `${sidePrefix}${dur}s${intensityText}`;
-  }
-
-  if (measurement === 'distance') {
-    const dist = set.distance_meters ?? 0;
-    return `${sidePrefix}${dist}m${intensityText}`;
-  }
-
-  const rawWeight = set.weight_kg ?? 0;
-  const convertedWeight = fromKg(rawWeight, unit);
-  const formattedWeight =
-    Math.round(convertedWeight * 10) / 10 === Math.round(convertedWeight)
-      ? Math.round(convertedWeight).toString()
-      : (Math.round(convertedWeight * 10) / 10).toString();
-
-  const reps = set.reps ?? 0;
-  return `${sidePrefix}${formattedWeight}X${reps}${intensityText}`;
-}
-
-/**
- * Limpia y recorta el nombre de una hoja para respetar los límites de Excel (máx 31 caracteres).
- */
-export function sanitizeSheetName(name: string): string {
-  const clean = name.replace(/[\\/?*[\]:]/g, '-').trim();
-  return clean.slice(0, 31) || 'Rutina';
-}
-
-/**
- * Construye la hoja "Día a día": fecha · rutina · día; cada ejercicio con sus series y nota (D-131).
+ * Construye la hoja "Día a día": fecha · rutina · día; cada ejercicio con sus series y nota (D-131, D-149).
+ * Orden cronológico inverso (de más reciente a más antiguo, D-149).
  */
 export function buildDailySheet(
   workouts: RawWorkout[],
   exerciseOptionsById: Map<string, { name: string; measurement: string; isUnilateral: boolean }>,
-  language: Language,
+  translations: ExcelTranslations,
   unit: WeightUnit,
 ): ExcelSheet {
-  const sheetTitle = language === 'en' ? 'Daily' : 'Día a día';
-  const headers = [
-    { value: language === 'en' ? 'Date' : 'Fecha', fontWeight: 'bold' as const },
-    { value: language === 'en' ? 'Routine' : 'Rutina', fontWeight: 'bold' as const },
-    { value: language === 'en' ? 'Day' : 'Día', fontWeight: 'bold' as const },
-    { value: language === 'en' ? 'Exercise' : 'Ejercicio', fontWeight: 'bold' as const },
-    { value: language === 'en' ? 'Sets' : 'Series', fontWeight: 'bold' as const },
-    { value: language === 'en' ? 'Note' : 'Nota', fontWeight: 'bold' as const },
+  const sheetTitle = translations.daily;
+  const headers: ExcelRow = [
+    { value: translations.date, fontWeight: 'bold' as const },
+    { value: translations.routine, fontWeight: 'bold' as const },
+    { value: translations.day, fontWeight: 'bold' as const },
+    { value: translations.exercise, fontWeight: 'bold' as const },
+    { value: translations.sets, fontWeight: 'bold' as const },
+    { value: translations.note, fontWeight: 'bold' as const },
   ];
 
   const rows: ExcelRow[] = [headers];
 
-  // Ordenar entrenos por fecha ascendente
-  const sortedWorkouts = [...workouts].sort((a, b) => a.performed_on.localeCompare(b.performed_on));
+  // Orden cronológico inverso (más reciente primero, D-149)
+  const sortedWorkouts = [...workouts].sort((a, b) => {
+    const dateDiff = b.performed_on.localeCompare(a.performed_on);
+    if (dateDiff !== 0) return dateDiff;
+    return (b.started_at ?? '').localeCompare(a.started_at ?? '');
+  });
 
   for (const w of sortedWorkouts) {
-    const routineName = w.programs?.name ?? (language === 'en' ? 'No routine' : 'Sin rutina');
-    const dayLabel =
-      w.day_number != null
-        ? language === 'en'
-          ? `Day ${w.day_number}`
-          : `Día ${w.day_number}`
-        : '';
-
+    const routineName = w.programs?.name ?? translations.noRoutine;
+    const dayLabel = w.day_number != null ? translations.dayLabel(w.day_number) : '';
     const sortedExercises = [...w.workout_exercises].sort((a, b) => a.position - b.position);
 
     for (const ex of sortedExercises) {
@@ -150,21 +67,7 @@ export function buildDailySheet(
       const measurement = opt?.measurement ?? 'weight_reps';
       const isUnilateral = opt?.isUnilateral ?? false;
 
-      let setsStr: string;
-      if (ex.is_skipped) {
-        setsStr = language === 'en' ? 'Skipped' : 'Saltado';
-      } else {
-        const doneSets = ex.workout_sets
-          .filter((s) => s.is_done)
-          .sort((a, b) => a.set_number - b.set_number);
-
-        setsStr =
-          doneSets.length > 0
-            ? doneSets
-                .map((s) => formatSetTextForExcel(s, measurement, isUnilateral, language, unit))
-                .join(' / ')
-            : '-';
-      }
+      const setsStr = formatWorkoutExerciseSets(ex, measurement, isUnilateral, translations, unit);
 
       rows.push([
         { value: w.performed_on },
@@ -192,12 +95,12 @@ export function buildDailySheet(
 }
 
 /**
- * Construye una hoja por rutina: cada ejercicio con sus entrenos (día, fecha, series y nota) (D-131).
+ * Construye una hoja por rutina: cada ejercicio con sus entrenos (día, fecha, series y nota) (D-131, D-149).
  */
 export function buildRoutineSheets(
   workouts: RawWorkout[],
   exerciseOptionsById: Map<string, { name: string; measurement: string; isUnilateral: boolean }>,
-  language: Language,
+  translations: ExcelTranslations,
   unit: WeightUnit,
 ): ExcelSheet[] {
   // Agrupar entrenos por rutina (program_id)
@@ -207,30 +110,28 @@ export function buildRoutineSheets(
     const key = w.program_id ?? 'no-program';
     let group = routineGroups.get(key);
     if (!group) {
-      const programName =
-        w.programs?.name ?? (language === 'en' ? 'Other routines' : 'Otras rutinas');
+      const programName = w.programs?.name ?? translations.otherRoutines;
       group = { programName, workouts: [] };
       routineGroups.set(key, group);
     }
     group.workouts.push(w);
   }
 
+  const rawSheetNames = Array.from(routineGroups.values()).map((g) => g.programName);
+  const deduplicatedNames = deduplicateSheetNames(rawSheetNames);
+
   const sheets: ExcelSheet[] = [];
-  const usedSheetNames = new Set<string>();
+  let nameIndex = 0;
 
-  for (const { programName, workouts: routineWorkouts } of routineGroups.values()) {
-    let baseSheetName = sanitizeSheetName(programName);
-    if (usedSheetNames.has(baseSheetName)) {
-      baseSheetName = `${baseSheetName.slice(0, 28)} 2`;
-    }
-    usedSheetNames.add(baseSheetName);
+  for (const { workouts: routineWorkouts } of routineGroups.values()) {
+    const sheetName = deduplicatedNames[nameIndex++] ?? 'Rutina';
 
-    const headers = [
-      { value: language === 'en' ? 'Exercise' : 'Ejercicio', fontWeight: 'bold' as const },
-      { value: language === 'en' ? 'Day' : 'Día', fontWeight: 'bold' as const },
-      { value: language === 'en' ? 'Date' : 'Fecha', fontWeight: 'bold' as const },
-      { value: language === 'en' ? 'Sets' : 'Series', fontWeight: 'bold' as const },
-      { value: language === 'en' ? 'Note' : 'Nota', fontWeight: 'bold' as const },
+    const headers: ExcelRow = [
+      { value: translations.exercise, fontWeight: 'bold' as const },
+      { value: translations.day, fontWeight: 'bold' as const },
+      { value: translations.date, fontWeight: 'bold' as const },
+      { value: translations.sets, fontWeight: 'bold' as const },
+      { value: translations.note, fontWeight: 'bold' as const },
     ];
 
     const rows: ExcelRow[] = [headers];
@@ -246,12 +147,7 @@ export function buildRoutineSheets(
     );
 
     for (const w of sortedRoutineWorkouts) {
-      const dayLabel =
-        w.day_number != null
-          ? language === 'en'
-            ? `Day ${w.day_number}`
-            : `Día ${w.day_number}`
-          : '';
+      const dayLabel = w.day_number != null ? translations.dayLabel(w.day_number) : '';
 
       for (const ex of w.workout_exercises) {
         let list = exerciseSessions.get(ex.exercise_id);
@@ -264,21 +160,13 @@ export function buildRoutineSheets(
         const measurement = opt?.measurement ?? 'weight_reps';
         const isUnilateral = opt?.isUnilateral ?? false;
 
-        let setsStr: string;
-        if (ex.is_skipped) {
-          setsStr = language === 'en' ? 'Skipped' : 'Saltado';
-        } else {
-          const doneSets = ex.workout_sets
-            .filter((s) => s.is_done)
-            .sort((a, b) => a.set_number - b.set_number);
-
-          setsStr =
-            doneSets.length > 0
-              ? doneSets
-                  .map((s) => formatSetTextForExcel(s, measurement, isUnilateral, language, unit))
-                  .join(' / ')
-              : '-';
-        }
+        const setsStr = formatWorkoutExerciseSets(
+          ex,
+          measurement,
+          isUnilateral,
+          translations,
+          unit,
+        );
 
         list.push({
           dayLabel,
@@ -306,7 +194,7 @@ export function buildRoutineSheets(
     }
 
     sheets.push({
-      sheet: baseSheetName,
+      sheet: sheetName,
       columns: [{ width: 28 }, { width: 12 }, { width: 14 }, { width: 32 }, { width: 35 }],
       data: rows,
     });
@@ -316,22 +204,22 @@ export function buildRoutineSheets(
 }
 
 /**
- * Construye la hoja "Peso corporal" SOLO si hay consentimiento de salud (D-126, D-131).
+ * Construye la hoja "Peso corporal" SOLO si hay consentimiento de salud y registros de peso (D-126, D-149).
  */
 export function buildWeightSheet(
   healthData: ExcelHealthData | null,
-  language: Language,
+  translations: ExcelTranslations,
   unit: WeightUnit,
 ): ExcelSheet | null {
-  if (healthData?.hasConsent !== true) {
+  if (healthData?.hasConsent !== true || !healthData.weights || healthData.weights.length === 0) {
     return null;
   }
 
-  const sheetTitle = language === 'en' ? 'Body weight' : 'Peso corporal';
-  const headers = [
-    { value: language === 'en' ? 'Date' : 'Fecha', fontWeight: 'bold' as const },
+  const sheetTitle = translations.bodyWeight;
+  const headers: ExcelRow = [
+    { value: translations.date, fontWeight: 'bold' as const },
     {
-      value: language === 'en' ? `Weight (${unit})` : `Peso (${unit})`,
+      value: translations.weightColumn(unit),
       fontWeight: 'bold' as const,
     },
   ];
@@ -359,19 +247,19 @@ export function buildWeightSheet(
  * Construye la lista completa de hojas para el archivo Excel.
  */
 export function buildWorkoutSheets(options: ExcelExportOptions): ExcelSheet[] {
-  const { workouts, exerciseOptionsById, healthData, language, unit } = options;
+  const { workouts, exerciseOptionsById, healthData, translations, unit } = options;
 
   const sheets: ExcelSheet[] = [];
 
-  // 1. Hoja "Día a día"
-  sheets.push(buildDailySheet(workouts, exerciseOptionsById, language, unit));
+  // 1. Hoja "Día a día" (orden cronológico inverso)
+  sheets.push(buildDailySheet(workouts, exerciseOptionsById, translations, unit));
 
   // 2. Una hoja por rutina
-  const routineSheets = buildRoutineSheets(workouts, exerciseOptionsById, language, unit);
+  const routineSheets = buildRoutineSheets(workouts, exerciseOptionsById, translations, unit);
   sheets.push(...routineSheets);
 
-  // 3. Hoja "Peso corporal" si hay consentimiento
-  const weightSheet = buildWeightSheet(healthData, language, unit);
+  // 3. Hoja "Peso corporal" si hay consentimiento y registros de peso
+  const weightSheet = buildWeightSheet(healthData, translations, unit);
   if (weightSheet) {
     sheets.push(weightSheet);
   }
@@ -383,27 +271,19 @@ export function buildWorkoutSheets(options: ExcelExportOptions): ExcelSheet[] {
  * Convierte las hojas a un Blob de Excel compatible con navegadores y tests.
  */
 export async function generateExcelBlob(sheets: ExcelSheet[]): Promise<Blob> {
-  const writer = writeXlsxFile as unknown as (sheetsData: unknown) => {
-    toBlob: () => Promise<Blob>;
-  };
-  const result = writer(sheets);
+  const result = writeXlsxFile(sheets);
   return await result.toBlob();
 }
 
 /**
- * Descarga o comparte el archivo Excel de entrenos (D-131).
+ * Descarga o comparte el archivo Excel de entrenos (D-131, D-149).
  */
 export async function exportWorkoutsToExcel(
   options: ExcelExportOptions,
 ): Promise<FileShareOutcome> {
   const sheets = buildWorkoutSheets(options);
   const blob = await generateExcelBlob(sheets);
-
-  const now = new Date().toISOString().split('T')[0];
-  const nameSlug = options.clientName
-    ? `-${options.clientName.toLowerCase().replace(/[^a-z0-9]/g, '-')}`
-    : '';
-  const fileName = `entrenos${nameSlug}-${now}.xlsx`;
+  const fileName = buildExcelFileName(options.clientName, options.translations);
 
   return await shareOrDownloadFile(blob, fileName);
 }

@@ -17,7 +17,7 @@ import { createQueryClient } from './query-client';
 
 interface AppProvidersProps {
   children: ReactNode;
-  /** Solo para tests: un cliente propio, sin caché compartida ni reintentos. */
+  /** El de la app (`createAppQueryClient`, que en el móvil recupera lo guardado) o, en los tests, uno propio. */
   queryClient?: QueryClient;
   /** Solo para tests: una sesión falsa, sin Supabase. */
   authService?: AuthService;

@@ -7,12 +7,12 @@ Este archivo lo actualiza quien termina una tarea, en el mismo Pull Request, jun
 
 ## En curso
 
-**PR 3.2a — Base de datos: entrenos** (`db/entrenos`, #59) y **PR 3.2b — El día saltado** (`db/dia-saltado`, encima del 3.2a), en revisión. El PR 3.2 pasaba de 300 líneas y se ha partido como preveía su bloque.
+**Reparto Claude/Gemini** (`docs/reparto-claude-gemini`), solo documentación, en revisión (D-140).
 
 ## Siguiente
 
-1. Fusionar el 3.2a y después el 3.2b (con el visto bueno del propietario, D-068), y aplicar en staging las migraciones 17 a 19.
-2. **PR 3.3 — Base de datos: datos de salud, set-up y ajustes del cliente.**
+1. Aplicar en staging las migraciones 17 a 19 (el 3.2a y el 3.2b ya están fusionados).
+2. **PR 3.3 — Base de datos: datos de salud, set-up y ajustes del cliente** (Claude). Al fusionarlo, Claude y Gemini siguen en paralelo según `docs/PROMPTS.md` §7.
 3. El propietario dio por buenas, por ahora, la lista de `docs/referencia/biblioteca-ejercicios.md` y las rutinas de ejemplo. Se pueden retocar más adelante.
 
 ## Fases
@@ -260,6 +260,7 @@ Cosas que alguien ha visto y que no tocaban en su tarea. No se hacen sin convert
 
 Lo más nuevo, arriba.
 
+- 2026-11-17 — Reparto Claude/Gemini (solo documentación): decisión D-140, que ajusta D-115. Columna "Quién", tabla de paralelo y cabecera para Gemini en `docs/PROMPTS.md`; entrenos inventados en el seed dentro del bloque del 3.3; "Dudas para Claude" y "Lo que tiene que saber el siguiente" en la plantilla de PR; trampas de Windows en `docs/GUIA-GIT.md` §14; reparto resumido en AGENTS.md §7.
 - 2026-11-17 — PR 3.2b (base de datos: el día saltado): migración 19. `program_missed_day_rules` guarda la regla de cada rutina de cliente ("se pierde", "se recupera en el siguiente descanso" o "se mueve todo") con el día desde el que vale; `set_missed_day_rule` la cambia el coach y queda en `audit_log`. `program_missed_days` guarda los días que faltó, del lado de las rutinas; los apunta la app del cliente con `record_missed_days` y la fecha del móvil. Solo con calendario. Decisión D-139. 28 tests pgTAP nuevos (463 en total). Regenera `src/core/supabase/database.types.ts`.
 - 2026-11-17 — PR 3.2a (base de datos: entrenos): migraciones 17 y 18. Tablas `workouts`, `workout_exercises` (con su copia de lo prescrito, D-087) y `workout_sets` (una fila por serie y lado), con identificadores del móvil y RLS de solo lectura: el cliente lee los suyos, el coach los de su negocio, el dado de baja nada. `sync_workout` sube un entreno entero: no duplica, gana el cambio más reciente en cada fila, un cerrado sigue cerrado, marca "Editado" y no deja corregir pasados 7 días. `discard_workout` borra un entreno abierto. Flag `workouts` (core). La forma de medir de un ejercicio con series apuntadas tampoco cambia. Decisión D-138. 36 tests pgTAP nuevos (435 en total). Regenera `src/core/supabase/database.types.ts`.
 - 2026-11-16 — PR 3.1b (tests de flujos completos en el CI): nuevo trabajo "Tests de flujos completos" en `ci.yml`. Arranca Supabase local (sin el panel, Realtime ni funciones), escribe `.env.local` con sus valores públicos y `VITE_ALLOW_WEB_WORKOUTS=true`, instala Chromium y ejecuta `npm run test:e2e`; si falla, guarda el informe 7 días. Cumple ARQUITECTURA §13, punto 3.

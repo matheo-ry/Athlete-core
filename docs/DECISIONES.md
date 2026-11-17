@@ -1315,6 +1315,17 @@ Cómo añadir una: copia el formato, usa el siguiente número y no borres las an
   - **En `audit_log`** queda `program.missed_day_rule_changed`, solo con identificadores y la regla.
 - **Por qué:** con una sola columna, cambiar de "se mueve todo" a "se pierde" borraría el retraso acumulado, y D-125 dice que el cambio no recalcula el pasado.
 
+### D-140 · Reparto Claude/Gemini
+- **Fecha:** 2026-11-17
+- **Decisión:** ajusta D-115. Desde el PR 3.3, la Fase 3 la hacen dos agentes con papeles distintos:
+  - **Claude decide:** es el único que escribe en `docs/DECISIONES.md`. Hace la base de datos (`supabase/`), la seguridad, `src/core/` y los PR 3.3 a 3.9. **Revisa cada PR de Gemini** (plantilla §4 de `docs/PROMPTS.md`) antes de que el propietario lo fusione.
+  - **Gemini programa** los PR 3.10 a 3.18. No toca `supabase/` ni `src/core/` y no decide: si algo no está decidido o no encaja, lo apunta en el apartado "Dudas para Claude" del PR y sigue con lo demás.
+  - **Quién hace cada PR** está en la columna "Quién" de `docs/PROMPTS.md` §7, junto con lo que se puede hacer en paralelo.
+  - **Lo que uno deba saber del otro se escribe en el repositorio** (el PR, `CONTEXTO.md`, `docs/ESTADO.md`, `docs/GUIA-GIT.md`), no en la memoria de un chat.
+- **Por qué:** decisión del propietario, para avanzar en paralelo sin que dos agentes decidan cosas distintas sobre lo mismo. Lo delicado (aislamiento de datos, migraciones, `core/`) queda en un solo agente.
+- **Consecuencias:** AGENTS.md §7 lo resume (aprobado por el propietario). La plantilla de PR gana "Dudas para Claude" y "Lo que tiene que saber el siguiente".
+- **Revisar si:** los PR de Gemini necesitan muchas correcciones.
+
 ---
 
 ## Pendientes de decidir

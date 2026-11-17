@@ -267,3 +267,14 @@ git switch main && git pull             # tras fusionar: volver a main
 git branch -d feat/nombre-corto         # borrar la rama local
 git log --oneline -10                   # ver los últimos 10 commits
 ```
+
+## 14. Trampas del entorno (Windows)
+
+En el ordenador del proyecto la terminal es Windows PowerShell 5.1. Esto ya ha fallado alguna vez:
+
+- **No reescribas archivos con `Get-Content -Raw` + `Set-Content`.** Leen UTF-8 como ANSI y escriben con BOM: estropean todas las tildes. Edita con la herramienta de edición del agente; si usas PowerShell, `Out-File` y `Set-Content` siempre con `-Encoding utf8`.
+- **`git commit -F -` con un here-string no funciona.** Escribe el mensaje en un archivo temporal fuera del repositorio y usa `git commit -F <archivo>`.
+- **`gh … --jq '…'` con comillas dentro se rompe en PowerShell.** Hazlo desde Git Bash.
+- **`npm run check`, `npm run test` y `git push` (su hook lanza `npm run check`) se ejecutan desde PowerShell**, no desde Git Bash: desde Git Bash todos los archivos de Vitest fallan con "Vitest failed to find the runner" sin que el código tenga nada mal. `git commit`, `gh` y los `npm run db:*` sí van bien desde Git Bash.
+- **El texto "NativeCommandError"** que PowerShell pone alrededor de la salida de `git` o `npx` no significa que haya fallado: mira el resultado real (`git status`, `git log`).
+- **Con el portátil en batería** los tests van unas 4 veces más lentos y muchos fallan por tiempo agotado. Si fallan por tiempo tests que no has tocado, mira la batería (`Get-CimInstance Win32_Battery`: `BatteryStatus` 1 = descargando, 2 = enchufado) y pide que se enchufe. Nunca `--no-verify` ni subir los tiempos de los tests. Dos servidores de desarrollo abiertos también ralentizan.

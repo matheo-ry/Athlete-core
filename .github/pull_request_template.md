@@ -24,6 +24,14 @@
 
 <!-- Obligatorio para el colaborador junior: 3 frases sobre cómo funciona el cambio. -->
 
+## Dudas para Claude
+
+<!-- Gemini: lo que no estaba decidido o no encajaba, y qué hiciste mientras tanto (D-140). Si no hay, "Ninguna". -->
+
+## Lo que tiene que saber el siguiente
+
+<!-- Lo que el próximo chat o el otro agente necesita saber y no está en el código: trampas, cosas a medias, avisos. -->
+
 ## Lista de comprobación
 
 - [ ] `npm run check` pasa en mi ordenador

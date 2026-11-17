@@ -129,6 +129,7 @@ Los tests van junto al archivo que prueban: `units.ts` → `units.test.ts`.
 - El título del Pull Request sigue el mismo formato que un commit: es el mensaje que quedará en `main`.
 - Antes de pedir revisión: `npm run check` en verde.
 - Los agentes fusionan un Pull Request **solo con el visto bueno expreso del propietario** para ese PR o ese lote (D-068). Nunca hacen `push --force`.
+- **Reparto (D-140):** Claude decide y hace base de datos, seguridad y src/core/. Gemini programa los PR que PROMPTS.md le asigna en "Quién" y no decide: apunta dudas en el PR. Lo que uno deba saber del otro se escribe en el repositorio.
 
 ## 8. Cómo trabaja un agente en una tarea
 

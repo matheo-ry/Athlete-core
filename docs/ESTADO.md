@@ -7,11 +7,11 @@ Este archivo lo actualiza quien termina una tarea, en el mismo Pull Request, jun
 
 ## En curso
 
-Nada. El PR 3.3 (partido en 3.3a, #63, y 3.3b, #64) está fusionado, y las migraciones 17 a 21 están aplicadas en staging con los 524 tests pgTAP en verde.
+- **PR 3.4 — Guardado en el móvil** (Claude), partido en dos (D-143): el **3.4a** (almacén del teléfono, cola de subida, abrir sin conexión y preguntar al cerrar sesión) está en revisión; el **3.4b** (módulo `workouts`: descargar lo necesario para entrenar y subir los entrenos) va encima, en `feat/guardado-en-el-movil-b`.
 
 ## Siguiente
 
-1. **PR 3.4 — Guardado en el móvil** (Claude). Desde ahora Claude y Gemini trabajan en paralelo según `docs/PROMPTS.md` §7 (D-142).
+1. **PR 3.4b** (Claude), y después el **PR 3.5 — Apuntar un entreno**. Claude y Gemini trabajan en paralelo según `docs/PROMPTS.md` §7 (D-142).
 2. **PR 3.3c — Entrenos inventados en el seed** (Claude), antes de que Gemini empiece el 3.12.
 3. El propietario dio por buenas, por ahora, la lista de `docs/referencia/biblioteca-ejercicios.md` y las rutinas de ejemplo. Se pueden retocar más adelante.
 
@@ -135,7 +135,9 @@ El diseño está en DECISIONES D-115 a D-136, y el detalle de cada PR, en `docs/
   - [x] 3.3a — consentimiento, peso y medidas
   - [x] 3.3b — set-up, ajustes de entreno y el interruptor de logros
 - [ ] PR 3.3c — Entrenos inventados en el seed (salió del bloque del 3.3, D-142)
-- [ ] PR 3.4 — Guardado en el móvil
+- [ ] PR 3.4 — Guardado en el móvil (partido en dos, D-143)
+  - [ ] 3.4a — almacén del teléfono, cola de subida, abrir sin conexión y preguntar al cerrar sesión
+  - [ ] 3.4b — módulo `workouts`: descargar la rutina y lo de la vez anterior, y subir los entrenos
 
 **Lote 2 — Apuntar**
 
@@ -262,6 +264,8 @@ Cosas que alguien ha visto y que no tocaban en su tarea. No se hacen sin convert
 ## Registro de cambios
 
 Lo más nuevo, arriba.
+
+- 2026-11-17 — PR 3.4a (guardado en el móvil, cimientos): `core/native` gana el almacén del teléfono (`getDeviceStore`, con `@capacitor/preferences` en la app y `localStorage` en el navegador, validado con Zod al leer), `onAppResume` y la cola de subida (`getUploadQueue`: en orden, sin duplicar, reintentos de 5 s a 5 min, rechazos que no se reintentan; 12 tests). En la app instalada, la caché de datos se guarda en el teléfono y se recupera antes de pintar (`app/query-persistence.ts`); en el navegador no cambia nada. `core/auth` entra con la sesión guardada cuando no hay red para renovar el token. Cerrar sesión con entrenos sin subir pregunta antes y vacía la cola. Librería `@capacitor/preferences` (D-135). Decisión D-143. 635 tests unitarios.
 
 - 2026-11-17 — Arreglo de un test de flujos completos que fallaba a ratos: `program-client-tab.spec.ts` buscaba con `getByRole('status')` los avisos de asignar y reiniciar desde la ficha, pero al recargarse la rutina el `Spinner` ("Loading…") también tiene ese papel y a veces había dos. Ahora se buscan por su texto. Falló en el CI del #62 en los dos intentos; en local pasa 20 de 20 y la suite completa, 91 de 91. Sin cambios en `src/`.
 - 2026-11-17 — Reparto Claude/Gemini (solo documentación): decisión D-142, que ajusta D-115. Columna "Quién", tabla de paralelo y cabecera para Gemini en `docs/PROMPTS.md`; revisión cruzada en §0 (Claude revisa los PR de Gemini y Gemini los de Claude); los entrenos inventados del seed salen del bloque del 3.3 (ya hecho) y pasan a ser el PR 3.3c, de Claude; "Dudas para Claude" y "Lo que tiene que saber el siguiente" en la plantilla de PR; trampas de Windows en `docs/GUIA-GIT.md` §14; reparto resumido en AGENTS.md §7.

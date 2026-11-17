@@ -37,7 +37,10 @@ const excelMock = vi.hoisted(() => ({
     .fn<(options: { clientName?: string }) => Promise<string>>()
     .mockResolvedValue('downloaded'),
 }));
-vi.mock('../model/export-excel', () => excelMock);
+vi.mock('../model/export-excel', async (importOriginal) => ({
+  ...(await importOriginal<Record<string, unknown>>()),
+  ...excelMock,
+}));
 
 async function anaUserId(): Promise<string> {
   const members = await createFakeTenancySource().listMembers(TEST_TENANTS.iron.id);

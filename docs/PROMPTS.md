@@ -46,6 +46,10 @@ Si falta algo, hazlo en esta misma rama con un commit. Después dime en
 3 líneas qué queda pendiente para el próximo chat.
 ```
 
+### Pruebas manuales en la Fase 3
+
+En la Fase 3 el propietario no prueba la app PR a PR. Al cerrar la fase se hace una prueba completa y una lista de cambios. Los agentes no le piden pruebas manuales: basta con los tests (unitarios, pgTAP y de flujos completos).
+
 ### Revisión cruzada
 
 En la Fase 3 (D-142), Claude revisa cada PR de Gemini antes de fusionarlo, y Gemini revisa los de Claude, siempre con la plantilla §4. Cada uno en su chat. Nunca dos agentes escribiendo a la vez en la misma rama.

@@ -13,10 +13,25 @@ import {
 
 const suffix = () => Date.now().toString().slice(-5);
 
-function localDate(): string {
-  const date = new Date();
+function formatDate(date: Date): string {
   const month = String(date.getMonth() + 1).padStart(2, '0');
   return `${String(date.getFullYear())}-${month}-${String(date.getDate()).padStart(2, '0')}`;
+}
+
+function localDate(): string {
+  return formatDate(new Date());
+}
+
+/**
+ * El lunes de esta semana en el dispositivo. Un bloque semanal que empieza
+ * otro día hace antes la semana a medias (D-075) y acabaría a más de 7 días:
+ * empezando en lunes, la rutina de una vuelta termina este domingo, sea el
+ * día que sea.
+ */
+function thisMonday(): string {
+  const date = new Date();
+  date.setDate(date.getDate() - ((date.getDay() + 6) % 7));
+  return formatDate(date);
 }
 
 const template = (name: string, laps: number | null) => ({
@@ -60,7 +75,7 @@ test('una rutina de una semana da aviso de que termina; una sin fin, ninguno', a
       p_tenant: business.tenantId,
       p_template: saved.id,
       p_clients: [client.userId],
-      p_starts_on: localDate(),
+      p_starts_on: thisMonday(),
       p_mode: 'calendar',
       p_today: localDate(),
     });

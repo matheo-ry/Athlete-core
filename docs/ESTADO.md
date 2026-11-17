@@ -12,8 +12,7 @@ Nada. El PR 3.3 (partido en 3.3a, #63, y 3.3b, #64) está fusionado, y las migra
 ## Siguiente
 
 1. **PR 3.4 — Guardado en el móvil.**
-2. Arreglar los dos tests de flujos completos que fallan en el CI desde el 2026-11-17 (ver "Ideas y deuda").
-3. El propietario dio por buenas, por ahora, la lista de `docs/referencia/biblioteca-ejercicios.md` y las rutinas de ejemplo. Se pueden retocar más adelante.
+2. El propietario dio por buenas, por ahora, la lista de `docs/referencia/biblioteca-ejercicios.md` y las rutinas de ejemplo. Se pueden retocar más adelante.
 
 ## Fases
 
@@ -208,14 +207,13 @@ Ideas aprobadas como ideas, no como diseño: se diseñan cuando llegue la fase (
 
 Cosas que alguien ha visto y que no tocaban en su tarea. No se hacen sin convertirlas antes en tarea.
 
-- **CI en rojo (tests de flujos completos):** desde el 2026-11-17 fallan siempre `e2e/home-cards.spec.ts` ("una rutina de una semana da aviso de que termina") y `e2e/program-assign.spec.ts` ("después de asignar, cambiar la plantilla…"): esperan "Week…" y "Program ends" y sale "Starting week". Ya fallaba en `main` con el #60, sin cambios en `src/`; parece que dependen de la fecha o del día de la semana en que se ejecutan.
 - Entrenos (PR 3.2a): el cliente solo lee los ejercicios que están en sus rutinas. Uno elegido con "Cambiar ejercicio" (D-122) que no esté en ninguna no lo podrá leer por su nombre en el historial: el PR 3.8 tiene que ampliar `is_exercise_in_my_programs` (o añadir otra política) a los ejercicios de sus entrenos.
 
 - Entrenos (PR 3.2a): si el móvil reutilizara el identificador de una serie para otro número o lado, `sync_workout` fallaría con un error de clave repetida y la subida se quedaría atascada. La app no debe hacerlo nunca; el PR 3.4 debería tener un test de ello.
 
 - `docs/ARQUITECTURA.md` §5: el ejemplo de manifest no enseña `homeCards` (PR 2.18, D-114) ni lo que recibe una pestaña de la ficha (`ClientProfileTabProps`, PR 2.14a, D-109). Es zona protegida y ninguna de las dos tareas pedía tocarla: actualizarlo cuando el propietario lo apruebe.
 
-- Tests que fallan a ratos (2026-11-15): con el ordenador cargado (dos servidores de la app abiertos), algunos tests unitarios antiguos agotan su tiempo (`SignupPage`, `JoinAfterSignup`, `ExercisePanel`) y `npm run check` falla sin que el código tenga nada mal; al repetir, pasan. Además, 1 de 5 pasadas completas de `npm run test:e2e` tuvo un fallo que no se pudo reproducir. Habría que mirar si conviene subir el límite de tiempo o bajar el número de tests a la vez.
+- Tests que fallan a ratos (2026-11-15): con el ordenador cargado (dos servidores de la app abiertos), algunos tests unitarios antiguos agotan su tiempo (`SignupPage`, `JoinAfterSignup`, `ExercisePanel`) y `npm run check` falla sin que el código tenga nada mal; al repetir, pasan. Además, 1 de 5 pasadas completas de `npm run test:e2e` tuvo un fallo que no se pudo reproducir. Habría que mirar si conviene subir el límite de tiempo o bajar el número de tests a la vez. El 2026-11-17 falló una vez `profile.spec.ts` ("el perfil del cliente: nombre que ve su coach, libras e idioma", un `toHaveAttribute`); al repetirlo, pasó.
 - En la pantalla de un código de coach que no existe (`/join`), dejar a la vista "Ya tengo cuenta" y "Soy coach", como en la primera pantalla (lo echó en falta el propietario al probar staging).
 - Que el coach pueda elegir un código de invitación propio y fácil de recordar (D-050).
 - Que el coach vea el email de sus clientes, si lo piden para distinguir nombres repetidos (D-059).
@@ -263,6 +261,7 @@ Cosas que alguien ha visto y que no tocaban en su tarea. No se hacen sin convert
 
 Lo más nuevo, arriba.
 
+- 2026-11-17 — Arreglo de dos tests de flujos completos que fallaban en el CI desde el 2026-11-17: se escribieron en lunes y daban por hecho que una rutina semanal empieza en lunes. Cualquier otro día la app hace primero la semana a medias (D-075), que es lo correcto. `home-cards.spec.ts` asigna ahora la rutina desde el lunes de esta semana (así acaba como mucho en 7 días) y `program-assign.spec.ts` acepta "Week 1 of 4" o "Starting week". Sin cambios en `src/`. 91 tests de flujos completos en verde en local.
 - 2026-11-17 — Cierre del PR 3.3: fusionados el 3.3a (#63) y el 3.3b (#64), con el visto bueno del propietario. Aplicadas en staging las migraciones 17 a 21; `supabase test db --linked`: 524 tests, `Result: PASS`.
 - 2026-11-17 — PR 3.3b (base de datos: set-up y ajustes): migración 21. `client_exercise_setups` (uno por cliente y ejercicio, hasta 500 caracteres; lo escribe el cliente y lo lee el coach). Ajustes de entreno en `profiles`: descanso por defecto (2:00), arrancar solo, sonido, vibración y cómo funciona "Igual". Interruptor `achievementsEnabled` en `tenants.settings` (activado sin la clave) y `achievements_enabled()`. Decisión D-141. 26 tests pgTAP nuevos (524 en total). Regenera `src/core/supabase/database.types.ts`.
 - 2026-11-17 — PR 3.3a (base de datos: datos de salud): migración 20. `health_consents` (por espacio, con fecha, versión del texto y retirada), `body_weights` y `body_measurements` (lista cerrada de D-127, con lado). Solo se escriben con el consentimiento dado (RLS y un trigger en las notas del día). `grant_health_consent` y `withdraw_health_consent`; retirarlo borra peso, medidas y notas del día, y queda en `audit_log`. El coach lee lo de sus clientes con consentimiento y no escribe. Decisión D-140. 35 tests pgTAP nuevos (498 en total). Regenera `src/core/supabase/database.types.ts`.

@@ -203,6 +203,8 @@ test('después de asignar, cambiar la plantilla no cambia la rutina del cliente'
   await page.getByRole('button', { name: 'Save', exact: true }).click();
   await expect(page.getByRole('status')).toHaveText('Renamed to “Casa nueva”.');
   await page.getByRole('button', { name: 'Assigned' }).click();
-  await expect(assignedRow(page, 'Carla Copia')).toContainText('Casa · Week');
+  // Asignada hoy: si hoy no es lunes, va por la semana a medias (D-075).
+  const progress = new Date().getDay() === 1 ? 'Week 1' : 'Starting week';
+  await expect(assignedRow(page, 'Carla Copia')).toContainText(`Casa · ${progress}`);
   await expect(assignedRow(page, 'Carla Copia')).not.toContainText('Casa nueva');
 });

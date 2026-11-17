@@ -13,10 +13,20 @@ import {
 
 const suffix = () => Date.now().toString().slice(-5);
 
-function localDate(): string {
-  const date = new Date();
+function localDate(date: Date = new Date()): string {
   const month = String(date.getMonth() + 1).padStart(2, '0');
   return `${String(date.getFullYear())}-${month}-${String(date.getDate()).padStart(2, '0')}`;
+}
+
+/**
+ * El lunes de esta semana. Una rutina semanal que empieza otro día hace antes
+ * la semana a medias (D-075) y termina más tarde: empezando el lunes, la de una
+ * vuelta acaba el domingo, a 6 días o menos, sea cual sea el día de hoy.
+ */
+function thisMonday(): string {
+  const date = new Date();
+  date.setDate(date.getDate() - ((date.getDay() + 6) % 7));
+  return localDate(date);
 }
 
 const template = (name: string, laps: number | null) => ({
@@ -60,7 +70,7 @@ test('una rutina de una semana da aviso de que termina; una sin fin, ninguno', a
       p_tenant: business.tenantId,
       p_template: saved.id,
       p_clients: [client.userId],
-      p_starts_on: localDate(),
+      p_starts_on: thisMonday(),
       p_mode: 'calendar',
       p_today: localDate(),
     });

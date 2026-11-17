@@ -79,18 +79,18 @@
 
 Los 5 más recientes, el más nuevo arriba. El historial completo está en `docs/ESTADO.md`.
 
+- 2026-11-17 — Solo documentación: los agentes fusionan sin esperar al propietario, salvo lo crítico, que pide su OK escrito en el prompt (D-147, sustituye a D-068). Chat revisor de Claude y final de los prompts de Gemini en PROMPTS §0.
 - 2026-11-17 — PR 3.5b: lo gris de la vez anterior, "Igual", desmarcar, "+ Serie" y abrir directo en el ejercicio que toca (D-146).
 - 2026-11-17 — PR 3.5a: el cliente empieza un entreno desde "Hoy toca" o "Entreno" y apunta sus series en el móvil, guardadas al instante y en la cola (D-146).
 - 2026-11-17 — PR 3.16: gráficas de progreso en SVG propio sin librería (D-135). Por ejercicio: métricas, periodos, % de progreso por RM (D-129) y detalle del entreno bajo la gráfica. Peso y medidas con consentimiento (D-126, D-127). Decisión D-145 (Gemini).
 - 2026-11-17 — Solo documentación: reglas para chats en paralelo (GUIA-GIT §15) y autonomía de Gemini (D-144, sustituye en parte D-142). PROMPTS §7 dice qué carpetas toca cada PR y si usa la base local.
-- 2026-11-17 — PR 3.4b: el módulo `workouts` guarda en el móvil la rutina y la vez anterior de cada ejercicio, sube lo pendiente y avisa de los rechazos (D-143).
 
 ## A tener en cuenta ahora
 
 - El proyecto vive en `C:\dev\athlete-core`, **fuera de OneDrive** (sincronizar `node_modules` da errores).
 - Se usa **TypeScript 6**, no 7: el lint de TypeScript aún no admite la 7 (DECISIONES D-022).
 - `main` no está protegida en GitHub: hace falta GitHub Pro (GUIA-GIT §12).
-- Un agente puede fusionar PR, pero solo con el visto bueno expreso del propietario para ese lote (D-068).
+- Los agentes fusionan solos (D-147): Claude sus PR con el CI en verde; Gemini los suyos con el comentario "VISTO BUENO DE CLAUDE". El propietario solo da su OK, escrito en el prompt, para lo crítico (producción, borrar datos, relajar RLS o permisos, pagos, secretos, historial, reglas de oro).
 - Supabase en plan gratuito (D-063): la sesión de 30 días la controla la propia app, y no hay copias de seguridad recuperables. Resend gratuito: 100 emails al día.
 - **Si staging deja de responder** (la app contra staging no carga o no llegan emails), lo más probable es que Supabase lo haya pausado por pasar una semana sin uso: es normal en el plan gratuito. Se reanuda en el panel de Supabase con **Restore project**, tarda un par de minutos y no se pierde nada (`supabase/README.md`, paso 6).
 - El proyecto de staging de Supabase está conectado al repositorio de GitHub (comprobación "Supabase Preview", siempre omitida). No hace nada; se quita en el panel, Settings → Integrations.

@@ -465,6 +465,7 @@ Cómo añadir una: copia el formato, usa el siguiente número y no borres las an
 - **Consecuencias:** el logo (PR 1.16) también tendrá su función. Los tests de aislamiento que editaban el nombre a mano ahora editan `settings`, que sigue protegido por la misma regla de acceso.
 
 ### D-068 · Los agentes fusionan con el visto bueno del propietario
+- **Sustituida por D-147** (2026-11-17): los agentes fusionan solos, salvo lo crítico.
 - **Fecha:** 2026-11-14
 - **Decisión:** un agente puede fusionar Pull Requests en `main`, pero solo cuando el propietario le da el visto bueno expreso para ese PR o ese lote. Cambia la regla anterior ("los agentes no fusionan", AGENTS.md §7 y GUIA-GIT §3 y §8).
 - **Cómo se hace:** el agente no pregunta en cada cambio. Junta varios, le dice al propietario qué mirar en la app ("entra en tal pantalla y dime si te gusta") y fusiona cuando él responde que adelante, o cuando ya no queda nada por cambiar y él lo confirma. Siempre con "Squash and merge", con el CI en verde y, en una pila de PR, en orden y poniendo al día el siguiente como explica D-064.
@@ -1396,6 +1397,25 @@ Cómo añadir una: copia el formato, usa el siguiente número y no borres las an
 - **Por qué:** pasa de 300 líneas; y lo provisional de "Terminar" evita dejar entrenos abiertos para siempre mientras no llega el PR 3.6.
 - **Revisar si:** en el PR 3.6 el cierre necesita otro formato de lo guardado.
   - **3.5b:** el gris sale de lo guardado en el teléfono (`previousFor`), y tras subir un entreno se vuelve a descargar al momento: así "la siguiente vez" ya ve lo de hoy. Se desmarca tocando el título de la serie iluminada ("Serie 1"), no la tarjeta entera, para no apagarla al tocar sus botones. "+ Serie" añade series extra vacías, hasta 10. "Ir directo" solo actúa una vez por arranque y solo desde el inicio del cliente; si no le quedan series a ningún ejercicio, va al resumen.
+
+### D-147 · Los agentes fusionan solos, salvo lo crítico
+- **Fecha:** 2026-11-17
+- **Decisión:** sustituye a D-068 y a la parte de D-115 y D-069 que hacía esperar el visto bueno del propietario para fusionar o empezar un lote. Aprobado por el propietario.
+  - **PR de Claude:** Claude los fusiona él mismo cuando el CI está en verde y ha repasado su propio diff con la plantilla de PROMPTS §4. La revisión de Gemini a los PR de Claude pasa a ser opcional y puede hacerse después de fusionar; lo que encuentre se arregla en otro PR.
+  - **PR de Gemini:** Claude los revisa en su chat de revisor y deja en el PR un comentario que empieza por `VISTO BUENO DE CLAUDE` o por `CAMBIOS PEDIDOS POR CLAUDE`. Con el visto bueno y el CI en verde, Gemini integra `main` si va detrás y fusiona él mismo. Con cambios pedidos, los arregla en la misma rama y se vuelve a revisar. Es un comentario y no una aprobación de GitHub porque los dos agentes usan la cuenta del propietario, y GitHub no deja aprobar un PR propio.
+  - **Siempre:** "Squash and merge", CI en verde, la rama se borra al fusionar y, tras fusionar, se avisa de las ramas que quedan detrás de `main` (GUIA-GIT §15).
+  - **Un lote empieza** cuando el anterior está fusionado; no espera al propietario. Las pruebas en la app se hacen al cerrar la fase (PROMPTS §0).
+- **Lo crítico, que sí necesita al propietario:** lo que luego es muy difícil de arreglar.
+  1. Producción: desplegar, migraciones, claves o enlazar la CLI (regla de oro 12).
+  2. Borrar datos o cambios destructivos del esquema, también en staging: `drop` de tablas o columnas, cambiar un tipo perdiendo datos, borrados masivos.
+  3. Relajar el aislamiento: quitar o ampliar políticas RLS, `grant` o funciones `security definer` que ya existen, de forma que alguien vea o escriba más que antes. Las políticas de una tabla nueva, hechas con la plantilla y con su test de aislamiento, no cuentan.
+  4. Pagos, servicios o cuentas de pago, y secretos.
+  5. Historial de Git: `push --force`, `reset --hard`, `git clean`, borrar ramas de otros.
+  6. Las reglas de oro de AGENTS.md §3 y esta lista.
+  7. Cambiar una decisión marcada como del propietario ("decisión del propietario" o "aprobado por el propietario").
+- **Cómo se pide:** el OK del propietario para algo crítico tiene que estar **escrito en el prompt** de la tarea ("tienes mi OK para …"). Si no lo está, el agente no lo hace: sigue con el resto, lo deja como pregunta en el PR y en su resumen, y no fusiona hasta tenerlo.
+- **Por qué:** decisión del propietario, para que los agentes avancen sin esperarle en cada PR. Él solo interviene donde un fallo no se arregla con otro PR.
+- **Revisar si:** algo fusionado sin el propietario causa un problema difícil de deshacer.
 
 ---
 

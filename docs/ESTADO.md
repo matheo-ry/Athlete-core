@@ -7,7 +7,7 @@ Este archivo lo actualiza quien termina una tarea, en el mismo Pull Request, jun
 
 ## En curso
 
-- Nada de Claude. El **PR 3.4** (guardado en el móvil) está fusionado: 3.4a (#69) y 3.4b (#73), D-143. **Falta que el propietario lo pruebe en el móvil** (criterios 1 y 2: abrir sin red tras quitar la app de la multitarea y tras apagar el móvil).
+- Nada de Claude. El **PR 3.4** (guardado en el móvil) está fusionado: 3.4a (#69) y 3.4b (#73), D-143. Sus criterios en el móvil (abrir sin red tras quitar la app de la multitarea y tras apagar el móvil) entran en la prueba completa al cerrar la fase (PROMPTS §0).
 
 ## Siguiente
 
@@ -197,6 +197,8 @@ Ideas aprobadas como ideas, no como diseño: se diseñan cuando llegue la fase (
 
 ## Bloqueos y dudas abiertas
 
+- **Pruebas en la Fase 3:** el propietario no prueba la app PR a PR. Al cerrar la fase se hace una prueba completa y una lista de cambios. Los agentes no le piden pruebas manuales: basta con los tests.
+
 - **El nicho es provisional** (D-070, P-02): el propietario hablará con 3–5 coaches cuando tenga la demo. Las preguntas están en D-070.
 - Resend en plan gratuito: 100 emails al día y 3.000 al mes (D-046). Hay que revisarlo antes de los pilotos.
 - Staging se pausa tras una semana sin uso (D-063). Si deja de responder, es eso: se reanuda desde el panel de Supabase con **Restore project** (guía de staging, paso 6).
@@ -209,6 +211,10 @@ Ideas aprobadas como ideas, no como diseño: se diseñan cuando llegue la fase (
 ## Ideas y deuda
 
 Cosas que alguien ha visto y que no tocaban en su tarea. No se hacen sin convertirlas antes en tarea.
+
+- Actividad del coach (PR 3.14): la marca "Nuevo" de cada entreno se guarda por dispositivo (`localStorage`). En otro ordenador o móvil, el coach vuelve a ver como nuevos los que ya abrió.
+
+- Formato de las series: la pestaña "Entrenos" (PR 3.13, `workout-format.ts`) escribe el RPE como "(@8)" y el historial de `progress` (PR 3.15) lo pasa a RIR "(2)". Hay dos funciones que formatean lo mismo; conviene dejar una y decidir la notación.
 
 - Entrenos (PR 3.2a): el cliente solo lee los ejercicios que están en sus rutinas. Uno elegido con "Cambiar ejercicio" (D-122) que no esté en ninguna no lo podrá leer por su nombre en el historial: el PR 3.8 tiene que ampliar `is_exercise_in_my_programs` (o añadir otra política) a los ejercicios de sus entrenos.
 
@@ -265,8 +271,10 @@ Cosas que alguien ha visto y que no tocaban en su tarea. No se hacen sin convert
 Lo más nuevo, arriba.
 
 - 2026-11-17 — PR 3.4b (guardado en el móvil, módulo `workouts`): amplía el módulo que creó el PR 3.13, todavía sin pantallas del cliente. Su servicio (`services`, campo nuevo y opcional del manifest que `app/` monta con sesión, D-143) descarga al abrir o volver a la app con conexión la rutina vigente (con las claves de `programs`, así "Entreno" y "Hoy toca" también funcionan sin red) y la vez anterior de cada ejercicio (D-120: mismo día de la rutina; si no, cualquiera), y la guarda en el teléfono validada con Zod. Sube la cola con `sync_workout`; `not_allowed` avisa "No se pudo guardar: ya no tienes acceso a …" y cualquier otra regla o dato no válido se rechaza sin reintentar. Al cerrar sesión se borra del teléfono todo lo del usuario (`userKey`, `removeUser`). Probado en el navegador contra la base de datos local como Ana. 653 tests unitarios.
-- 2026-11-17 — PR 3.14 (actividad y avisos del coach en el inicio): tarjeta "Actividad" en el inicio del coach (`homeCards.coach`, orden 5 en el nuevo módulo `workouts`), con los últimos entrenos completados de los clientes ("Ana terminó Lunes · 2 récords · cambió 1 ejercicio · 1 nota"); los no abiertos se marcan con la chapa "Nuevo" y se recuerdan en el dispositivo (`localStorage`); al pulsar se marca como abierto y lleva al entreno. Estado vacío cuando no hay entrenos. En la tarjeta "Avisos" del coach (`CoachAlertsCard` en `programs`), dos nuevos avisos ordenados por prioridad: "Sin entrenar desde hace 7 días" y "Cambió <ejercicio> 3 veces en 4 semanas" que llevan a la ficha del cliente. 15 tests unitarios nuevos (636 en total) y build limpio.
+- 2026-11-17 — Fusionados los PR 3.13 (#70), 3.15 (#71, con el flag `progress` en #74) y 3.14 (#72), revisados por Claude. En el 3.14, la actividad del coach usa la fórmula única de RM y récords de `workouts/model` (D-129). Regla nueva: en la Fase 3 no se piden pruebas manuales PR a PR (PROMPTS §0).
 - 2026-11-17 — Migración 22 (`20261117130000_progress_flag.sql`): flag `progress`, de tipo core, para el módulo del PR 3.15 (D-129). Test pgTAP 20. Pendiente de aplicar en staging.
+
+- 2026-11-17 — PR 3.14 (actividad y avisos del coach en el inicio): tarjeta "Actividad" en el inicio del coach (`homeCards.coach`, orden 5 en el nuevo módulo `workouts`), con los últimos entrenos completados de los clientes ("Ana terminó Lunes · 2 récords · cambió 1 ejercicio · 1 nota"); los no abiertos se marcan con la chapa "Nuevo" y se recuerdan en el dispositivo (`localStorage`); al pulsar se marca como abierto y lleva al entreno. Estado vacío cuando no hay entrenos. En la tarjeta "Avisos" del coach (`CoachAlertsCard` en `programs`), dos nuevos avisos ordenados por prioridad: "Sin entrenar desde hace 7 días" y "Cambió <ejercicio> 3 veces en 4 semanas" que llevan a la ficha del cliente. 15 tests unitarios nuevos (636 en total) y build limpio.
 - 2026-11-17 — PR 3.4a (guardado en el móvil, cimientos): `core/native` gana el almacén del teléfono (`getDeviceStore`, con `@capacitor/preferences` en la app y `localStorage` en el navegador, validado con Zod al leer), `onAppResume` y la cola de subida (`getUploadQueue`: en orden, sin duplicar, reintentos de 5 s a 5 min, rechazos que no se reintentan; 12 tests). En la app instalada, la caché de datos se guarda en el teléfono y se recupera antes de pintar (`app/query-persistence.ts`); en el navegador no cambia nada. `core/auth` entra con la sesión guardada cuando no hay red para renovar el token. Cerrar sesión con entrenos sin subir pregunta antes y vacía la cola. Librería `@capacitor/preferences` (D-135). Decisión D-143. 635 tests unitarios.
 - 2026-11-17 — Arreglo de un test de flujos completos que fallaba a ratos: `program-client-tab.spec.ts` buscaba con `getByRole('status')` los avisos de asignar y reiniciar desde la ficha, pero al recargarse la rutina el `Spinner` ("Loading…") también tiene ese papel y a veces había dos. Ahora se buscan por su texto. Falló en el CI del #62 en los dos intentos; en local pasa 20 de 20 y la suite completa, 91 de 91. Sin cambios en `src/`.
 - 2026-11-17 — PR 3.13 (pestaña "Entrenos" en la ficha): el coach ve los entrenos, el peso y las medidas de cada cliente. Módulo `workouts` (`src/modules/workouts/`), que aporta la pestaña a la ficha mediante su manifest (`clientProfileTabs`). Lista con fecha, día de la rutina, series hechas y marcas "En curso", "Editado" y "Faltado"; detalle de un entreno desplegable con series como en Excel ("45×8(1) / 45×7(1)"), flecha comparativa frente a la sesión anterior (↑ / ↓ / →), notas del día, set-up de la máquina, ejercicios cambiados, saltados y duración calculada; peso corporal y medidas si hay consentimiento de salud, o aviso explicativo si el cliente no lo ha concedido. Responsivo en móvil y escritorio. 25 tests unitarios. Decisiones D-124, D-126, D-127 y D-128.

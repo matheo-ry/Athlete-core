@@ -22,7 +22,7 @@
 ## Dónde estamos
 
 - **Fase actual:** 3 — Entreno y progreso, en construcción (diseño en D-115 a D-137). Las Fases 1 y 2 están terminadas y fusionadas en `main`.
-- **Última tarea terminada:** PR 3.4 — guardado en el móvil, fusionado en dos partes: 3.4a (#69) y 3.4b (#73), D-143. Falta la prueba del propietario en el móvil.
+- **Última tarea terminada:** PR 3.4 — guardado en el móvil, fusionado en dos partes: 3.4a (#69) y 3.4b (#73), D-143. Antes, los PR de Gemini 3.13 (#70), 3.15 (#71, flag `progress` en #74) y 3.14 (#72). En la Fase 3 no se piden pruebas manuales PR a PR: al cerrar la fase se hace una prueba completa (PROMPTS §0).
 - **Siguiente tarea:** **PR 3.5 — Apuntar un entreno** (`docs/PROMPTS.md` §7). Amplía el módulo `workouts`, que ya existe (PR 3.13 y 3.4b). Trabajan Claude y Gemini a la vez (D-142): quién hace cada PR, en la columna "Quién" de §7. En staging están aplicadas y probadas las migraciones 1 a 21.
 
 ## Cómo será la Fase 3 (diseñada, D-115 a D-136)
@@ -79,10 +79,10 @@
 Los 5 más recientes, el más nuevo arriba. El historial completo está en `docs/ESTADO.md`.
 
 - 2026-11-17 — PR 3.4b: el módulo `workouts` guarda en el móvil la rutina y la vez anterior de cada ejercicio, sube lo pendiente y avisa de los rechazos (D-143).
+- 2026-11-17 — Fusionados 3.13, 3.15 y 3.14 tras la revisión de Claude: validación Zod, errores que ya no se tragan, "DIA n" traducido y una sola fórmula de RM y récords (D-129). Flag `progress` (migración 22).
 - 2026-11-17 — PR 3.14: actividad y avisos del coach en el inicio (tarjeta de actividad con récords/cambios/notas y avisos de inactividad >= 7 días y cambios reiterados de ejercicios).
 - 2026-11-17 — PR 3.15: módulo progress con historial "DIA 1: 45×8(1)", RM estimado (Epley + RIR/RPE), récords y pestaña en la ficha del cliente (D-129).
 - 2026-11-17 — PR 3.13: pestaña "Entrenos" en la ficha del cliente (módulo `workouts`, aportada por su manifest en `clientProfileTabs`). Lista con fecha, día, series hechas, marcas "En curso", "Editado" y "Faltado"; detalle con formato Excel ("45×8(1) / 45×7(1)"), flecha comparativa (↑ / ↓ / →), notas del día, set-up, ejercicio cambiado, ejercicio saltado y duración; peso corporal y medidas si hay consentimiento de salud o aviso sin él (D-124, D-126, D-127, D-128). 25 tests unitarios.
-- 2026-11-17 — PR 3.4a: almacén del teléfono, cola de subida, la caché guardada en la app del móvil, abrir sin red con la sesión guardada y preguntar al cerrar sesión con algo pendiente (D-143).
 
 ## A tener en cuenta ahora
 

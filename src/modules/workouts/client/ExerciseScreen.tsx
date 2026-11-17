@@ -1,0 +1,129 @@
+import { useRef } from 'react';
+import { useTranslation } from 'react-i18next';
+import { Link, useNavigate } from 'react-router';
+
+import { cn } from '@/core/lib';
+import { buttonClassName } from '@/core/ui';
+import { useExerciseOptions } from '@/modules/exercises';
+
+import { useSaveActiveWorkout } from '../api/useActiveWorkout';
+import { changeSet } from '../model/active-workout';
+import type { ActiveWorkout } from '../model/active-workout';
+import { SetEditor } from './SetEditor';
+
+/** Lo que hay que deslizar, en píxeles, para pasar de ejercicio. */
+const SWIPE = 60;
+
+/**
+ * Un ejercicio por pantalla (D-120): su nombre, "Ejercicio 3 de 7" con la
+ * fila de puntos, deslizar al siguiente o al anterior, y sus series. Cada
+ * cambio se guarda en el móvil al instante y va a la cola de subida (D-118).
+ */
+export function ExerciseScreen({
+  workout,
+  position,
+}: {
+  workout: ActiveWorkout;
+  position: number;
+}) {
+  const { t } = useTranslation();
+  const navigate = useNavigate();
+  const options = useExerciseOptions();
+  const save = useSaveActiveWorkout();
+  const touchStart = useRef<number | null>(null);
+  const exercise = workout.exercises[position - 1];
+  if (exercise === undefined) {
+    return null;
+  }
+  const count = workout.exercises.length;
+  const go = (to: number) => {
+    if (to >= 1 && to <= count) {
+      void navigate(`?exercise=${String(to)}`, { replace: true });
+    }
+  };
+
+  return (
+    <div
+      className="flex flex-col gap-4"
+      onTouchStart={(event) => {
+        touchStart.current = event.touches[0]?.clientX ?? null;
+      }}
+      onTouchEnd={(event) => {
+        const start = touchStart.current;
+        const end = event.changedTouches[0]?.clientX;
+        touchStart.current = null;
+        if (start !== null && end !== undefined && Math.abs(end - start) > SWIPE) {
+          go(end < start ? position + 1 : position - 1);
+        }
+      }}
+    >
+      <Link to="?" className={buttonClassName('ghost', 'self-start')}>
+        {t('workouts.workout.toSummary')}
+      </Link>
+      <header className="flex flex-col gap-2">
+        <p className="text-muted text-sm">
+          {t('workouts.workout.exerciseOf', { number: position, count })}
+        </p>
+        <nav aria-label={t('workouts.workout.exercisesLabel')} className="flex flex-wrap gap-1">
+          {workout.exercises.map((item) => (
+            <Link
+              key={item.id}
+              to={`?exercise=${String(item.position)}`}
+              replace
+              aria-label={t('workouts.workout.goTo', { number: item.position })}
+              aria-current={item.position === position ? 'step' : undefined}
+              className="flex h-11 w-11 items-center justify-center"
+            >
+              <span
+                className={cn(
+                  'h-3 w-3 rounded-full',
+                  item.position === position ? 'bg-primary' : 'bg-border',
+                )}
+              />
+            </Link>
+          ))}
+        </nav>
+        <h1 className="text-xl font-semibold">
+          {options.byId.get(exercise.exerciseId)?.name ?? '…'}
+        </h1>
+        {exercise.coachNote === null ? null : <p className="text-sm">{exercise.coachNote}</p>}
+      </header>
+      <ol className="flex flex-col gap-3">
+        {exercise.sets.map((set) => (
+          <SetEditor
+            key={set.id}
+            exercise={exercise}
+            set={set}
+            onChange={(patch) => {
+              save.mutate(
+                changeSet(workout, position, set.setNumber, patch, new Date().toISOString()),
+              );
+            }}
+          />
+        ))}
+      </ol>
+      <div className="flex justify-between gap-2">
+        <button
+          type="button"
+          className={buttonClassName('secondary')}
+          disabled={position === 1}
+          onClick={() => {
+            go(position - 1);
+          }}
+        >
+          {t('workouts.workout.previous')}
+        </button>
+        <button
+          type="button"
+          className={buttonClassName('secondary')}
+          disabled={position === count}
+          onClick={() => {
+            go(position + 1);
+          }}
+        >
+          {t('workouts.workout.next')}
+        </button>
+      </div>
+    </div>
+  );
+}

@@ -1373,6 +1373,18 @@ Cómo añadir una: copia el formato, usa el siguiente número y no borres las an
 - **Por qué:** decisión del propietario. Con Gemini parado a preguntar, el paralelo no avanzaba; y el 2026-11-17 tres PR crearon a la vez `src/modules/workouts` y dos chats chocaron en la base local.
 - **Revisar si:** las decisiones de Gemini chocan a menudo con las existentes o sus PR de `supabase/` necesitan muchas correcciones.
 
+### D-145 · Apuntar un entreno: detalles del PR 3.5a
+- **Fecha:** 2026-11-17
+- **Decisión:** detalles que D-119 y D-120 no fijaban. El PR 3.5 se parte en dos, como prevé PROMPTS §7: **3.5a** (iniciar, el resumen del día, la pantalla del ejercicio, las series con − y + y teclado, guardar y encolar) y **3.5b** (el gris de la vez anterior, "Igual", "+ Serie", desmarcar, ir directo al abrir y los criterios 4 a 7).
+  - **El entreno abierto** vive en el almacén del teléfono, uno por usuario y espacio (`workouts.active.<negocio>`), y cada cambio se encola entero (la cola sustituye la versión anterior). La ruta es `/client/workout`: el resumen, `?exercise=N` para un ejercicio y, sin entreno abierto, `?day=N` para empezar ese día desde "Entreno".
+  - **"Hoy toca"** es de `workouts` y usa `useClientToday` de `programs` (su `index.ts`). Con un entreno abierto dice "Continuar entreno". Desde un día de "Entreno", el enlace "Iniciar entreno" va a la ruta sin importar `workouts`.
+  - **Pasos** que D-120 no decía: 5 segundos y 10 metros. El primer toque de − o + en una serie vacía pone lo prescrito, si lo hay (luego, lo gris del 3.5b); si no, un paso desde 0. Con un rango de repeticiones, la referencia es el tope.
+  - **"F"** (al fallo) es un botón que sustituye al número de RIR o RPE.
+  - **Unilaterales:** hasta el PR 3.8 se apuntan en el móvil, pero sus series no se suben (la base de datos exige el lado, D-121).
+  - **"Terminar entreno"**, provisional hasta el PR 3.6: cierra a mano (`close_reason = 'manual'`), lo sube y vuelve al inicio; sin ninguna serie hecha, no se sube (D-119).
+- **Por qué:** pasa de 300 líneas; y lo provisional de "Terminar" evita dejar entrenos abiertos para siempre mientras no llega el PR 3.6.
+- **Revisar si:** en el PR 3.6 el cierre necesita otro formato de lo guardado.
+
 ---
 
 ## Pendientes de decidir

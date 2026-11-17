@@ -66,13 +66,7 @@ export const programsModule = defineModule({
           import('./coach/CoachAlertsCard').then((card) => ({ Component: card.CoachAlertsCard })),
       },
     ],
-    client: [
-      {
-        key: 'programs-today',
-        order: 10,
-        lazy: () =>
-          import('./client/ClientTodayCard').then((card) => ({ Component: card.ClientTodayCard })),
-      },
-    ],
+    // "Hoy toca" es de `workouts` (D-119), con el cálculo de `useClientToday`.
+    client: [],
   },
 });

@@ -290,7 +290,9 @@
     "coachNote": "Note from your coach",
     "instructions": "How to do it",
     "watchVideo": "Watch video",
-    "nextBlock": "The next block starts on {{date}}."
+    "nextBlock": "The next block starts on {{date}}.",
+    "startWorkout": "Start workout",
+    "openMobileApp": "To train, open the app on your phone"
   },
   "blocks": {
     "label": "Blocks of the program",
@@ -338,10 +340,6 @@
     "notTrained": "Has not trained for {{days}} days",
     "exerciseChanged": "Changed {{exerciseName}} {{times}} times in 4 weeks",
     "endsOn": "Program ends {{date}}",
-    "repeating": "Finished: repeating until you change it",
-    "todayTitle": "Today",
-    "todayRest": "Today: rest",
-    "open": "Open training",
-    "listProgram": "Your program"
+    "repeating": "Finished: repeating until you change it"
   }
 }

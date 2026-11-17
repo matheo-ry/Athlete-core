@@ -290,7 +290,9 @@
     "coachNote": "Nota de tu coach",
     "instructions": "Cómo se hace",
     "watchVideo": "Ver vídeo",
-    "nextBlock": "El siguiente bloque empieza el {{date}}."
+    "nextBlock": "El siguiente bloque empieza el {{date}}.",
+    "startWorkout": "Iniciar entreno",
+    "openMobileApp": "Para entrenar, abre la app en tu móvil"
   },
   "blocks": {
     "label": "Bloques de la rutina",
@@ -338,10 +340,6 @@
     "notTrained": "Sin entrenar desde hace {{days}} días",
     "exerciseChanged": "Cambió {{exerciseName}} {{times}} veces en 4 semanas",
     "endsOn": "Termina la rutina el {{date}}",
-    "repeating": "Terminada: se repite hasta que la cambies",
-    "todayTitle": "Hoy toca",
-    "todayRest": "Hoy: descanso",
-    "open": "Abrir entreno",
-    "listProgram": "Tu rutina"
+    "repeating": "Terminada: se repite hasta que la cambies"
   }
 }

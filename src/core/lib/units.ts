@@ -41,3 +41,24 @@ export function formatWeight(kg: number, unit: WeightUnit, locale: string): stri
   const formatter = new Intl.NumberFormat(locale, { maximumFractionDigits: 1 });
   return `${formatter.format(fromKg(kg, unit))} ${unit}`;
 }
+
+// Las medidas corporales se guardan SIEMPRE en cm. Quien usa libras las ve en
+// pulgadas (D-127): la unidad de longitud sigue a la de peso.
+export type LengthUnit = 'cm' | 'in';
+
+const CM_PER_IN = 2.54;
+
+export function lengthUnitFor(unit: WeightUnit): LengthUnit {
+  return unit === 'lb' ? 'in' : 'cm';
+}
+
+/** Convierte una medida guardada (cm) a la unidad de longitud del usuario. */
+export function fromCm(cm: number, unit: WeightUnit): number {
+  return unit === 'lb' ? cm / CM_PER_IN : cm;
+}
+
+/** Texto listo para mostrar: número en el formato del idioma + cm o in. */
+export function formatLength(cm: number, unit: WeightUnit, locale: string): string {
+  const formatter = new Intl.NumberFormat(locale, { maximumFractionDigits: 1 });
+  return `${formatter.format(fromCm(cm, unit))} ${lengthUnitFor(unit)}`;
+}

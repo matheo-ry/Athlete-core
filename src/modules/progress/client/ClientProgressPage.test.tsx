@@ -9,9 +9,15 @@ const api = vi.hoisted(() => ({
   fetchClientWorkouts: vi.fn<(tenantId: string, clientId: string) => Promise<RawWorkout[]>>(),
   fetchCurrentClientProgramId:
     vi.fn<(tenantId: string, clientId: string) => Promise<string | null>>(),
-  fetchClientHealthData: vi.fn(),
 }));
 vi.mock('../api/progress-api', () => api);
+
+// El peso y las medidas los carga el módulo workouts (D-127).
+const healthApi = vi.hoisted(() => ({ fetchClientHealthData: vi.fn() }));
+vi.mock('@/modules/workouts/api/workouts-coach-api', async (importOriginal) => ({
+  ...(await importOriginal<Record<string, unknown>>()),
+  ...healthApi,
+}));
 
 const exercisesApi = vi.hoisted(() => ({
   fetchExercises: vi.fn(),
@@ -21,7 +27,7 @@ vi.mock('@/modules/exercises/api/exercises-api', () => exercisesApi);
 describe('ClientProgressPage (D-127, D-129, PR 3.16)', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    api.fetchClientHealthData.mockResolvedValue({
+    healthApi.fetchClientHealthData.mockResolvedValue({
       hasConsent: false,
       weights: [],
       measurements: [],
@@ -328,7 +334,7 @@ describe('ClientProgressPage (D-127, D-129, PR 3.16)', () => {
   it('criterio 3: Ana ve la gráfica de su peso corporal', async () => {
     api.fetchClientWorkouts.mockResolvedValue([]);
     api.fetchCurrentClientProgramId.mockResolvedValue(null);
-    api.fetchClientHealthData.mockResolvedValue({
+    healthApi.fetchClientHealthData.mockResolvedValue({
       hasConsent: true,
       weights: [
         { id: 'bw-1', measured_on: '2026-10-01', weight_kg: 62.0 },
@@ -355,5 +361,44 @@ describe('ClientProgressPage (D-127, D-129, PR 3.16)', () => {
 
     // Muestra último peso y cambio
     expect(screen.getByTestId('health-diff-stat')).toHaveTextContent('+1 kg');
+  });
+  it('fallo de Gemini: con medidas y sin peso, se ve la gráfica de la primera medida', async () => {
+    api.fetchClientWorkouts.mockResolvedValue([]);
+    api.fetchCurrentClientProgramId.mockResolvedValue(null);
+    healthApi.fetchClientHealthData.mockResolvedValue({
+      hasConsent: true,
+      weights: [],
+      measurements: [
+        { id: 'm-1', measured_on: '2026-10-01', kind: 'waist', side: null, value_cm: 72 },
+        { id: 'm-2', measured_on: '2026-10-15', kind: 'waist', side: null, value_cm: 70.5 },
+      ],
+    });
+
+    const { user } = await renderAppAs('client@example.test', '/client/progress');
+    await user.click(await screen.findByTestId('tab-health'));
+
+    expect(await screen.findByTestId('health-metric-waist')).toHaveAttribute(
+      'aria-pressed',
+      'true',
+    );
+    expect(screen.queryByTestId('health-metric-weight')).not.toBeInTheDocument();
+    expect(screen.queryByTestId('chart-empty')).not.toBeInTheDocument();
+    expect(screen.getByTestId('chart-point-1')).toBeInTheDocument();
+    expect(screen.getByTestId('health-diff-stat')).toHaveTextContent('-1.5 cm');
+  });
+
+  it('fallo de Gemini: si falla la carga de salud, los ejercicios se siguen viendo', async () => {
+    api.fetchClientWorkouts.mockResolvedValue([]);
+    api.fetchCurrentClientProgramId.mockResolvedValue(null);
+    healthApi.fetchClientHealthData.mockRejectedValue(new Error('network'));
+
+    const { user } = await renderAppAs('client@example.test', '/client/progress');
+
+    // La pestaña de ejercicios no depende de la salud: sale su estado vacío, no un error.
+    expect(await screen.findByText('No workouts recorded yet')).toBeVisible();
+    expect(healthApi.fetchClientHealthData).not.toHaveBeenCalled();
+
+    await user.click(screen.getByTestId('tab-health'));
+    expect(await screen.findByText('Something went wrong')).toBeVisible();
   });
 });

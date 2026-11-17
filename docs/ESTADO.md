@@ -162,7 +162,7 @@ El diseño está en DECISIONES D-115 a D-136, y el detalle de cada PR, en `docs/
 **Lote 5 — Progreso**
 
 - [x] PR 3.15 — Módulo `progress`: historial, RM y récords (D-129)
-- [x] PR 3.16 — Gráficas (Gemini)
+- [x] PR 3.16 — Gráficas (Gemini), con los arreglos de su revisión (D-147)
 - [ ] PR 3.17 — Minilogros, racha, niveles y logros
 
 - [ ] PR 3.18 — Descargar en Excel
@@ -214,6 +214,10 @@ Ideas aprobadas como ideas, no como diseño: se diseñan cuando llegue la fase (
 ## Ideas y deuda
 
 Cosas que alguien ha visto y que no tocaban en su tarea. No se hacen sin convertirlas antes en tarea.
+
+- Medidas en pulgadas: la pestaña "Entrenos" del coach (`workouts/coach/ClientWorkoutsTab.tsx`) aún convierte con `/ 2.54` a mano. Debería usar `formatLength` de `core/lib` (D-147).
+- Pantalla del ejercicio: hasta que llega lo gris de la vez anterior (`usePreviousPerformance`), la serie enseña lo prescrito, y un toque de + en ese momento toma lo prescrito. Se nota poco en el móvil (sale del teléfono), pero se podría esperar a esa carga antes de pintar las series.
+- Consentimiento de salud en `core/tenancy` (D-127, D-147): moverlo cuando se haga la pantalla de dar y retirar el permiso.
 
 - Actividad del coach (PR 3.14): la marca "Nuevo" de cada entreno se guarda por dispositivo (`localStorage`). En otro ordenador o móvil, el coach vuelve a ver como nuevos los que ya abrió.
 
@@ -273,7 +277,14 @@ Cosas que alguien ha visto y que no tocaban en su tarea. No se hacen sin convert
 
 Lo más nuevo, arriba.
 
+- 2026-11-17 — Renumerada a D-148 la decisión de que los agentes fusionan solos (PR #81): se escribió como D-147 a la vez que el #80, que ya usaba D-147 para los arreglos de la revisión del PR 3.16. Dos lecciones, en `docs/GUIA-GIT.md` §15: antes de usar un número D-xxx se miran `main` y los PR abiertos, y nunca se fusiona con el CI en rojo (el #79 se fusionó así y dejó `main` en rojo hasta el #82).
+
 - 2026-11-17 — Los agentes fusionan sin esperar al propietario (solo documentación, D-148, sustituye a D-068). Claude fusiona sus PR con el CI en verde; Gemini, los suyos con el comentario "VISTO BUENO DE CLAUDE" de su chat revisor. El propietario solo da su OK, escrito en el prompt, para lo crítico: producción, borrar datos, relajar RLS o permisos, pagos, secretos, historial de Git, reglas de oro y decisiones suyas. Chat revisor y final de los prompts de Gemini en `docs/PROMPTS.md` §0.
+
+- 2026-11-17 — Arreglo del test de flujos completos `workout-log.spec.ts` ("Ana inicia el lunes…"), rojo en `main` desde el #79: desde el PR 3.5b el primer + pone lo gris de la vez anterior (D-120, D-146), y Ana ya tiene ese lunes en el seed (0 kg de lastre), pero el test seguía esperando lo prescrito (10). Pasaba o fallaba según si lo gris llegaba antes del clic (en local, 10; en el CI, 0). Ahora espera a que salga lo gris y compara con ese valor. Sin cambios en `src/`.
+
+- 2026-11-17 — Arreglos de la revisión del PR 3.16 (Claude, D-147), que se fusionó sin revisión: `LineChart` sin colores hex de reserva ni textos fijos en español; teclado con patrón de grupo de radio, foco visible y resumen para el lector de pantalla; 44 px táctiles medidos en píxeles reales; `touch-action: pan-y`; selectores `ChoiceChips` con `aria-pressed` (desaparecen las clases `surface-raised` y `primary-contrast`, que no existen en el tema); peso y medidas leídos de `workouts` (D-127) solo al abrir su pestaña y sin tumbar los ejercicios si fallan; medidas con `formatLength` de `core/lib`; con medidas y sin peso se abre la primera medida.
+
 - 2026-11-17 — PR 3.5b (apuntar un entreno, segunda parte, D-146): en gris, la vez anterior en esa serie (mismo día de la rutina o cualquiera), "Igual" para copiarla, desmarcar tocando la serie iluminada, "+ Serie" hasta 10, y al abrir la app con un entreno abierto, directo al ejercicio que toca (D-119). La vez anterior se vuelve a descargar tras subir un entreno. e2e con los criterios 4 a 7 (Bruno, en libras). Fusionados el 3.5a (#77) y el 3.5b (#79).
 
 - 2026-11-17 — PR 3.5a (apuntar un entreno, primera parte, D-146): "Hoy toca" pasa de `programs` a `workouts` con "Iniciar entreno" o "Continuar entreno" (en la web, "Para entrenar, abre la app en tu móvil"), y cada día de "Entreno" enlaza a `/client/workout`. Resumen del día con anillos "1/3" y el total "6/20 series", un ejercicio por pantalla con "Ejercicio 1 de 7", puntos y deslizar, y series con − y + y teclado (peso en la unidad del cliente, RIR o RPE del negocio y "F"). Cada cambio se guarda en el teléfono y va a la cola. "Terminar entreno" provisional (cierra a mano). Test e2e `workout-log.spec.ts`. 728 tests unitarios.

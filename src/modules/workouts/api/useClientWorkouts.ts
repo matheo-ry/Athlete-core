@@ -14,7 +14,7 @@ export function clientWorkoutsQueryKey(tenantId: string | null, clientId: string
   return ['workouts', 'coach-client-workouts', tenantId, clientId] as const;
 }
 
-export function clientHealthQueryKey(tenantId: string | null, clientId: string) {
+export function clientHealthQueryKey(tenantId: string | null, clientId: string | null) {
   return ['workouts', 'coach-client-health', tenantId, clientId] as const;
 }
 
@@ -99,14 +99,17 @@ export function useClientWorkouts(clientId: string) {
   };
 }
 
-/** Datos de salud del cliente (peso y medidas si dio el consentimiento). */
-export function useClientHealthData(clientId: string) {
+/**
+ * Datos de salud del cliente (peso y medidas si dio el consentimiento).
+ * También los usa `progress` por el index.ts (D-127): este módulo es el dueño.
+ */
+export function useClientHealthData(clientId: string | null) {
   const { tenant } = useTenancy();
   const tenantId = tenant?.id ?? null;
 
   return useQuery({
     queryKey: clientHealthQueryKey(tenantId, clientId),
-    queryFn: () => fetchClientHealthData(tenantId ?? '', clientId),
-    enabled: tenantId !== null,
+    queryFn: () => fetchClientHealthData(tenantId ?? '', clientId ?? ''),
+    enabled: tenantId !== null && clientId !== null,
   });
 }

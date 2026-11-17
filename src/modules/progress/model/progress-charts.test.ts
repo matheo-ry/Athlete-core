@@ -129,13 +129,14 @@ describe('progress-charts model (D-127, D-129)', () => {
   });
 
   describe('buildExerciseChartPoints', () => {
+    const formatReps = (count: number) => `${count} rep`;
     const sessions = [
       dummySession('w1', 1, '2026-10-01', 60, 50, 500, 12),
       dummySession('w2', 2, '2026-10-10', 70, 60, 600, 10),
     ];
 
     it('construye puntos para RM estimado', () => {
-      const pts = buildExerciseChartPoints(sessions, 'estimated_rm', 'kg', 'es');
+      const pts = buildExerciseChartPoints(sessions, 'estimated_rm', 'kg', 'es', formatReps);
       expect(pts).toHaveLength(2);
       expect(pts[0]!.value).toBe(60);
       expect(pts[0]!.formattedValue).toBe('60 kg');
@@ -144,19 +145,19 @@ describe('progress-charts model (D-127, D-129)', () => {
     });
 
     it('construye puntos para peso máximo', () => {
-      const pts = buildExerciseChartPoints(sessions, 'max_weight', 'kg', 'es');
+      const pts = buildExerciseChartPoints(sessions, 'max_weight', 'kg', 'es', formatReps);
       expect(pts[0]!.value).toBe(50);
       expect(pts[1]!.value).toBe(60);
     });
 
     it('construye puntos para volumen', () => {
-      const pts = buildExerciseChartPoints(sessions, 'volume', 'kg', 'es');
+      const pts = buildExerciseChartPoints(sessions, 'volume', 'kg', 'es', formatReps);
       expect(pts[0]!.value).toBe(500);
       expect(pts[1]!.value).toBe(600);
     });
 
     it('construye puntos para repeticiones', () => {
-      const pts = buildExerciseChartPoints(sessions, 'reps', 'kg', 'es');
+      const pts = buildExerciseChartPoints(sessions, 'reps', 'kg', 'es', formatReps);
       expect(pts[0]!.value).toBe(12);
       expect(pts[0]!.formattedValue).toBe('12 rep');
       expect(pts[1]!.value).toBe(10);
@@ -181,11 +182,11 @@ describe('progress-charts model (D-127, D-129)', () => {
       const measurements = [
         { id: 'm1', measured_on: '2026-10-01', kind: 'waist', side: null, value_cm: 72 },
       ];
-      const ptsCm = buildMeasurementChartPoints(measurements, 'kg');
+      const ptsCm = buildMeasurementChartPoints(measurements, 'kg', 'es');
       expect(ptsCm[0]!.value).toBe(72);
       expect(ptsCm[0]!.formattedValue).toBe('72 cm');
 
-      const ptsIn = buildMeasurementChartPoints(measurements, 'lb');
+      const ptsIn = buildMeasurementChartPoints(measurements, 'lb', 'en');
       expect(ptsIn[0]!.value).toBe(28.3);
       expect(ptsIn[0]!.formattedValue).toBe('28.3 in');
     });

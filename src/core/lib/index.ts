@@ -7,10 +7,13 @@ export {
   DEFAULT_WEIGHT_UNIT,
   WEIGHT_UNITS,
   defaultWeightUnitFor,
+  formatLength,
   formatWeight,
+  fromCm,
   fromKg,
   kgToLb,
   lbToKg,
+  lengthUnitFor,
   toKg,
 } from './units';
-export type { WeightUnit } from './units';
+export type { LengthUnit, WeightUnit } from './units';

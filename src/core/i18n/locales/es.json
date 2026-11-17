@@ -11,7 +11,12 @@
       "errorDescription": "No hemos podido cargar esto. Inténtalo de nuevo.",
       "retry": "Reintentar",
       "showPassword": "Mostrar contraseña",
-      "hidePassword": "Ocultar contraseña"
+      "hidePassword": "Ocultar contraseña",
+      "chart": {
+        "empty": "Aún no hay datos suficientes para la gráfica",
+        "summary_one": "1 punto: {{first}}",
+        "summary_other": "{{count}} puntos, de {{first}} a {{last}}"
+      }
     },
     "network": {
       "offline": "Sin conexión"

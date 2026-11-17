@@ -1398,6 +1398,20 @@ Cómo añadir una: copia el formato, usa el siguiente número y no borres las an
 - **Revisar si:** en el PR 3.6 el cierre necesita otro formato de lo guardado.
   - **3.5b:** el gris sale de lo guardado en el teléfono (`previousFor`), y tras subir un entreno se vuelve a descargar al momento: así "la siguiente vez" ya ve lo de hoy. Se desmarca tocando el título de la serie iluminada ("Serie 1"), no la tarjeta entera, para no apagarla al tocar sus botones. "+ Serie" añade series extra vacías, hasta 10. "Ir directo" solo actúa una vez por arranque y solo desde el inicio del cliente; si no le quedan series a ningún ejercicio, va al resumen.
 
+### D-147 · Arreglos de la revisión del PR 3.16
+- **Fecha:** 2026-11-17
+- **Decisión:** el PR 3.16 (#78) se fusionó sin revisión. La revisión posterior encontró fallos que corrige el PR `fix/progress-charts-review`. Cambia en parte D-145:
+  - **`LineChart` mide su contenedor:** el `viewBox` tiene el ancho real en píxeles, así el texto (12 px) y la zona táctil de cada punto (44 px) no encogen en el móvil. Tocar en cualquier punto de la gráfica elige el punto más cercano.
+  - **Accesibilidad con el patrón de grupo de radio:** la gráfica es un `radiogroup` con su nombre. Solo el punto elegido entra en el orden de Tab, las flechas, Inicio y Fin mueven el foco y la selección, el tooltip sigue al foco, se dibuja un anillo de foco y un resumen en texto (solo para el lector de pantalla) dice el primer y el último valor.
+  - **Solo colores del tema y textos traducidos:** sin colores hex de reserva y sin textos fijos en español dentro de `core/ui` (claves `core.ui.chart.*`). `ariaLabel` pasa a ser obligatorio.
+  - **`touch-action: pan-y`** en lugar de `none`: la página se puede desplazar en vertical aunque el dedo empiece encima de la gráfica.
+  - **Peso y medidas, por `workouts` (D-127):** `progress` ya no consulta `health_consents`, `body_weights` ni `body_measurements`. Usa `useClientHealthData` del `index.ts` de `workouts`, la misma consulta que la pestaña "Entrenos" del coach. Se carga solo al abrir la pestaña "Peso y medidas", y si falla, los ejercicios se siguen viendo.
+  - **Medidas en `core/lib/units`:** `formatLength`, `fromCm` y `lengthUnitFor`. Sin "cm" ni "in" escritos a mano.
+  - **Selectores de 44 px** con `aria-pressed` (`ChoiceChips`). Desaparecen las clases `surface-raised` y `primary-contrast`, que no existen en el tema y dejaban los botones sin fondo ni color de texto.
+  - **Métrica por defecto:** si el cliente tiene medidas pero ningún peso, se abre la primera medida, no una gráfica vacía.
+- **Por qué:** se rompían las reglas de AGENTS §3 (regla 7) y §4 (colores del tema y zonas táctiles), además de D-127, y había fallos en el móvil.
+- **Pendiente:** D-127 también pide que el consentimiento esté en `core/tenancy`. Hoy lo lee `workouts`, que es el único que lo usa. Se moverá cuando llegue la pantalla de dar y retirar el consentimiento, que lo necesita fuera de `workouts`.
+
 ### D-148 · Los agentes fusionan solos, salvo lo crítico
 - **Fecha:** 2026-11-17
 - **Decisión:** sustituye a D-068 y a la parte de D-115 y D-069 que hacía esperar el visto bueno del propietario para fusionar o empezar un lote. Aprobado por el propietario.

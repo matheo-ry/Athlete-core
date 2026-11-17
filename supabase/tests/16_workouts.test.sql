@@ -149,7 +149,8 @@ select is((select (edited_at is not null) from public.workouts), true, 'D-124: c
 select is((pg_temp.set1()).weight_kg, 60.00, 'la corrección se guarda');
 
 set local role postgres;
-update public.workouts set started_at = now() - interval '9 days', closed_at = now() - interval '8 days';
+update public.workouts set started_at = now() - interval '9 days', closed_at = now() - interval '8 days'
+where id = current_setting('t.w1')::uuid;
 set local role authenticated;
 select lives_ok($$ select pg_temp.sync(pg_temp.w(1, jsonb_build_array(pg_temp.s(1, 1, 60, 50)))) $$,
   'pasados 7 días, subir otra vez lo mismo no falla');

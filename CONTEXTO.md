@@ -77,11 +77,11 @@
 
 Los 5 más recientes, el más nuevo arriba. El historial completo está en `docs/ESTADO.md`.
 
+- 2026-11-17 — PR 3.15: módulo progress con historial "DIA 1: 45×8(1)", RM estimado (Epley + RIR/RPE), récords y pestaña en la ficha del cliente (D-129).
 - 2026-11-17 — PR 3.3c: entrenos inventados en el seed para Ana, Bruno y Diego, con días faltados, récords y datos de salud.
 - 2026-11-17 — Arreglo del test de flujos `program-client-tab`, que fallaba a ratos porque el `Spinner` también tiene el papel `status`. Sin cambios en `src/`.
 - 2026-11-17 — Reparto Claude/Gemini (D-142): Claude decide, hace base de datos, seguridad, `src/core/` y los PR 3.3 a 3.9 (y el 3.3c, entrenos inventados en el seed), y revisa los de Gemini; Gemini hace 3.10 a 3.18 y revisa los de Claude. Columna "Quién" y tabla de paralelo en `docs/PROMPTS.md` §7; trampas de Windows en `docs/GUIA-GIT.md` §14.
 - 2026-11-17 — Arreglo de los tests de flujos `home-cards` y `program-assign`, que solo pasaban en lunes por la semana a medias de D-075. Sin cambios en `src/`.
-- 2026-11-17 — PR 3.3b: set-up del cliente, ajustes de entreno e interruptor de logros, con 26 tests pgTAP (D-141).
 
 ## A tener en cuenta ahora
 

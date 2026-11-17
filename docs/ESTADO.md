@@ -7,7 +7,8 @@ Este archivo lo actualiza quien termina una tarea, en el mismo Pull Request, jun
 
 ## En curso
 
-**PR 3.3c — Entrenos inventados en el seed** (`db/seed-entrenos`), en revisión. El PR 3.3 (3.3a, #63, y 3.3b, #64) está fusionado y las migraciones 17 a 21, aplicadas en staging.
+**PR 3.15 — Módulo progress: historial, RM y récords** (`feat/modulo-progress`), terminado y en revisión (D-129).
+El PR 3.3c (`db/seed-entrenos`) está también en revisión.
 
 ## Siguiente
 
@@ -158,7 +159,7 @@ El diseño está en DECISIONES D-115 a D-136, y el detalle de cada PR, en `docs/
 
 **Lote 5 — Progreso**
 
-- [ ] PR 3.15 — Módulo `progress`: historial, RM y récords
+- [x] PR 3.15 — Módulo `progress`: historial, RM y récords (D-129)
 - [ ] PR 3.16 — Gráficas
 - [ ] PR 3.17 — Minilogros, racha, niveles y logros
 - [ ] PR 3.18 — Descargar en Excel

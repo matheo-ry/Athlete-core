@@ -1,0 +1,29 @@
+{
+  "nav": {
+    "client": "Progress"
+  },
+  "clientTab": {
+    "label": "Progress"
+  },
+  "title": "Progress",
+  "empty": {
+    "title": "No workouts recorded yet",
+    "description": "When workouts are completed, you will see your exercise history, estimated 1RM, and personal records here."
+  },
+  "routine": {
+    "current": "Current routine",
+    "past": "Previous routine"
+  },
+  "stats": {
+    "last": "Last",
+    "record": "Record",
+    "maxWeight": "Max",
+    "estimatedRm": "Est. 1RM"
+  },
+  "history": {
+    "title": "History",
+    "note": "Note",
+    "showHistory": "View history",
+    "hideHistory": "Hide history"
+  }
+}

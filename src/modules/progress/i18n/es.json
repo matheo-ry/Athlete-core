@@ -1,0 +1,29 @@
+{
+  "nav": {
+    "client": "Progreso"
+  },
+  "clientTab": {
+    "label": "Progreso"
+  },
+  "title": "Progreso",
+  "empty": {
+    "title": "Aún no hay entrenos registrados",
+    "description": "Cuando se completen entrenos, aquí aparecerá el historial de cada ejercicio, el RM estimado y los récords."
+  },
+  "routine": {
+    "current": "Rutina actual",
+    "past": "Rutina anterior"
+  },
+  "stats": {
+    "last": "Último",
+    "record": "Récord",
+    "maxWeight": "Máx.",
+    "estimatedRm": "RM est."
+  },
+  "history": {
+    "title": "Historial",
+    "note": "Nota",
+    "showHistory": "Ver historial",
+    "hideHistory": "Ocultar historial"
+  }
+}

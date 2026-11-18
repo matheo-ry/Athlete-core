@@ -141,6 +141,6 @@ test('Bruno ve los pesos en libras (criterio 5)', async ({ page }) => {
   await page.getByRole('button', { name: 'Finish workout' }).click();
   // Sin ninguna serie hecha no se guarda: vuelve al inicio, sin resumen (D-119).
   await expect(page).toHaveURL(/\/client$/);
-  // Y no se queda abierto en la nube, aunque subiera al empezar (D-150).
+  // Y no se queda abierto en la nube, aunque subiera al empezar (D-151).
   await expectNothingOpen('bruno@example.com');
 });

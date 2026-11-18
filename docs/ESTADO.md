@@ -7,11 +7,11 @@ Este archivo lo actualiza quien termina una tarea, en el mismo Pull Request, jun
 
 ## En curso
 
-- **PR 3.6b** (Claude): recordatorio de las 6 horas y cierre a las 12 horas (D-150).
+- **PR 3.6b** (Claude): recordatorio de las 6 horas y cierre a las 12 horas (D-151).
 
 ## Siguiente
 
-1. **PR 3.6c — Dos móviles** (Claude, D-150): "Este entreno está abierto en otro dispositivo" con "Seguir aquí". Claude y Gemini trabajan en paralelo según `docs/PROMPTS.md` §7 (D-142, D-144) y las reglas de `docs/GUIA-GIT.md` §15.
+1. **PR 3.6c — Dos móviles** (Claude, D-151): "Este entreno está abierto en otro dispositivo" con "Seguir aquí". Claude y Gemini trabajan en paralelo según `docs/PROMPTS.md` §7 (D-142, D-144) y las reglas de `docs/GUIA-GIT.md` §15.
 2. El propietario dio por buenas, por ahora, la lista de `docs/referencia/biblioteca-ejercicios.md` y las rutinas de ejemplo. Se pueden retocar más adelante.
 
 ## Fases
@@ -143,7 +143,7 @@ El diseño está en DECISIONES D-115 a D-136, y el detalle de cada PR, en `docs/
 - [x] PR 3.5 — Apuntar un entreno (partido en dos, como preveía `docs/PROMPTS.md` §7)
   - [x] 3.5a — iniciar, resumen, pantalla del ejercicio y series
   - [x] 3.5b — el gris, "Igual", "+ Serie", desmarcar e ir directo
-- [ ] PR 3.6 — Subida, cierre y resumen (partido en tres, D-149 y D-150)
+- [ ] PR 3.6 — Subida, cierre y resumen (partido en tres, D-149 y D-151)
   - [x] 3.6a — cierre solo, "Terminar", "Descartar", resumen final y "Pendiente de subir"
   - [x] 3.6b — recordatorio de las 6 horas y cierre a las 12 horas
   - [ ] 3.6c — dos móviles
@@ -218,7 +218,7 @@ Ideas aprobadas como ideas, no como diseño: se diseñan cuando llegue la fase (
 
 Cosas que alguien ha visto y que no tocaban en su tarea. No se hacen sin convertirlas antes en tarea.
 
-- Recordatorio de las 6 horas (D-150): si se cierra sesión con un entreno abierto, la notificación ya programada sigue y puede llegar igual. Cancelarla tendría que hacerse al cerrar sesión, y eso lo lleva `core/auth`, que no conoce `workouts`.
+- Recordatorio de las 6 horas (D-151): si se cierra sesión con un entreno abierto, la notificación ya programada sigue y puede llegar igual. Cancelarla tendría que hacerse al cerrar sesión, y eso lo lleva `core/auth`, que no conoce `workouts`.
 - Medidas en pulgadas: la pestaña "Entrenos" del coach (`workouts/coach/ClientWorkoutsTab.tsx`) aún convierte con `/ 2.54` a mano. Debería usar `formatLength` de `core/lib` (D-147).
 - Pantalla del ejercicio: hasta que llega lo gris de la vez anterior (`usePreviousPerformance`), la serie enseña lo prescrito, y un toque de + en ese momento toma lo prescrito. Se nota poco en el móvil (sale del teléfono), pero se podría esperar a esa carga antes de pintar las series.
 - Consentimiento de salud en `core/tenancy` (D-127, D-147): moverlo cuando se haga la pantalla de dar y retirar el permiso.
@@ -281,7 +281,7 @@ Cosas que alguien ha visto y que no tocaban en su tarea. No se hacen sin convert
 
 Lo más nuevo, arriba.
 
-- 2026-11-18 — PR 3.6b: recordatorio a las 6 horas con notificación local (`@capacitor/local-notifications`) y cierre solo a las 12 horas con "Guardamos tu entreno del lunes" (D-150). Arreglo: cerrar sin series hechas dejaba el entreno abierto en la nube. `android/` se sincroniza con los plugins, también el de `preferences`, que faltaba en los archivos generados.
+- 2026-11-18 — PR 3.6b: recordatorio a las 6 horas con notificación local (`@capacitor/local-notifications`) y cierre solo a las 12 horas con "Guardamos tu entreno del lunes" (D-151). Arreglo: cerrar sin series hechas dejaba el entreno abierto en la nube. `android/` se sincroniza con los plugins, también el de `preferences`, que faltaba en los archivos generados.
 
 - 2026-11-17 — PR 3.6a: el entreno se cierra solo con todas las series hechas (al ir al resumen o tras 20 s sin cambios); "Terminar entreno" lleva al resumen final (duración, series y ejercicios); "Descartar entreno" lo borra tras confirmar (por la cola, también sin conexión); y "Pendiente de subir" se ve mientras algo espera en la cola (D-149). Arreglo: sin conexión no se guardaba lo apuntado, porque TanStack Query dejaba en pausa lo que va al teléfono. Test de flujos completos nuevo, `e2e/workout-close.spec.ts`, con Diego. El 3.6b (recordatorio, 12 horas y dos móviles) queda para el siguiente PR.
 

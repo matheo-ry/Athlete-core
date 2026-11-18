@@ -109,7 +109,7 @@ export function useSaveActiveWorkout() {
         tenantId: scope.tenantId,
         tenantName: scope.tenantName,
         // Sin ninguna serie hecha no se guarda (D-119): al empezar ya subió, y
-        // si no se borra se queda abierto en la nube para siempre (D-150).
+        // si no se borra se queda abierto en la nube para siempre (D-151).
         payload: empty ? discardPayload(workout.id) : toSyncPayload(workout),
       });
     },

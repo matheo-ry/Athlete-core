@@ -4,7 +4,7 @@ import type { Page } from '@playwright/test';
 import { SEED_PASSWORD, signIn } from './helpers';
 import { select, signInApi } from './supabase-helpers';
 
-// Subida, cierre y resumen (PR 3.6, D-118, D-119, D-149 y D-150), contra Supabase
+// Subida, cierre y resumen (PR 3.6, D-118, D-119, D-149 y D-151), contra Supabase
 // local y la rutina "Fuerza básica" de Diego (seed): el día 1 son 4
 // ejercicios de 3 series, y la plancha va en segundos. Diego no lo usa ningún
 // otro test de entrenos, así que no choca con los de Ana en paralelo.

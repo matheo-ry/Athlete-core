@@ -1444,7 +1444,7 @@ Cómo añadir una: copia el formato, usa el siguiente número y no borres las an
 - **Por qué:** con todo junto pasa de 400 líneas, y el 3.6b es lo que necesita la librería nueva y la parte nativa.
 - **Revisar si:** los 20 segundos se quedan cortos o largos al entrenar de verdad.
 
-### D-150 · Recordatorio y 12 horas: detalles del PR 3.6b
+### D-151 · Recordatorio y 12 horas: detalles del PR 3.6b
 - **Fecha:** 2026-11-18
 - **Decisión:** detalles que D-119 no fijaba. Lo que quedaba del PR 3.6 pasaba de 400 líneas, así que se parte otra vez: **3.6b** (recordatorio y 12 horas) y **3.6c** (dos móviles).
   - **Recordatorio:** a las 6 horas del último dato cambiado, con una notificación local por espacio. Cada cambio la vuelve a programar; cerrar o descartar la cancela. El permiso de Android se pide la primera vez que hace falta, al empezar un entreno. Sin permiso, el entreno sigue igual.

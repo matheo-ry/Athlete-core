@@ -9,7 +9,7 @@ import { useSetTimedOutNotice } from '../api/useTimedOutNotice';
 import { finishWorkout, setCounts } from '../model/active-workout';
 import { isTimedOut, reminderAt, reminderId, timeoutDelay } from '../model/workout-timers';
 
-/** Lo que le pasa al entreno abierto sin que nadie lo toque (D-119, D-150). */
+/** Lo que le pasa al entreno abierto sin que nadie lo toque (D-119, D-151). */
 export function useWorkoutLifecycle(): void {
   useReminder();
   useCloseWhenAbandoned();

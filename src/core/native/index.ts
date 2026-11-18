@@ -5,8 +5,8 @@ export { cancelLocalNotification, scheduleLocalNotification } from './local-noti
 export type { LocalNotificationInput } from './local-notifications';
 export { followColorScheme, startNativeShell, statusBarStyleFor } from './native-shell';
 export { canLogWorkouts, isNativeApp } from './platform';
-export { copyText, shareOrCopyLink } from './share';
-export type { ShareOutcome } from './share';
+export { copyText, shareOrCopyLink, shareOrDownloadFile } from './share';
+export type { FileShareOutcome, ShareOutcome } from './share';
 export { createUploadQueue, getUploadQueue, retryDelayMs, UPLOAD_REJECTIONS } from './upload-queue';
 export type {
   UploadInput,

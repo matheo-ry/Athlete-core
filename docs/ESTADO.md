@@ -168,7 +168,7 @@ El diseño está en DECISIONES D-115 a D-136, y el detalle de cada PR, en `docs/
 - [x] PR 3.16 — Gráficas (Gemini), con los arreglos de su revisión (D-147)
 - [ ] PR 3.17 — Minilogros, racha, niveles y logros
 
-- [ ] PR 3.18 — Descargar en Excel
+- [x] PR 3.18 — Descargar en Excel (Gemini, D-131, D-135, D-150)
 
 ### Fase 4 — Pilotos
 
@@ -282,15 +282,12 @@ Cosas que alguien ha visto y que no tocaban en su tarea. No se hacen sin convert
 Lo más nuevo, arriba.
 
 - 2026-11-18 — PR 3.6b: recordatorio a las 6 horas con notificación local (`@capacitor/local-notifications`) y cierre solo a las 12 horas con "Guardamos tu entreno del lunes" (D-151). Arreglo: cerrar sin series hechas dejaba el entreno abierto en la nube. `android/` se sincroniza con los plugins, también el de `preferences`, que faltaba en los archivos generados.
+- 2026-11-17 — PR 3.18 (descargar en Excel): exportación de entrenos en archivo .xlsx con `write-excel-file/universal` (D-135, D-150). Hoja "Día a día" cronológica inversa (fecha, rutina, día, ejercicios y series 45X8(1)), una hoja por rutina con la evolución de sus ejercicios a lo largo del tiempo, y hoja opcional "Peso corporal" solo si el cliente ha dado consentimiento de salud (D-126). Disponible en la sección Progreso del cliente y en la ficha del cliente para el coach. En web descarga directa y en móvil apertura de compartir/guardar (`core/native/share`).
 
 - 2026-11-17 — PR 3.6a: el entreno se cierra solo con todas las series hechas (al ir al resumen o tras 20 s sin cambios); "Terminar entreno" lleva al resumen final (duración, series y ejercicios); "Descartar entreno" lo borra tras confirmar (por la cola, también sin conexión); y "Pendiente de subir" se ve mientras algo espera en la cola (D-149). Arreglo: sin conexión no se guardaba lo apuntado, porque TanStack Query dejaba en pausa lo que va al teléfono. Test de flujos completos nuevo, `e2e/workout-close.spec.ts`, con Diego. El 3.6b (recordatorio, 12 horas y dos móviles) queda para el siguiente PR.
-
 - 2026-11-17 — Renumerada a D-148 la decisión de que los agentes fusionan solos (PR #81): se escribió como D-147 a la vez que el #80, que ya usaba D-147 para los arreglos de la revisión del PR 3.16. Dos lecciones, en `docs/GUIA-GIT.md` §15: antes de usar un número D-xxx se miran `main` y los PR abiertos, y nunca se fusiona con el CI en rojo (el #79 se fusionó así y dejó `main` en rojo hasta el #82).
-
 - 2026-11-17 — Los agentes fusionan sin esperar al propietario (solo documentación, D-148, sustituye a D-068). Claude fusiona sus PR con el CI en verde; Gemini, los suyos con el comentario "VISTO BUENO DE CLAUDE" de su chat revisor. El propietario solo da su OK, escrito en el prompt, para lo crítico: producción, borrar datos, relajar RLS o permisos, pagos, secretos, historial de Git, reglas de oro y decisiones suyas. Chat revisor y final de los prompts de Gemini en `docs/PROMPTS.md` §0.
-
 - 2026-11-17 — Arreglo del test de flujos completos `workout-log.spec.ts` ("Ana inicia el lunes…"), rojo en `main` desde el #79: desde el PR 3.5b el primer + pone lo gris de la vez anterior (D-120, D-146), y Ana ya tiene ese lunes en el seed (0 kg de lastre), pero el test seguía esperando lo prescrito (10). Pasaba o fallaba según si lo gris llegaba antes del clic (en local, 10; en el CI, 0). Ahora espera a que salga lo gris y compara con ese valor. Sin cambios en `src/`.
-
 - 2026-11-17 — Arreglos de la revisión del PR 3.16 (Claude, D-147), que se fusionó sin revisión: `LineChart` sin colores hex de reserva ni textos fijos en español; teclado con patrón de grupo de radio, foco visible y resumen para el lector de pantalla; 44 px táctiles medidos en píxeles reales; `touch-action: pan-y`; selectores `ChoiceChips` con `aria-pressed` (desaparecen las clases `surface-raised` y `primary-contrast`, que no existen en el tema); peso y medidas leídos de `workouts` (D-127) solo al abrir su pestaña y sin tumbar los ejercicios si fallan; medidas con `formatLength` de `core/lib`; con medidas y sin peso se abre la primera medida.
 
 - 2026-11-17 — PR 3.5b (apuntar un entreno, segunda parte, D-146): en gris, la vez anterior en esa serie (mismo día de la rutina o cualquiera), "Igual" para copiarla, desmarcar tocando la serie iluminada, "+ Serie" hasta 10, y al abrir la app con un entreno abierto, directo al ejercicio que toca (D-119). La vez anterior se vuelve a descargar tras subir un entreno. e2e con los criterios 4 a 7 (Bruno, en libras). Fusionados el 3.5a (#77) y el 3.5b (#79).

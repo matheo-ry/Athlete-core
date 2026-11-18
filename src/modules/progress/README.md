@@ -8,4 +8,5 @@
 - **Rutas y vistas:**
   - Cliente: `/client/progress` (menú inferior con icono `chart`, orden 20).
   - Coach: Pestaña "Progreso" en la ficha del cliente (`/coach/clients/:id`).
-- **Estado:** ampliado con gráficas y salud (PR 3.16).
+- **Estado:** ampliado con gráficas y salud (PR 3.16), y exportación completa a Excel (PR 3.18, D-131, D-135, D-150) para cliente y coach.
+- **Exportación Excel:** genera archivos `.xlsx` (`write-excel-file/universal`) con el formato de la app de apuntes del propietario: hoja "Día a día" cronológica, una hoja por rutina y hoja opcional "Peso corporal" (condicionada al consentimiento de salud). Compatible con web y compartir nativo en móvil (`core/native/share`).

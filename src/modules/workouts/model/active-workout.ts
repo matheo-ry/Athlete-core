@@ -397,3 +397,31 @@ export function exerciseToResume(workout: ActiveWorkout): number | null {
   }
   return null;
 }
+
+/**
+ * Lo que copia "Igual" (D-120). Por defecto, la vez anterior en esa serie. Con
+ * el ajuste `previous_then_today` (Perfil → "Entreno"), la serie 1 copia la vez
+ * anterior y las siguientes, la serie anterior de hoy si ya está hecha.
+ */
+export function copySource(
+  mode: 'previous' | 'previous_then_today',
+  exercise: ActiveExercise,
+  setNumber: number,
+  previous: PreviousSetValues | null,
+): PreviousSetValues | null {
+  if (mode === 'previous' || setNumber === 1) {
+    return previous;
+  }
+  const before = exercise.sets.find((set) => set.setNumber === setNumber - 1);
+  if (before === undefined || !before.isDone) {
+    return null;
+  }
+  return {
+    weightKg: before.weightKg,
+    reps: before.reps,
+    durationSeconds: before.durationSeconds,
+    distanceMeters: before.distanceMeters,
+    intensityType: before.intensityType,
+    intensityValue: before.intensityValue,
+  };
+}

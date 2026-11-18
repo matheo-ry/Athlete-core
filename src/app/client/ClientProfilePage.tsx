@@ -2,9 +2,10 @@ import { useTranslation } from 'react-i18next';
 
 import { AccountSection } from '../AccountSection';
 import { MySpacesSection } from '../MySpacesSection';
+import { TrainingSettingsSection } from '../TrainingSettingsSection';
 
 /**
- * El perfil del cliente (D-056 y D-058): sus espacios, su cuenta y la nota de
+ * El perfil del cliente (D-056 y D-058): sus espacios, sus ajustes de entreno, su cuenta y la nota de
  * la plataforma. Se ve con la marca de su coach.
  */
 export function ClientProfilePage() {
@@ -16,6 +17,7 @@ export function ClientProfilePage() {
         <h1 className="text-2xl font-bold">{t('app.clientProfile.title')}</h1>
       </header>
       <MySpacesSection />
+      <TrainingSettingsSection />
       <AccountSection />
       <p className="text-muted text-center text-xs">{t('app.account.poweredBy')}</p>
     </section>

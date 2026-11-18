@@ -327,6 +327,16 @@
       "logoRemove": "Remove logo",
       "logoTooLarge": "The logo can't be larger than 2 MB.",
       "logoInvalidType": "Format not supported. Use PNG, JPG or WebP."
+    },
+    "training": {
+      "title": "Training",
+      "defaultRest": "Default rest",
+      "autostart": "Start the rest timer automatically",
+      "sound": "Sound when rest ends",
+      "vibration": "Vibration when rest ends",
+      "sameLabel": "What “Same” copies",
+      "samePrevious": "Last time's set",
+      "sameToday": "Previous set of today"
     }
   }
 }

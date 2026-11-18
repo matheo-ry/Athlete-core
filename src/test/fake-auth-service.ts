@@ -1,3 +1,4 @@
+import { DEFAULT_TRAINING_SETTINGS } from '@/core/auth';
 import type {
   AuthChangeEvent,
   AuthChangeListener,
@@ -93,6 +94,7 @@ export function createFakeAuthService({
       displayName: email.split('@')[0] ?? email,
       locale: 'en',
       weightUnit: 'kg',
+      ...DEFAULT_TRAINING_SETTINGS,
       ...initialProfiles[email],
     };
   };

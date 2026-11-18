@@ -13,7 +13,7 @@ import type {
   AuthUser,
 } from '../auth-types';
 import { storedSessionUser } from '../offline-session';
-import { parseProfile } from '../profile';
+import { PROFILE_COLUMNS, parseProfile } from '../profile';
 import type { SignupProfile } from '../signup';
 
 // El AuthService real: el único sitio de la app que habla con Supabase Auth.
@@ -271,7 +271,7 @@ export function createSupabaseAuthService(): AuthService {
       }
       const { data, error } = await client
         .from('profiles')
-        .select('display_name, locale, weight_unit')
+        .select(PROFILE_COLUMNS)
         .eq('user_id', userData.user.id)
         .single();
       if (error !== null) {
@@ -291,6 +291,13 @@ export function createSupabaseAuthService(): AuthService {
           ...(patch.displayName === undefined ? {} : { display_name: patch.displayName.trim() }),
           ...(patch.locale === undefined ? {} : { locale: patch.locale }),
           ...(patch.weightUnit === undefined ? {} : { weight_unit: patch.weightUnit }),
+          ...(patch.defaultRestSeconds === undefined
+            ? {}
+            : { default_rest_seconds: patch.defaultRestSeconds }),
+          ...(patch.restAutostart === undefined ? {} : { rest_autostart: patch.restAutostart }),
+          ...(patch.restSound === undefined ? {} : { rest_sound: patch.restSound }),
+          ...(patch.restVibration === undefined ? {} : { rest_vibration: patch.restVibration }),
+          ...(patch.sameButton === undefined ? {} : { same_button: patch.sameButton }),
         })
         .eq('user_id', userData.user.id);
       if (error !== null) {

@@ -2,6 +2,7 @@ export { onAppResume } from './app-resume';
 export { getDeviceId } from './device-id';
 export { createDeviceStore, getDeviceStore, userKey } from './device-store';
 export type { DeviceStore, KeyValueBackend } from './device-store';
+export { vibrate } from './haptics';
 export { cancelLocalNotification, scheduleLocalNotification } from './local-notifications';
 export type { LocalNotificationInput } from './local-notifications';
 export { followColorScheme, startNativeShell, statusBarStyleFor } from './native-shell';

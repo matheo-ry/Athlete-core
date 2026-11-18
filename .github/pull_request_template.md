@@ -26,7 +26,7 @@
 
 ## Decisiones tomadas y dudas
 
-<!-- Lo que decidiste tú (con su D-xxx) y lo que propones cambiar de una decisión existente, con el porqué (D-144). Dudas, solo de lo irreversible. Si no hay, "Ninguna". -->
+<!-- Lo que decidiste tú (con su D-<tarea>-<n>, en el archivo de `docs/cambios/`) y lo que propones cambiar de una decisión existente, con el porqué (D-144). Dudas, solo de lo irreversible. Si no hay, "Ninguna". -->
 
 ## Lo que tiene que saber el siguiente
 
@@ -39,7 +39,7 @@
 - [ ] Probado como coach y como cliente, en ancho de móvil y de escritorio
 - [ ] Tablas nuevas con `tenant_id`, RLS y test de aislamiento (o no aplica)
 - [ ] No hay secretos ni datos reales
-- [ ] `docs/ESTADO.md` actualizado
+- [ ] Añadido `docs/cambios/<tarea>-<nombre>.md` (y no toco CONTEXTO, ESTADO ni DECISIONES)
 - [ ] El PR hace una sola cosa y ronda las 300 líneas o menos
 
 ## Zonas protegidas

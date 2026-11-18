@@ -21,7 +21,8 @@ App para coaches de gimnasio y sus clientes. Una sola app (web, iOS y Android): 
 | `docs/ARQUITECTURA.md` | Carpetas, módulos, perfiles, base de datos |
 | `docs/GUIA-GIT.md` | Cómo se hace un cambio, paso a paso |
 | `docs/ESTADO.md` | Qué está hecho, qué está en curso y qué toca |
-| `docs/DECISIONES.md` | Decisiones tomadas y su porqué |
+| `docs/DECISIONES.md` | Decisiones tomadas hasta D-153 y su porqué (histórico) |
+| `docs/cambios/` | Un archivo por tarea: qué cambió, decisiones nuevas, deuda (D-153) |
 | `docs/PROMPTS.md` | Plantillas de prompt para los agentes |
 | `docs/referencia/` | SQL de partida para la base de datos |
 

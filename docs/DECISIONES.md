@@ -2,7 +2,9 @@
 
 Registro de decisiones del proyecto y su porqué. Antes de proponer cambiar algo, mira si ya se decidió aquí.
 
-Cómo añadir una: copia el formato, usa el siguiente número y no borres las antiguas. Si una decisión cambia, se añade una nueva que diga "sustituye a D-0XX".
+> **Histórico hasta D-153 (D-153).** Desde D-153 las decisiones nuevas no se añaden aquí: viven en `docs/cambios/<tarea>-<nombre>.md` como `D-<tarea>-<n>`. Este archivo no se renumera. Antes de decidir algo, busca en los dos sitios.
+
+Si una decisión de este archivo cambia, el archivo nuevo de `docs/cambios/` dice "Sustituye a D-x" y aquí se añade a la antigua una línea "Sustituida por D-y". No se borra nada.
 
 ---
 
@@ -1479,6 +1481,18 @@ Cómo añadir una: copia el formato, usa el siguiente número y no borres las an
   - **Si otro móvil lo cerró o lo descartó**, aquí se olvida. Solo con la cola vacía, pasado un minuto del último cambio y preguntando antes a la nube, para no confundirlo con un entreno que aún no ha subido.
 - **Por qué:** D-124 pide que un entreno viva en un solo móvil sin perder lo apuntado en ninguno.
 - **Revisar si:** al probar con dos móviles de verdad el aviso llega tarde: hoy solo se mira al entrar y al volver a la app, no en tiempo real.
+
+### D-153 · Un archivo por tarea en `docs/cambios/`
+- **Fecha:** 2026-11-18
+- **Decisión:** para que los PR en paralelo no choquen:
+  1. Cada PR añade UN archivo nuevo, `docs/cambios/<tarea>-<nombre>.md`, con fecha, qué cambió, decisiones, qué debe saber el siguiente y deuda.
+  2. Las decisiones nuevas son `D-<tarea>-<n>` y van en ese archivo. Este archivo queda como histórico hasta D-153 y no se renumera.
+  3. Si algo cambia o se quita: "Sustituye a D-x" en el archivo nuevo y "Sustituida por D-y" en la decisión antigua.
+  4. Los PR normales no tocan `CONTEXTO.md`, `docs/ESTADO.md`, `docs/DECISIONES.md` ni las marcas "hecho" de PROMPTS §7. Una tarea está hecha si su archivo está en `main`.
+  5. Al cerrar cada lote, un solo PR de Claude resume `docs/cambios/` en `CONTEXTO.md` y `docs/ESTADO.md`.
+  6. Al empezar, cada chat lee `CONTEXTO.md`, lista `docs/cambios/` y mira `git log -15` y `gh pr list`. Antes de decidir, busca también en `docs/cambios/`.
+- **Por qué:** cada PR editaba `CONTEXTO.md`, `ESTADO.md` y `DECISIONES.md`: conflictos en cada fusión y números D repetidos (D-147 usado dos veces el 2026-11-17).
+- **Revisar si:** `docs/cambios/` crece tanto que cuesta leerla: entonces se resume por lotes.
 
 ---
 

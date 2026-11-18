@@ -3,7 +3,7 @@
 **Última actualización:** 2026-11-18
 **Fase actual:** 3 — Entreno y progreso, en construcción (diseño en D-115 a D-137). La Fase 2 terminó y se fusionó entera en `main`.
 
-Este archivo lo actualiza quien termina una tarea, en el mismo Pull Request, junto con `CONTEXTO.md` (que resume este en una página).
+Desde D-153 (2026-11-18) los PR normales NO tocan este archivo: cada uno añade su archivo en `docs/cambios/`, y un solo PR de Claude lo resume aquí y en `CONTEXTO.md` al cerrar cada lote. Una tarea está hecha si su archivo está en `main`. Lo anterior al 2026-11-18 está completo aquí.
 
 ## En curso
 
@@ -279,8 +279,9 @@ Cosas que alguien ha visto y que no tocaban en su tarea. No se hacen sin convert
 
 ## Registro de cambios
 
-Lo más nuevo, arriba.
+Lo más nuevo, arriba. Desde D-153 los cambios nuevos se registran en `docs/cambios/`, no aquí.
 
+- 2026-11-18 — Un archivo por tarea en `docs/cambios/` (D-153, solo documentación): los PR en paralelo ya no editan CONTEXTO, ESTADO ni DECISIONES. Se actualizan AGENTS.md, GUIA-GIT, PROMPTS §0, la plantilla de PR y `docs/cambios/README.md`.
 - 2026-11-18 — PR 3.6c: dos móviles. En otro dispositivo sale "Este entreno está abierto en otro dispositivo" con "Seguir aquí", que une lo apuntado en los dos, y el móvil anterior deja de poder apuntar hasta recuperarlo (D-152).
 
 - 2026-11-18 — PR 3.6b: recordatorio a las 6 horas con notificación local (`@capacitor/local-notifications`) y cierre solo a las 12 horas con "Guardamos tu entreno del lunes" (D-151). Arreglo: cerrar sin series hechas dejaba el entreno abierto en la nube. `android/` se sincroniza con los plugins, también el de `preferences`, que faltaba en los archivos generados.

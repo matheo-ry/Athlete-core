@@ -1,8 +1,8 @@
 # AGENTS.md — Reglas del proyecto
 
-> Fuente única de reglas para cualquier agente de IA (Antigravity, Claude Code, Gemini) y para las personas del equipo.
-> Si una regla choca con lo que te piden en un prompt, **para y pregunta**. No la rompas por tu cuenta.
-> Este archivo debe quedar por debajo de 12.000 caracteres (límite de los archivos de reglas de Antigravity). El detalle va en `docs/`.
+> Fuente única de reglas para cualquier agente de IA y para las personas del equipo.
+> Si una regla choca con lo que te piden, **para y pregunta**.
+> Máximo 12.000 caracteres (límite de Antigravity). El detalle va en `docs/`.
 
 ## 1. Qué es esto
 
@@ -22,23 +22,24 @@ Equipo: el **propietario** (decide y aprueba), un **colaborador junior** y agent
 4. `docs/ARQUITECTURA.md`: dónde va cada cosa.
 5. `docs/GUIA-GIT.md`: cómo se guardan y se suben los cambios.
 6. El `README.md` del módulo que vayas a tocar.
+7. Lista `docs/cambios/` y mira `git log -15` y `gh pr list`: lo último está ahí (D-153).
 
-Cada chat empieza sin memoria de los anteriores: lo que debe saber el siguiente tiene que quedar escrito en `CONTEXTO.md` y en `docs/ESTADO.md`, no solo en la conversación.
+Cada chat empieza sin memoria: lo que debe saber el siguiente queda escrito en el archivo de `docs/cambios/` de tu PR, no solo en la conversación.
 
-`docs/DECISIONES.md` explica el porqué de cada decisión. Consúltalo antes de proponer cambiar algo.
+`docs/DECISIONES.md` (hasta D-153) y `docs/cambios/` (desde D-153) explican el porqué de cada decisión. Búscalas en los dos antes de proponer cambiar algo.
 
 ## 3. Reglas de oro (no negociables)
 
 1. **Aislamiento de datos.** Toda tabla de negocio lleva `tenant_id NOT NULL` y RLS activado con políticas. Las únicas excepciones están listadas en ARQUITECTURA §8.
 2. **La seguridad vive en la base de datos, no en la pantalla.** Ocultar un botón no es seguridad; la política RLS sí.
 3. **Cero secretos en el repositorio.** Nada de claves en el código ni en commits. Solo `.env.local` (ignorado por Git) y `.env.example` sin valores. La clave `service_role` de Supabase nunca aparece en `src/`.
-4. **Cero código para un cliente concreto.** Prohibido `if (tenant.id === '...')` y similares. Lo que cambia por coach se resuelve con configuración: marca, flags y plan.
+4. **Cero código para un cliente concreto.** Prohibido `if (tenant.id === '...')` y similares. Lo que cambia por coach va en configuración: marca, flags y plan.
 5. **Una carpeta por función.** El código de una función vive en `src/modules/<función>/`. Respeta las fronteras de importación de ARQUITECTURA §6.
 6. **La estructura de la base de datos solo cambia con migraciones** en `supabase/migrations/` (tablas, columnas, políticas, funciones). Nunca a mano desde el panel de Supabase. Una migración ya fusionada en `main` no se edita: se crea otra.
 7. **Ningún texto visible escrito directamente en el código.** Todo pasa por i18n, en inglés y en español.
 8. **Todo cambio queda en Git.** Commits pequeños y frecuentes; al terminar, `git status` limpio. Nunca se trabaja ni se hace push sobre `main`.
 9. **Zonas protegidas:** `src/core/`, `supabase/`, `.github/`, archivos de configuración de la raíz, `AGENTS.md` y `docs/ARQUITECTURA.md`. Solo se tocan si la tarea lo pide expresamente. El colaborador junior necesita aprobación del propietario.
-10. **Nada de dependencias nuevas por tu cuenta.** Si hace falta una librería, proponla, espera el OK y anótala en `docs/DECISIONES.md`.
+10. **Nada de dependencias nuevas por tu cuenta.** Si hace falta una librería, proponla, espera el OK y anótala en tu archivo de `docs/cambios/`.
 11. **No se hace trampa con las comprobaciones.** Prohibido borrar o saltar tests, desactivar reglas de lint, usar `any`, `@ts-ignore` o `--no-verify` para que algo "pase".
 12. **Producción no se toca.** Agentes y colaborador trabajan en local y en staging. Solo el propietario despliega y aplica migraciones en producción. Ningún agente enlaza la CLI de Supabase con el proyecto de producción ni usa sus claves.
 13. **Ante la duda en algo irreversible, pregunta.** Borrar datos, cambios destructivos del esquema, reescribir el historial de Git, tocar pagos o permisos. Tampoco ejecutes sin permiso comandos que borran trabajo: `git reset --hard`, `git clean`, borrar ramas remotas.
@@ -96,7 +97,7 @@ Cada chat empieza sin memoria de los anteriores: lo que debe saber el siguiente 
 
 ### Comentarios
 
-- Explica el **porqué**, no el qué. Cada módulo tiene un `README.md` corto.
+- Explica el **porqué**, no el qué. Cada módulo, un `README.md` corto.
 
 ## 5. Base de datos (resumen; detalle en ARQUITECTURA §8)
 
@@ -128,18 +129,19 @@ Los tests van junto al archivo que prueban: `units.ts` → `units.test.ts`.
 - Commit después de cada paso que funcione. Push al terminar la sesión.
 - El título del Pull Request sigue el mismo formato que un commit: es el mensaje que quedará en `main`.
 - Antes de pedir revisión: `npm run check` en verde.
-- **Fusionar (D-148):** los chats de Claude que programan no fusionan: con el CI en verde dicen "PR N listo para fusionar" y terminan. Fusiona el chat de fusión (Haiku 5.5, PROMPTS §0). Gemini fusiona los suyos con el CI en verde y un comentario "VISTO BUENO DE CLAUDE". Lo crítico de D-148 (producción, borrar datos, relajar RLS o permisos, pagos, secretos, historial de Git, reglas de oro, decisiones suyas) necesita el OK del propietario escrito en el prompt; si no está, el agente para y pregunta. Nunca `push --force`.
+- **Fusionar (D-148):** Claude no fusiona: con el CI en verde dice "PR N listo para fusionar" y termina; fusiona el chat de fusión (Haiku 5.5, PROMPTS §0). Gemini fusiona los suyos con el CI en verde y un comentario "VISTO BUENO DE CLAUDE". Lo crítico de D-148 (producción, borrar datos, relajar RLS o permisos, pagos, secretos, historial de Git, reglas de oro, decisiones suyas) necesita el OK del propietario escrito en el prompt; si no está, para y pregunta. Nunca `push --force`.
 - **Reparto (D-142, D-144):** cada agente decide lo de sus PR con criterio propio y lo deja escrito como D-xxx; solo pregunta lo irreversible (regla 13). Gemini puede tocar cualquier carpeta y añadir librerías; lo que contradiga una decisión lo propone en el PR. Claude revisa antes de fusionar todo PR que toque `supabase/`, RLS o permisos.
 - **Chats en paralelo (GUIA-GIT §15):** cada chat en su worktree y su rama; nunca dos PR a la vez sobre la misma carpeta de módulo ni la misma base local.
+- **Documentación por tarea (D-153):** cada PR añade un archivo en `docs/cambios/`. Al cerrar cada lote, un solo PR de Claude lo resume en `CONTEXTO.md` y `docs/ESTADO.md`.
 
 ## 8. Cómo trabaja un agente en una tarea
 
 1. Lee lo indicado en §2 y la tarea. Si falta algo importante, pregunta **todo junto al principio**. Después trabaja de forma autónoma hasta terminar.
 2. Crea la rama desde `main` actualizado.
-3. Cambia **solo** lo que pide la tarea. No refactorices lo que no toca, no actualices dependencias y no añadas funciones "de regalo". Si ves algo mejorable, anótalo en `docs/ESTADO.md`, apartado "Ideas y deuda".
+3. Cambia **solo** lo que pide la tarea. No refactorices lo que no toca, no actualices dependencias y no añadas funciones "de regalo". Si ves algo mejorable, anótalo como deuda en tu archivo de `docs/cambios/`.
 4. Haz commits pequeños mientras avanzas.
-5. Ejecuta `npm run check` y arregla lo que falle, sin trampas (regla 11). Si falla algo que no has tocado tú, no lo tapes: dilo en el resumen.
-6. Actualiza `docs/ESTADO.md` y `CONTEXTO.md` (fase, última tarea, siguiente tarea y los 5 últimos cambios). Si tomaste una decisión de diseño, añádela a `docs/DECISIONES.md`.
+5. Ejecuta `npm run check` y arregla lo que falle, sin trampas (regla 11). Si falla algo ajeno, no lo tapes: dilo.
+6. Añade UN archivo nuevo `docs/cambios/<tarea>-<nombre>.md` (plantilla en `docs/cambios/README.md`) con fecha, qué cambió, decisiones `D-<tarea>-<n>`, lo que debe saber el siguiente y deuda. **No toques** `CONTEXTO.md`, `docs/ESTADO.md`, `docs/DECISIONES.md` ni las marcas "hecho" de PROMPTS §7: una tarea está hecha si su archivo está en `main` (D-153).
 7. Deja `git status` limpio, haz push y abre el Pull Request con la plantilla.
 8. Termina con un resumen: qué cambió, cómo probarlo paso a paso, qué queda pendiente y qué dudas tienes.
 
@@ -150,23 +152,22 @@ Los tests van junto al archivo que prueban: `units.ts` → `units.test.ts`.
 - [ ] Textos en `en` y `es`.
 - [ ] Probado como coach y como cliente, en ancho de móvil y de escritorio.
 - [ ] Tablas nuevas con RLS y test de aislamiento.
-- [ ] `docs/ESTADO.md` y `CONTEXTO.md` actualizados.
+- [ ] Archivo nuevo en `docs/cambios/` (sin tocar CONTEXTO, ESTADO ni DECISIONES).
 - [ ] Todo en commits, `git status` limpio y Pull Request abierto.
 
 ## 10. Glosario
 
 | Palabra | Significado |
 |---|---|
-| Tenant | El negocio de un coach. Todo dato pertenece a un tenant. |
-| Miembro | Un usuario dentro de un tenant, con un rol. |
-| Espacio | Cada pertenencia de un usuario a un tenant, con su rol. Es la palabra que ve el usuario en la app. |
+| Tenant | El negocio de un coach. |
+| Espacio | Pertenencia de un usuario a un tenant, con su rol (lo que ve en la app). |
 | Rol | `owner` (el coach dueño), `staff` (otro coach del mismo negocio; previsto, todavía sin alta) o `client`. |
 | Perfil coach | Lo que ven `owner` y `staff`: rutas `/coach/...`. |
 | Perfil cliente | Lo que ve `client`: rutas `/client/...`. |
 | Módulo | Una función de la app en su carpeta: `src/modules/<función>/`. |
-| Manifest | La ficha de un módulo: sus rutas, sus entradas de menú y su flag. |
-| Flag | Interruptor que activa o desactiva una función para un tenant. |
-| RLS | Reglas de Postgres que filtran las filas que puede ver cada usuario. |
-| Migración | Archivo SQL que cambia la base de datos de forma ordenada y repetible. |
+| Manifest | Ficha de un módulo: rutas, menú y flag. |
+| Flag | Interruptor de una función para un tenant. |
+| RLS | Reglas de Postgres que filtran las filas de cada usuario. |
+| Migración | Archivo SQL que cambia la base de datos. |
 | Staging | Entorno de pruebas en la nube, con datos inventados. |
 | PR | Pull Request: la petición de fusionar una rama en `main`. |

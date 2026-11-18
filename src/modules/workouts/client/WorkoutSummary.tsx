@@ -1,24 +1,25 @@
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, useNavigate } from 'react-router';
 
 import { Button, Card } from '@/core/ui';
 import { useExerciseOptions } from '@/modules/exercises';
 
-import { useSaveActiveWorkout } from '../api/useActiveWorkout';
-import { finishWorkout, setCounts } from '../model/active-workout';
+import { useDiscardActiveWorkout } from '../api/useActiveWorkout';
+import { setCounts } from '../model/active-workout';
 import type { ActiveWorkout } from '../model/active-workout';
 import { SetsRing } from './SetsRing';
+import { useCloseWorkout } from './useCloseWorkout';
 
 /**
  * El resumen del día (D-120): cada ejercicio con su anillo de series hechas
- * ("1/3"), el total ("6/20 series") y "Terminar entreno". El cierre completo
- * (cierre solo y resumen) llega en el PR 3.6: de momento cierra y vuelve al inicio.
+ * ("1/3"), el total ("6/20 series"), "Terminar entreno" y "Descartar entreno"
+ * con confirmación (D-119).
  */
 export function WorkoutSummary({ workout }: { workout: ActiveWorkout }) {
   const { t } = useTranslation();
-  const navigate = useNavigate();
   const options = useExerciseOptions();
-  const save = useSaveActiveWorkout();
+  const closer = useCloseWorkout();
   const total = setCounts(workout.exercises);
 
   return (
@@ -47,18 +48,50 @@ export function WorkoutSummary({ workout }: { workout: ActiveWorkout }) {
           })}
         </ol>
       </Card>
-      <Button
-        variant="secondary"
-        className="self-start"
-        disabled={save.isPending}
-        onClick={() => {
-          void save
-            .mutateAsync(finishWorkout(workout, new Date().toISOString()))
-            .then(() => navigate('/client'));
-        }}
-      >
-        {t('workouts.workout.finish')}
+      <div className="flex flex-wrap gap-2">
+        <Button
+          variant="secondary"
+          disabled={closer.isPending}
+          onClick={() => void closer.close(workout, 'manual')}
+        >
+          {t('workouts.workout.finish')}
+        </Button>
+      </div>
+      <DiscardWorkout workout={workout} />
+    </div>
+  );
+}
+
+/** "Descartar entreno", con confirmación: lo borra con todo lo apuntado (D-119). */
+function DiscardWorkout({ workout }: { workout: ActiveWorkout }) {
+  const { t } = useTranslation();
+  const navigate = useNavigate();
+  const discard = useDiscardActiveWorkout();
+  const [isConfirming, setIsConfirming] = useState(false);
+
+  if (!isConfirming) {
+    return (
+      <Button variant="ghost" className="self-start" onClick={() => setIsConfirming(true)}>
+        {t('workouts.discard.button')}
       </Button>
+    );
+  }
+  return (
+    <div role="alert" className="border-border flex flex-col gap-2 rounded-lg border p-3">
+      <p className="text-sm">{t('workouts.discard.confirm')}</p>
+      <div className="flex flex-wrap gap-2">
+        <Button
+          disabled={discard.isPending}
+          onClick={() => {
+            void discard.mutateAsync(workout).then(() => navigate('/client', { replace: true }));
+          }}
+        >
+          {t('workouts.discard.yes')}
+        </Button>
+        <Button variant="ghost" onClick={() => setIsConfirming(false)}>
+          {t('workouts.discard.cancel')}
+        </Button>
+      </div>
     </div>
   );
 }

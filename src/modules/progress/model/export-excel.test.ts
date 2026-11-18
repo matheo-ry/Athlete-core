@@ -56,7 +56,7 @@ const enTranslations: ExcelTranslations = {
   fileName: 'workouts',
 };
 
-describe('export-excel (D-131, D-149)', () => {
+describe('export-excel (D-131, D-150)', () => {
   describe('formatSetTextForExcel', () => {
     it('formatea series con notación X y RIR en paréntesis: 45X8(1)', () => {
       const set: RawWorkoutSet = {
@@ -263,7 +263,7 @@ describe('export-excel (D-131, D-149)', () => {
   });
 
   describe('buildDailySheet', () => {
-    it('crea la hoja Día a día con cabeceras y filas formateadas en orden cronológico inverso (D-149)', () => {
+    it('crea la hoja Día a día con cabeceras y filas formateadas en orden cronológico inverso (D-150)', () => {
       const workouts: RawWorkout[] = [
         {
           id: 'w-1',

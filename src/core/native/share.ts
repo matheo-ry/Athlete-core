@@ -1,6 +1,6 @@
 // Compartir un enlace o un archivo con lo que ofrezca el dispositivo. Hoy usa las
 // funciones del navegador / Web Share API; en la app móvil abre el menú nativo de
-// compartir/guardar (D-131, D-149).
+// compartir/guardar (D-131, D-150).
 
 import { Directory, Filesystem } from '@capacitor/filesystem';
 import { Share } from '@capacitor/share';
@@ -60,7 +60,7 @@ async function blobToBase64(blob: Blob): Promise<string> {
 
 /**
  * En la app nativa (Android / iOS) escribe el archivo en la caché del dispositivo
- * y abre el menú nativo de compartir/guardar con @capacitor/share (D-149).
+ * y abre el menú nativo de compartir/guardar con @capacitor/share (D-150).
  * En la web descarga el archivo mediante un enlace temporal <a download>.
  */
 export async function shareOrDownloadFile(blob: Blob, fileName: string): Promise<FileShareOutcome> {

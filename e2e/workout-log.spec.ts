@@ -56,8 +56,10 @@ test('Ana inicia el lunes, apunta la serie 1 y la sigue viendo al recargar', asy
   await expect(page.getByText('1/20 sets')).toBeVisible();
   await expect(page.getByRole('img', { name: '1 of 3 sets done' })).toBeVisible();
 
-  // Terminar (el cierre completo llega en el PR 3.6): vuelve al inicio sin entreno abierto.
+  // Terminar: el resumen final (PR 3.6) y, de ahí, al inicio sin entreno abierto.
   await page.getByRole('button', { name: 'Finish workout' }).click();
+  await expect(page.getByRole('heading', { name: 'Workout finished' })).toBeVisible();
+  await page.getByRole('link', { name: 'Back to home' }).click();
   await expect(page).toHaveURL(/\/client$/);
 });
 
@@ -96,6 +98,7 @@ test('desmarcar, volver al mismo ejercicio al abrir y la vez anterior en gris (P
   // Se termina: la próxima vez, en gris lo de hoy, y "Igual" lo copia (criterio 7).
   await page.getByRole('link', { name: 'Back to summary' }).click();
   await page.getByRole('button', { name: 'Finish workout' }).click();
+  await page.getByRole('link', { name: 'Back to home' }).click();
   await expect(page).toHaveURL(/\/client$/);
   await page.goto('/client/workout?day=1');
   await page.getByRole('button', { name: 'Start workout' }).click();
@@ -107,6 +110,7 @@ test('desmarcar, volver al mismo ejercicio al abrir y la vez anterior en gris (P
   await expect(again).toHaveAttribute('data-done', 'true');
   await page.getByRole('link', { name: 'Back to summary' }).click();
   await page.getByRole('button', { name: 'Finish workout' }).click();
+  await page.getByRole('link', { name: 'Back to home' }).click();
 });
 
 test('Bruno ve los pesos en libras (criterio 5)', async ({ page }) => {
@@ -120,4 +124,6 @@ test('Bruno ve los pesos en libras (criterio 5)', async ({ page }) => {
   ).toBeVisible();
   await page.getByRole('link', { name: 'Back to summary' }).click();
   await page.getByRole('button', { name: 'Finish workout' }).click();
+  // Sin ninguna serie hecha no se guarda: vuelve al inicio, sin resumen (D-119).
+  await expect(page).toHaveURL(/\/client$/);
 });

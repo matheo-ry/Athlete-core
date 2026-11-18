@@ -14,7 +14,7 @@ export type {
 } from './model/records';
 
 // Peso y medidas del cliente: los lleva este módulo y `progress` los lee de aquí (D-127).
-export { useClientHealthData } from './api/useClientWorkouts';
+export { useClientHealthData, clientHealthQueryKey } from './api/useClientWorkouts';
 export { fetchClientHealthData } from './api/workouts-coach-api';
 export type { ClientHealthData } from './api/workouts-coach-api';
 export type { BodyMeasurementRecord, BodyWeightRecord } from './model/workout-types';

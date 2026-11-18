@@ -7,11 +7,11 @@ Este archivo lo actualiza quien termina una tarea, en el mismo Pull Request, jun
 
 ## En curso
 
-- Nada de Claude. El **PR 3.5** (apuntar un entreno) está fusionado en dos partes: 3.5a (#77) y 3.5b (#79), D-146.
+- **PR 3.6a** (Claude): cierre solo, "Terminar", "Descartar", resumen final y "Pendiente de subir" (D-149).
 
 ## Siguiente
 
-1. **PR 3.6 — Subida, cierre y resumen** (Claude). Claude y Gemini trabajan en paralelo según `docs/PROMPTS.md` §7 (D-142, D-144) y las reglas de `docs/GUIA-GIT.md` §15.
+1. **PR 3.6b — Recordatorio, cierre a las 12 horas y dos móviles** (Claude, D-149): notificación local con `@capacitor/local-notifications` (`src/core/native`), "Guardamos tu entreno del lunes" y "Este entreno está abierto en otro dispositivo" con "Seguir aquí". Es el criterio 3 del PR 3.6. Claude y Gemini trabajan en paralelo según `docs/PROMPTS.md` §7 (D-142, D-144) y las reglas de `docs/GUIA-GIT.md` §15.
 2. El propietario dio por buenas, por ahora, la lista de `docs/referencia/biblioteca-ejercicios.md` y las rutinas de ejemplo. Se pueden retocar más adelante.
 
 ## Fases
@@ -143,7 +143,9 @@ El diseño está en DECISIONES D-115 a D-136, y el detalle de cada PR, en `docs/
 - [x] PR 3.5 — Apuntar un entreno (partido en dos, como preveía `docs/PROMPTS.md` §7)
   - [x] 3.5a — iniciar, resumen, pantalla del ejercicio y series
   - [x] 3.5b — el gris, "Igual", "+ Serie", desmarcar e ir directo
-- [ ] PR 3.6 — Subida, cierre y resumen
+- [ ] PR 3.6 — Subida, cierre y resumen (partido en dos, D-149)
+  - [x] 3.6a — cierre solo, "Terminar", "Descartar", resumen final y "Pendiente de subir"
+  - [ ] 3.6b — recordatorio de las 6 horas, cierre a las 12 horas y dos móviles
 - [ ] PR 3.7 — Cronómetro de descanso
 
 **Lote 3 — Completar el entreno**
@@ -165,7 +167,7 @@ El diseño está en DECISIONES D-115 a D-136, y el detalle de cada PR, en `docs/
 - [x] PR 3.16 — Gráficas (Gemini), con los arreglos de su revisión (D-147)
 - [ ] PR 3.17 — Minilogros, racha, niveles y logros
 
-- [x] PR 3.18 — Descargar en Excel (Gemini, D-131, D-135, D-149)
+- [x] PR 3.18 — Descargar en Excel (Gemini, D-131, D-135, D-150)
 
 ### Fase 4 — Pilotos
 
@@ -277,7 +279,9 @@ Cosas que alguien ha visto y que no tocaban en su tarea. No se hacen sin convert
 
 Lo más nuevo, arriba.
 
-- 2026-11-17 — PR 3.18 (descargar en Excel): exportación de entrenos en archivo .xlsx con `write-excel-file/universal` (D-135, D-149). Hoja "Día a día" cronológica inversa (fecha, rutina, día, ejercicios y series 45X8(1)), una hoja por rutina con la evolución de sus ejercicios a lo largo del tiempo, y hoja opcional "Peso corporal" solo si el cliente ha dado consentimiento de salud (D-126). Disponible en la sección Progreso del cliente y en la ficha del cliente para el coach. En web descarga directa y en móvil apertura de compartir/guardar (`core/native/share`).
+- 2026-11-17 — PR 3.18 (descargar en Excel): exportación de entrenos en archivo .xlsx con `write-excel-file/universal` (D-135, D-150). Hoja "Día a día" cronológica inversa (fecha, rutina, día, ejercicios y series 45X8(1)), una hoja por rutina con la evolución de sus ejercicios a lo largo del tiempo, y hoja opcional "Peso corporal" solo si el cliente ha dado consentimiento de salud (D-126). Disponible en la sección Progreso del cliente y en la ficha del cliente para el coach. En web descarga directa y en móvil apertura de compartir/guardar (`core/native/share`).
+
+- 2026-11-17 — PR 3.6a: el entreno se cierra solo con todas las series hechas (al ir al resumen o tras 20 s sin cambios); "Terminar entreno" lleva al resumen final (duración, series y ejercicios); "Descartar entreno" lo borra tras confirmar (por la cola, también sin conexión); y "Pendiente de subir" se ve mientras algo espera en la cola (D-149). Arreglo: sin conexión no se guardaba lo apuntado, porque TanStack Query dejaba en pausa lo que va al teléfono. Test de flujos completos nuevo, `e2e/workout-close.spec.ts`, con Diego. El 3.6b (recordatorio, 12 horas y dos móviles) queda para el siguiente PR.
 - 2026-11-17 — Renumerada a D-148 la decisión de que los agentes fusionan solos (PR #81): se escribió como D-147 a la vez que el #80, que ya usaba D-147 para los arreglos de la revisión del PR 3.16. Dos lecciones, en `docs/GUIA-GIT.md` §15: antes de usar un número D-xxx se miran `main` y los PR abiertos, y nunca se fusiona con el CI en rojo (el #79 se fusionó así y dejó `main` en rojo hasta el #82).
 - 2026-11-17 — Los agentes fusionan sin esperar al propietario (solo documentación, D-148, sustituye a D-068). Claude fusiona sus PR con el CI en verde; Gemini, los suyos con el comentario "VISTO BUENO DE CLAUDE" de su chat revisor. El propietario solo da su OK, escrito en el prompt, para lo crítico: producción, borrar datos, relajar RLS o permisos, pagos, secretos, historial de Git, reglas de oro y decisiones suyas. Chat revisor y final de los prompts de Gemini en `docs/PROMPTS.md` §0.
 - 2026-11-17 — Arreglo del test de flujos completos `workout-log.spec.ts` ("Ana inicia el lunes…"), rojo en `main` desde el #79: desde el PR 3.5b el primer + pone lo gris de la vez anterior (D-120, D-146), y Ana ya tiene ese lunes en el seed (0 kg de lastre), pero el test seguía esperando lo prescrito (10). Pasaba o fallaba según si lo gris llegaba antes del clic (en local, 10; en el CI, 0). Ahora espera a que salga lo gris y compara con ese valor. Sin cambios en `src/`.

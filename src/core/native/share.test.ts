@@ -19,7 +19,7 @@ vi.mock('@capacitor/share', () => ({
   },
 }));
 
-describe('shareOrDownloadFile (D-131, D-149)', () => {
+describe('shareOrDownloadFile (D-131, D-150)', () => {
   beforeEach(() => {
     vi.restoreAllMocks();
     writeFileMock.mockReset();
@@ -55,16 +55,19 @@ describe('shareOrDownloadFile (D-131, D-149)', () => {
       });
     });
 
-    it('detecta cancelación del usuario al compartir sin considerarlo fallo', async () => {
+    it('detecta cancelación del usuario al compartir sin considerarlo fallo (Share canceled y Share cancelled)', async () => {
       writeFileMock.mockResolvedValue({
         uri: 'file:///cache/entrenos.xlsx',
       });
-      shareMock.mockRejectedValue(new Error('Share canceled'));
+      shareMock.mockRejectedValueOnce(new Error('Share canceled'));
 
       const blob = new Blob(['test']);
-      const outcome = await shareOrDownloadFile(blob, 'entrenos.xlsx');
+      const outcome1 = await shareOrDownloadFile(blob, 'entrenos.xlsx');
+      expect(outcome1).toBe('cancelled');
 
-      expect(outcome).toBe('cancelled');
+      shareMock.mockRejectedValueOnce(new Error('Share cancelled'));
+      const outcome2 = await shareOrDownloadFile(blob, 'entrenos.xlsx');
+      expect(outcome2).toBe('cancelled');
     });
 
     it('devuelve failed si falla la escritura del archivo', async () => {

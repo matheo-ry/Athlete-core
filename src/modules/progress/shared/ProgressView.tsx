@@ -57,7 +57,7 @@ export function ProgressView({
 
   return (
     <div className="flex flex-col gap-6">
-      {/* Ejercicios o Peso y medidas + Botón Descargar Excel (D-131, D-149) */}
+      {/* Ejercicios o Peso y medidas + Botón Descargar Excel (D-131, D-150) */}
       <div className="flex flex-col gap-2 border-b border-border pb-2">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <ChoiceChips

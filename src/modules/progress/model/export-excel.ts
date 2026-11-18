@@ -28,8 +28,8 @@ export interface ExcelExportOptions {
 }
 
 /**
- * Construye la hoja "Día a día": fecha · rutina · día; cada ejercicio con sus series y nota (D-131, D-149).
- * Orden cronológico inverso (de más reciente a más antiguo, D-149).
+ * Construye la hoja "Día a día": fecha · rutina · día; cada ejercicio con sus series y nota (D-131, D-150).
+ * Orden cronológico inverso (de más reciente a más antiguo, D-150).
  */
 export function buildDailySheet(
   workouts: RawWorkout[],
@@ -49,7 +49,7 @@ export function buildDailySheet(
 
   const rows: ExcelRow[] = [headers];
 
-  // Orden cronológico inverso (más reciente primero, D-149)
+  // Orden cronológico inverso (más reciente primero, D-150)
   const sortedWorkouts = [...workouts].sort((a, b) => {
     const dateDiff = b.performed_on.localeCompare(a.performed_on);
     if (dateDiff !== 0) return dateDiff;
@@ -95,7 +95,7 @@ export function buildDailySheet(
 }
 
 /**
- * Construye una hoja por rutina: cada ejercicio con sus entrenos (día, fecha, series y nota) (D-131, D-149).
+ * Construye una hoja por rutina: cada ejercicio con sus entrenos (día, fecha, series y nota) (D-131, D-150).
  */
 export function buildRoutineSheets(
   workouts: RawWorkout[],
@@ -204,7 +204,7 @@ export function buildRoutineSheets(
 }
 
 /**
- * Construye la hoja "Peso corporal" SOLO si hay consentimiento de salud y registros de peso (D-126, D-149).
+ * Construye la hoja "Peso corporal" SOLO si hay consentimiento de salud y registros de peso (D-126, D-150).
  */
 export function buildWeightSheet(
   healthData: ExcelHealthData | null,
@@ -276,7 +276,7 @@ export async function generateExcelBlob(sheets: ExcelSheet[]): Promise<Blob> {
 }
 
 /**
- * Descarga o comparte el archivo Excel de entrenos (D-131, D-149).
+ * Descarga o comparte el archivo Excel de entrenos (D-131, D-150).
  */
 export async function exportWorkoutsToExcel(
   options: ExcelExportOptions,

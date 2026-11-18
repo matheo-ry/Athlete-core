@@ -65,7 +65,7 @@ export function getExcelTranslations(
 }
 
 /**
- * Formatea una serie individual para Excel con el formato "45X8(1)" (D-131, D-149).
+ * Formatea una serie individual para Excel con el formato "45X8(1)" (D-131, D-150).
  */
 export function formatSetTextForExcel(
   set: RawWorkoutSet,
@@ -117,7 +117,7 @@ export function formatSetTextForExcel(
 }
 
 /**
- * Formatea el conjunto de series de un ejercicio para una sesión dada (D-131, D-149).
+ * Formatea el conjunto de series de un ejercicio para una sesión dada (D-131, D-150).
  */
 export function formatWorkoutExerciseSets(
   ex: RawWorkoutExercise,
@@ -188,7 +188,7 @@ export function sanitizeFileNameSlug(name: string): string {
 }
 
 /**
- * Construye el nombre de archivo Excel con fecha y slug del cliente (D-149).
+ * Construye el nombre de archivo Excel con fecha y slug del cliente (D-150).
  */
 export function buildExcelFileName(
   clientName: string | undefined,

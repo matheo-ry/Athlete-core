@@ -31,8 +31,8 @@ export {
   TERMS_VERSION,
 } from './signup';
 export type { DisplayNameError, SignupInput, SignupProfile } from './signup';
-export { parseProfile } from './profile';
-export type { ProfilePatch, UserProfile } from './profile';
+export { DEFAULT_TRAINING_SETTINGS, SAME_BUTTON_MODES, parseProfile } from './profile';
+export type { ProfilePatch, SameButtonMode, UserProfile } from './profile';
 export { ProfileLanguageSync } from './ProfileLanguageSync';
 export { RequireAuth } from './RequireAuth';
 export { RequireGuest } from './RequireGuest';

@@ -5,6 +5,7 @@ import { canLogWorkouts, getUploadQueue, useUploadQueue } from '@/core/native';
 import { cn } from '@/core/lib';
 import { Button, useOnlineStatus } from '@/core/ui';
 
+import { RestTimerBar } from './RestTimerBar';
 import { useOfflineSnapshotRefresh, useUploadPending } from '../api/useWorkoutSync';
 import { TimedOutNotice } from './TimedOutNotice';
 import { useResumeOnOpen } from './useResumeOnOpen';
@@ -29,6 +30,7 @@ function SyncForUser({ userId }: { userId: string }) {
   return (
     <>
       <TimedOutNotice />
+      <RestTimerBar />
       <PendingUploadsBadge userId={userId} />
       <RejectedUploadsNotice userId={userId} />
     </>

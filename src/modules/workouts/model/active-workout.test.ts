@@ -8,6 +8,7 @@ import {
   addSet,
   changeSet,
   copyPrevious,
+  copySource,
   exerciseToResume,
   previousSet,
   unmarkSet,
@@ -222,5 +223,48 @@ describe('desmarcar, "+ Serie", "Igual" y reanudar (PR 3.5b)', () => {
     expect(exerciseToResume(current)).toBe(3);
     current = changeSet(current, 1, 1, { reps: 5 }, at);
     expect(exerciseToResume(current)).toBe(1);
+  });
+});
+
+describe('"Igual" según el ajuste del Perfil (D-120)', () => {
+  const at = '2026-11-16T08:10:00.000Z';
+  const lastTime = {
+    weightKg: 50,
+    reps: 5,
+    durationSeconds: null,
+    distanceMeters: null,
+    intensityType: null,
+    intensityValue: null,
+  };
+
+  it('por defecto copia la vez anterior en esa serie', () => {
+    const done = changeSet(workout(), 1, 1, { weightKg: 60, reps: 8 }, at);
+    const exercise = done.exercises[0];
+    expect(exercise).toBeDefined();
+    if (exercise === undefined) {
+      return;
+    }
+    expect(copySource('previous', exercise, 2, lastTime)).toEqual(lastTime);
+  });
+
+  it('"copiar la serie anterior de hoy": la serie 1 copia la vez anterior y la 2 copia la serie 1 de hoy', () => {
+    const done = changeSet(workout(), 1, 1, { weightKg: 60, reps: 8 }, at);
+    const exercise = done.exercises[0];
+    if (exercise === undefined) {
+      throw new Error('missing exercise');
+    }
+    expect(copySource('previous_then_today', exercise, 1, lastTime)).toEqual(lastTime);
+    expect(copySource('previous_then_today', exercise, 2, lastTime)).toMatchObject({
+      weightKg: 60,
+      reps: 8,
+    });
+  });
+
+  it('si la serie anterior de hoy no está hecha, no hay nada que copiar', () => {
+    const exercise = workout().exercises[0];
+    if (exercise === undefined) {
+      throw new Error('missing exercise');
+    }
+    expect(copySource('previous_then_today', exercise, 2, lastTime)).toBeNull();
   });
 });

@@ -136,5 +136,17 @@
     "elsewhere": "Este entreno está abierto en otro dispositivo",
     "continueHere": "Seguir aquí",
     "error": "No se pudo seguir aquí. Inténtalo otra vez."
+  },
+  "rest": {
+    "label": "Cronómetro de descanso",
+    "pause": "Pausar",
+    "resume": "Seguir",
+    "skip": "Saltar",
+    "close": "Cerrar",
+    "done": "Descanso terminado",
+    "plus": "Sumar {{seconds}} segundos",
+    "minus": "Restar {{seconds}} segundos",
+    "notificationTitle": "Descanso terminado",
+    "notificationBody": "Toca la siguiente serie"
   }
 }

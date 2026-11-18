@@ -7,11 +7,11 @@ Este archivo lo actualiza quien termina una tarea, en el mismo Pull Request, jun
 
 ## En curso
 
-- **PR 3.6b** (Claude): recordatorio de las 6 horas y cierre a las 12 horas (D-151).
+- **PR 3.6c** (Claude): dos móviles, con "Seguir aquí" (D-152). Con él queda completo el PR 3.6.
 
 ## Siguiente
 
-1. **PR 3.6c — Dos móviles** (Claude, D-151): "Este entreno está abierto en otro dispositivo" con "Seguir aquí". Claude y Gemini trabajan en paralelo según `docs/PROMPTS.md` §7 (D-142, D-144) y las reglas de `docs/GUIA-GIT.md` §15.
+1. **PR 3.7 — Cronómetro de descanso** (Claude, `docs/PROMPTS.md` §7). Claude y Gemini trabajan en paralelo según §7 (D-142, D-144) y las reglas de `docs/GUIA-GIT.md` §15.
 2. El propietario dio por buenas, por ahora, la lista de `docs/referencia/biblioteca-ejercicios.md` y las rutinas de ejemplo. Se pueden retocar más adelante.
 
 ## Fases
@@ -143,10 +143,10 @@ El diseño está en DECISIONES D-115 a D-136, y el detalle de cada PR, en `docs/
 - [x] PR 3.5 — Apuntar un entreno (partido en dos, como preveía `docs/PROMPTS.md` §7)
   - [x] 3.5a — iniciar, resumen, pantalla del ejercicio y series
   - [x] 3.5b — el gris, "Igual", "+ Serie", desmarcar e ir directo
-- [ ] PR 3.6 — Subida, cierre y resumen (partido en tres, D-149 y D-151)
+- [x] PR 3.6 — Subida, cierre y resumen (partido en tres, D-149 y D-151)
   - [x] 3.6a — cierre solo, "Terminar", "Descartar", resumen final y "Pendiente de subir"
   - [x] 3.6b — recordatorio de las 6 horas y cierre a las 12 horas
-  - [ ] 3.6c — dos móviles
+  - [x] 3.6c — dos móviles
 - [ ] PR 3.7 — Cronómetro de descanso
 
 **Lote 3 — Completar el entreno**
@@ -280,6 +280,8 @@ Cosas que alguien ha visto y que no tocaban en su tarea. No se hacen sin convert
 ## Registro de cambios
 
 Lo más nuevo, arriba.
+
+- 2026-11-18 — PR 3.6c: dos móviles. En otro dispositivo sale "Este entreno está abierto en otro dispositivo" con "Seguir aquí", que une lo apuntado en los dos, y el móvil anterior deja de poder apuntar hasta recuperarlo (D-152).
 
 - 2026-11-18 — PR 3.6b: recordatorio a las 6 horas con notificación local (`@capacitor/local-notifications`) y cierre solo a las 12 horas con "Guardamos tu entreno del lunes" (D-151). Arreglo: cerrar sin series hechas dejaba el entreno abierto en la nube. `android/` se sincroniza con los plugins, también el de `preferences`, que faltaba en los archivos generados.
 - 2026-11-17 — PR 3.18 (descargar en Excel): exportación de entrenos en archivo .xlsx con `write-excel-file/universal` (D-135, D-150). Hoja "Día a día" cronológica inversa (fecha, rutina, día, ejercicios y series 45X8(1)), una hoja por rutina con la evolución de sus ejercicios a lo largo del tiempo, y hoja opcional "Peso corporal" solo si el cliente ha dado consentimiento de salud (D-126). Disponible en la sección Progreso del cliente y en la ficha del cliente para el coach. En web descarga directa y en móvil apertura de compartir/guardar (`core/native/share`).

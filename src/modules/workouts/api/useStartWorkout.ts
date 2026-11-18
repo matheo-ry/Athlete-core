@@ -3,18 +3,33 @@ import { useExerciseOptions } from '@/modules/exercises';
 import type { ProgramBlock, ProgramDay } from '@/modules/programs';
 
 import { startWorkout } from '../model/active-workout';
-import type { ActiveWorkout } from '../model/active-workout';
+import type { ActiveWorkout, ExerciseInfo } from '../model/active-workout';
 import { useActiveWorkout, useSaveActiveWorkout } from './useActiveWorkout';
+
+/** Cómo se mide cada ejercicio, de la lista de ejercicios del negocio. */
+export function useExerciseInfo() {
+  const options = useExerciseOptions();
+  return {
+    isPending: options.isPending,
+    exerciseInfo: (exerciseId: string): ExerciseInfo => {
+      const option = options.byId.get(exerciseId);
+      return {
+        measurement: option?.measurement ?? 'weight_reps',
+        isUnilateral: option?.isUnilateral ?? false,
+      };
+    },
+  };
+}
 
 /**
  * Empieza el entreno de un día (D-119). Si ya hay uno abierto, no empieza
- * otro: devuelve el abierto (un solo entreno a la vez; se cierra en el PR 3.6).
+ * otro: devuelve el abierto (un solo entreno a la vez).
  */
 export function useStartWorkout() {
   const { tenant } = useTenancy();
   const active = useActiveWorkout();
   const save = useSaveActiveWorkout();
-  const options = useExerciseOptions();
+  const { exerciseInfo, isPending: infoPending } = useExerciseInfo();
 
   const start = async (
     programId: string,
@@ -32,13 +47,7 @@ export function useStartWorkout() {
       programId,
       block,
       day,
-      exerciseInfo: (exerciseId) => {
-        const option = options.byId.get(exerciseId);
-        return {
-          measurement: option?.measurement ?? 'weight_reps',
-          isUnilateral: option?.isUnilateral ?? false,
-        };
-      },
+      exerciseInfo,
       now: new Date().toISOString(),
       newId: () => crypto.randomUUID(),
     });
@@ -46,5 +55,5 @@ export function useStartWorkout() {
     return workout;
   };
 
-  return { start, isReady: active.isSuccess && !options.isPending, isPending: save.isPending };
+  return { start, isReady: active.isSuccess && !infoPending, isPending: save.isPending };
 }

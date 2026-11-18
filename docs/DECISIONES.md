@@ -1469,6 +1469,17 @@ Cómo añadir una: copia el formato, usa el siguiente número y no borres las an
   - **Textos:** todos los textos visibles (nombres de hojas fijas, cabeceras, notas de saltado/sin rutina, prefijos unilaterales D:/I:) se obtienen mediante las claves de internacionalización i18n (`progress.excel.*`).
 - **Por qué:** formato idéntico al de la app de apuntes del propietario, listo para compartir y analizar en Excel, respetando la privacidad y consentimiento de salud (D-126) y garantizando compatibilidad nativa en Android y web.
 
+### D-152 · Dos móviles: detalles del PR 3.6c
+- **Fecha:** 2026-11-18
+- **Decisión:** detalles que D-124 y D-138 no fijaban.
+  - **Identificar el móvil:** `getDeviceId()` crea un identificador la primera vez y lo guarda en el teléfono. No depende de la cuenta.
+  - **De quién es el entreno:** se mira en la nube al entrar y al volver a la app. Sin entreno aquí y con uno abierto en otro móvil, sale el aviso con "Seguir aquí" y no se puede empezar otro (D-119), salvo que lleve más de 12 horas sin tocarse: entonces está abandonado y no bloquea. Con entreno aquí, si otro móvil lo tomó después, este deja de poder apuntar hasta pulsar "Seguir aquí". Sin conexión no se molesta: se entrena con lo que hay.
+  - **"Seguir aquí"** une lo de la nube y lo de este móvil, serie a serie, y se queda el último cambio (D-124). Toma el entreno con una hora siempre posterior a la del otro móvil, aunque este reloj vaya atrasado.
+  - **Si lo tiene otro móvil**, este no le manda recordatorio ni lo cierra a las 12 horas.
+  - **Si otro móvil lo cerró o lo descartó**, aquí se olvida. Solo con la cola vacía, pasado un minuto del último cambio y preguntando antes a la nube, para no confundirlo con un entreno que aún no ha subido.
+- **Por qué:** D-124 pide que un entreno viva en un solo móvil sin perder lo apuntado en ninguno.
+- **Revisar si:** al probar con dos móviles de verdad el aviso llega tarde: hoy solo se mira al entrar y al volver a la app, no en tiempo real.
+
 ---
 
 

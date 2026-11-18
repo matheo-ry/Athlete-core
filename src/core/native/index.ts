@@ -1,4 +1,5 @@
 export { onAppResume } from './app-resume';
+export { getDeviceId } from './device-id';
 export { createDeviceStore, getDeviceStore, userKey } from './device-store';
 export type { DeviceStore, KeyValueBackend } from './device-store';
 export { cancelLocalNotification, scheduleLocalNotification } from './local-notifications';

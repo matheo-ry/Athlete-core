@@ -4,7 +4,7 @@ import type { Page } from '@playwright/test';
 import { SEED_PASSWORD, signIn } from './helpers';
 import { select, signInApi } from './supabase-helpers';
 
-// Subida, cierre y resumen (PR 3.6, D-118, D-119, D-149 y D-151), contra Supabase
+// Subida, cierre y resumen (PR 3.6, D-118, D-119, D-124, D-149, D-151 y D-152), contra Supabase
 // local y la rutina "Fuerza básica" de Diego (seed): el día 1 son 4
 // ejercicios de 3 series, y la plancha va en segundos. Diego no lo usa ningún
 // otro test de entrenos, así que no choca con los de Ana en paralelo.
@@ -103,6 +103,44 @@ async function logFirstSet(page: Page, since: string): Promise<void> {
   const path = `workout_sets?select=id&is_done=eq.true&recorded_at=gte.${encodeURIComponent(since)}`;
   await expect.poll(async () => (await select(session, path)).length).toBe(1);
 }
+
+test('dos móviles: "Seguir aquí" lo trae con lo apuntado y el otro se entera (D-124)', async ({
+  page,
+  browser,
+}) => {
+  const since = new Date().toISOString();
+  await startDayOne(page);
+  await logFirstSet(page, since);
+  const session = await signInApi(DIEGO, SEED_PASSWORD);
+  const openDevice = async () =>
+    select(session, 'workouts?select=open_device_id&closed_at=is.null');
+  const [before] = await openDevice();
+
+  // Otro contexto del navegador es otro móvil: su propio almacén.
+  const otherPhone = await browser.newContext();
+  const other = await otherPhone.newPage();
+  await signIn(other, DIEGO);
+  await other.goto('/client/workout?day=1');
+  await expect(other.getByText('This workout is open on another device')).toBeVisible();
+  await expect(other.getByRole('button', { name: 'Start workout' })).toHaveCount(0);
+  await other.getByRole('button', { name: 'Continue here' }).click();
+  await expect(other.getByText('1/12 sets')).toBeVisible();
+  await expect.poll(async () => (await openDevice())[0]).not.toEqual(before);
+
+  // El primero ya no puede seguir apuntando, hasta que lo recupere.
+  await page.reload();
+  await expect(page.getByText('This workout is open on another device')).toBeVisible();
+  await expect(page.getByRole('listitem', { name: 'Set 1' })).toHaveCount(0);
+  await page.getByRole('button', { name: 'Continue here' }).click();
+  await expect(page.getByRole('listitem', { name: 'Set 1' })).toHaveAttribute('data-done', 'true');
+  await expect.poll(async () => (await openDevice())[0]).toEqual(before);
+
+  await otherPhone.close();
+  await page.getByRole('link', { name: 'Back to summary' }).click();
+  await page.getByRole('button', { name: 'Discard workout' }).click();
+  await page.getByRole('button', { name: 'Yes, discard' }).click();
+  await expect.poll(async () => (await openWorkoutsSince(since)).length).toBe(0);
+});
 
 test('a las 12 horas sin tocarlo se cierra solo y lo avisa (D-119)', async ({ page }) => {
   const since = new Date().toISOString();

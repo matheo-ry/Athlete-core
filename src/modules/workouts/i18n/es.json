@@ -131,5 +131,10 @@
   "reminder": {
     "title": "Tienes un entreno abierto",
     "body": "Termínalo, apunta lo que hiciste o marca lo que saltaste"
+  },
+  "device": {
+    "elsewhere": "Este entreno está abierto en otro dispositivo",
+    "continueHere": "Seguir aquí",
+    "error": "No se pudo seguir aquí. Inténtalo otra vez."
   }
 }

@@ -9,6 +9,7 @@ import type { ProgramBlock, ProgramDay } from '@/modules/programs';
 
 import { useActiveWorkout } from '../api/useActiveWorkout';
 import { useStartWorkout } from '../api/useStartWorkout';
+import { useWorkoutOwnership } from '../api/useWorkoutOwnership';
 
 const LINK =
   'focus-visible:outline-primary-readable rounded text-lg font-semibold underline-offset-4 hover:underline focus-visible:outline-2';
@@ -85,9 +86,11 @@ function StartButton({ start }: { start: StartArgs }) {
   const navigate = useNavigate();
   const active = useActiveWorkout();
   const starter = useStartWorkout();
+  const ownership = useWorkoutOwnership();
   const open = active.data ?? null;
 
-  if (open !== null) {
+  // Con uno abierto en otro móvil tampoco se empieza otro (D-119, D-124).
+  if (open !== null || ownership.kind === 'elsewhere') {
     return (
       <Link to="/client/workout" className={buttonClassName('primary', 'mt-2 self-start')}>
         {t('workouts.today.continue')}

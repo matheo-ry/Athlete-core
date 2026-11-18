@@ -29,6 +29,7 @@ export function RestTimerBar() {
   const profile = useProfile().data;
   const [now, setNow] = useState(() => Date.now());
   const rang = useRef<number | null>(null);
+  const bar = useRef<HTMLElement | null>(null);
 
   const belongsHere = timer !== null && workout !== null && workout.id === timer.workoutId;
   // Sin entreno abierto (o con otro) no hay descanso que enseñar ni avisar.
@@ -49,6 +50,20 @@ export function RestTimerBar() {
       window.clearInterval(id);
     };
   }, [belongsHere]);
+
+  // La barra va por encima del contenido: se deja sitio debajo para que no tape
+  // ningún botón (ni se pueda tocar nada a su través).
+  useEffect(() => {
+    const element = bar.current;
+    if (!belongsHere || element === null) {
+      return;
+    }
+    const previous = document.body.style.paddingBottom;
+    document.body.style.paddingBottom = `${String(element.offsetHeight + 16)}px`;
+    return () => {
+      document.body.style.paddingBottom = previous;
+    };
+  });
 
   const endsAt = timer?.endsAtMs ?? null;
   const left = timer === null ? 0 : remainingMs(timer, now);
@@ -76,6 +91,7 @@ export function RestTimerBar() {
 
   return (
     <section
+      ref={bar}
       aria-label={t('workouts.rest.label')}
       className="bg-surface border-border fixed inset-x-2 bottom-[calc(5rem+var(--safe-bottom))] z-40 mx-auto flex max-w-lg flex-col gap-2 rounded-lg border p-3 shadow-lg"
     >

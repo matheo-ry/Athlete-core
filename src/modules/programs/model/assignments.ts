@@ -1,13 +1,29 @@
 import { z } from 'zod';
 
-import { calendarPosition, daysBetween, programEndsOn } from './calendar';
-import type { CalendarBlock } from './calendar';
+import { calendarPosition, daysBetween, listPosition, programEndsOn } from './calendar';
+import type {
+  CalendarBlock,
+  CalendarOptions,
+  MissedDayRecord,
+  MissedDayRule,
+  MissedDayRuleHistory,
+} from './calendar';
+
+export type { MissedDayRecord, MissedDayRule, MissedDayRuleHistory };
 
 // Las rutinas de los clientes que siguen abiertas (D-081): la vigente de cada
 // uno y su próxima. Se calcula al leer, con "hoy" del dispositivo (D-082).
 
 export const PROGRAM_MODES = ['calendar', 'list'] as const;
 export type ProgramMode = (typeof PROGRAM_MODES)[number];
+
+export interface ClientProgramWorkout {
+  id: string;
+  programDayId?: string | null;
+  dayNumber?: number;
+  performedOn?: string;
+  closedAt?: string | null;
+}
 
 export interface ClientProgram {
   id: string;
@@ -19,6 +35,10 @@ export interface ClientProgram {
   /** La terminó el coach o se sustituyó: está en "Anteriores" (D-081). */
   endedAt: string | null;
   blocks: CalendarBlock[];
+  missedDayRules?: MissedDayRuleHistory[];
+  missedDays?: MissedDayRecord[];
+  workouts?: ClientProgramWorkout[];
+  completedWorkoutsCount?: number;
 }
 
 /** Lo que tiene cada cliente: la rutina vigente y la próxima, si las hay. */
@@ -44,6 +64,39 @@ const rowSchema = z.object({
       laps: z.number().int().nullable(),
     }),
   ),
+  program_missed_day_rules: z
+    .array(
+      z.object({
+        rule: z.enum(['lose', 'recover', 'shift']),
+        starts_on: z.string(),
+      }),
+    )
+    .optional()
+    .nullable(),
+  program_missed_days: z
+    .array(
+      z.object({
+        id: z.string().optional(),
+        block_id: z.string().nullable().optional(),
+        program_day_id: z.string().nullable().optional(),
+        day_number: z.number().int(),
+        missed_on: z.string(),
+      }),
+    )
+    .optional()
+    .nullable(),
+  workouts: z
+    .array(
+      z.object({
+        id: z.string(),
+        program_day_id: z.string().nullable().optional(),
+        day_number: z.number().optional(),
+        performed_on: z.string().optional(),
+        closed_at: z.string().nullable().optional(),
+      }),
+    )
+    .optional()
+    .nullable(),
 });
 
 /** Una rutina ya leída, tal como se guarda en el móvil para entrenar sin conexión (D-118). */
@@ -60,26 +113,84 @@ export const clientProgramSchema: z.ZodType<ClientProgram> = z.object({
       id: z.string().nullable(),
       cycleDays: z.number().int(),
       laps: z.number().int().nullable(),
+      trainingDaysCount: z.number().int().optional(),
     }),
   ),
+  missedDayRules: z
+    .array(
+      z.object({
+        rule: z.enum(['lose', 'recover', 'shift']),
+        startsOn: z.string(),
+      }),
+    )
+    .optional(),
+  missedDays: z
+    .array(
+      z.object({
+        id: z.string().optional(),
+        blockId: z.string().nullable().optional(),
+        programDayId: z.string().nullable().optional(),
+        dayNumber: z.number().int(),
+        missedOn: z.string(),
+      }),
+    )
+    .optional(),
+  workouts: z
+    .array(
+      z.object({
+        id: z.string(),
+        programDayId: z.string().nullable().optional(),
+        dayNumber: z.number().optional(),
+        performedOn: z.string().optional(),
+        closedAt: z.string().nullable().optional(),
+      }),
+    )
+    .optional(),
+  completedWorkoutsCount: z.number().int().optional(),
 });
 
 export function parseClientPrograms(rows: unknown): ClientProgram[] {
   return z
     .array(rowSchema)
     .parse(rows)
-    .map((row) => ({
-      id: row.id,
-      name: row.name,
-      clientId: row.client_id,
-      startsOn: row.starts_on,
-      startBlockId: row.start_block_id,
-      mode: row.mode,
-      endedAt: row.ended_at ?? null,
-      blocks: [...row.program_blocks]
-        .sort((a, b) => a.position - b.position)
-        .map((block) => ({ id: block.id, cycleDays: block.cycle_days, laps: block.laps })),
-    }));
+    .map((row) => {
+      const missedDayRules = (row.program_missed_day_rules ?? []).map((r) => ({
+        rule: r.rule,
+        startsOn: r.starts_on,
+      }));
+      const missedDays = (row.program_missed_days ?? []).map((m) => ({
+        id: m.id,
+        blockId: m.block_id ?? null,
+        programDayId: m.program_day_id ?? null,
+        dayNumber: m.day_number,
+        missedOn: m.missed_on,
+      }));
+      const workouts = (row.workouts ?? []).map((w) => ({
+        id: w.id,
+        programDayId: w.program_day_id ?? null,
+        dayNumber: w.day_number,
+        performedOn: w.performed_on,
+        closedAt: w.closed_at ?? null,
+      }));
+      const completedWorkoutsCount = workouts.filter((w) => w.closedAt !== null).length;
+
+      return {
+        id: row.id,
+        name: row.name,
+        clientId: row.client_id,
+        startsOn: row.starts_on,
+        startBlockId: row.start_block_id,
+        mode: row.mode,
+        endedAt: row.ended_at ?? null,
+        blocks: [...row.program_blocks]
+          .sort((a, b) => a.position - b.position)
+          .map((block) => ({ id: block.id, cycleDays: block.cycle_days, laps: block.laps })),
+        missedDayRules,
+        missedDays,
+        workouts,
+        completedWorkoutsCount,
+      };
+    });
 }
 
 /**
@@ -155,8 +266,43 @@ export interface RoutineProgress {
 }
 
 /** En qué bloque y vuelta va hoy la rutina vigente de un cliente. */
-export function routineProgress(program: ClientProgram, today: string): RoutineProgress | null {
-  const position = calendarPosition(program.blocks, program.startsOn, today, program.startBlockId);
+export function routineProgress(
+  program: ClientProgram,
+  today: string,
+  options?: CalendarOptions,
+): RoutineProgress | null {
+  const opts: CalendarOptions = {
+    rules: program.missedDayRules,
+    missedDays: program.missedDays,
+    completedWorkouts: program.completedWorkoutsCount,
+    ...options,
+  };
+
+  if (program.mode === 'list') {
+    const pos = listPosition(
+      program.blocks,
+      opts.completedWorkouts ?? program.completedWorkoutsCount ?? 0,
+      opts.trainingDaysPerBlock,
+    );
+    const block = program.blocks[pos.blockIndex];
+    return {
+      blockNumber: pos.blockIndex + 1,
+      blockCount: program.blocks.length,
+      lap: pos.lap,
+      laps: block?.laps ?? null,
+      isWeekly: block?.cycleDays === 7,
+      isRepeating: pos.isRepeating,
+      endsOn: null,
+    };
+  }
+
+  const position = calendarPosition(
+    program.blocks,
+    program.startsOn,
+    today,
+    program.startBlockId,
+    opts,
+  );
   if (position.status === 'upcoming') {
     return null;
   }
@@ -168,6 +314,6 @@ export function routineProgress(program: ClientProgram, today: string): RoutineP
     laps: block?.laps ?? null,
     isWeekly: block?.cycleDays === 7,
     isRepeating: position.isRepeating,
-    endsOn: programEndsOn(program.blocks, program.startsOn, program.startBlockId),
+    endsOn: programEndsOn(program.blocks, program.startsOn, program.startBlockId, opts),
   };
 }

@@ -292,7 +292,11 @@
     "watchVideo": "Watch video",
     "nextBlock": "The next block starts on {{date}}.",
     "startWorkout": "Start workout",
-    "openMobileApp": "To train, open the app on your phone"
+    "openMobileApp": "To train, open the app on your phone",
+    "recoverSuffix": "(recover)",
+    "missed": "Missed",
+    "doneOnWeekday": "{{name}}, done on {{weekday}}",
+    "doneOnWeekdayShort": "Done on {{weekday}}"
   },
   "blocks": {
     "label": "Blocks of the program",
@@ -341,5 +345,23 @@
     "exerciseChanged": "Changed {{exerciseName}} {{times}} times in 4 weeks",
     "endsOn": "Program ends {{date}}",
     "repeating": "Finished: repeating until you change it"
+  },
+  "missedDayRule": {
+    "title": "If a workout is missed",
+    "subtitle": "What happens when a training day passes without your client logging it.",
+    "rules": {
+      "lose": {
+        "label": "Skipped",
+        "hint": "The schedule does not move. The workout is marked as missed."
+      },
+      "recover": {
+        "label": "Recovered on the next rest day",
+        "hint": "The next rest day becomes the missed workout."
+      },
+      "shift": {
+        "label": "Shift everything",
+        "hint": "The rest of the schedule and the block end are delayed by one day."
+      }
+    }
   }
 }

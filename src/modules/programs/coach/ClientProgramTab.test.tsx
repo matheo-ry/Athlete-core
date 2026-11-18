@@ -23,6 +23,7 @@ const assignments = vi.hoisted(() => ({
   fetchClientPrograms: vi.fn(),
   fetchProgramsOfClient: vi.fn<(tenantId: string, clientId: string) => Promise<ClientProgram[]>>(),
   assignProgram: vi.fn(),
+  setMissedDayRule: vi.fn(),
 }));
 vi.mock('../api/assignments-api', () => assignments);
 
@@ -100,6 +101,23 @@ describe('módulo programs: la pestaña "Rutina" de la ficha (PR 2.14)', () => {
     assignments.fetchProgramsOfClient.mockResolvedValue([]);
     await renderAppAs('coach@example.test', `/coach/clients/${await anaUserId()}`);
     expect(await screen.findByText("This client doesn't have a program.")).toBeVisible();
+  });
+
+  it('enseña la sección de regla de día saltado y permite elegir una opción (PR 3.12, D-125)', async () => {
+    const ana = await anaUserId();
+    api.fetchProgram.mockResolvedValue(document(ana));
+    assignments.fetchProgramsOfClient.mockResolvedValue(
+      parseClientPrograms([row(PROGRAM_ID, ana, 'Casa + Gym', '2026-11-09', null)]),
+    );
+    assignments.setMissedDayRule.mockResolvedValue({ status: 'done' });
+    await renderAppAs('coach@example.test', `/coach/clients/${ana}`);
+
+    expect(await screen.findByRole('heading', { name: 'If a workout is missed' })).toBeVisible();
+    const radioRecover = screen.getByRole('radio', { name: /Recovered on the next rest day/i });
+    expect(radioRecover).not.toBeChecked();
+
+    const radioLose = screen.getByRole('radio', { name: /Skipped/i });
+    expect(radioLose).toBeChecked();
   });
 
   it('el editor de la rutina de un cliente dice de quién es y vuelve a su ficha', async () => {

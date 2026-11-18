@@ -63,11 +63,13 @@ export function ClientTodayCard() {
       </Card>
     );
   }
+  const isRecovery = Boolean(today.isRecovery);
   return (
     <Card className="flex flex-col gap-1">
       <p className="text-muted text-sm">{t('workouts.today.title')}</p>
       <Link to={`/client/program?day=${String(day.dayNumber)}`} className={LINK}>
         {title(day)}
+        {isRecovery ? ` ${t('workouts.today.recoverSuffix')}` : null}
       </Link>
       <p className="text-sm">{summary({ ...day, name: null })}</p>
       {canLogWorkouts() ? (

@@ -74,6 +74,7 @@
     "startsOn": "Your program starts on {{date}}",
     "start": "Start workout",
     "continue": "Continue workout",
+    "recoverSuffix": "(recover)",
     "openMobileApp": "To train, open the app on your phone"
   },
   "workout": {

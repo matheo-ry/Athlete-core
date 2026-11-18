@@ -22,7 +22,7 @@
 ## Dónde estamos
 
 - **Fase actual:** 3 — Entreno y progreso, en construcción (diseño en D-115 a D-137). Las Fases 1 y 2 están terminadas y fusionadas en `main`.
-- **Última tarea terminada:** PR 3.6a — cierre solo, "Terminar", "Descartar", resumen final y "Pendiente de subir" (D-149), con el arreglo de lo apuntado sin conexión, que no se guardaba. Antes, los agentes fusionan solos salvo lo crítico (D-148, solo documentación; se escribió como D-147, número que ya era del #80). Antes, arreglo del e2e `workout-log.spec.ts`, rojo en `main` desde el #79 (el test esperaba lo prescrito y, desde el 3.5b, el primer + pone lo gris de la vez anterior). Antes, arreglos de la revisión del PR 3.16 (D-147): accesibilidad y colores de la gráfica, zonas táctiles y lectura del peso y las medidas desde `workouts`. Antes, PR 3.5 — apuntar un entreno, fusionado en dos partes: 3.5a (#77) y 3.5b (#79), D-146. Antes, PR 3.16 — gráficas del progreso (Gemini, D-146). Antes, PR 3.4b (#73, D-143) y reglas de chats en paralelo (D-144). En la Fase 3 no se piden pruebas manuales PR a PR: al cerrar la fase se hace una prueba completa (PROMPTS §0).
+- **Última tarea terminada:** PR 3.18 — descargar los entrenos en Excel (Gemini, D-131, D-135, D-150). Antes, PR 3.6a — cierre solo, "Terminar", "Descartar", resumen final y "Pendiente de subir" (D-149), con el arreglo de lo apuntado sin conexión, que no se guardaba. Antes, los agentes fusionan solos salvo lo crítico (D-148, solo documentación; se escribió como D-147, número que ya era del #80). Antes, arreglo del e2e `workout-log.spec.ts`, rojo en `main` desde el #79 (el test esperaba lo prescrito y, desde el 3.5b, el primer + pone lo gris de la vez anterior). Antes, arreglos de la revisión del PR 3.16 (D-147): accesibilidad y colores de la gráfica, zonas táctiles y lectura del peso y las medidas desde `workouts`. Antes, PR 3.5 — apuntar un entreno, fusionado en dos partes: 3.5a (#77) y 3.5b (#79), D-146. Antes, PR 3.16 — gráficas del progreso (Gemini, D-146). Antes, PR 3.4b (#73, D-143) y reglas de chats en paralelo (D-144). En la Fase 3 no se piden pruebas manuales PR a PR: al cerrar la fase se hace una prueba completa (PROMPTS §0).
 - **Siguiente tarea:** **PR 3.6b — recordatorio de las 6 horas, cierre a las 12 horas y dos móviles** (`docs/PROMPTS.md` §7, PR 3.6, partido según D-149), en `workouts` y `src/core/native` (`@capacitor/local-notifications`). Después, el 3.7. Trabajan Claude y Gemini a la vez (D-142): quién hace cada PR, en la columna "Quién" de §7, con qué carpetas toca y si usa la base local. Gemini decide en sus PR y lo deja escrito como D-xxx "(Gemini)" (D-144). Chats en paralelo: reglas de `docs/GUIA-GIT.md` §15. En staging están aplicadas y probadas las migraciones 1 a 21.
 
 
@@ -80,11 +80,11 @@
 
 Los 5 más recientes, el más nuevo arriba. El historial completo está en `docs/ESTADO.md`.
 
+- 2026-11-17 — PR 3.18: descargar entrenos en Excel (.xlsx) con write-excel-file (D-131, D-135, D-150). Hoja "Día a día", una hoja por rutina y "Peso corporal" si hay consentimiento (D-126).
 - 2026-11-17 — PR 3.6a: cierre solo con todas las series hechas, "Terminar" con el resumen final, "Descartar" con confirmación y "Pendiente de subir" (D-149). Arreglo: lo apuntado sin conexión no se guardaba (TanStack Query lo dejaba en pausa). Test e2e `workout-close.spec.ts`.
 - 2026-11-17 — Solo documentación: los agentes fusionan sin esperar al propietario, salvo lo crítico, que pide su OK escrito en el prompt (D-148, sustituye a D-068; era D-147, número ya usado por el #80). Chat revisor de Claude y final de los prompts de Gemini en PROMPTS §0.
 - 2026-11-17 — Arreglo del e2e `workout-log.spec.ts`: espera a lo gris de la vez anterior antes de pulsar + y compara con ese valor (D-146). Sin cambios en `src/`.
 - 2026-11-17 — Arreglos de la revisión del PR 3.16 (D-147): `LineChart` sin colores hex ni textos fijos, con teclado (grupo de radio), foco visible, 44 px táctiles y desplazamiento vertical en el móvil. `progress` lee el peso y las medidas de `workouts` (D-127), solo al abrir la pestaña. Si esa carga falla, los ejercicios se siguen viendo.
-- 2026-11-17 — PR 3.5b: lo gris de la vez anterior, "Igual", desmarcar, "+ Serie" y abrir directo en el ejercicio que toca (D-146).
 
 ## A tener en cuenta ahora
 

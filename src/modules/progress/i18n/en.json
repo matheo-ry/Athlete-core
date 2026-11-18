@@ -79,5 +79,26 @@
   },
   "exercise": {
     "unilateral": "Unilateral"
+  },
+  "excel": {
+    "download": "Download Excel",
+    "downloading": "Downloading…",
+    "error": "Could not generate or download the Excel file",
+    "daily": "Daily",
+    "date": "Date",
+    "routine": "Routine",
+    "day": "Day",
+    "dayLabel": "Day {{number}}",
+    "exercise": "Exercise",
+    "sets": "Sets",
+    "note": "Note",
+    "bodyWeight": "Body weight",
+    "weightColumn": "Weight ({{unit}})",
+    "skipped": "Skipped",
+    "noRoutine": "No routine",
+    "otherRoutines": "Other routines",
+    "sideRight": "R: ",
+    "sideLeft": "L: ",
+    "fileName": "workouts"
   }
 }

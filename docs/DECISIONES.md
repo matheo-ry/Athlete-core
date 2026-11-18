@@ -1262,7 +1262,9 @@ Cómo añadir una: copia el formato, usa el siguiente número y no borres las an
   | `@capacitor/haptics` | Vibración |
   | `@capacitor/preferences` | Guardar el entreno en el almacén del teléfono (D-118) |
   | `@capacitor/app` | Saber cuándo se vuelve a la app, para el cronómetro y la subida |
-  | `write-excel-file` | El Excel (D-131) |
+  | `@capacitor/filesystem` | Escribir el Excel en la caché del móvil para compartirlo (PR 3.18, D-150) |
+  | `@capacitor/share` | Compartir o guardar el Excel desde la app nativa (PR 3.18, D-150) |
+  | `write-excel-file` | El Excel (D-131, D-150) |
 
   - **Autorización amplia para esta fase:** el propietario autoriza además las librerías que hagan falta para construir la Fase 3. El agente que añada una la anota aquí con su porqué, antes de instalarla, y lo dice en la descripción del PR. Las versiones, en "Versiones instaladas".
   - **Las gráficas se dibujan sin librería** (SVG propio).
@@ -1446,6 +1448,20 @@ Cómo añadir una: copia el formato, usa el siguiente número y no borres las an
 
 ---
 
+### D-150 · Descargar entrenos en Excel (Gemini)
+- **Fecha:** 2026-11-17
+- **Decisión:** detalles del PR 3.18 (D-131, D-135):
+  - **Librería y entorno:** `write-excel-file` (D-135) importada desde el subpath `/universal` (`write-excel-file/universal`), compatible con Vite y Node en modo ESM estricto.
+  - **Compartición / Descarga móvil vs web:** función `shareOrDownloadFile` en `src/core/native/share.ts`. En la app móvil nativa (Capacitor), escribe el archivo con `@capacitor/filesystem` (en `Directory.Cache`) y lo comparte/guarda con `@capacitor/share`; en la web usa descarga directa mediante un elemento `<a>` con atributo `download` (o `navigator.share` si admite archivos).
+  - **Estructura y hojas del Excel:**
+    1. **Hoja "Día a día":** registro cronológico inverso (de más reciente a más antiguo) de las sesiones completadas. Cabecera con Fecha, Rutina (programa) y Día prescrito, seguido de una columna por cada ejercicio de la sesión. En cada celda de ejercicio se resume la serie con el formato compacto de la app de notas del propietario `45X8(1)` (peso x reps (rir o rpe)), y notas del ejercicio si las hubiera.
+    2. **Una hoja por rutina:** columnas para Fecha, Día y cada ejercicio prescrito o registrado en esa rutina, con el formato de series en cada fecha. Los nombres de hoja se sanitizan (máximo 31 caracteres, sin caracteres prohibidos en Excel `\ / ? * [ ] :` y desambiguación con sufijos numéricos si coinciden).
+    3. **Hoja "Peso corporal":** exporta el historial de peso corporal solo si el cliente ha otorgado consentimiento explícito de salud (D-126). Si no hay consentimiento o no hay ningún registro de peso, la hoja se omite totalmente.
+  - **Textos:** todos los textos visibles (nombres de hojas fijas, cabeceras, notas de saltado/sin rutina, prefijos unilaterales D:/I:) se obtienen mediante las claves de internacionalización i18n (`progress.excel.*`).
+- **Por qué:** formato idéntico al de la app de apuntes del propietario, listo para compartir y analizar en Excel, respetando la privacidad y consentimiento de salud (D-126) y garantizando compatibilidad nativa en Android y web.
+
+---
+
 
 ## Pendientes de decidir
 
@@ -1494,6 +1510,9 @@ Anotadas al terminar la Fase 0 (2026-11-13). Son las estables más recientes de 
 | `@capacitor/android` | 8.6 | La app de Android (PR 3.1, D-117) |
 | `@capacitor/app` | 8.1 | El botón "atrás" de Android (PR 3.1, D-135) y saber cuándo se vuelve a la app (PR 3.4) |
 | `@capacitor/preferences` | 8.0 | El almacén del teléfono, que el sistema no borra (PR 3.4, D-118 y D-135) |
+| `@capacitor/filesystem` | 8.1 | Guardar archivos en el teléfono antes de compartirlos (PR 3.18, D-135, D-150) |
+| `@capacitor/share` | 8.0 | Menú nativo para compartir o guardar archivos en el móvil (PR 3.18, D-135, D-150) |
+| `write-excel-file` | 4.1 | Exportar entrenos en Excel (PR 3.18, D-131, D-135, D-150) |
 
 **Compilación y estilos**
 

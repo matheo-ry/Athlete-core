@@ -32,6 +32,16 @@ const assignments = vi.hoisted(() => ({
 }));
 vi.mock('@/modules/programs/api/assignments-api', () => assignments);
 
+const excelMock = vi.hoisted(() => ({
+  exportWorkoutsToExcel: vi
+    .fn<(options: { clientName?: string }) => Promise<string>>()
+    .mockResolvedValue('downloaded'),
+}));
+vi.mock('../model/export-excel', async (importOriginal) => ({
+  ...(await importOriginal<Record<string, unknown>>()),
+  ...excelMock,
+}));
+
 async function anaUserId(): Promise<string> {
   const members = await createFakeTenancySource().listMembers(TEST_TENANTS.iron.id);
   return members.find((member) => member.displayName === 'Ana Cliente')?.userId ?? '';
@@ -122,5 +132,62 @@ describe('ClientProgressTab (D-129, Criterio 4)', () => {
 
     const historyList = screen.getByTestId('history-ex-flexiones');
     expect(historyList).toHaveTextContent('DAY 1: 45×8(1)');
+  });
+
+  it('criterio 2: Como coach.iron, descargo el Excel de Ana desde su ficha', async () => {
+    const ana = await anaUserId();
+
+    api.fetchClientWorkouts.mockResolvedValue([
+      {
+        id: 'w-1',
+        performed_on: '2026-10-06',
+        started_at: '2026-10-06T18:00:00Z',
+        closed_at: '2026-10-06T19:00:00Z',
+        day_number: 1,
+        program_id: 'prog-1',
+        programs: { id: 'prog-1', name: 'Casa + Gym' },
+        workout_exercises: [
+          {
+            id: 'we-1',
+            exercise_id: 'ex-flexiones',
+            replaces_exercise_id: null,
+            day_note: 'Primera sesión',
+            is_skipped: false,
+            position: 1,
+            workout_sets: [
+              {
+                id: 's-1',
+                set_number: 1,
+                side: 'none',
+                weight_kg: 45,
+                reps: 8,
+                duration_seconds: null,
+                distance_meters: null,
+                intensity_type: 'rir',
+                intensity_value: 1,
+                is_done: true,
+                recorded_at: '2026-10-06T18:03:00Z',
+              },
+            ],
+          },
+        ],
+      },
+    ]);
+    api.fetchCurrentClientProgramId.mockResolvedValue('prog-1');
+
+    const { user } = await renderAppAs('coach@example.test', `/coach/clients/${ana}`);
+
+    const progressTab = await screen.findByRole('button', { name: 'Progress' });
+    await user.click(progressTab);
+
+    const downloadBtn = await screen.findByTestId('download-excel-btn');
+    expect(downloadBtn).toBeVisible();
+
+    await user.click(downloadBtn);
+    expect(excelMock.exportWorkoutsToExcel).toHaveBeenCalledWith(
+      expect.objectContaining({
+        clientName: 'Ana Cliente',
+      }),
+    );
   });
 });

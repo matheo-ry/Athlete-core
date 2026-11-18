@@ -24,7 +24,17 @@ const exercisesApi = vi.hoisted(() => ({
 }));
 vi.mock('@/modules/exercises/api/exercises-api', () => exercisesApi);
 
-describe('ClientProgressPage (D-127, D-129, PR 3.16)', () => {
+const excelMock = vi.hoisted(() => ({
+  exportWorkoutsToExcel: vi
+    .fn<(options: { workouts: RawWorkout[] }) => Promise<string>>()
+    .mockResolvedValue('downloaded'),
+}));
+vi.mock('../model/export-excel', async (importOriginal) => ({
+  ...(await importOriginal<Record<string, unknown>>()),
+  ...excelMock,
+}));
+
+describe('ClientProgressPage (D-127, D-129, PR 3.16, PR 3.18)', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     healthApi.fetchClientHealthData.mockResolvedValue({
@@ -400,5 +410,81 @@ describe('ClientProgressPage (D-127, D-129, PR 3.16)', () => {
 
     await user.click(screen.getByTestId('tab-health'));
     expect(await screen.findByText('Something went wrong')).toBeVisible();
+  });
+
+  it('criterio 1: Como Ana, pulso Descargar Excel y se exporta el archivo', async () => {
+    api.fetchClientWorkouts.mockResolvedValue([
+      {
+        id: 'w-1',
+        performed_on: '2026-10-06',
+        started_at: '2026-10-06T18:00:00Z',
+        closed_at: '2026-10-06T19:00:00Z',
+        day_number: 1,
+        program_id: 'prog-1',
+        programs: { id: 'prog-1', name: 'Casa + Gym' },
+        workout_exercises: [
+          {
+            id: 'we-1',
+            exercise_id: 'ex-flexiones',
+            replaces_exercise_id: null,
+            day_note: 'Primera sesión',
+            is_skipped: false,
+            position: 1,
+            workout_sets: [
+              {
+                id: 's-1',
+                set_number: 1,
+                side: 'none',
+                weight_kg: 45,
+                reps: 8,
+                duration_seconds: null,
+                distance_meters: null,
+                intensity_type: 'rir',
+                intensity_value: 1,
+                is_done: true,
+                recorded_at: '2026-10-06T18:03:00Z',
+              },
+            ],
+          },
+        ],
+      },
+    ]);
+    api.fetchCurrentClientProgramId.mockResolvedValue('prog-1');
+
+    const { user } = await renderAppAs('client@example.test', '/client/progress');
+
+    const downloadBtn = await screen.findByTestId('download-excel-btn');
+    expect(downloadBtn).toBeVisible();
+
+    await user.click(downloadBtn);
+    expect(excelMock.exportWorkoutsToExcel).toHaveBeenCalled();
+    const callArgs = excelMock.exportWorkoutsToExcel.mock.calls[0]?.[0];
+    expect(callArgs?.workouts?.[0]?.id).toBe('w-1');
+  });
+
+  it('muestra mensaje de error si falla la exportación de Excel', async () => {
+    api.fetchClientWorkouts.mockResolvedValue([
+      {
+        id: 'w-1',
+        performed_on: '2026-10-06',
+        started_at: '2026-10-06T18:00:00Z',
+        closed_at: '2026-10-06T19:00:00Z',
+        day_number: 1,
+        program_id: 'prog-1',
+        programs: { id: 'prog-1', name: 'Casa + Gym' },
+        workout_exercises: [],
+      },
+    ]);
+    api.fetchCurrentClientProgramId.mockResolvedValue('prog-1');
+    excelMock.exportWorkoutsToExcel.mockRejectedValueOnce(new Error('Export crash'));
+
+    const { user } = await renderAppAs('client@example.test', '/client/progress');
+
+    const downloadBtn = await screen.findByTestId('download-excel-btn');
+    await user.click(downloadBtn);
+
+    const errorMsg = await screen.findByTestId('excel-error-msg');
+    expect(errorMsg).toBeVisible();
+    expect(errorMsg).toHaveTextContent('Could not generate or download the Excel file');
   });
 });

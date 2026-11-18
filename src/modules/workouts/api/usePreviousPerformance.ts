@@ -6,6 +6,7 @@ import { useTenancy } from '@/core/tenancy';
 import { previousFor } from '../model/offline-snapshot';
 import type { PreviousPerformance } from '../model/offline-snapshot';
 import { readOfflineSnapshot, snapshotQueryKey } from './offline-snapshot-api';
+import { DEVICE_ONLY } from './useActiveWorkout';
 
 /**
  * Lo de la vez anterior de un ejercicio (D-120), de lo guardado en el teléfono:
@@ -24,6 +25,7 @@ export function usePreviousPerformance(
     queryFn: () => readOfflineSnapshot(userId, tenantId),
     enabled: userId !== '' && tenantId !== '',
     staleTime: Infinity,
+    networkMode: DEVICE_ONLY,
   });
   return snapshot.data ? previousFor(snapshot.data, exerciseId, dayNumber) : null;
 }

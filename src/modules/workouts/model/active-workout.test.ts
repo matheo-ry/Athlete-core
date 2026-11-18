@@ -4,6 +4,7 @@ import type { ProgramBlock, ProgramDay } from '@/modules/programs';
 
 import {
   MAX_SETS,
+  activeWorkoutSchema,
   addSet,
   changeSet,
   copyPrevious,
@@ -145,6 +146,26 @@ describe('toSyncPayload', () => {
       closed_at: '2026-11-16T09:00:00.000Z',
       close_reason: 'manual',
     });
+  });
+
+  it('el cierre solo sube su motivo (PR 3.6)', () => {
+    const closed = finishWorkout(workout(), '2026-11-16T09:00:00.000Z', 'completed');
+    expect(toSyncPayload(closed)).toMatchObject({ close_reason: 'completed' });
+  });
+
+  it('la fecha es la del último dato cambiado, aunque se cierre al día siguiente (D-119)', () => {
+    // La 01:30 del martes en UTC sigue siendo lunes en Nueva York; se fija la
+    // hora del mediodía para que valga en cualquier zona del ordenador de los tests.
+    const changed = changeSet(workout(), 1, 1, { reps: 8 }, '2026-11-16T12:00:00.000Z');
+    const closed = finishWorkout(changed, '2026-11-17T12:00:00.000Z');
+    expect(closed.lastChangedAt).toBe('2026-11-16T12:00:00.000Z');
+    expect(toSyncPayload(closed)).toMatchObject({ performed_on: '2026-11-16' });
+  });
+
+  it('lo guardado en el teléfono antes del PR 3.6 se lee sin motivo de cierre', () => {
+    const stored: Record<string, unknown> = { ...workout() };
+    delete stored.closeReason;
+    expect(activeWorkoutSchema.parse(stored).closeReason).toBeNull();
   });
 });
 

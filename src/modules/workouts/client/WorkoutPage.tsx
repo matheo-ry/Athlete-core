@@ -5,20 +5,26 @@ import { canLogWorkouts } from '@/core/native';
 import { Button, Card, EmptyState, ErrorState, Spinner, buttonClassName } from '@/core/ui';
 import { useClientToday, useDayTitle } from '@/modules/programs';
 
-import { useActiveWorkout } from '../api/useActiveWorkout';
+import { useActiveWorkout, useFinishedWorkout } from '../api/useActiveWorkout';
 import { useStartWorkout } from '../api/useStartWorkout';
+import type { ActiveWorkout } from '../model/active-workout';
+import { isComplete } from '../model/close-workout';
 import { ExerciseScreen } from './ExerciseScreen';
+import { FinishedScreen } from './FinishedScreen';
+import { useAutoClose } from './useCloseWorkout';
 import { WorkoutSummary } from './WorkoutSummary';
 
 /**
  * `/client/workout` (D-119, D-120): con un entreno abierto, su resumen o, con
- * `?exercise=N`, ese ejercicio. Sin entreno, `?day=N` ofrece empezar ese día.
- * Solo en la app del móvil (D-116).
+ * `?exercise=N`, ese ejercicio. Sin entreno, `?day=N` ofrece empezar ese día
+ * y `?finished=<id>` enseña el resumen final del recién cerrado. Solo en la
+ * app del móvil (D-116).
  */
 export function WorkoutPage() {
   const { t } = useTranslation();
   const [params] = useSearchParams();
   const active = useActiveWorkout();
+  const finished = useFinishedWorkout(params.get('finished'));
 
   if (!canLogWorkouts()) {
     return <EmptyState title={t('workouts.today.openMobileApp')} />;
@@ -31,13 +37,44 @@ export function WorkoutPage() {
   }
   const workout = active.data;
   if (workout === null) {
-    return <StartDay dayNumber={Number(params.get('day'))} />;
+    return finished.data ? (
+      <FinishedScreen workout={finished.data} />
+    ) : (
+      <StartDay dayNumber={Number(params.get('day'))} />
+    );
   }
   const exercise = Number(params.get('exercise'));
-  return Number.isInteger(exercise) && exercise >= 1 && exercise <= workout.exercises.length ? (
-    <ExerciseScreen workout={workout} position={exercise} />
-  ) : (
-    <WorkoutSummary workout={workout} />
+  return (
+    <OpenWorkout
+      workout={workout}
+      position={
+        Number.isInteger(exercise) && exercise >= 1 && exercise <= workout.exercises.length
+          ? exercise
+          : null
+      }
+    />
+  );
+}
+
+/** El entreno abierto: el resumen o un ejercicio, y el cierre solo (D-149). */
+function OpenWorkout({ workout, position }: { workout: ActiveWorkout; position: number | null }) {
+  const { t } = useTranslation();
+  useAutoClose(workout, position === null);
+  if (position === null) {
+    return <WorkoutSummary workout={workout} />;
+  }
+  return (
+    <div className="flex flex-col gap-4">
+      {isComplete(workout) ? (
+        <Card role="status" className="flex flex-col gap-2">
+          <p className="font-semibold">{t('workouts.finished.allDone')}</p>
+          <Link to="?" replace className={buttonClassName('primary', 'self-start')}>
+            {t('workouts.finished.seeSummary')}
+          </Link>
+        </Card>
+      ) : null}
+      <ExerciseScreen workout={workout} position={position} />
+    </div>
   );
 }
 

@@ -2,7 +2,8 @@ import { useTranslation } from 'react-i18next';
 
 import { useAuth } from '@/core/auth';
 import { canLogWorkouts, getUploadQueue, useUploadQueue } from '@/core/native';
-import { Button } from '@/core/ui';
+import { cn } from '@/core/lib';
+import { Button, useOnlineStatus } from '@/core/ui';
 
 import { useOfflineSnapshotRefresh, useUploadPending } from '../api/useWorkoutSync';
 import { useResumeOnOpen } from './useResumeOnOpen';
@@ -22,7 +23,39 @@ function SyncForUser({ userId }: { userId: string }) {
   const refreshSnapshot = useOfflineSnapshotRefresh(userId);
   useUploadPending(userId, refreshSnapshot);
   useResumeOnOpen();
-  return <RejectedUploadsNotice userId={userId} />;
+  return (
+    <>
+      <PendingUploadsBadge userId={userId} />
+      <RejectedUploadsNotice userId={userId} />
+    </>
+  );
+}
+
+/**
+ * "Pendiente de subir" (D-118) mientras haya algo en la cola que no se ha
+ * podido subir: sin conexión o tras fallar un intento. Con conexión, lo
+ * recién encolado sube en un momento y no se enseña, para que no parpadee en
+ * cada serie (D-149).
+ */
+function PendingUploadsBadge({ userId }: { userId: string }) {
+  const { t } = useTranslation();
+  const isOnline = useOnlineStatus();
+  const pending = useUploadQueue(userId).filter((item) => item.status === 'pending');
+  if (pending.length === 0 || (isOnline && pending.every((item) => item.attempts === 0))) {
+    return null;
+  }
+  return (
+    <p
+      role="status"
+      className={cn(
+        'bg-surface border-border text-foreground fixed right-4 z-50 rounded-full border px-3 py-1 text-xs font-semibold shadow',
+        // Debajo de la franja "Sin conexión" (D-061), que va arriba del todo.
+        isOnline ? 'top-[calc(0.5rem+var(--safe-top))]' : 'top-[calc(3rem+var(--safe-top))]',
+      )}
+    >
+      {t('workouts.sync.pending')}
+    </p>
+  );
 }
 
 /** "No se pudo guardar: ya no tienes acceso a …" (D-118), hasta que el cliente lo lee. */

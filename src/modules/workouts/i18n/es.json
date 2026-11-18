@@ -62,7 +62,8 @@
     "noAccess": "No se pudo guardar: ya no tienes acceso a {{name}}.",
     "invalid_one": "No se pudo guardar un entreno: tenía datos que la app no acepta.",
     "invalid_other": "No se pudieron guardar {{count}} entrenos: tenían datos que la app no acepta.",
-    "dismiss": "Entendido"
+    "dismiss": "Entendido",
+    "pending": "Pendiente de subir"
   },
   "today": {
     "title": "Hoy toca",
@@ -106,5 +107,22 @@
     "same": "Igual",
     "add": "+ Serie",
     "unmark": "Desmarcar la serie {{number}}"
+  },
+  "finished": {
+    "title": "Entreno terminado",
+    "titleCompleted": "¡Entreno completo!",
+    "duration": "Duración",
+    "sets": "Series hechas",
+    "exercises": "Ejercicios",
+    "exercisesValue": "{{done}} de {{total}}",
+    "done": "Volver al inicio",
+    "allDone": "Todas las series hechas. El entreno se cierra solo en unos segundos.",
+    "seeSummary": "Ver el resumen"
+  },
+  "discard": {
+    "button": "Descartar entreno",
+    "confirm": "Se borrará este entreno con todo lo apuntado. No se puede deshacer.",
+    "yes": "Sí, descartar",
+    "cancel": "Cancelar"
   }
 }

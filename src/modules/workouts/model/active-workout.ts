@@ -59,6 +59,8 @@ export const activeWorkoutSchema = z.object({
   lastChangedAt: z.string(),
   /** Vacío mientras está abierto. */
   closedAt: z.string().nullable(),
+  /** Por qué se cerró (D-119); los guardados antes del PR 3.6 no lo traen. */
+  closeReason: z.enum(['manual', 'completed', 'timeout']).nullable().default(null),
   /** El último ejercicio que se tocó (D-119). */
   lastExercise: z.number().int().min(1),
   exercises: z.array(activeExerciseSchema),
@@ -110,6 +112,7 @@ export function startWorkout(input: StartInput): ActiveWorkout {
     startedAt: now,
     lastChangedAt: now,
     closedAt: null,
+    closeReason: null,
     lastExercise: 1,
     exercises: day.exercises.map((item, index) => ({
       id: newId(),
@@ -194,9 +197,18 @@ export function stepValue(value: number, step: number, direction: 1 | -1, max: n
   return Math.min(max, Math.max(0, Number(next.toFixed(2))));
 }
 
-/** "Terminar entreno" (D-119). El cierre completo, con su resumen, llega en el PR 3.6. */
-export function finishWorkout(workout: ActiveWorkout, now: string): ActiveWorkout {
-  return { ...workout, closedAt: now };
+export type CloseReason = NonNullable<ActiveWorkout['closeReason']>;
+
+/**
+ * Cierra el entreno (D-119): a mano, porque está todo hecho o por tiempo. No
+ * toca `lastChangedAt`: la fecha sigue siendo la del último dato cambiado.
+ */
+export function finishWorkout(
+  workout: ActiveWorkout,
+  now: string,
+  reason: CloseReason = 'manual',
+): ActiveWorkout {
+  return { ...workout, closedAt: now, closeReason: reason };
 }
 
 /** Lo que espera `sync_workout` (migración 18). */
@@ -212,7 +224,7 @@ export function toSyncPayload(workout: ActiveWorkout): { [key: string]: JsonValu
     started_at: workout.startedAt,
     last_changed_at: workout.lastChangedAt,
     closed_at: workout.closedAt,
-    close_reason: workout.closedAt === null ? null : 'manual',
+    close_reason: workout.closedAt === null ? null : (workout.closeReason ?? 'manual'),
     device_since: workout.startedAt,
     exercises: workout.exercises.map((exercise) => ({
       id: exercise.id,

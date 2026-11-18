@@ -4,7 +4,7 @@ import type { Page } from '@playwright/test';
 import { SEED_PASSWORD, signIn } from './helpers';
 import { select, signInApi } from './supabase-helpers';
 
-// Subida, cierre y resumen (PR 3.6a, D-118, D-119 y D-149), contra Supabase
+// Subida, cierre y resumen (PR 3.6, D-118, D-119, D-149 y D-150), contra Supabase
 // local y la rutina "Fuerza básica" de Diego (seed): el día 1 son 4
 // ejercicios de 3 series, y la plancha va en segundos. Diego no lo usa ningún
 // otro test de entrenos, así que no choca con los de Ana en paralelo.
@@ -90,4 +90,45 @@ test('con todas las series hechas se cierra solo y sale el resumen (criterio 2)'
 
   await page.getByRole('link', { name: 'Back to home' }).click();
   await expect(page).toHaveURL(/\/client$/);
+});
+
+/** Apunta la serie 1 del primer ejercicio y espera a que llegue a la nube. */
+async function logFirstSet(page: Page, since: string): Promise<void> {
+  await page.getByRole('list', { name: 'Workout exercises' }).getByRole('link').first().click();
+  const first = page.getByRole('listitem', { name: 'Set 1' });
+  await first.getByRole('textbox', { name: 'Reps' }).fill('5');
+  await first.getByRole('textbox', { name: 'Reps' }).press('Enter');
+  await expect(first).toHaveAttribute('data-done', 'true');
+  const session = await signInApi(DIEGO, SEED_PASSWORD);
+  const path = `workout_sets?select=id&is_done=eq.true&recorded_at=gte.${encodeURIComponent(since)}`;
+  await expect.poll(async () => (await select(session, path)).length).toBe(1);
+}
+
+test('a las 12 horas sin tocarlo se cierra solo y lo avisa (D-119)', async ({ page }) => {
+  const since = new Date().toISOString();
+  await startDayOne(page);
+  await logFirstSet(page, since);
+
+  // Se envejece lo guardado en el "móvil", como si llevara 13 horas sin tocarse.
+  await page.evaluate(
+    (at) => {
+      const key = Object.keys(localStorage).find((item) => item.includes('workouts.active.'));
+      if (key !== undefined) {
+        const stored = JSON.parse(localStorage.getItem(key) ?? '{}') as Record<string, unknown>;
+        localStorage.setItem(key, JSON.stringify({ ...stored, startedAt: at, lastChangedAt: at }));
+      }
+    },
+    new Date(Date.now() - 13 * 3_600_000).toISOString(),
+  );
+  await page.goto('/client');
+
+  const notice = page.getByRole('status').filter({ hasText: /We saved your \w+ workout/ });
+  await expect(notice).toBeVisible();
+  await expect(page).toHaveURL(/\/client$/);
+  const session = await signInApi(DIEGO, SEED_PASSWORD);
+  const path = `workouts?select=close_reason&last_changed_at=gte.${encodeURIComponent(since)}`;
+  await expect.poll(async () => select(session, path)).toEqual([{ close_reason: 'timeout' }]);
+
+  await notice.getByRole('button').click();
+  await expect(notice).toHaveCount(0);
 });

@@ -94,12 +94,12 @@ export function useSaveActiveWorkout() {
         activeQueryKey(scope.userId, scope.tenantId),
         closed ? null : workout,
       );
+      const empty = closed && setCounts(workout.exercises).done === 0;
       if (closed) {
         await getDeviceStore().remove(key);
-        if (setCounts(workout.exercises).done === 0) {
-          return;
+        if (!empty) {
+          queryClient.setQueryData(finishedQueryKey(workout.id), workout);
         }
-        queryClient.setQueryData(finishedQueryKey(workout.id), workout);
       } else if (!(await getDeviceStore().write(key, workout))) {
         logger.error('Could not save the open workout on the device');
       }
@@ -108,7 +108,9 @@ export function useSaveActiveWorkout() {
         kind: 'workout',
         tenantId: scope.tenantId,
         tenantName: scope.tenantName,
-        payload: toSyncPayload(workout),
+        // Sin ninguna serie hecha no se guarda (D-119): al empezar ya subió, y
+        // si no se borra se queda abierto en la nube para siempre (D-150).
+        payload: empty ? discardPayload(workout.id) : toSyncPayload(workout),
       });
     },
   });

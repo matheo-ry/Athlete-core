@@ -15,9 +15,11 @@ El prompt de la Fase 0 está en `EMPEZAR-AQUI.md`.
 Pega esto y, debajo, la tarea (con la plantilla §1, §2 o §3):
 
 ```
-Chat nuevo. Antes de nada lee CONTEXTO.md y AGENTS.md, y los documentos
-que indica AGENTS.md §2 si la tarea los necesita. Resúmeme en 3 líneas en
-qué punto está el proyecto y luego empieza con esta tarea:
+Chat nuevo. Antes de nada lee CONTEXTO.md y AGENTS.md, lista docs/cambios,
+y mira git log -15 y gh pr list. Lee los documentos que indica AGENTS.md
+§2 si la tarea los necesita. Antes de decidir algo, busca también en
+docs/cambios. Resúmeme en 3 líneas en qué punto está el proyecto y luego
+empieza con esta tarea:
 
 [pega aquí la tarea]
 ```
@@ -37,14 +39,18 @@ docs/DECISIONES.md: si tu idea contradice una decisión, no la cambies:
 propónla en el PR con el porqué. Lo que decidas, como D-xxx "(Gemini)".
 Pregunta solo lo irreversible (regla de oro 13). Lee antes
 docs/GUIA-GIT.md §14 (trampas de Windows) y §15 (chats en paralelo).
+Tus decisiones nuevas van como D-<tarea>-<n> "(Gemini)" en tu archivo de
+docs/cambios (D-153), no en DECISIONES.md.
 ```
 
 ### Antes de cerrar un chat
 
 ```
 Antes de cerrar este chat comprueba que:
-1. CONTEXTO.md y docs/ESTADO.md reflejan lo que hemos hecho (fase,
-   última tarea, siguiente tarea y últimos cambios).
+1. Existe docs/cambios/<tarea>-<nombre>.md con fecha, qué cambió,
+   decisiones D-<tarea>-<n>, qué debe saber el siguiente y deuda.
+   No has tocado CONTEXTO.md, docs/ESTADO.md, docs/DECISIONES.md ni
+   las marcas "hecho" de PROMPTS §7 (D-153).
 2. git status está limpio y todo está subido.
 Si falta algo, hazlo en esta misma rama con un commit. Después dime en
 3 líneas qué queda pendiente para el próximo chat.
@@ -101,13 +107,15 @@ Solo en lo crítico: producción, borrar datos o cambios destructivos del esquem
 
 ```
 Eres el revisor de los PR de Gemini. Solo lees y comentas: no cambias
-código, no haces commits y no fusionas. Lee una vez AGENTS.md y
-docs/DECISIONES.md desde D-115.
+código, no haces commits y no fusionas. Lee una vez AGENTS.md,
+docs/DECISIONES.md desde D-115 y docs/cambios.
 Cuando te diga "revisa el PR N": gh pr view N, gh pr diff N y
 gh pr checks N (no ejecutes npm run check: lo hace el CI). Revisa con
 la plantilla §4: reglas de oro, RLS y permisos si toca supabase/, lo
 crítico de D-148, colores fijos, textos sin i18n, any, catch vacíos,
-que respete las D-xxx y que las suyas nuevas estén escritas. Deja UN
+que respete las D-xxx, que exista su archivo docs/cambios/<tarea>-<nombre>.md
+con sus decisiones nuevas (si falta, son cambios pedidos) y que no
+toque CONTEXTO.md, ESTADO.md ni DECISIONES.md. Deja UN
 comentario (gh pr comment N) que empiece por "VISTO BUENO DE CLAUDE" o
 "CAMBIOS PEDIDOS POR CLAUDE", con la lista corta de arreglos (archivo,
 qué falla, cómo) y lo menor en "Opcional". Si el PR hace algo crítico
@@ -146,8 +154,8 @@ FUERA DE ALCANCE (no lo hagas):
 
 Si te falta algo importante para empezar, pregúntamelo todo junto ahora.
 Si no, trabaja de forma autónoma hasta terminar, con commits pequeños.
-Termina como indica AGENTS.md §8: npm run check en verde, docs/ESTADO.md
-actualizado, git status limpio, PR abierto y un resumen con cómo probarlo.
+Termina como indica AGENTS.md §8: npm run check en verde, archivo de docs/cambios
+añadido, git status limpio, PR abierto y un resumen con cómo probarlo.
 ```
 
 Consejos:
@@ -971,7 +979,7 @@ CRITERIOS DE ACEPTACIÓN:
 
 ## 6. Fase 2 — Ejercicios y rutinas
 
-El diseño está decidido en `docs/DECISIONES.md` (D-069 a D-088). Son **18 PR en 5 lotes**. Se piden **en este orden y de uno en uno**, cada uno en su chat.
+El diseño está decidido en `docs/DECISIONES.md` (D-069 a D-088). Son **18 PR en 5 lotes**. Se piden **en este orden y de uno en uno**, cada uno en su chat. Una tarea está hecha si su archivo está en `docs/cambios/` de `main` (D-153): las marcas "hecho" de la tabla las pone el PR de cierre de cada lote, no los PR normales.
 
 | Lote | PR | Qué hace | Rama |
 |---|---|---|---|

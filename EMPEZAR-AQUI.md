@@ -307,8 +307,8 @@ Por qué:
 ### `CONTEXTO.md`: el resumen para cada chat nuevo
 
 - Está en la raíz del proyecto. Resume en una página qué es la app, en qué fase está, cuál fue la última tarea, cuál es la siguiente y los 5 últimos cambios.
-- **Se actualiza solo:** las reglas obligan al agente a ponerlo al día al terminar cada tarea, en el mismo PR.
-- Si alguna vez ves que se ha quedado viejo, pídele a un agente que lo actualice a partir de `docs/ESTADO.md` y del historial de Git.
+- **Se actualiza por lotes (D-153):** los PR normales no lo tocan; cada uno deja su archivo en `docs/cambios/` y, al cerrar cada lote, un PR de Claude lo resume aquí y en `docs/ESTADO.md`.
+- Si alguna vez ves que se ha quedado viejo, pídele a un agente que lo actualice a partir de `docs/cambios/` y del historial de Git.
 
 ### Al empezar un chat nuevo
 
@@ -316,7 +316,7 @@ Pega el prompt de inicio de `docs/PROMPTS.md` §0 y, debajo, la tarea. Así el a
 
 ### Antes de cerrar un chat
 
-Pega el prompt de cierre de `docs/PROMPTS.md` §0. Comprueba que `CONTEXTO.md` y `docs/ESTADO.md` están al día y que todo está subido.
+Pega el prompt de cierre de `docs/PROMPTS.md` §0. Comprueba que existe el archivo de `docs/cambios/` de la tarea y que todo está subido.
 
 ### Claude y Gemini
 

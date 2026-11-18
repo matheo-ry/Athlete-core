@@ -1,13 +1,13 @@
 # ESTADO DEL PROYECTO
 
-**Última actualización:** 2026-11-17
+**Última actualización:** 2026-11-18
 **Fase actual:** 3 — Entreno y progreso, en construcción (diseño en D-115 a D-137). La Fase 2 terminó y se fusionó entera en `main`.
 
 Este archivo lo actualiza quien termina una tarea, en el mismo Pull Request, junto con `CONTEXTO.md` (que resume este en una página).
 
 ## En curso
 
-- **PR 3.6c** (Claude): dos móviles, con "Seguir aquí" (D-152). Con él queda completo el PR 3.6.
+- Nada de Claude. El **PR 3.6** (subida, cierre y resumen) está fusionado en tres partes: 3.6a (#84, D-149), 3.6b (#85, D-151) y 3.6c (#86, D-152).
 
 ## Siguiente
 

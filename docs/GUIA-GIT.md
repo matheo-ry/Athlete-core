@@ -178,7 +178,7 @@ Si un secreto se sube por error: **cámbialo de inmediato** en el servicio (dalo
 - Un agente trabaja **en una rama y en una tarea**. Nunca en `main`.
 - **Un chat por tarea.** Cuando la tarea se fusiona, ese chat se cierra y la siguiente empieza en un chat nuevo, que se pone al día leyendo `CONTEXTO.md`.
 - Hace commit después de cada paso que funcione, con el formato de §5.
-- Fusiona solo (D-148): Claude, sus PR con el CI en verde; Gemini, los suyos con el CI en verde y el comentario "VISTO BUENO DE CLAUDE". Siempre con "Squash and merge". Lo crítico de D-148 (producción, borrar datos, relajar RLS o permisos, pagos, secretos, historial, reglas de oro) solo con el OK del propietario escrito en el prompt.
+- No fusiona (D-148): los chats de Claude que programan dejan el PR con el CI en verde y dicen "PR N listo para fusionar". Fusiona el chat de fusión (Haiku 5.5, PROMPTS §0). Gemini fusiona los suyos con el CI en verde y el comentario "VISTO BUENO DE CLAUDE". Siempre con "Squash and merge". Lo crítico de D-148 (producción, borrar datos, relajar RLS o permisos, pagos, secretos, historial, reglas de oro) solo con el OK del propietario escrito en el prompt.
 - No borra ramas de otros y no reescribe historial (`push --force`, `rebase` sobre ramas ya subidas).
 - Al terminar: `npm run check` en verde, `git status` limpio, rama subida y PR abierto. Si no puede abrir el PR, sube la rama y deja el enlace.
 - Para abrir el PR desde la terminal, el agente escribe la plantilla rellena en un archivo temporal fuera del repositorio y usa `gh pr create --title "…" --body-file <archivo>`. No usa `--fill`, porque se salta la plantilla.

@@ -1,12 +1,25 @@
 import { expect, test } from '@playwright/test';
 
-import { signIn } from './helpers';
+import { SEED_PASSWORD, signIn } from './helpers';
+import { select, signInApi } from './supabase-helpers';
 
 // Apuntar un entreno (PR 3.5a, D-119 y D-120), contra Supabase local y la
 // rutina "Casa + Gym" de Ana (seed). En el navegador, con
 // VITE_ALLOW_WEB_WORKOUTS (D-116), como en el CI.
 
 test.describe.configure({ mode: 'serial' });
+
+/**
+ * Espera a que el cierre haya subido. Si la página se cierra antes, el entreno
+ * se queda abierto en la nube y el test siguiente, que es otro "móvil", lo ve
+ * abierto en otro dispositivo (D-124).
+ */
+async function expectNothingOpen(email: string): Promise<void> {
+  const session = await signInApi(email, SEED_PASSWORD);
+  await expect
+    .poll(async () => (await select(session, 'workouts?select=id&closed_at=is.null')).length)
+    .toBe(0);
+}
 
 test('Ana inicia el lunes, apunta la serie 1 y la sigue viendo al recargar', async ({ page }) => {
   await signIn(page, 'ana@example.com');
@@ -61,6 +74,7 @@ test('Ana inicia el lunes, apunta la serie 1 y la sigue viendo al recargar', asy
   await expect(page.getByRole('heading', { name: 'Workout finished' })).toBeVisible();
   await page.getByRole('link', { name: 'Back to home' }).click();
   await expect(page).toHaveURL(/\/client$/);
+  await expectNothingOpen('ana@example.com');
 });
 
 test('desmarcar, volver al mismo ejercicio al abrir y la vez anterior en gris (PR 3.5b)', async ({
@@ -111,6 +125,7 @@ test('desmarcar, volver al mismo ejercicio al abrir y la vez anterior en gris (P
   await page.getByRole('link', { name: 'Back to summary' }).click();
   await page.getByRole('button', { name: 'Finish workout' }).click();
   await page.getByRole('link', { name: 'Back to home' }).click();
+  await expectNothingOpen('ana@example.com');
 });
 
 test('Bruno ve los pesos en libras (criterio 5)', async ({ page }) => {
@@ -126,4 +141,6 @@ test('Bruno ve los pesos en libras (criterio 5)', async ({ page }) => {
   await page.getByRole('button', { name: 'Finish workout' }).click();
   // Sin ninguna serie hecha no se guarda: vuelve al inicio, sin resumen (D-119).
   await expect(page).toHaveURL(/\/client$/);
+  // Y no se queda abierto en la nube, aunque subiera al empezar (D-151).
+  await expectNothingOpen('bruno@example.com');
 });

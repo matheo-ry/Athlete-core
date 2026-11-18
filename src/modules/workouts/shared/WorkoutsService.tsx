@@ -6,7 +6,9 @@ import { cn } from '@/core/lib';
 import { Button, useOnlineStatus } from '@/core/ui';
 
 import { useOfflineSnapshotRefresh, useUploadPending } from '../api/useWorkoutSync';
+import { TimedOutNotice } from './TimedOutNotice';
 import { useResumeOnOpen } from './useResumeOnOpen';
+import { useWorkoutLifecycle } from './useWorkoutLifecycle';
 
 /**
  * Lo que `workouts` hace sin pantalla mientras hay sesión (D-143): guardar en
@@ -23,8 +25,10 @@ function SyncForUser({ userId }: { userId: string }) {
   const refreshSnapshot = useOfflineSnapshotRefresh(userId);
   useUploadPending(userId, refreshSnapshot);
   useResumeOnOpen();
+  useWorkoutLifecycle();
   return (
     <>
+      <TimedOutNotice />
       <PendingUploadsBadge userId={userId} />
       <RejectedUploadsNotice userId={userId} />
     </>

@@ -3,6 +3,7 @@ import { useLocation, useNavigate } from 'react-router';
 
 import { useActiveWorkout } from '../api/useActiveWorkout';
 import { exerciseToResume } from '../model/active-workout';
+import { isTimedOut } from '../model/workout-timers';
 
 /**
  * Con un entreno abierto, al abrir la app se va directo al ejercicio que toca
@@ -21,7 +22,12 @@ export function useResumeOnOpen(): void {
     }
     decided.current = true;
     const workout = active.data;
-    if (workout === null || pathname !== '/client') {
+    // Pasadas las 12 horas se cierra solo (D-119): no se entra en él.
+    if (
+      workout === null ||
+      pathname !== '/client' ||
+      isTimedOut(workout.lastChangedAt, Date.now())
+    ) {
       return;
     }
     const position = exerciseToResume(workout);

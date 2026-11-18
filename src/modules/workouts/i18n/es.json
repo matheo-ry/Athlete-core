@@ -124,5 +124,12 @@
     "confirm": "Se borrará este entreno con todo lo apuntado. No se puede deshacer.",
     "yes": "Sí, descartar",
     "cancel": "Cancelar"
+  },
+  "timeout": {
+    "saved": "Guardamos tu entreno del {{day}}"
+  },
+  "reminder": {
+    "title": "Tienes un entreno abierto",
+    "body": "Termínalo, apunta lo que hiciste o marca lo que saltaste"
   }
 }

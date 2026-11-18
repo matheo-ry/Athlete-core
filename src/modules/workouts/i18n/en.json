@@ -124,5 +124,12 @@
     "confirm": "This workout and everything you logged will be deleted. This cannot be undone.",
     "yes": "Yes, discard",
     "cancel": "Cancel"
+  },
+  "timeout": {
+    "saved": "We saved your {{day}} workout"
+  },
+  "reminder": {
+    "title": "You have an open workout",
+    "body": "Finish it, log what you did or mark what you skipped"
   }
 }

@@ -128,7 +128,7 @@ Los tests van junto al archivo que prueban: `units.ts` → `units.test.ts`.
 - Commit después de cada paso que funcione. Push al terminar la sesión.
 - El título del Pull Request sigue el mismo formato que un commit: es el mensaje que quedará en `main`.
 - Antes de pedir revisión: `npm run check` en verde.
-- **Fusionar (D-148):** Claude fusiona sus PR con el CI en verde; Gemini, los suyos con el CI en verde y un comentario "VISTO BUENO DE CLAUDE". No hace falta el propietario, salvo en lo crítico de D-148 (producción, borrar datos, relajar RLS o permisos, pagos, secretos, historial de Git, reglas de oro, decisiones suyas): ahí su OK tiene que estar escrito en el prompt; si no está, el agente para y pregunta. Nunca `push --force`.
+- **Fusionar (D-148):** los chats de Claude que programan no fusionan: con el CI en verde dicen "PR N listo para fusionar" y terminan. Fusiona el chat de fusión (Haiku 5.5, PROMPTS §0). Gemini fusiona los suyos con el CI en verde y un comentario "VISTO BUENO DE CLAUDE". Lo crítico de D-148 (producción, borrar datos, relajar RLS o permisos, pagos, secretos, historial de Git, reglas de oro, decisiones suyas) necesita el OK del propietario escrito en el prompt; si no está, el agente para y pregunta. Nunca `push --force`.
 - **Reparto (D-142, D-144):** cada agente decide lo de sus PR con criterio propio y lo deja escrito como D-xxx; solo pregunta lo irreversible (regla 13). Gemini puede tocar cualquier carpeta y añadir librerías; lo que contradiga una decisión lo propone en el PR. Claude revisa antes de fusionar todo PR que toque `supabase/`, RLS o permisos.
 - **Chats en paralelo (GUIA-GIT §15):** cada chat en su worktree y su rama; nunca dos PR a la vez sobre la misma carpeta de módulo ni la misma base local.
 

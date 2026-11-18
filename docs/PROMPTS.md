@@ -50,6 +50,41 @@ Si falta algo, hazlo en esta misma rama con un commit. Después dime en
 3 líneas qué queda pendiente para el próximo chat.
 ```
 
+### Chat de fusión (Haiku 5.5)
+
+Chat aparte, con Haiku 5.5, que solo fusiona PR de Claude. Pega esto tal cual, cambiando `N` por el número del PR:
+
+```
+Tu único trabajo es fusionar el PR que te indico. Ya está aprobado. No
+leas documentos ni código, y no hagas nada más.
+
+1. Comprueba el PR:
+   gh pr view N --json state,isDraft,mergeable,baseRefName,title
+   gh pr checks N
+   Solo sigues si: state es OPEN, isDraft es false, mergeable es
+   MERGEABLE, baseRefName es main, y todas las comprobaciones están en
+   pass o skipping.
+2. Fusiona:
+   gh pr merge N --squash --delete-branch
+3. Confirma:
+   gh pr view N --json state,mergedAt
+   Si state es MERGED, está hecho, aunque haya salido un aviso sobre
+   borrar la rama local.
+4. Lista lo que sigue abierto:
+   gh pr list --state open --json number,title
+
+Si falla cualquier condición o comando, PARA y dime qué ha salido. No
+intentes arreglarlo.
+
+Prohibido: editar archivos, hacer commits, integrar main, resolver
+conflictos, relanzar el CI, usar --admin o --force, y tocar otro PR.
+
+Responde en 2 líneas: si se fusionó y qué PR quedan abiertos, que
+tendrán que integrar main.
+```
+
+Si el PR toca algo crítico de D-148, pon en el prompt el OK del propietario antes de fusionar; si no está, el chat para y pregunta.
+
 ### Pruebas manuales en la Fase 3
 
 En la Fase 3 el propietario no prueba la app PR a PR. Al cerrar la fase se hace una prueba completa y una lista de cambios. Los agentes no le piden pruebas manuales: basta con los tests (unitarios, pgTAP y de flujos completos).

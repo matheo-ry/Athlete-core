@@ -131,5 +131,10 @@
   "reminder": {
     "title": "You have an open workout",
     "body": "Finish it, log what you did or mark what you skipped"
+  },
+  "device": {
+    "elsewhere": "This workout is open on another device",
+    "continueHere": "Continue here",
+    "error": "Couldn't continue here. Please try again."
   }
 }

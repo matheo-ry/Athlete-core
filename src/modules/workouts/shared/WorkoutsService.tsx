@@ -25,7 +25,7 @@ function SyncForUser({ userId }: { userId: string }) {
   const refreshSnapshot = useOfflineSnapshotRefresh(userId);
   useUploadPending(userId, refreshSnapshot);
   useResumeOnOpen();
-  useWorkoutLifecycle();
+  useWorkoutLifecycle(userId);
   return (
     <>
       <TimedOutNotice />

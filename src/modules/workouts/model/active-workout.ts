@@ -61,6 +61,8 @@ export const activeWorkoutSchema = z.object({
   closedAt: z.string().nullable(),
   /** Por qué se cerró (D-119); los guardados antes del PR 3.6 no lo traen. */
   closeReason: z.enum(['manual', 'completed', 'timeout']).nullable().default(null),
+  /** Desde cuándo lo tiene este móvil, si lo tomó con "Seguir aquí" (D-124). */
+  deviceSince: z.string().nullable().default(null),
   /** El último ejercicio que se tocó (D-119). */
   lastExercise: z.number().int().min(1),
   exercises: z.array(activeExerciseSchema),
@@ -83,7 +85,7 @@ export interface StartInput {
   newId: () => string;
 }
 
-function emptySet(id: string, setNumber: number, isExtra: boolean): ActiveSet {
+export function emptySet(id: string, setNumber: number, isExtra: boolean): ActiveSet {
   return {
     id,
     setNumber,
@@ -113,6 +115,7 @@ export function startWorkout(input: StartInput): ActiveWorkout {
     lastChangedAt: now,
     closedAt: null,
     closeReason: null,
+    deviceSince: null,
     lastExercise: 1,
     exercises: day.exercises.map((item, index) => ({
       id: newId(),
@@ -212,7 +215,10 @@ export function finishWorkout(
 }
 
 /** Lo que espera `sync_workout` (migración 18). */
-export function toSyncPayload(workout: ActiveWorkout): { [key: string]: JsonValue } {
+export function toSyncPayload(
+  workout: ActiveWorkout,
+  deviceId: string | null = null,
+): { [key: string]: JsonValue } {
   return {
     id: workout.id,
     program_id: workout.programId,
@@ -225,7 +231,8 @@ export function toSyncPayload(workout: ActiveWorkout): { [key: string]: JsonValu
     last_changed_at: workout.lastChangedAt,
     closed_at: workout.closedAt,
     close_reason: workout.closedAt === null ? null : (workout.closeReason ?? 'manual'),
-    device_since: workout.startedAt,
+    device_id: deviceId,
+    device_since: workout.deviceSince ?? workout.startedAt,
     exercises: workout.exercises.map((exercise) => ({
       id: exercise.id,
       position: exercise.position,

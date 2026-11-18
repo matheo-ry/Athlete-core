@@ -7,10 +7,12 @@ import { useClientToday, useDayTitle } from '@/modules/programs';
 
 import { useActiveWorkout, useFinishedWorkout } from '../api/useActiveWorkout';
 import { useStartWorkout } from '../api/useStartWorkout';
+import { useWorkoutOwnership } from '../api/useWorkoutOwnership';
 import type { ActiveWorkout } from '../model/active-workout';
 import { isComplete } from '../model/close-workout';
 import { ExerciseScreen } from './ExerciseScreen';
 import { FinishedScreen } from './FinishedScreen';
+import { OtherDeviceNotice } from './OtherDeviceNotice';
 import { useAutoClose } from './useCloseWorkout';
 import { WorkoutSummary } from './WorkoutSummary';
 
@@ -25,6 +27,7 @@ export function WorkoutPage() {
   const [params] = useSearchParams();
   const active = useActiveWorkout();
   const finished = useFinishedWorkout(params.get('finished'));
+  const ownership = useWorkoutOwnership();
 
   if (!canLogWorkouts()) {
     return <EmptyState title={t('workouts.today.openMobileApp')} />;
@@ -37,11 +40,17 @@ export function WorkoutPage() {
   }
   const workout = active.data;
   if (workout === null) {
-    return finished.data ? (
-      <FinishedScreen workout={finished.data} />
+    if (finished.data) {
+      return <FinishedScreen workout={finished.data} />;
+    }
+    return ownership.kind === 'elsewhere' ? (
+      <OtherDeviceNotice remote={ownership.remote} local={null} />
     ) : (
       <StartDay dayNumber={Number(params.get('day'))} />
     );
+  }
+  if (ownership.kind === 'taken') {
+    return <OtherDeviceNotice remote={ownership.remote} local={workout} />;
   }
   const exercise = Number(params.get('exercise'));
   return (

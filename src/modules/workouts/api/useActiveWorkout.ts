@@ -2,7 +2,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 import { useAuth } from '@/core/auth';
 import { logger } from '@/core/lib';
-import { getDeviceStore, getUploadQueue, userKey } from '@/core/native';
+import { getDeviceId, getDeviceStore, getUploadQueue, userKey } from '@/core/native';
 import { useTenancy } from '@/core/tenancy';
 
 import { activeWorkoutSchema, setCounts, toSyncPayload } from '../model/active-workout';
@@ -110,8 +110,23 @@ export function useSaveActiveWorkout() {
         tenantName: scope.tenantName,
         // Sin ninguna serie hecha no se guarda (D-119): al empezar ya subió, y
         // si no se borra se queda abierto en la nube para siempre (D-151).
-        payload: empty ? discardPayload(workout.id) : toSyncPayload(workout),
+        payload: empty ? discardPayload(workout.id) : toSyncPayload(workout, await getDeviceId()),
       });
+    },
+  });
+}
+
+/** Lo quita de este móvil sin subir nada: se cerró o se descartó en otro (D-152). */
+export function useForgetActiveWorkout() {
+  const scope = useScope();
+  const queryClient = useQueryClient();
+  return useMutation({
+    networkMode: DEVICE_ONLY,
+    mutationFn: async () => {
+      if (scope !== null) {
+        queryClient.setQueryData(activeQueryKey(scope.userId, scope.tenantId), null);
+        await getDeviceStore().remove(activeKey(scope.userId, scope.tenantId));
+      }
     },
   });
 }

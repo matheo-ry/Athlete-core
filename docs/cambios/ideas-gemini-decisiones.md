@@ -115,6 +115,30 @@ Solo documentación. El propietario revisó una segunda lista de ideas hecha con
   - Antes de usarla, comprobar en su repositorio la licencia y el origen de cada base de alimentos.
 - **No usar OpenNutriTracker:** su licencia GPL-3.0 obligaría a publicar el código de la app.
 
+### D-ideas-15 · Plan para gimnasios
+- **Decisión:** el plan más grande de coach llega a **500 clientes**. Por encima hay un **plan de gimnasio**, solo para el gimnasio y sus empleados, que asignan rutinas a sus socios. **No es para coaches de fuera** que entrenan en ese gimnasio: ellos contratan su propio plan de coach.
+- **Cambia D-017** (provisional), donde el plan `studio` no tenía límite. Los números finales se fijan en la Fase 5.
+- **Cómo se evita que lo usen coaches de fuera (propuesta de Claude):** la app no puede saber quién tiene contrato con el gimnasio, así que se combina lo técnico con las condiciones:
+  1. **Solo el dueño del gimnasio da de alta a sus empleados** (rol `staff`, que ya existe en la base de datos sin alta, ARQUITECTURA §7), por invitación a su email. Nadie entra como empleado por su cuenta, y el dueño los quita cuando quiera.
+  2. **Los socios y sus datos son del gimnasio:** el dueño y todos los empleados los ven (las políticas de hoy ya tratan igual a `owner` y `staff`), y un empleado que se va pierde el acceso a todos. A un coach de fuera no le interesa meter ahí a sus clientes: no serían suyos.
+  3. **La marca es la del gimnasio:** un coach de fuera no puede poner la suya.
+  4. **Las condiciones del plan** prohíben usarlo para clientes de coaches externos.
+  5. Un empleado que además tenga clientes propios puede abrir su propio negocio de coach con la misma cuenta (D-048).
+- **Incentivo:** si un coach que entrena en el gimnasio contrata su propio plan de coach invitado por el gimnasio, el gimnasio recibe el **30 % del plan de ese coach**. Necesita pagos.
+- **Cuándo:** después de la Fase 5 (pagos y planes). Dificultad alta: alta de empleados, quién ve a qué socio y la marca del gimnasio.
+
+### D-ideas-16 · Chat con IA para el cliente
+- **Decisión:** el cliente también puede preguntar a la IA, **solo sobre sus propios datos** y para preguntas sencillas ("¿cuánto levanté el mes pasado en sentadilla?").
+- **Nunca le quita autoridad al coach:** si la pregunta es seria (cambiar la rutina o la dieta, dolor, lesión, salud), contesta "Eso háblalo con tu coach" y no opina. Nunca contradice la rutina ni la dieta que puso el coach.
+- **Cómo:** igual que el del coach (D-ideas-12): lee con la sesión del cliente, así que el RLS solo le deja ver lo suyo. Tiene topes diarios (D-ideas-1 y D-ideas-8).
+
+### D-ideas-17 · Derechos de los vídeos 3D: lo único que se vende aparte
+- **Decisión:** es la **única excepción** a "precios cerrados" (D-ideas-13), y resuelve el choque con D-ideas-7.
+  - **Gratis:** subir a redes capturas o grabaciones de pantalla de la app, en las que se ve la app.
+  - **De pago:** descargar el vídeo 3D solo, sin sello, para publicarlo como contenido propio.
+  - Los coaches de **planes más altos los pagan más baratos**, y hay **paquetes con descuento**.
+- **Cuándo:** con los vídeos 3D y los pagos.
+
 ## Qué está claro, qué está en el aire y qué choca
 
 Repaso hecho el 2026-11-20 de todo lo de este archivo frente a las decisiones anteriores.
@@ -130,16 +154,18 @@ Repaso hecho el 2026-11-20 de todo lo de este archivo frente a las decisiones an
 
 **Resuelto el 2026-11-20** (antes en el aire): API de pago (D-ideas-1), lo que ve tras la prueba, duración, abusos y contacto (D-ideas-9), OpenMacro (D-ideas-14), nota final (D-ideas-10), radar (D-ideas-11), chat con IA (D-ideas-12) y la IA incluida en el plan (D-ideas-13).
 
-**Choque nuevo:**
-- **Descargar los vídeos 3D para redes "como extra de pago"** (D-ideas-7) choca con "precios cerrados, sin nada aparte" (D-ideas-13). Hay que elegir: incluido en todos los planes, o la única excepción de pago.
+**También resuelto:** los vídeos 3D para redes (D-ideas-17, única excepción de pago), los gimnasios (D-ideas-15) y el chat del cliente (D-ideas-16). D-017 queda cambiado en parte por D-ideas-15 (500 clientes como máximo en los planes de coach).
 
-**En el aire** (falta que el propietario decida):
-1. **Gimnasios como clientes:** ¿solo coaches independientes, o también gimnasios con varios coaches? Hoy un negocio es un coach (D-070) y el segundo coach (`staff`) no tiene fase.
-2. **Chat con IA para el cliente:** D-ideas-12 es para el coach ("sobre todo coaches"). ¿También el cliente, sobre sus propios datos?
+**En el aire** (falta que el propietario decida; ninguno frena nada cercano):
+1. **¿Qué es un gimnasio?** ¿Un gimnasio de 200 socios va al plan de gimnasio o a uno de coach? Es decir, si el plan de gimnasio va por tipo de negocio o solo por pasar de 500.
+2. **El 30 % para el gimnasio:** ¿todos los meses mientras el coach pague, o solo el primer pago? ¿En dinero o como descuento en la factura del gimnasio?
+3. **En el gimnasio, ¿cada empleado ve a todos los socios o solo a los suyos?** Hoy la base de datos deja ver todo a `owner` y `staff`.
+4. **Vídeos 3D comprados:** si el coach se da de baja, ¿puede seguir usando los que ya pagó (para siempre) o solo mientras tenga plan?
+5. **Chat del cliente con IA:** ¿el coach puede leer lo que su cliente pregunta a la IA?
 
 **Decidido por Claude dentro de D-ideas-2** (el propietario puede cambiarlo antes del PR 3.19): el calentamiento no va por lado en los unilaterales; el descanso no arranca solo tras un calentamiento; un entreno con solo calentamientos no se guarda; el coach lo ve en gris y no sale en el Excel.
 
-**Completamente claro:** todo lo demás de D-ideas-1 a D-ideas-14.
+**Completamente claro:** todo lo demás de D-ideas-1 a D-ideas-17.
 
 ## Lo que debe saber el siguiente
 

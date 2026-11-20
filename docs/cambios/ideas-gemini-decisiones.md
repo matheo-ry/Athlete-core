@@ -10,7 +10,7 @@ Solo documentación. El propietario revisó una segunda lista de ideas hecha con
 ## Decisiones
 
 ### D-ideas-1 · Nutrición e IA entran en el producto
-- **Decisión:** la app tendrá nutrición e IA. **La nutrición llega después de la Fase 4 (pilotos)**; su orden frente a las Fases 5 y 6 se decide al cerrar la 4. La IA será **Gemini Flash Lite**.
+- **Decisión:** la app tendrá nutrición e IA. **Orden:** primero el entreno completo y maduro (Fases 3 y 4, y lo que salga de los pilotos); cuando funcione bien, la nutrición; después, los vídeos 3D (D-ideas-3). La IA será **Gemini Flash Lite, por la API de pago**.
 - **Por qué:** decisión del propietario: siempre estuvo previsto. Cambia ARQUITECTURA §14 ("Nutrición" fuera de la primera versión) solo en el cuándo: sigue fuera hasta después de los pilotos.
 - **Reglas para cuando se construya:**
   - La clave de Gemini **nunca** va en la app (regla de oro 3): se llama desde una función de Supabase (Edge Function), que además lleva la cuenta de usos diarios por usuario (tabla de negocio con `tenant_id` y RLS).
@@ -76,6 +76,45 @@ Solo documentación. El propietario revisó una segunda lista de ideas hecha con
 - **Por qué:** decisión del propietario: que pruebe la IA y le enganche, sin que el coste se dispare.
 - **Cómo:** los topes los lleva la función de Supabase que llama a Gemini (D-ideas-1), según el tipo de espacio (prueba o cliente). Los números exactos se fijan al construir la nutrición.
 
+### D-ideas-9 · Pruebas gratuitas: el detalle (completa D-ideas-5)
+- **Duración:** de **7 a 10 días**; la elige el coach al crear el código de prueba, en la misma pantalla de sus códigos de invitación.
+- **Cuántas:** sin límite de personas en prueba por coach.
+- **Una prueba por cuenta y coach:** con la misma cuenta (email) no se puede repetir prueba con el mismo coach. Con otro email, sí. Como la cuenta no se borra, basta con recordar "esta cuenta ya probó con este coach" (sin guardar el email aparte).
+- **Con otro coach:** es otro espacio, así que empieza de cero.
+- **Al acabar la prueba** (los 7 días para decidir):
+  - Solo ve **resúmenes que motivan**: kilos levantados esa semana, lo que progresó, cuántos días entrenó y una proyección ("si entrenas un mes como esta semana, podrías llegar a X kg" y, si apuntó su peso, "bajar X kg"). Las proyecciones se enseñan como estimación, nunca como promesa.
+  - El resto de la app (entreno y, cuando exista, nutrición) se ve **en gris**, sin poder usarla.
+  - El aviso: "Para seguir con tu plan sin perder lo que has apuntado, contrata a tu coach. Tienes N días; después se borrarán y, si contratas más tarde, empezarás de cero".
+  - El **contacto del coach**. Decidido por Claude: un único campo "Cómo contactarme" en los Ajustes del coach (enlace o teléfono, validado con Zod).
+
+### D-ideas-10 · Nota final del entreno
+- **Decisión:** además de la nota de cada ejercicio (D-122), una **nota del entreno entero**. Sale **sola al terminar**: tanto cuando se cierra solo con todo hecho como con "Terminar" a medias. Es opcional, se puede saltar.
+- **Encaja con lo que hay:** es dato de salud, así que sigue D-126 (sin consentimiento, lo pide, igual que la nota de cada ejercicio). Si el entreno se cierra solo a las 12 horas (D-151) no sale; se puede añadir desde el resumen o el historial.
+- **Base de datos:** migración nueva con `workouts.note` (hasta 500 caracteres) y `sync_workout` que la acepte.
+- **Cuándo:** un PR pequeño **después del 3.10** (notas del día), que toca la misma pantalla. Propuesta: "PR 3.10b — Nota final del entreno". Lo tiene que añadir a `docs/PROMPTS.md` §7 el PR que resuma el lote.
+
+### D-ideas-11 · Radar de abandono
+- **Decisión:** como en D-ideas-4: ampliar los avisos de D-128 con los datos de entreno. Tras la Fase 3.
+
+### D-ideas-12 · Chat con IA para el coach
+- **Decisión:** el coach podrá preguntar a la IA sobre los datos de sus clientes ("¿quién ha bajado el volumen este mes?") y la IA le contesta **solo con los datos de su negocio**.
+- **Regla de seguridad:** la IA lee los datos **con la sesión del coach**, así que pasa por el RLS y no puede ver otro negocio aunque se le pida. **Nunca** con la clave `service_role` (regla de oro 3).
+- **Datos de salud:** el peso, las medidas y las notas que se manden a Gemini los tiene que cubrir el consentimiento de cada cliente (D-126), ampliado para la IA.
+- **Cuándo:** con la IA (con la nutrición o después). Dificultad alta.
+
+### D-ideas-13 · La IA, incluida en todos los planes
+- **Decisión:** precios cerrados. **Todos los planes tienen las mismas funciones** (también la IA); lo único que cambia el precio es el número de clientes. Sigue D-017 y D-133.
+- **Ojo:** los topes diarios de uso (D-ideas-1 y D-ideas-8) siguen existiendo para cuidar el coste: es uso razonable, no una función de pago.
+
+### D-ideas-14 · OpenMacro como base de la nutrición
+- **Qué es (según el propietario):** app de nutrición de código abierto para Android, con TDEE adaptativo, unos 58.000 alimentos, escáner de códigos de barras y registro con IA. Código con licencia **MIT** (se puede usar en una app comercial cerrada conservando el aviso de copyright y la licencia).
+- **Ojo:**
+  - Está hecha en **Rust**. Nuestra app es TypeScript, así que no se copia el código tal cual: se **trasladan sus algoritmos** (el del TDEE, por ejemplo), con su aviso MIT.
+  - **Los alimentos van con licencias aparte:** USDA (dominio público), FSANZ (CC BY 4.0: hay que citarla) y Open Food Facts (ODbL: citarla y compartir las mejoras que se hagan a esa base, no el código de la app).
+  - Esas bases están sobre todo **en inglés**: para España hará falta una base con nombres en español.
+  - Antes de usarla, comprobar en su repositorio la licencia y el origen de cada base de alimentos.
+- **No usar OpenNutriTracker:** su licencia GPL-3.0 obligaría a publicar el código de la app.
+
 ## Qué está claro, qué está en el aire y qué choca
 
 Repaso hecho el 2026-11-20 de todo lo de este archivo frente a las decisiones anteriores.
@@ -89,28 +128,24 @@ Repaso hecho el 2026-11-20 de todo lo de este archivo frente a las decisiones an
 - ARQUITECTURA §14 dice "Nutrición: fuera de la primera versión" → hay que añadir "llega después de la Fase 4" (zona protegida: con el OK del propietario).
 - `docs/ESTADO.md` todavía pone los retos en la Fase 6 y no tiene la nutrición ni el PR 3.19.
 
+**Resuelto el 2026-11-20** (antes en el aire): API de pago (D-ideas-1), lo que ve tras la prueba, duración, abusos y contacto (D-ideas-9), OpenMacro (D-ideas-14), nota final (D-ideas-10), radar (D-ideas-11), chat con IA (D-ideas-12) y la IA incluida en el plan (D-ideas-13).
+
+**Choque nuevo:**
+- **Descargar los vídeos 3D para redes "como extra de pago"** (D-ideas-7) choca con "precios cerrados, sin nada aparte" (D-ideas-13). Hay que elegir: incluido en todos los planes, o la única excepción de pago.
+
 **En el aire** (falta que el propietario decida):
-1. **Nivel de la API de Gemini:** gratuito o de pago. Con datos de salud hace falta comprobar que Google no los usa para entrenar sus modelos en el nivel que se elija.
-2. **Pruebas — qué puede hacer en los 7 días de decidir:** ¿sigue entrenando, o solo ve su resumen?
-3. **Pruebas — cuántos días dura y quién lo elige** (¿el coach, entre 3 y 14?).
-4. **Pruebas — topes contra el abuso:** cuántas personas en prueba a la vez puede tener un coach, y si la misma persona puede repetir prueba con el mismo coach.
-5. **Pruebas — el contacto del coach** en la pantalla de cierre: WhatsApp, email, enlace…
-6. **"OpenMacro":** qué base de alimentos es y su licencia.
-7. **Nota general al terminar el entreno** (además de la de cada ejercicio, D-122).
-8. **Radar de abandono:** el propietario escribió "implementado". Aquí se entiende "ampliarlo" (D-ideas-4); si quería decir "ya está con el aviso de 7 días", no se hace nada más.
-9. **Qué IA cuenta como "mensajes"** para los topes: el registro por voz y por texto de la comida, seguro. ¿Habrá un chat con la IA? No está decidido.
-10. **Cuánto pagan los coaches por la IA:** incluida en el plan o aparte. Se decide en la Fase 5 con los precios.
-11. **Gimnasios como clientes:** el documento de Gemini habla de "entrenadores y gimnasios". Hoy el producto es para coaches (D-070) y el segundo coach del negocio (`staff`) no tiene fase.
+1. **Gimnasios como clientes:** ¿solo coaches independientes, o también gimnasios con varios coaches? Hoy un negocio es un coach (D-070) y el segundo coach (`staff`) no tiene fase.
+2. **Chat con IA para el cliente:** D-ideas-12 es para el coach ("sobre todo coaches"). ¿También el cliente, sobre sus propios datos?
 
 **Decidido por Claude dentro de D-ideas-2** (el propietario puede cambiarlo antes del PR 3.19): el calentamiento no va por lado en los unilaterales; el descanso no arranca solo tras un calentamiento; un entreno con solo calentamientos no se guarda; el coach lo ve en gris y no sale en el Excel.
 
-**Completamente claro:** todo lo demás de D-ideas-1 a D-ideas-8.
+**Completamente claro:** todo lo demás de D-ideas-1 a D-ideas-14.
 
 ## Lo que debe saber el siguiente
 
 - Estas decisiones **no** mueven el plan de la Fase 3: lo único que se suma cerca es el PR del calentamiento (D-ideas-2) y lo marcado "tras la Fase 3".
 - Al cerrar el lote, el PR de resumen debe llevar a `docs/ESTADO.md` la nutrición e IA después de la Fase 4, el PR 3.19 propuesto y lo que cambia en la Fase 6 (pruebas, D-ideas-5), y a `docs/ARQUITECTURA.md` §14 que la nutrición ya tiene momento (zona protegida: con el OK del propietario).
-- "Las molestias en notas" hoy es la nota de cada ejercicio (D-122). Una nota general al terminar el entreno sería un PR pequeño con migración: hoy `workouts` no la tiene (en el aire, punto 7).
+- Lo único cercano para construir: el PR 3.10b (nota final, D-ideas-10) y el PR 3.19 (calentamiento, D-ideas-2). El PR de resumen del lote debe añadir los dos a `docs/PROMPTS.md` §7.
 
 ## Deuda
 

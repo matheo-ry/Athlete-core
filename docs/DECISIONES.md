@@ -101,7 +101,7 @@ Si una decisión de este archivo cambia, el archivo nuevo de `docs/cambios/` dic
 - **Fecha:** 2026-11-12
 - **Decisión:** `free` (3 clientes), `starter` (10), `pro` (30) y `studio` (sin límite). El límite se comprueba en la base de datos.
 - **Revisar si:** siempre que se cambien los precios. Son valores de partida.
-- **Sustituida en parte por D-ideas-15** (`docs/cambios/ideas-gemini-decisiones.md`): los planes de coach llegan como máximo a 500 clientes; por encima, plan de gimnasio.
+- **Sustituida en parte por D-ideas-15** (`docs/cambios/ideas-gemini-decisiones.md`): los planes de coach (un solo coach) llegan como máximo a 500 clientes, y hay planes aparte para gimnasios.
 
 ### D-018 · Dependencias entre módulos
 - **Fecha:** 2026-11-12

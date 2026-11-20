@@ -116,15 +116,27 @@ Solo documentación. El propietario revisó una segunda lista de ideas hecha con
 - **No usar OpenNutriTracker:** su licencia GPL-3.0 obligaría a publicar el código de la app.
 
 ### D-ideas-15 · Plan para gimnasios
-- **Decisión:** el plan más grande de coach llega a **500 clientes**. Por encima hay un **plan de gimnasio**, solo para el gimnasio y sus empleados, que asignan rutinas a sus socios. **No es para coaches de fuera** que entrenan en ese gimnasio: ellos contratan su propio plan de coach.
-- **Cambia D-017** (provisional), donde el plan `studio` no tenía límite. Los números finales se fijan en la Fase 5.
+- **Decisión:** hay **dos tipos de plan**, según el tipo de negocio (no según el tamaño):
+  - **Coach:** como hoy, **un solo coach** por negocio, con tramos por número de clientes hasta **500**.
+  - **Gimnasio:** el gimnasio y sus empleados asignan rutinas a sus socios.
+
+    | Plan de gimnasio | Socios | Empleados coach incluidos |
+    |---|---|---|
+    | Inicial | hasta 200 | 2 |
+    | Medio | hasta 500 | 4 |
+    | Grande | más de 500 | 10 |
+
+    Cada empleado más se paga aparte.
+  - **No es para coaches de fuera** que entrenan en ese gimnasio: ellos contratan su propio plan de coach.
+- **El cliente es el gimnasio, no sus empleados:** todos los empleados ven a todos los socios (como hacen hoy las políticas con `owner` y `staff`).
+- **Cambia D-017** (provisional), donde el plan `studio` no tenía límite. Los precios se fijan en la Fase 5.
 - **Cómo se evita que lo usen coaches de fuera (propuesta de Claude):** la app no puede saber quién tiene contrato con el gimnasio, así que se combina lo técnico con las condiciones:
   1. **Solo el dueño del gimnasio da de alta a sus empleados** (rol `staff`, que ya existe en la base de datos sin alta, ARQUITECTURA §7), por invitación a su email. Nadie entra como empleado por su cuenta, y el dueño los quita cuando quiera.
   2. **Los socios y sus datos son del gimnasio:** el dueño y todos los empleados los ven (las políticas de hoy ya tratan igual a `owner` y `staff`), y un empleado que se va pierde el acceso a todos. A un coach de fuera no le interesa meter ahí a sus clientes: no serían suyos.
   3. **La marca es la del gimnasio:** un coach de fuera no puede poner la suya.
   4. **Las condiciones del plan** prohíben usarlo para clientes de coaches externos.
   5. Un empleado que además tenga clientes propios puede abrir su propio negocio de coach con la misma cuenta (D-048).
-- **Incentivo:** si un coach que entrena en el gimnasio contrata su propio plan de coach invitado por el gimnasio, el gimnasio recibe el **30 % del plan de ese coach**. Necesita pagos.
+- **Incentivo:** ver D-ideas-18.
 - **Cuándo:** después de la Fase 5 (pagos y planes). Dificultad alta: alta de empleados, quién ve a qué socio y la marca del gimnasio.
 
 ### D-ideas-16 · Chat con IA para el cliente
@@ -138,6 +150,25 @@ Solo documentación. El propietario revisó una segunda lista de ideas hecha con
   - **De pago:** descargar el vídeo 3D solo, sin sello, para publicarlo como contenido propio.
   - Los coaches de **planes más altos los pagan más baratos**, y hay **paquetes con descuento**.
 - **Cuándo:** con los vídeos 3D y los pagos.
+- **Lo comprado es para siempre:** el coach puede seguir usando los vídeos que pagó aunque se dé de baja.
+
+### D-ideas-18 · El gimnasio gana por traer coaches
+- **Decisión:** si un coach que entrena en el gimnasio contrata su propio plan de coach invitado por el gimnasio:
+  - **Pago mensual:** el gimnasio recibe el **30 % de los 6 primeros meses** del coach.
+  - **Pago anual** (el año cuesta lo que 10 meses): el **20 % de ese pago**.
+  - Las dos opciones salen parecidas: 6 × 30 % = 1,8 meses y 10 × 20 % = 2 meses.
+- **Cómo se le paga (propuesta de Claude, falta el OK del propietario):** **saldo a favor en euros**, que se descuenta solo de las siguientes facturas del gimnasio, **sin pagar nunca en efectivo**:
+  - **Sin salida de caja**, y sin que el gimnasio tenga que facturarnos una comisión (menos papeleo fiscal).
+  - **Retiene:** el saldo solo vale mientras el gimnasio siga con el plan; si se da de baja, se pierde (escrito en las condiciones).
+  - Es mejor que "regalar meses": los meses cuestan distinto según el plan, y el saldo en euros vale para cualquiera.
+  - Stripe lo hace solo con el saldo del cliente (comprobarlo en la Fase 5).
+  - El saldo se da cuando el pago del coach está cobrado. Si se le devuelve el dinero, se quita.
+  - Solo cuenta para coaches que no fueran ya clientes de la app.
+- **Cuándo:** con los pagos y el plan de gimnasio.
+
+### D-ideas-19 · El coach ve lo que su cliente pregunta a la IA
+- **Decisión:** el coach puede leer el chat de su cliente con la IA (D-ideas-16).
+- **Transparencia:** el cliente lo ve escrito en el propio chat: "Tu coach puede leer esta conversación". Lo cubre el consentimiento de D-126, ampliado para la IA.
 
 ## Qué está claro, qué está en el aire y qué choca
 
@@ -156,16 +187,13 @@ Repaso hecho el 2026-11-20 de todo lo de este archivo frente a las decisiones an
 
 **También resuelto:** los vídeos 3D para redes (D-ideas-17, única excepción de pago), los gimnasios (D-ideas-15) y el chat del cliente (D-ideas-16). D-017 queda cambiado en parte por D-ideas-15 (500 clientes como máximo en los planes de coach).
 
-**En el aire** (falta que el propietario decida; ninguno frena nada cercano):
-1. **¿Qué es un gimnasio?** ¿Un gimnasio de 200 socios va al plan de gimnasio o a uno de coach? Es decir, si el plan de gimnasio va por tipo de negocio o solo por pasar de 500.
-2. **El 30 % para el gimnasio:** ¿todos los meses mientras el coach pague, o solo el primer pago? ¿En dinero o como descuento en la factura del gimnasio?
-3. **En el gimnasio, ¿cada empleado ve a todos los socios o solo a los suyos?** Hoy la base de datos deja ver todo a `owner` y `staff`.
-4. **Vídeos 3D comprados:** si el coach se da de baja, ¿puede seguir usando los que ya pagó (para siempre) o solo mientras tenga plan?
-5. **Chat del cliente con IA:** ¿el coach puede leer lo que su cliente pregunta a la IA?
+**Resuelto después:** plan de gimnasio por tipo de negocio y con empleados (D-ideas-15), el 30 % (D-ideas-18), los empleados ven a todos los socios (D-ideas-15), los vídeos comprados son para siempre (D-ideas-17) y el coach lee el chat del cliente (D-ideas-19).
+
+**En el aire:** solo **cómo se paga el 30 %** al gimnasio (D-ideas-18): la propuesta es saldo a favor en sus facturas, sin efectivo; falta el OK del propietario.
 
 **Decidido por Claude dentro de D-ideas-2** (el propietario puede cambiarlo antes del PR 3.19): el calentamiento no va por lado en los unilaterales; el descanso no arranca solo tras un calentamiento; un entreno con solo calentamientos no se guarda; el coach lo ve en gris y no sale en el Excel.
 
-**Completamente claro:** todo lo demás de D-ideas-1 a D-ideas-17.
+**Completamente claro:** todo lo demás de D-ideas-1 a D-ideas-19.
 
 ## Lo que debe saber el siguiente
 

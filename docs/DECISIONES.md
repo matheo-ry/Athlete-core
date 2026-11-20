@@ -1094,6 +1094,7 @@ Si una decisión de este archivo cambia, el archivo nuevo de `docs/cambios/` dic
   - **La fecha del entreno es la del último dato cambiado**, en la zona horaria del móvil: si entrenó el lunes y lo cierra el martes, queda como entreno del lunes.
   - **Un entreno sin ninguna serie hecha** no se guarda al cerrarlo.
   - **El calentamiento no se apunta**: solo las series efectivas.
+- **Sustituida en parte por D-ideas-2** (`docs/cambios/ideas-gemini-decisiones.md`): el calentamiento sí se puede apuntar, pero no cuenta para el progreso.
 - **Por qué:** así entrena el propietario: abre la app ya en el gimnasio y quiere estar en el ejercicio en un toque.
 - **Consecuencias:** la tarjeta "Hoy toca" del inicio del cliente pasa de `programs` a `workouts` (que usa a `programs`), con "Iniciar entreno" o "Continuar". En los días de "Entreno", `programs` enseña un enlace a la ruta de `workouts`, sin importar el módulo.
 

@@ -1252,6 +1252,7 @@ Si una decisión de este archivo cambia, el archivo nuevo de `docs/cambios/` dic
   - **Tarjetas de récords para Instagram:** después de la Fase 3 (necesitan generar una imagen con la marca del coach y compartirla desde el móvil).
   - **Chat, nutrición, hábitos, check-ins, fotos y subir vídeos:** a futuro, cada uno en su fase. **Hosting, vídeos, notificaciones y demás servicios:** se eligen en su fase.
   - Se crea la **Fase 6 — Crecimiento** en ESTADO: Modo Alumni, retos, pase para un amigo, embajadores, tarjetas de récords y el directorio (con su condición).
+- **Sustituida en parte por D-ideas-5** (`docs/cambios/ideas-gemini-decisiones.md`): los retos (pruebas gratuitas) pasan a la Fase 5.
 - **Por qué:** son buenas ideas para crecer, pero ninguna hace falta para validar el producto con los primeros coaches.
 
 ### D-135 · Librerías de la Fase 3

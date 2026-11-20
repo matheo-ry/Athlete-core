@@ -50,8 +50,8 @@ Solo documentación. El propietario revisó una segunda lista de ideas hecha con
   - Mientras dura, el cliente en prueba sale en la lista del coach con la etiqueta "En prueba · quedan N días". No hay pestaña aparte de "leads".
   - **Al acabar**, ve una pantalla de cierre con lo que hizo y un botón para contactar con su coach (el coach tendrá que guardar su contacto en Ajustes).
   - Tiene **7 días para decidir**: si escribe el código normal de su coach, sigue como cliente con todos sus datos y la misma cuenta. Si no, a los 7 días **se borran los datos de esa prueba** (entrenos y datos de salud de ese espacio). La cuenta no se borra. Es la única excepción a "dar de baja no borra" (D-055), y solo para pruebas. El borrado es automático (tarea programada en la base de datos).
-- **Cuándo:** sin prisa. Propuesta: en la Fase 5, con los límites por plan, porque "no gastar plazas" importa cuando las plazas se cobran.
-- **Límite diario de IA en las pruebas:** con un tope más bajo que el de los clientes (supuesto: el propietario no lo contestó; confirmar al diseñar la fase).
+- **Cuándo:** en la **Fase 5**, con los límites por plan, porque "no gastar plazas" importa cuando las plazas se cobran. El propietario dejó elegir la fase ("en la que mejor venga"). **Sustituye en parte a D-134**, que la ponía en la Fase 6. El pase para un amigo sigue en la Fase 6.
+- **IA en las pruebas:** ver D-ideas-8.
 - **Tarjeta para Stories al acabar un entreno o reto:** son las tarjetas de récords ya previstas (D-134, Fase 6).
 - **Generador de casos de éxito:** no, por ahora.
 
@@ -68,11 +68,49 @@ Solo documentación. El propietario revisó una segunda lista de ideas hecha con
 - **Cuenta de marketing con los vídeos 3D:** es marketing, fuera de la app. No pide código.
 - **Derivar clientes a coaches a cambio de comisión:** no.
 
+### D-ideas-8 · La IA, recortada en las pruebas
+- **Decisión:** quien está en prueba usa la IA, pero con topes más bajos y **nunca sin límite**:
+  - **Fotos de comida:** 1 plato al día.
+  - **Lo demás** (textos, mensajes, voz): un tope diario más bajo que el de los clientes.
+  - Al llegar al tope ve un mensaje: "Para usarlo sin este límite, hazte cliente de tu coach". Al pasar a cliente con el código normal (D-ideas-5), tiene los topes de cliente.
+- **Por qué:** decisión del propietario: que pruebe la IA y le enganche, sin que el coste se dispare.
+- **Cómo:** los topes los lleva la función de Supabase que llama a Gemini (D-ideas-1), según el tipo de espacio (prueba o cliente). Los números exactos se fijan al construir la nutrición.
+
+## Qué está claro, qué está en el aire y qué choca
+
+Repaso hecho el 2026-11-20 de todo lo de este archivo frente a las decisiones anteriores.
+
+**Choques resueltos aquí** (ya no hay dos decisiones):
+- Calentamiento: D-119 decía que no se apunta → D-ideas-2. D-119 lleva la marca "Sustituida en parte".
+- Pruebas: D-134 las ponía en la Fase 6 → Fase 5 (D-ideas-5). D-134 lleva la marca.
+- Pruebas y "dar de baja no borra" (D-055): las pruebas son la única excepción, escrita en D-ideas-5.
+
+**Choques que quedan hasta el PR de resumen del lote** (es solo papeleo):
+- ARQUITECTURA §14 dice "Nutrición: fuera de la primera versión" → hay que añadir "llega después de la Fase 4" (zona protegida: con el OK del propietario).
+- `docs/ESTADO.md` todavía pone los retos en la Fase 6 y no tiene la nutrición ni el PR 3.19.
+
+**En el aire** (falta que el propietario decida):
+1. **Nivel de la API de Gemini:** gratuito o de pago. Con datos de salud hace falta comprobar que Google no los usa para entrenar sus modelos en el nivel que se elija.
+2. **Pruebas — qué puede hacer en los 7 días de decidir:** ¿sigue entrenando, o solo ve su resumen?
+3. **Pruebas — cuántos días dura y quién lo elige** (¿el coach, entre 3 y 14?).
+4. **Pruebas — topes contra el abuso:** cuántas personas en prueba a la vez puede tener un coach, y si la misma persona puede repetir prueba con el mismo coach.
+5. **Pruebas — el contacto del coach** en la pantalla de cierre: WhatsApp, email, enlace…
+6. **"OpenMacro":** qué base de alimentos es y su licencia.
+7. **Nota general al terminar el entreno** (además de la de cada ejercicio, D-122).
+8. **Radar de abandono:** el propietario escribió "implementado". Aquí se entiende "ampliarlo" (D-ideas-4); si quería decir "ya está con el aviso de 7 días", no se hace nada más.
+9. **Qué IA cuenta como "mensajes"** para los topes: el registro por voz y por texto de la comida, seguro. ¿Habrá un chat con la IA? No está decidido.
+10. **Cuánto pagan los coaches por la IA:** incluida en el plan o aparte. Se decide en la Fase 5 con los precios.
+11. **Gimnasios como clientes:** el documento de Gemini habla de "entrenadores y gimnasios". Hoy el producto es para coaches (D-070) y el segundo coach del negocio (`staff`) no tiene fase.
+
+**Decidido por Claude dentro de D-ideas-2** (el propietario puede cambiarlo antes del PR 3.19): el calentamiento no va por lado en los unilaterales; el descanso no arranca solo tras un calentamiento; un entreno con solo calentamientos no se guarda; el coach lo ve en gris y no sale en el Excel.
+
+**Completamente claro:** todo lo demás de D-ideas-1 a D-ideas-8.
+
 ## Lo que debe saber el siguiente
 
 - Estas decisiones **no** mueven el plan de la Fase 3: lo único que se suma cerca es el PR del calentamiento (D-ideas-2) y lo marcado "tras la Fase 3".
 - Al cerrar el lote, el PR de resumen debe llevar a `docs/ESTADO.md` la nutrición e IA después de la Fase 4, el PR 3.19 propuesto y lo que cambia en la Fase 6 (pruebas, D-ideas-5), y a `docs/ARQUITECTURA.md` §14 que la nutrición ya tiene momento (zona protegida: con el OK del propietario).
-- **Pregunta abierta para el propietario:** "las molestias en notas" hoy es la nota de cada ejercicio (D-122). Si quiere además **una nota general al terminar el entreno**, es un PR pequeño con migración (hoy `workouts` no tiene nota general).
+- "Las molestias en notas" hoy es la nota de cada ejercicio (D-122). Una nota general al terminar el entreno sería un PR pequeño con migración: hoy `workouts` no la tiene (en el aire, punto 7).
 
 ## Deuda
 

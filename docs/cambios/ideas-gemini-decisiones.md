@@ -154,10 +154,9 @@ Solo documentación. El propietario revisó una segunda lista de ideas hecha con
 
 ### D-ideas-18 · El gimnasio gana por traer coaches
 - **Decisión:** si un coach que entrena en el gimnasio contrata su propio plan de coach invitado por el gimnasio:
-  - **Pago mensual:** el gimnasio recibe el **30 % de los 6 primeros meses** del coach.
-  - **Pago anual** (el año cuesta lo que 10 meses): el **20 % de ese pago**.
-  - Las dos opciones salen parecidas: 6 × 30 % = 1,8 meses y 10 × 20 % = 2 meses.
-- **Cómo se le paga (propuesta de Claude, falta el OK del propietario):** **saldo a favor en euros**, que se descuenta solo de las siguientes facturas del gimnasio, **sin pagar nunca en efectivo**:
+  - **Pago mensual:** el gimnasio recibe el **30 % de los 9 primeros meses** del coach, **mes a mes**: cada vez que se cobra una cuota del coach, se suma su 30 % al saldo del gimnasio. En total, unos 2,7 meses del plan del coach.
+  - **Pago anual** (el año cuesta lo que 10 meses): el **20 % de ese pago, de golpe**, en cuanto se cobra. En total, 2 meses.
+- **Cómo se le paga (aprobado por el propietario):** **saldo a favor en euros**, que se descuenta solo de las siguientes facturas del gimnasio, **sin pagar nunca en efectivo**:
   - **Sin salida de caja**, y sin que el gimnasio tenga que facturarnos una comisión (menos papeleo fiscal).
   - **Retiene:** el saldo solo vale mientras el gimnasio siga con el plan; si se da de baja, se pierde (escrito en las condiciones).
   - Es mejor que "regalar meses": los meses cuestan distinto según el plan, y el saldo en euros vale para cualquiera.
@@ -189,7 +188,7 @@ Repaso hecho el 2026-11-20 de todo lo de este archivo frente a las decisiones an
 
 **Resuelto después:** plan de gimnasio por tipo de negocio y con empleados (D-ideas-15), el 30 % (D-ideas-18), los empleados ven a todos los socios (D-ideas-15), los vídeos comprados son para siempre (D-ideas-17) y el coach lee el chat del cliente (D-ideas-19).
 
-**En el aire:** solo **cómo se paga el 30 %** al gimnasio (D-ideas-18): la propuesta es saldo a favor en sus facturas, sin efectivo; falta el OK del propietario.
+**En el aire:** nada. Cómo se paga al gimnasio (saldo a favor) quedó aprobado en D-ideas-18.
 
 **Decidido por Claude dentro de D-ideas-2** (el propietario puede cambiarlo antes del PR 3.19): el calentamiento no va por lado en los unilaterales; el descanso no arranca solo tras un calentamiento; un entreno con solo calentamientos no se guarda; el coach lo ve en gris y no sale en el Excel.
 

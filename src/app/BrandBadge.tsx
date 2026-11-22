@@ -26,7 +26,7 @@ export function BrandBadge({ brand, size = 'sm', logoSrc }: BrandBadgeProps) {
   const src = logoSrc === undefined ? saved : logoSrc;
   // La dirección que no se pudo cargar: para ella, las iniciales.
   const [failedSrc, setFailedSrc] = useState<string | null>(null);
-  const sizeClass = size === 'sm' ? 'size-8 text-sm' : 'size-16 text-2xl';
+  const sizeClass = size === 'sm' ? 'size-10 text-sm' : 'size-20 text-3xl';
 
   if (src !== null && src !== failedSrc) {
     return (
@@ -36,7 +36,7 @@ export function BrandBadge({ brand, size = 'sm', logoSrc }: BrandBadgeProps) {
         aria-hidden="true"
         data-testid="brand-logo"
         onError={() => setFailedSrc(src)}
-        className={cn('bg-surface shrink-0 rounded-lg object-contain', sizeClass)}
+        className={cn('bg-surface shrink-0 rounded-2xl object-contain', sizeClass)}
       />
     );
   }
@@ -49,7 +49,10 @@ export function BrandBadge({ brand, size = 'sm', logoSrc }: BrandBadgeProps) {
         backgroundColor: brand.colors.primary,
         color: pickReadableOn(brand.colors.primary),
       }}
-      className={cn('flex shrink-0 items-center justify-center rounded-lg font-bold', sizeClass)}
+      className={cn(
+        'flex shrink-0 items-center justify-center rounded-2xl font-bold tracking-tight shadow-[inset_0_1px_0_rgb(255_255_255/0.28)]',
+        sizeClass,
+      )}
     >
       {brandInitials(brand.appName)}
     </span>

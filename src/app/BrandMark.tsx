@@ -10,9 +10,11 @@ export function BrandMark() {
   const brand = useBrand();
 
   return (
-    <div className="flex items-center gap-2">
+    <div className="flex min-w-0 items-center gap-3">
       <BrandBadge brand={brand} />
-      <span className="text-foreground font-semibold">{brand.appName}</span>
+      <span className="text-foreground truncate text-base font-semibold tracking-tight">
+        {brand.appName}
+      </span>
     </div>
   );
 }

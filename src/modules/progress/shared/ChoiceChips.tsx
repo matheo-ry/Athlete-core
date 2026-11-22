@@ -15,8 +15,9 @@ interface ChoiceChipsProps<K extends string> {
 }
 
 /**
- * Botones para elegir una opción (métrica, periodo, pestaña). min-h-11 = 44 px
- * de zona táctil (AGENTS §4) y aria-pressed para anunciar la elegida.
+ * Control segmentado para elegir una opción (métrica, periodo, pestaña): una
+ * píldora hundida con la elegida encendida; si no caben, se desliza de lado. min-h-11 = 44 px de zona táctil
+ * (AGENTS §4) y aria-pressed para anunciar la elegida.
  */
 export function ChoiceChips<K extends string>({
   label,
@@ -26,7 +27,11 @@ export function ChoiceChips<K extends string>({
   testIdPrefix,
 }: ChoiceChipsProps<K>) {
   return (
-    <div className="flex flex-wrap items-center gap-1.5" role="group" aria-label={label}>
+    <div
+      className="bg-foreground/6 no-scrollbar inline-flex max-w-full items-center gap-0.5 self-start overflow-x-auto rounded-full p-1"
+      role="group"
+      aria-label={label}
+    >
       {options.map((option) => {
         const active = option.key === value;
         return (
@@ -36,11 +41,10 @@ export function ChoiceChips<K extends string>({
             aria-pressed={active}
             onClick={() => onChange(option.key)}
             className={cn(
-              'min-h-11 rounded-lg px-3 text-sm font-semibold transition-colors',
-              'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-readable',
+              'focus-visible:outline-primary-readable min-h-11 shrink-0 focus-visible:outline-2 focus-visible:-outline-offset-2 rounded-full px-4 text-sm font-semibold whitespace-nowrap transition-[background-color,color,box-shadow] duration-200',
               active
-                ? 'bg-primary text-on-primary'
-                : 'border border-border bg-surface text-muted hover:text-foreground',
+                ? 'bg-primary text-on-primary shadow-[0_6px_16px_-8px_var(--color-primary-glow)]'
+                : 'text-muted hover:text-foreground',
             )}
             data-testid={`${testIdPrefix}-${option.key}`}
           >

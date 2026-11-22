@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useLanguage } from '@/core/i18n';
-import { Card, EmptyState, ErrorState, Spinner } from '@/core/ui';
+import { Card, EmptyState, ErrorState, PageHeader, Spinner } from '@/core/ui';
 
 import { useClientPrograms } from '../api/useAssignments';
 import { routinesByClient } from '../model/assignments';
@@ -27,10 +27,8 @@ export function ClientProgramPage() {
   const next = routines?.next ?? null;
 
   return (
-    <section className="flex flex-col gap-4">
-      <header>
-        <h1 className="text-2xl font-bold">{t('programs.client.title')}</h1>
-      </header>
+    <section className="flex flex-col gap-5">
+      <PageHeader title={t('programs.client.title')} />
       {programs.isPending ? <Spinner /> : null}
       {programs.isError ? <ErrorState onRetry={() => void programs.refetch()} /> : null}
       {programs.isSuccess && current === null && next === null ? (

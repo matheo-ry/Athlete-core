@@ -2,6 +2,8 @@ export { Button } from './Button';
 export { buttonClassName } from './button-styles';
 export type { ButtonVariant } from './button-styles';
 export { Card } from './Card';
+export { FIELD_LABEL_CLASS, fieldClassName } from './field-styles';
+export { SEGMENTED_GROUP_CLASS, segmentClassName } from './segmented-styles';
 export { Checkbox } from './Checkbox';
 export { EmptyState } from './EmptyState';
 export { ErrorState } from './ErrorState';

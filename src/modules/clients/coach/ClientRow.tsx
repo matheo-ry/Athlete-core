@@ -5,6 +5,7 @@ import { brandInitials } from '@/core/branding';
 import { useLanguage } from '@/core/i18n';
 import { formatDate } from '@/core/lib';
 import type { TenantMember } from '@/core/tenancy';
+import { Icon, Pill } from '@/core/ui';
 
 import { isNewClient } from '../model/client-list';
 
@@ -19,28 +20,30 @@ export function ClientRow({ client, now }: ClientRowProps) {
   const language = useLanguage();
 
   return (
-    <li className="border-border border-b last:border-b-0">
+    <li>
       <Link
         to={`/coach/clients/${encodeURIComponent(client.userId)}`}
-        className="hover:bg-surface focus-visible:outline-primary-readable flex min-h-14 items-center gap-3 rounded-lg px-1 py-2 focus-visible:outline-2"
+        className="focus-ring hover:bg-foreground/5 group flex min-h-16 items-center gap-3 rounded-2xl px-3 py-2 transition-colors"
       >
         <span
           aria-hidden="true"
-          className="bg-surface border-border flex size-10 shrink-0 items-center justify-center rounded-full border text-sm font-semibold"
+          className="bg-primary-soft text-primary-readable ring-primary/20 flex size-11 shrink-0 items-center justify-center rounded-full text-sm font-semibold ring-1"
         >
           {brandInitials(client.displayName)}
         </span>
         <span className="flex min-w-0 flex-1 flex-col">
-          <span className="truncate font-medium">{client.displayName}</span>
+          <span className="truncate font-semibold">{client.displayName}</span>
           <span className="text-muted text-sm">
             {t('clients.list.joinedOn', { date: formatDate(client.joinedAt, language) })}
           </span>
         </span>
         {isNewClient(client.joinedAt, now) ? (
-          <span className="bg-primary text-on-primary rounded-full px-2 py-0.5 text-xs font-semibold">
-            {t('clients.list.new')}
-          </span>
+          <Pill tone="primary">{t('clients.list.new')}</Pill>
         ) : null}
+        <Icon
+          name="chevronRight"
+          className="text-muted size-5 shrink-0 transition-transform group-hover:translate-x-0.5"
+        />
       </Link>
     </li>
   );

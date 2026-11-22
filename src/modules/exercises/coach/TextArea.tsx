@@ -2,6 +2,7 @@ import { useId } from 'react';
 import type { TextareaHTMLAttributes } from 'react';
 
 import { cn } from '@/core/lib';
+import { FIELD_LABEL_CLASS, fieldClassName } from '@/core/ui';
 
 interface TextAreaProps extends Omit<TextareaHTMLAttributes<HTMLTextAreaElement>, 'id'> {
   label: string;
@@ -17,20 +18,15 @@ export function TextArea({ label, hint, error, className, ...rest }: TextAreaPro
   const describedBy = [hint ? hintId : null, error ? errorId : null].filter(Boolean).join(' ');
 
   return (
-    <div className="flex flex-col gap-1.5">
-      <label htmlFor={id} className="text-foreground text-sm font-medium">
+    <div className="flex flex-col gap-2">
+      <label htmlFor={id} className={FIELD_LABEL_CLASS}>
         {label}
       </label>
       <textarea
         id={id}
         aria-invalid={error ? true : undefined}
         aria-describedby={describedBy || undefined}
-        className={cn(
-          'bg-surface text-foreground min-h-28 rounded-lg border px-3 py-2 text-base',
-          'focus-visible:outline-primary-readable focus-visible:outline-2 focus-visible:outline-offset-2',
-          error ? 'border-danger' : 'border-border',
-          className,
-        )}
+        className={fieldClassName(Boolean(error), cn('min-h-28 py-3', className))}
         {...rest}
       />
       {hint ? (

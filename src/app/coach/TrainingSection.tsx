@@ -1,10 +1,10 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { cn, logger } from '@/core/lib';
+import { logger } from '@/core/lib';
 import { INTENSITY_SCALES, useSaveTenantSettings, useTenantSettings } from '@/core/tenancy';
 import type { IntensityScale } from '@/core/tenancy';
-import { Card } from '@/core/ui';
+import { Card, segmentClassName, SEGMENTED_GROUP_CLASS } from '@/core/ui';
 
 /**
  * "Entrenamiento", en los Ajustes del coach, solo para el dueño: con qué
@@ -36,7 +36,7 @@ export function TrainingSection() {
 
   return (
     <Card className="flex flex-col gap-3">
-      <h2 className="text-lg font-bold">{t('app.coachSettings.training.title')}</h2>
+      <h2 className="text-lg font-semibold">{t('app.coachSettings.training.title')}</h2>
       <div
         role="group"
         aria-label={t('app.coachSettings.training.intensityLabel')}
@@ -45,7 +45,7 @@ export function TrainingSection() {
         <span className="text-sm font-medium">
           {t('app.coachSettings.training.intensityLabel')}
         </span>
-        <div className="flex flex-wrap gap-2">
+        <div className={SEGMENTED_GROUP_CLASS}>
           {INTENSITY_SCALES.map((scale) => (
             <button
               key={scale}
@@ -53,13 +53,7 @@ export function TrainingSection() {
               aria-pressed={settings.intensityScale === scale}
               disabled={save.isPending}
               onClick={() => choose(scale)}
-              className={cn(
-                'min-h-11 rounded-lg px-4 text-sm font-medium',
-                'focus-visible:outline-primary-readable focus-visible:outline-2',
-                settings.intensityScale === scale
-                  ? 'bg-primary text-on-primary'
-                  : 'bg-background text-muted',
-              )}
+              className={segmentClassName(settings.intensityScale === scale)}
             >
               {t(`app.coachSettings.training.scales.${scale}`)}
             </button>

@@ -2,10 +2,11 @@ import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router';
 
+import { brandInitials } from '@/core/branding';
 import { useLanguage } from '@/core/i18n';
 import type { Language } from '@/core/i18n';
 import { useTenantMembers } from '@/core/tenancy';
-import { Card } from '@/core/ui';
+import { Card, Pill } from '@/core/ui';
 
 import { useCoachActivity } from '../api/useCoachActivity';
 import {
@@ -102,25 +103,29 @@ export function CoachActivityCard() {
     const isNew = !openedIds.has(workout.id);
 
     return (
-      <li key={workout.id} className="border-border border-b last:border-b-0">
+      <li key={workout.id}>
         <Link
           to={`/coach/clients/${workout.clientId}?workout=${workout.id}`}
           onClick={() => handleOpenWorkout(workout.id)}
-          className="hover:bg-background focus-visible:outline-primary-readable flex min-h-11 items-center justify-between gap-2 rounded-lg px-2 py-2 focus-visible:outline-2"
+          className="focus-ring hover:bg-foreground/5 flex min-h-14 items-center gap-3 rounded-2xl px-2 py-2 transition-colors"
         >
-          <span className="font-medium break-words">{parts.join(' · ')}</span>
-          {isNew ? (
-            <span className="bg-primary/10 text-primary-readable shrink-0 rounded px-1.5 py-0.5 text-xs font-semibold">
-              {t('workouts.home.newBadge')}
-            </span>
-          ) : null}
+          <span
+            aria-hidden="true"
+            className="bg-primary-soft text-primary-readable ring-primary/20 flex size-10 shrink-0 items-center justify-center rounded-full text-xs font-semibold ring-1"
+          >
+            {brandInitials(clientName)}
+          </span>
+          <span className="min-w-0 flex-1 text-sm leading-6 font-medium break-words">
+            {parts.join(' · ')}
+          </span>
+          {isNew ? <Pill tone="primary">{t('workouts.home.newBadge')}</Pill> : null}
         </Link>
       </li>
     );
   };
 
   return (
-    <Card className="flex flex-col gap-2">
+    <Card className="flex flex-col gap-3">
       <h2 className="text-lg font-semibold">{t('workouts.home.activityTitle')}</h2>
       {activeWorkouts.length === 0 ? (
         <p className="text-muted">{t('workouts.home.noActivity')}</p>

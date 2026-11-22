@@ -26,8 +26,8 @@ export function DayList({ block, selectedDay, onSelect }: DayListProps) {
             aria-current={selectedDay === day.dayNumber ? true : undefined}
             onClick={() => onSelect(day.dayNumber)}
             className={cn(
-              'flex min-h-14 w-full flex-col justify-center rounded-lg px-2 py-2 text-left',
-              'hover:bg-background focus-visible:outline-primary-readable focus-visible:outline-2',
+              'flex min-h-14 w-full flex-col justify-center rounded-xl px-2 py-2 text-left',
+              'hover:bg-foreground/5 focus-ring',
               selectedDay === day.dayNumber ? 'bg-background' : null,
             )}
           >

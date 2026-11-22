@@ -34,7 +34,7 @@ export function AssignSummary({ blocks, startsOn, today, warnings }: AssignSumma
   const isFuture = daysBetween(today, startsOn) > 0;
 
   return (
-    <div className="border-border flex flex-col gap-1 rounded-lg border p-3 text-sm">
+    <div className="border-border flex flex-col gap-1 rounded-xl border p-3 text-sm">
       {isFuture ? (
         <p>{t('programs.assign.startsLater', { date: longDate(startsOn, language) })}</p>
       ) : null}

@@ -46,7 +46,9 @@ export function ProgramEditorPage() {
                 {t('programs.editor.clientProgram', { name: clientName })}
               </p>
             )}
-            <h1 className="text-2xl font-bold break-words">{program.data.name}</h1>
+            <h1 className="text-3xl leading-[1.08] font-semibold break-words md:text-4xl">
+              {program.data.name}
+            </h1>
             <p className="text-muted">{t('programs.editor.description')}</p>
           </header>
           <ProgramEditor

@@ -49,7 +49,7 @@ export function SignOutButton({ className }: SignOutButtonProps) {
         type="button"
         onClick={() => (pending > 0 ? setIsAsking(true) : close())}
         disabled={isPending || isAsking}
-        className="text-muted hover:text-foreground focus-visible:outline-primary-readable inline-flex min-h-11 items-center gap-2 rounded-lg px-2 text-sm font-medium focus-visible:outline-2 disabled:opacity-50"
+        className="focus-ring text-muted hover:text-foreground inline-flex min-h-11 items-center gap-2 rounded-lg px-2 text-sm font-medium disabled:opacity-50"
       >
         <LogOut aria-hidden="true" className="size-4" />
         {t('app.shell.signOut')}

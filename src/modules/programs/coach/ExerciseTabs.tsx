@@ -40,8 +40,8 @@ export function ExerciseTabs({ items, byId, day, selected, onSelect }: ExerciseT
               aria-current={index === selected ? true : undefined}
               onClick={() => onSelect(index)}
               className={cn(
-                'min-h-11 min-w-11 rounded-lg px-3 text-sm font-semibold tabular-nums',
-                'focus-visible:outline-primary-readable focus-visible:outline-2',
+                'min-h-11 min-w-11 rounded-xl px-3 text-sm font-semibold tabular-nums',
+                'focus-ring',
                 index === selected ? 'bg-primary text-on-primary' : 'bg-background text-foreground',
                 // Los de una superserie o un circuito llevan una raya debajo.
                 group === null ? null : 'border-primary border-b-4',

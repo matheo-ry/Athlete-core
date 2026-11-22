@@ -26,8 +26,8 @@ export function ClientRoutineRow({ name, routines, today }: ClientRoutineRowProp
   const progressText = useProgressText();
 
   return (
-    <li className="border-border flex flex-col gap-0.5 border-b py-3 last:border-b-0">
-      <span className="font-medium break-words">{name}</span>
+    <li className="border-border/60 flex flex-col gap-1 border-b px-2 py-3.5 last:border-b-0">
+      <span className="font-semibold break-words">{name}</span>
       {current === null ? (
         <span className="text-muted text-sm">{t('programs.assigned.noProgram')}</span>
       ) : (

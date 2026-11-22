@@ -1,6 +1,7 @@
 import { useId } from 'react';
 
 import { cn } from '@/core/lib';
+import { FIELD_LABEL_CLASS, fieldClassName } from '@/core/ui';
 
 interface SelectFieldProps {
   label: string;
@@ -20,14 +21,14 @@ export function SelectField({ label, value, options, onChange, className }: Sele
 
   return (
     <div className={cn('flex min-w-0 flex-col gap-1.5', className)}>
-      <label htmlFor={id} className="text-foreground text-sm font-medium">
+      <label htmlFor={id} className={FIELD_LABEL_CLASS}>
         {label}
       </label>
       <select
         id={id}
         value={value}
         onChange={(event) => onChange(event.target.value)}
-        className="bg-surface text-foreground border-border focus-visible:outline-primary-readable min-h-11 rounded-lg border px-2 text-base focus-visible:outline-2 focus-visible:outline-offset-2"
+        className={fieldClassName(false)}
       >
         {options.map((option) => (
           <option key={option.value} value={option.value}>

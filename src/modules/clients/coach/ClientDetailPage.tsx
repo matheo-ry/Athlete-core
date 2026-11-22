@@ -54,12 +54,14 @@ export function ClientDetailPage() {
       <header className="flex items-center gap-4">
         <span
           aria-hidden="true"
-          className="bg-surface border-border flex size-16 shrink-0 items-center justify-center rounded-full border text-xl font-semibold"
+          className="bg-primary-soft text-primary-readable ring-primary/25 flex size-16 shrink-0 items-center justify-center rounded-full text-xl font-semibold ring-1 md:size-20 md:text-2xl"
         >
           {brandInitials(client.displayName)}
         </span>
         <div className="flex flex-col">
-          <h1 className="text-2xl font-bold">{client.displayName}</h1>
+          <h1 className="text-3xl leading-[1.08] font-semibold md:text-4xl">
+            {client.displayName}
+          </h1>
           <p className="text-muted text-sm">
             {t('clients.detail.joinedOn', { date: formatDate(client.joinedAt, language) })}
             {' · '}

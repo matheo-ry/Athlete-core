@@ -44,7 +44,7 @@ export function ExercisePanel({ target, onDone, onDuplicated, onClose }: Exercis
       aria-labelledby={titleId}
       className="flex flex-col gap-4 lg:sticky lg:top-4 lg:max-h-[calc(100vh-2rem)] lg:overflow-y-auto"
     >
-      <h2 id={titleId} ref={heading} tabIndex={-1} className="text-xl font-bold">
+      <h2 id={titleId} ref={heading} tabIndex={-1} className="text-xl font-semibold tracking-tight">
         {exercise === null ? t('exercises.form.newTitle') : t('exercises.form.editTitle')}
       </h2>
       <ExerciseForm

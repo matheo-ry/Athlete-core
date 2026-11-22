@@ -69,7 +69,7 @@ export function ClientStatusActions({ client }: ClientStatusActionsProps) {
       ) : null}
 
       {client.status === 'active' && isConfirming ? (
-        <div className="border-border flex flex-col gap-2 rounded-lg border p-3">
+        <div className="bg-background/50 border-border flex flex-col gap-3 rounded-2xl border p-4">
           <p className="text-sm">{t('clients.detail.archiveConfirm')}</p>
           <div className="flex flex-wrap gap-2">
             <Button onClick={handleArchive} disabled={archive.isPending}>

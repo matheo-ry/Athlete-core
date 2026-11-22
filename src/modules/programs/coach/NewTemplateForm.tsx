@@ -66,7 +66,7 @@ export function NewTemplateForm({ onCreated, onCancel }: NewTemplateFormProps) {
         className="flex flex-col gap-4"
         aria-labelledby="new-template"
       >
-        <h2 id="new-template" className="text-lg font-bold">
+        <h2 id="new-template" className="text-lg font-semibold">
           {t('programs.form.newTitle')}
         </h2>
         {failure !== null ? (

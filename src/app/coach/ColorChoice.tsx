@@ -33,7 +33,7 @@ export function ColorChoice({
   return (
     <fieldset className="flex flex-col gap-2">
       <legend className="mb-1 text-sm font-medium">{legend}</legend>
-      <div className="grid grid-cols-6 gap-2">
+      <div className="grid max-w-sm grid-cols-6 gap-2">
         {BRAND_PALETTE.map((color) => (
           <button
             key={color.key}
@@ -43,9 +43,12 @@ export function ColorChoice({
             onClick={() => onChange(color.hex)}
             style={{ backgroundColor: color.hex, color: pickReadableOn(color.hex) }}
             className={cn(
-              'flex aspect-square min-h-11 items-center justify-center rounded-lg text-lg font-bold',
-              'focus-visible:outline-primary-readable focus-visible:outline-2 focus-visible:outline-offset-2',
-              current === color.hex ? 'ring-foreground ring-2 ring-offset-2' : '',
+              'flex aspect-square min-h-11 items-center justify-center rounded-full text-base font-semibold',
+              'shadow-[inset_0_1px_0_rgb(255_255_255/0.25)] transition-transform hover:scale-105',
+              'focus-ring',
+              current === color.hex
+                ? 'ring-foreground ring-offset-surface ring-2 ring-offset-2'
+                : '',
             )}
           >
             {current === color.hex ? <span aria-hidden="true">✓</span> : null}
@@ -68,7 +71,7 @@ export function ColorChoice({
           type="color"
           value={(current ?? '#000000').toLowerCase()}
           onChange={(event) => onChange(event.target.value.toUpperCase())}
-          className="border-border h-11 w-14 shrink-0 cursor-pointer rounded-lg border"
+          className="border-border-strong h-11 w-14 shrink-0 cursor-pointer rounded-xl border"
         />
         {t('app.brand.pickerLabel')}
       </label>

@@ -1,8 +1,7 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { cn } from '@/core/lib';
-import { Button, Input } from '@/core/ui';
+import { Button, Input, segmentClassName, SEGMENTED_GROUP_CLASS } from '@/core/ui';
 
 import { dayCounts } from '../model/cycle-editor';
 import type { CycleEditorAction } from '../model/cycle-editor';
@@ -41,19 +40,19 @@ export function DayPanel({ block, day, label, onChange }: DayPanelProps) {
 
   return (
     <div className="flex flex-col gap-4">
-      <h2 className="text-xl font-bold">{label}</h2>
-      <div role="group" aria-label={t('programs.editor.kindLabel')} className="flex gap-2">
+      <h2 className="text-xl font-semibold tracking-tight">{label}</h2>
+      <div
+        role="group"
+        aria-label={t('programs.editor.kindLabel')}
+        className={SEGMENTED_GROUP_CLASS}
+      >
         {KINDS.map((kind) => (
           <button
             key={kind}
             type="button"
             aria-pressed={day.kind === kind}
             onClick={() => setKind(kind)}
-            className={cn(
-              'flex min-h-11 items-center rounded-lg px-4 text-sm font-medium',
-              'focus-visible:outline-primary-readable focus-visible:outline-2',
-              day.kind === kind ? 'bg-primary text-on-primary' : 'bg-surface text-muted',
-            )}
+            className={segmentClassName(day.kind === kind)}
           >
             {t(`programs.editor.kinds.${kind}`)}
           </button>
@@ -61,7 +60,7 @@ export function DayPanel({ block, day, label, onChange }: DayPanelProps) {
       </div>
 
       {isConfirmingRest ? (
-        <div className="border-border flex flex-col gap-2 rounded-lg border p-3">
+        <div className="bg-background/50 border-border flex flex-col gap-3 rounded-2xl border p-4">
           <p className="text-sm">{t('programs.editor.restConfirm', { count: counts.exercises })}</p>
           <div className="flex flex-wrap gap-2">
             <Button

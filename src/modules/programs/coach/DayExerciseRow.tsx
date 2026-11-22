@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { useProfile } from '@/core/auth';
 import { DEFAULT_WEIGHT_UNIT } from '@/core/lib';
 import { useTenantSettings } from '@/core/tenancy';
-import { Button } from '@/core/ui';
+import { Button, fieldClassName } from '@/core/ui';
 import type { ExerciseOption } from '@/modules/exercises';
 
 import { hasSetData } from '../model/day-exercises';
@@ -133,7 +133,7 @@ export function DayExerciseRow({
       </div>
 
       {isConfirmingRemove ? (
-        <div className="border-border flex flex-col gap-2 rounded-lg border p-3">
+        <div className="bg-background/50 border-border flex flex-col gap-3 rounded-2xl border p-4">
           <p className="text-sm">{t('programs.editor.removeConfirm', { name })}</p>
           <div className="flex flex-wrap gap-2">
             <Button onClick={onRemove}>{t('programs.editor.removeYes')}</Button>
@@ -202,7 +202,7 @@ export function DayExerciseRow({
             maxLength={NOTE_MAX_LENGTH}
             value={item.note ?? ''}
             onChange={(event) => onNote(event.target.value)}
-            className="bg-surface text-foreground border-border focus-visible:outline-primary-readable min-h-20 rounded-lg border px-3 py-2 text-base focus-visible:outline-2 focus-visible:outline-offset-2"
+            className={fieldClassName(false, 'min-h-20 py-3')}
           />
           <p className="text-muted text-sm">{t('programs.editor.noteHint')}</p>
         </div>

@@ -17,9 +17,11 @@ export function CoachSettingsPage() {
   const { tenant, role } = useTenancy();
 
   return (
-    <section className="flex flex-col gap-4">
+    <section className="flex max-w-3xl flex-col gap-5">
       <header>
-        <h1 className="text-2xl font-bold">{t('app.coachSettings.title')}</h1>
+        <h1 className="text-3xl leading-[1.08] font-semibold md:text-4xl">
+          {t('app.coachSettings.title')}
+        </h1>
       </header>
       {/* `key`: al cambiar de negocio, el formulario empieza con su marca. */}
       {tenant !== null && role === 'owner' ? (

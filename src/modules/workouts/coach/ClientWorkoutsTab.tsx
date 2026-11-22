@@ -121,7 +121,7 @@ export function ClientWorkoutsTab({ clientId }: ClientProfileTabProps) {
                 </span>
                 {latestWeight !== null ? (
                   <div className="flex items-baseline gap-2">
-                    <span className="text-2xl font-bold">
+                    <span className="text-3xl leading-[1.08] font-semibold md:text-4xl">
                       {formatWeight(latestWeight.weight_kg, weightUnit, language)}
                     </span>
                     <span className="text-xs text-muted">
@@ -282,7 +282,7 @@ export function ClientWorkoutsTab({ clientId }: ClientProfileTabProps) {
                         return (
                           <div
                             key={we.id}
-                            className="flex flex-col gap-1 p-3 rounded-lg bg-surface/50 border border-border/50"
+                            className="flex flex-col gap-1 p-3 rounded-xl bg-surface/50 border border-border/50"
                           >
                             <div className="flex items-center gap-2 flex-wrap justify-between">
                               <div className="flex items-center gap-2 flex-wrap">

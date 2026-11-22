@@ -56,8 +56,8 @@ export function BlockBar({ blocks, selected, onSelect, onChange }: BlockBarProps
                   onSelect(index);
                 }}
                 className={cn(
-                  'flex min-h-11 flex-col justify-center rounded-lg px-3 py-1 text-left text-sm',
-                  'focus-visible:outline-primary-readable focus-visible:outline-2',
+                  'flex min-h-11 flex-col justify-center rounded-xl px-3 py-1 text-left text-sm',
+                  'focus-ring',
                   index === selected
                     ? 'bg-primary text-on-primary'
                     : 'bg-background text-foreground',
@@ -116,7 +116,7 @@ export function BlockBar({ blocks, selected, onSelect, onChange }: BlockBarProps
       ) : null}
 
       {isConfirmingRemove ? (
-        <div className="border-border flex flex-col gap-2 rounded-lg border p-3">
+        <div className="bg-background/50 border-border flex flex-col gap-3 rounded-2xl border p-4">
           <p className="text-sm">{t('programs.blocks.removeConfirm', { number })}</p>
           <div className="flex flex-wrap gap-2">
             <Button

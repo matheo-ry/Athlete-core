@@ -40,7 +40,7 @@ export function ExercisePicker({ title, onPick, onCancel, measurement }: Exercis
   if (creating !== null) {
     return (
       <div className="flex flex-col gap-4">
-        <h3 className="text-lg font-bold">{t('exercises.form.newTitle')}</h3>
+        <h3 className="text-lg font-semibold">{t('exercises.form.newTitle')}</h3>
         <ExerciseForm
           exercise={null}
           initialValues={emptyFormValues(creating)}
@@ -54,7 +54,7 @@ export function ExercisePicker({ title, onPick, onCancel, measurement }: Exercis
   return (
     <div className="flex flex-col gap-4">
       <div className="flex flex-wrap items-center justify-between gap-2">
-        <h3 className="text-lg font-bold">{title}</h3>
+        <h3 className="text-lg font-semibold">{title}</h3>
         <Button variant="ghost" onClick={onCancel}>
           {t('exercises.form.cancel')}
         </Button>
@@ -82,7 +82,7 @@ export function ExercisePicker({ title, onPick, onCancel, measurement }: Exercis
               <button
                 type="button"
                 onClick={() => onPick(toOption(exercise, language))}
-                className="hover:bg-background focus-visible:outline-primary-readable flex min-h-12 w-full flex-col justify-center rounded-lg px-2 py-2 text-left focus-visible:outline-2"
+                className="focus-ring hover:bg-foreground/5 flex min-h-12 w-full flex-col justify-center rounded-xl px-2 py-2 text-left"
               >
                 <span className="font-medium break-words">{exercise.displayName}</span>
                 <span className="text-muted text-sm">

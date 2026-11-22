@@ -1,6 +1,7 @@
 import { useId } from 'react';
 
 import { cn } from '@/core/lib';
+import { FIELD_LABEL_CLASS, fieldClassName } from '@/core/ui';
 
 interface FilterSelectProps<T extends string> {
   label: string;
@@ -24,8 +25,8 @@ export function FilterSelect<T extends string>({
   const id = useId();
 
   return (
-    <div className={cn('flex min-w-0 flex-col gap-1.5', className)}>
-      <label htmlFor={id} className="text-foreground text-sm font-medium">
+    <div className={cn('flex min-w-0 flex-col gap-2', className)}>
+      <label htmlFor={id} className={FIELD_LABEL_CLASS}>
         {label}
       </label>
       <select
@@ -37,10 +38,7 @@ export function FilterSelect<T extends string>({
             onChange(chosen.value);
           }
         }}
-        className={cn(
-          'bg-surface text-foreground border-border min-h-11 w-full rounded-lg border px-3 text-base',
-          'focus-visible:outline-primary-readable focus-visible:outline-2 focus-visible:outline-offset-2',
-        )}
+        className={fieldClassName(false)}
       >
         {options.map((option) => (
           <option key={option.value} value={option.value}>

@@ -52,6 +52,7 @@
     "note": "Nota",
     "showHistory": "Ver historial",
     "hideHistory": "Ocultar historial",
+    "showAll": "Ver todo ({{count}})",
     "dayLabel": "DIA {{number}}"
   },
   "health": {

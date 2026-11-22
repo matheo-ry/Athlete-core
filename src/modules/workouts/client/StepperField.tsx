@@ -80,7 +80,8 @@ export function StepperField(props: StepperFieldProps) {
           inputMode={decimals ? 'decimal' : 'numeric'}
           className="numeric text-foreground placeholder:text-muted/45 h-11 w-full min-w-0 flex-1 rounded-lg bg-transparent text-center text-2xl font-medium outline-none focus-visible:bg-foreground/5"
           value={draft ?? (value === null ? '' : String(value))}
-          placeholder={placeholder === null ? '' : String(placeholder)}
+          // Sin referencia, un guion: el campo se lee como vacío a propósito, no roto.
+          placeholder={placeholder === null ? '—' : String(placeholder)}
           onFocus={(event) => {
             event.target.select();
           }}

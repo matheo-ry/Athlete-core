@@ -52,6 +52,7 @@
     "note": "Note",
     "showHistory": "View history",
     "hideHistory": "Hide history",
+    "showAll": "Show all ({{count}})",
     "dayLabel": "DAY {{number}}"
   },
   "health": {

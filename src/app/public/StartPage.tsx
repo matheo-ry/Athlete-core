@@ -2,7 +2,7 @@ import { useTranslation } from 'react-i18next';
 import { Link, useNavigate } from 'react-router';
 
 import { rememberCoachIntent } from '@/core/tenancy';
-import { buttonClassName } from '@/core/ui';
+import { buttonClassName, Icon, StateOrbit } from '@/core/ui';
 
 import { InviteCodeForm } from './InviteCodeForm';
 
@@ -17,12 +17,19 @@ export function StartPage() {
 
   return (
     <>
-      <header>
-        <h1 className="text-2xl font-bold">{t('app.start.title')}</h1>
-        <p className="text-muted">{t('app.start.description')}</p>
+      <header className="flex flex-col gap-5">
+        <StateOrbit>
+          <Icon name="dumbbell" className="text-primary-readable size-7" />
+        </StateOrbit>
+        <div className="flex flex-col gap-2">
+          <h1 className="text-4xl leading-[1.02] font-semibold md:text-5xl">
+            {t('app.start.title')}
+          </h1>
+          <p className="text-muted text-lg leading-7">{t('app.start.description')}</p>
+        </div>
       </header>
       <InviteCodeForm onSubmit={(code) => void navigate(`/join?code=${code}`)} />
-      <nav className="border-border flex flex-col gap-1 border-t pt-4">
+      <nav className="border-border flex flex-col gap-1 border-t pt-5">
         <Link to="/login" className={buttonClassName('ghost')}>
           {t('app.start.haveAccount')}
         </Link>

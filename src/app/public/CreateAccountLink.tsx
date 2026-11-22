@@ -12,7 +12,11 @@ export function CreateAccountLink({ email }: CreateAccountLinkProps) {
   const { t } = useTranslation();
   const location = useLocation();
   return (
-    <Link to={`/signup${location.search}`} state={{ email }} className={buttonClassName('primary')}>
+    <Link
+      to={`/signup${location.search}`}
+      state={{ email }}
+      className={buttonClassName('primary', undefined, 'lg')}
+    >
       {t('app.login.createAccount')}
     </Link>
   );

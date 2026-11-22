@@ -63,8 +63,8 @@ export function EmailStep({
 
   return (
     <>
-      <header>
-        <h1 className="text-2xl font-bold">{title}</h1>
+      <header className="flex flex-col gap-2">
+        <h1 className="text-3xl leading-[1.08] font-semibold md:text-4xl">{title}</h1>
         <p className="text-muted">{description}</p>
       </header>
       <form onSubmit={handleSubmit} noValidate className="flex flex-col gap-4">
@@ -82,7 +82,7 @@ export function EmailStep({
           reason={failure}
           action={failure === null ? undefined : failureAction?.(failure, email)}
         />
-        <Button type="submit" disabled={isSending}>
+        <Button type="submit" size="lg" disabled={isSending}>
           {isSending ? t('app.emailStep.sending') : t('app.emailStep.submit')}
         </Button>
       </form>

@@ -24,8 +24,8 @@ export function JoinPage() {
 
   return (
     <>
-      <header>
-        <h1 className="text-2xl font-bold">{t('app.join.title')}</h1>
+      <header className="flex flex-col gap-2">
+        <h1 className="text-3xl leading-[1.08] font-semibold md:text-4xl">{t('app.join.title')}</h1>
       </header>
       {code === '' ? (
         <InviteCodeForm onSubmit={changeCode} />

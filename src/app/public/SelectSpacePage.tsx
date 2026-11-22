@@ -23,8 +23,10 @@ export function SelectSpacePage() {
 
   return (
     <>
-      <header>
-        <h1 className="text-2xl font-bold">{t('app.spaces.selectTitle')}</h1>
+      <header className="flex flex-col gap-2">
+        <h1 className="text-3xl leading-[1.08] font-semibold md:text-4xl">
+          {t('app.spaces.selectTitle')}
+        </h1>
         <p className="text-muted">{t('app.spaces.selectDescription')}</p>
       </header>
       <SpaceList spaces={spaces} onChoose={choose} />

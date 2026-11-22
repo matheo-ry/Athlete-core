@@ -11,7 +11,7 @@ export function NotFoundPage() {
       title={t('app.notFound.title')}
       description={t('app.notFound.description')}
       action={
-        <Link to="/" className={buttonClassName('primary')}>
+        <Link to="/" className={buttonClassName('primary', undefined, 'lg')}>
           {t('app.notFound.action')}
         </Link>
       }

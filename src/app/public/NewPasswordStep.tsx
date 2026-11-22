@@ -54,8 +54,10 @@ export function NewPasswordStep({
 
   return (
     <>
-      <header>
-        <h1 className="text-2xl font-bold">{title ?? t('app.resetPassword.newTitle')}</h1>
+      <header className="flex flex-col gap-2">
+        <h1 className="text-3xl leading-[1.08] font-semibold md:text-4xl">
+          {title ?? t('app.resetPassword.newTitle')}
+        </h1>
         <p className="text-muted">{description ?? t('app.resetPassword.newDescription')}</p>
       </header>
       <form onSubmit={handleSubmit} noValidate className="flex flex-col gap-4">
@@ -69,7 +71,7 @@ export function NewPasswordStep({
           error={passwordError}
         />
         <FailureMessage reason={failure} />
-        <Button type="submit" disabled={isSaving}>
+        <Button type="submit" size="lg" disabled={isSaving}>
           {isSaving ? t('app.resetPassword.saving') : t('app.resetPassword.save')}
         </Button>
       </form>

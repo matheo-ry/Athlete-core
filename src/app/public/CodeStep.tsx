@@ -73,8 +73,10 @@ export function CodeStep({
 
   return (
     <>
-      <header>
-        <h1 className="text-2xl font-bold">{t('app.codeStep.title')}</h1>
+      <header className="flex flex-col gap-2">
+        <h1 className="text-3xl leading-[1.08] font-semibold md:text-4xl">
+          {t('app.codeStep.title')}
+        </h1>
         <p className="text-muted">{t('app.codeStep.sentTo', { email })}</p>
       </header>
       <form onSubmit={handleSubmit} noValidate className="flex flex-col gap-4">
@@ -83,7 +85,7 @@ export function CodeStep({
           name="code"
           inputMode="numeric"
           autoComplete="one-time-code"
-          className="text-center text-2xl tracking-[0.5em]"
+          className="numeric min-h-16 text-center text-3xl tracking-[0.5em]"
           value={code}
           onChange={(event) => setCode(normalizeCode(event.target.value))}
           error={codeError}
@@ -94,7 +96,7 @@ export function CodeStep({
             {t('app.codeStep.resent')}
           </p>
         ) : null}
-        <Button type="submit" disabled={isVerifying}>
+        <Button type="submit" size="lg" disabled={isVerifying}>
           {isVerifying ? t('app.codeStep.verifying') : t('app.codeStep.submit')}
         </Button>
       </form>

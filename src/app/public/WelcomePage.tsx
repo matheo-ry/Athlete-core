@@ -22,13 +22,15 @@ export function WelcomePage() {
   return (
     <>
       {formerCoach === null ? (
-        <header>
-          <h1 className="text-2xl font-bold">{t('app.welcome.title')}</h1>
+        <header className="flex flex-col gap-2">
+          <h1 className="text-3xl leading-[1.08] font-semibold md:text-4xl">
+            {t('app.welcome.title')}
+          </h1>
           <p className="text-muted">{t('app.welcome.description')}</p>
         </header>
       ) : (
-        <header>
-          <h1 className="text-2xl font-bold">
+        <header className="flex flex-col gap-2">
+          <h1 className="text-3xl leading-[1.08] font-semibold md:text-4xl">
             {t('app.welcome.lostAccessTitle', { name: formerCoach })}
           </h1>
           <p className="text-muted">{t('app.welcome.lostAccessDescription')}</p>

@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router';
 
-import { Button } from '@/core/ui';
+import { Button, Pill } from '@/core/ui';
 
 interface LegalPageProps {
   document: 'terms' | 'privacy' | 'coachTerms';
@@ -20,10 +20,10 @@ export function LegalPage({ document }: LegalPageProps) {
   return (
     <article className="flex flex-col gap-4">
       <header className="flex flex-col gap-2">
-        <span className="border-border text-muted w-fit rounded-full border px-3 py-1 text-xs font-semibold tracking-wide uppercase">
-          {t('app.legal.draft')}
-        </span>
-        <h1 className="text-2xl font-bold">{t(`app.legal.${document}.title`)}</h1>
+        <Pill className="w-fit">{t('app.legal.draft')}</Pill>
+        <h1 className="text-3xl leading-[1.08] font-semibold md:text-4xl">
+          {t(`app.legal.${document}.title`)}
+        </h1>
         <p className="text-muted text-sm">{t('app.legal.draftNotice')}</p>
       </header>
       {PARAGRAPHS.map((paragraph) => (

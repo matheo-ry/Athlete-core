@@ -78,7 +78,7 @@ describe('ensureContrast', () => {
   });
 
   it('aclara un color oscuro sobre fondo oscuro hasta que se lee', () => {
-    const background = '#0f1115';
+    const background = '#0e0d0b';
     const original = '#1e3a8a';
     expect(contrastRatio(original, background)).toBeLessThan(MIN_TEXT_CONTRAST);
 

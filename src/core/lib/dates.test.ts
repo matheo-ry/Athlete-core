@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { formatDate, formatDateTime } from './dates';
+import { formatDate, formatDateTime, formatDayLabel } from './dates';
 
 const STORED_UTC = '2026-01-15T23:30:00Z';
 
@@ -27,5 +27,12 @@ describe('formatDateTime', () => {
     const text = formatDateTime(STORED_UTC, 'en', 'UTC');
     expect(text).toContain('Jan 15, 2026');
     expect(text).toContain('11:30');
+  });
+});
+
+describe('formatDayLabel', () => {
+  it('escribe el día de la semana y la fecha, sin año, en cada idioma', () => {
+    expect(formatDayLabel(STORED_UTC, 'en', 'UTC')).toBe('Thursday, January 15');
+    expect(formatDayLabel(STORED_UTC, 'es', 'UTC')).toBe('jueves, 15 de enero');
   });
 });

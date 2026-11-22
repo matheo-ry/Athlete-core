@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useProfile } from '@/core/auth';
 import { DEFAULT_WEIGHT_UNIT, cn, fromKg, toKg } from '@/core/lib';
 import { useTenantSettings } from '@/core/tenancy';
+import { Icon } from '@/core/ui';
 
 import { STEPS, prescribedReference } from '../model/active-workout';
 import type {
@@ -59,31 +60,45 @@ export function SetEditor({
       aria-label={t('workouts.set.label', { number: set.setNumber })}
       data-done={set.isDone}
       className={cn(
-        'flex flex-col gap-2 rounded-lg border p-3',
-        set.isDone ? 'border-primary bg-primary/15' : 'border-border',
+        'flex flex-col gap-3 rounded-3xl p-3 transition-[background,border-color,box-shadow] duration-300',
+        set.isDone ? 'surface-accent' : 'surface',
       )}
     >
-      <div className="flex items-center justify-between gap-2">
+      <div className="flex min-h-11 items-center justify-between gap-2">
         <button
           type="button"
-          className="min-h-11 text-left text-sm font-semibold"
+          className="focus-ring flex min-h-11 items-center gap-2.5 rounded-full pr-2 text-left text-sm font-semibold"
           aria-pressed={set.isDone}
           disabled={!set.isDone}
           aria-label={t('workouts.set.unmark', { number: set.setNumber })}
           onClick={onUnmark}
         >
+          <span
+            aria-hidden="true"
+            className={cn(
+              'numeric flex size-9 items-center justify-center rounded-full text-sm transition-colors duration-300',
+              set.isDone
+                ? 'bg-primary text-on-primary shadow-[0_6px_18px_-6px_var(--color-primary-glow)]'
+                : 'bg-foreground/8 text-muted',
+            )}
+          >
+            {set.isDone ? <Icon name="check" className="size-4" /> : set.setNumber}
+          </span>
           {t('workouts.set.label', { number: set.setNumber })}
         </button>
-        <div className="flex items-center gap-2">
+        <div className="flex min-w-0 items-center gap-2">
           {previous === null ? null : (
-            <span className="text-muted text-sm" data-testid="previous">
-              {previousText(previous, exercise.measurement, unit, t('workouts.set.failureShort'))}
+            <span className="text-muted flex min-w-0 items-center gap-1.5">
+              <Icon name="history" className="size-3.5 shrink-0" />
+              <span className="numeric truncate text-sm" data-testid="previous">
+                {previousText(previous, exercise.measurement, unit, t('workouts.set.failureShort'))}
+              </span>
             </span>
           )}
           {copySource === null ? null : (
             <button
               type="button"
-              className="border-border bg-surface h-11 rounded-lg border px-3 text-sm font-semibold"
+              className="focus-ring surface-raised hover:border-border-strong min-h-11 shrink-0 rounded-full px-4 text-sm font-semibold transition-transform active:scale-95"
               onClick={onCopy}
             >
               {t('workouts.set.same')}
@@ -91,7 +106,7 @@ export function SetEditor({
           )}
         </div>
       </div>
-      <div className="flex flex-wrap justify-center gap-3">
+      <div className="grid grid-cols-2 gap-2">
         {byWeight ? (
           <>
             <StepperField
@@ -124,6 +139,7 @@ export function SetEditor({
           </>
         ) : exercise.measurement === 'time' ? (
           <StepperField
+            className="col-span-2"
             label={t('workouts.set.seconds')}
             value={set.durationSeconds}
             placeholder={reference?.durationSeconds ?? null}
@@ -136,6 +152,7 @@ export function SetEditor({
           />
         ) : (
           <StepperField
+            className="col-span-2"
             label={t('workouts.set.meters')}
             value={set.distanceMeters}
             placeholder={reference?.distanceMeters ?? null}
@@ -165,8 +182,10 @@ export function SetEditor({
           aria-pressed={atFailure}
           aria-label={t('workouts.set.failure')}
           className={cn(
-            'h-11 min-w-11 self-end rounded-lg border px-3 font-semibold',
-            atFailure ? 'border-primary bg-primary text-on-primary' : 'border-border bg-surface',
+            'focus-ring flex min-h-11 flex-col justify-between gap-0.5 rounded-2xl border p-1 text-left transition-[background-color,transform] duration-200 active:scale-[0.97]',
+            atFailure
+              ? 'bg-primary text-on-primary border-primary col-span-2'
+              : 'bg-background/70 border-border text-muted hover:text-foreground',
           )}
           onClick={() => {
             onChange(
@@ -176,7 +195,12 @@ export function SetEditor({
             );
           }}
         >
-          {t('workouts.set.failureShort')}
+          <span className={cn('eyebrow truncate px-2 pt-1.5', atFailure && 'text-on-primary/80')}>
+            {t('workouts.set.failure')}
+          </span>
+          <span className="numeric flex h-11 items-center px-2 text-2xl font-medium">
+            {t('workouts.set.failureShort')}
+          </span>
         </button>
       </div>
     </li>

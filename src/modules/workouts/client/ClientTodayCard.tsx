@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router';
 
 import { useLanguage } from '@/core/i18n';
 import { canLogWorkouts } from '@/core/native';
-import { Button, Card, buttonClassName } from '@/core/ui';
+import { Button, Card, Icon, buttonClassName } from '@/core/ui';
 import { shortDate, useClientToday, useDaySummary, useDayTitle } from '@/modules/programs';
 import type { ProgramBlock, ProgramDay } from '@/modules/programs';
 
@@ -11,8 +11,8 @@ import { useActiveWorkout } from '../api/useActiveWorkout';
 import { useStartWorkout } from '../api/useStartWorkout';
 import { useWorkoutOwnership } from '../api/useWorkoutOwnership';
 
-const LINK =
-  'focus-visible:outline-primary-readable rounded text-lg font-semibold underline-offset-4 hover:underline focus-visible:outline-2';
+const TITLE_LINK =
+  'focus-ring rounded-md text-2xl leading-tight font-semibold tracking-tight underline-offset-4 hover:underline';
 
 /**
  * La tarjeta del inicio del cliente (PR 2.18, D-084), de `workouts` desde el
@@ -32,7 +32,8 @@ export function ClientTodayCard() {
   }
   if (today.status === 'none') {
     return (
-      <Card>
+      <Card className="flex items-center gap-4">
+        <IconBubble name="calendar" />
         <p className="font-semibold">
           {today.next === null
             ? t('workouts.today.noProgram')
@@ -45,37 +46,76 @@ export function ClientTodayCard() {
   if (day === null) {
     // Modo lista: sin "Hoy toca" (D-082).
     return (
-      <Card className="flex flex-col gap-1">
-        <p className="text-muted text-sm">{t('workouts.today.listProgram')}</p>
-        <Link to="/client/program" className={LINK}>
-          {today.program.name}
-        </Link>
+      <Card className="flex items-center gap-4">
+        <IconBubble name="clipboard" />
+        <div className="flex min-w-0 flex-col gap-1">
+          <p className="eyebrow">{t('workouts.today.listProgram')}</p>
+          <Link to="/client/program" className={TITLE_LINK}>
+            {today.program.name}
+          </Link>
+        </div>
       </Card>
     );
   }
   if (day.kind === 'rest') {
     return (
-      <Card className="flex flex-col gap-1">
-        <p className="text-lg font-semibold">{t('workouts.today.rest')}</p>
-        <Link to="/client/program" className={LINK}>
-          {t('workouts.today.open')}
-        </Link>
+      <Card className="flex items-center gap-4">
+        <IconBubble name="moon" />
+        <div className="flex min-w-0 flex-col gap-1">
+          <p className="text-xl font-semibold tracking-tight">{t('workouts.today.rest')}</p>
+          <Link
+            to="/client/program"
+            className="focus-ring text-primary-readable inline-flex items-center gap-1 self-start rounded-md text-sm font-semibold"
+          >
+            {t('workouts.today.open')}
+            <Icon name="arrowRight" className="size-4" />
+          </Link>
+        </div>
       </Card>
     );
   }
   return (
-    <Card className="flex flex-col gap-1">
-      <p className="text-muted text-sm">{t('workouts.today.title')}</p>
-      <Link to={`/client/program?day=${String(day.dayNumber)}`} className={LINK}>
-        {title(day)}
-      </Link>
-      <p className="text-sm">{summary({ ...day, name: null })}</p>
+    <Card tone="accent" className="flex flex-col gap-4 p-5">
+      <div className="flex items-start justify-between gap-3">
+        <div className="flex min-w-0 flex-col gap-1.5">
+          <p className="eyebrow text-primary-readable">{t('workouts.today.title')}</p>
+          <Link to={`/client/program?day=${String(day.dayNumber)}`} className={TITLE_LINK}>
+            {title(day)}
+          </Link>
+        </div>
+        <IconBubble name="dumbbell" tone="primary" />
+      </div>
+      <p className="numeric text-muted text-sm">{summary({ ...day, name: null })}</p>
       {canLogWorkouts() ? (
         <StartButton start={() => ({ programId: today.program.id, block: today.block, day })} />
       ) : (
-        <p className="text-muted text-sm">{t('workouts.today.openMobileApp')}</p>
+        <p className="text-muted flex items-center gap-2 text-sm">
+          <Icon name="smartphone" className="size-4 shrink-0" />
+          {t('workouts.today.openMobileApp')}
+        </p>
       )}
     </Card>
+  );
+}
+
+/** El icono de la tarjeta, en un círculo: dice de un vistazo qué toca hoy. */
+function IconBubble({
+  name,
+  tone = 'neutral',
+}: {
+  name: 'calendar' | 'clipboard' | 'moon' | 'dumbbell';
+  tone?: 'neutral' | 'primary';
+}) {
+  return (
+    <span
+      className={
+        tone === 'primary'
+          ? 'bg-primary text-on-primary flex size-12 shrink-0 items-center justify-center rounded-2xl shadow-[0_10px_24px_-10px_var(--color-primary-glow)]'
+          : 'surface-raised text-muted flex size-12 shrink-0 items-center justify-center rounded-2xl'
+      }
+    >
+      <Icon name={name} className="size-5" />
+    </span>
   );
 }
 
@@ -92,14 +132,16 @@ function StartButton({ start }: { start: StartArgs }) {
   // Con uno abierto en otro móvil tampoco se empieza otro (D-119, D-124).
   if (open !== null || ownership.kind === 'elsewhere') {
     return (
-      <Link to="/client/workout" className={buttonClassName('primary', 'mt-2 self-start')}>
+      <Link to="/client/workout" className={buttonClassName('primary', 'w-full', 'lg')}>
+        <Icon name="play" className="size-5" />
         {t('workouts.today.continue')}
       </Link>
     );
   }
   return (
     <Button
-      className="mt-2 self-start"
+      size="lg"
+      className="w-full"
       disabled={!starter.isReady || starter.isPending}
       onClick={() => {
         const { programId, block, day } = start();
@@ -110,6 +152,7 @@ function StartButton({ start }: { start: StartArgs }) {
         });
       }}
     >
+      <Icon name="play" className="size-5" />
       {t('workouts.today.start')}
     </Button>
   );

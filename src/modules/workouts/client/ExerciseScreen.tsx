@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Link, useNavigate } from 'react-router';
 
 import { cn } from '@/core/lib';
-import { buttonClassName } from '@/core/ui';
+import { Icon, buttonClassName } from '@/core/ui';
 import { useExerciseOptions } from '@/modules/exercises';
 
 import { useSaveActiveWorkout } from '../api/useActiveWorkout';
@@ -16,6 +16,7 @@ import {
   copyPrevious,
   copySource,
   previousSet,
+  setCounts,
   unmarkSet,
 } from '../model/active-workout';
 import type { ActiveWorkout } from '../model/active-workout';
@@ -26,8 +27,9 @@ const SWIPE = 60;
 
 /**
  * Un ejercicio por pantalla (D-120): su nombre, "Ejercicio 3 de 7" con la
- * fila de puntos, deslizar al siguiente o al anterior, y sus series. Cada
- * cambio se guarda en el móvil al instante y va a la cola de subida (D-118).
+ * barra de ejercicios (hechos, el actual y los que faltan), deslizar al
+ * siguiente o al anterior, y sus series. Cada cambio se guarda en el móvil al
+ * instante y va a la cola de subida (D-118).
  */
 export function ExerciseScreen({
   workout,
@@ -57,7 +59,7 @@ export function ExerciseScreen({
 
   return (
     <div
-      className="flex flex-col gap-4"
+      className="flex flex-col gap-5"
       onTouchStart={(event) => {
         touchStart.current = event.touches[0]?.clientX ?? null;
       }}
@@ -70,36 +72,53 @@ export function ExerciseScreen({
         }
       }}
     >
-      <Link to="?" className={buttonClassName('ghost', 'self-start')}>
-        {t('workouts.workout.toSummary')}
-      </Link>
-      <header className="flex flex-col gap-2">
-        <p className="text-muted text-sm">
-          {t('workouts.workout.exerciseOf', { number: position, count })}
-        </p>
-        <nav aria-label={t('workouts.workout.exercisesLabel')} className="flex flex-wrap gap-1">
-          {workout.exercises.map((item) => (
+      <div className="flex items-center justify-between gap-2">
+        <Link to="?" className={buttonClassName('ghost', '-ml-3 pl-2')}>
+          <Icon name="chevronLeft" className="size-5" />
+          {t('workouts.workout.toSummary')}
+        </Link>
+        <p className="eyebrow">{t('workouts.workout.exerciseOf', { number: position, count })}</p>
+      </div>
+      <nav
+        aria-label={t('workouts.workout.exercisesLabel')}
+        className="-my-2 grid grid-cols-[repeat(auto-fit,minmax(2.75rem,1fr))] gap-x-1"
+      >
+        {workout.exercises.map((item) => {
+          const counts = setCounts([item]);
+          const isCurrent = item.position === position;
+          const isDone = counts.total > 0 && counts.done >= counts.total;
+          return (
             <Link
               key={item.id}
               to={`?exercise=${String(item.position)}`}
               replace
               aria-label={t('workouts.workout.goTo', { number: item.position })}
-              aria-current={item.position === position ? 'step' : undefined}
-              className="flex h-11 w-11 items-center justify-center"
+              aria-current={isCurrent ? 'step' : undefined}
+              className="focus-ring flex h-11 items-center rounded-md"
             >
               <span
                 className={cn(
-                  'h-3 w-3 rounded-full',
-                  item.position === position ? 'bg-primary' : 'bg-border',
+                  'h-1.5 w-full rounded-full transition-colors duration-300',
+                  isCurrent
+                    ? 'bg-primary shadow-[0_0_12px_var(--color-primary-glow)]'
+                    : isDone
+                      ? 'bg-primary/45'
+                      : 'bg-foreground/12',
                 )}
               />
             </Link>
-          ))}
-        </nav>
-        <h1 className="text-xl font-semibold">
+          );
+        })}
+      </nav>
+      <header className="flex flex-col gap-3">
+        <h1 className="text-3xl leading-[1.08] font-semibold">
           {options.byId.get(exercise.exerciseId)?.name ?? '…'}
         </h1>
-        {exercise.coachNote === null ? null : <p className="text-sm">{exercise.coachNote}</p>}
+        {exercise.coachNote === null ? null : (
+          <p className="border-accent text-muted border-l-2 pl-3 text-sm leading-6">
+            {exercise.coachNote}
+          </p>
+        )}
       </header>
       <ol className="flex flex-col gap-3">
         {exercise.sets.map((set) => {
@@ -142,7 +161,7 @@ export function ExerciseScreen({
       {exercise.sets.length >= MAX_SETS ? null : (
         <button
           type="button"
-          className={buttonClassName('secondary', 'self-start')}
+          className="focus-ring border-border-strong text-muted hover:text-foreground hover:bg-foreground/5 min-h-14 w-full rounded-3xl border border-dashed text-sm font-semibold transition-colors"
           onClick={() => {
             save.mutate(addSet(workout, position, now(), () => crypto.randomUUID()));
           }}
@@ -150,26 +169,28 @@ export function ExerciseScreen({
           {t('workouts.set.add')}
         </button>
       )}
-      <div className="flex justify-between gap-2">
+      <div className="grid grid-cols-2 gap-3">
         <button
           type="button"
-          className={buttonClassName('secondary')}
+          className={buttonClassName('secondary', undefined, 'lg')}
           disabled={position === 1}
           onClick={() => {
             go(position - 1);
           }}
         >
+          <Icon name="chevronLeft" className="size-5" />
           {t('workouts.workout.previous')}
         </button>
         <button
           type="button"
-          className={buttonClassName('secondary')}
+          className={buttonClassName('secondary', undefined, 'lg')}
           disabled={position === count}
           onClick={() => {
             go(position + 1);
           }}
         >
           {t('workouts.workout.next')}
+          <Icon name="chevronRight" className="size-5" />
         </button>
       </div>
     </div>

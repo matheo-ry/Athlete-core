@@ -2,8 +2,8 @@ import { useTranslation } from 'react-i18next';
 import { Link, useNavigate, useSearchParams } from 'react-router';
 
 import { canLogWorkouts } from '@/core/native';
-import { Button, Card, EmptyState, ErrorState, Spinner, buttonClassName } from '@/core/ui';
-import { useClientToday, useDayTitle } from '@/modules/programs';
+import { Button, Card, EmptyState, ErrorState, Icon, Spinner, buttonClassName } from '@/core/ui';
+import { useClientToday, useDaySummary, useDayTitle } from '@/modules/programs';
 
 import { useActiveWorkout, useFinishedWorkout } from '../api/useActiveWorkout';
 import { useStartWorkout } from '../api/useStartWorkout';
@@ -75,9 +75,12 @@ function OpenWorkout({ workout, position }: { workout: ActiveWorkout; position: 
   return (
     <div className="flex flex-col gap-4">
       {isComplete(workout) ? (
-        <Card role="status" className="flex flex-col gap-2">
-          <p className="font-semibold">{t('workouts.finished.allDone')}</p>
-          <Link to="?" replace className={buttonClassName('primary', 'self-start')}>
+        <Card tone="accent" role="status" className="animate-rise flex flex-col gap-3">
+          <p className="flex items-start gap-2 font-semibold">
+            <Icon name="check" className="text-primary-readable mt-0.5 size-5 shrink-0" />
+            {t('workouts.finished.allDone')}
+          </p>
+          <Link to="?" replace className={buttonClassName('primary', 'w-full')}>
             {t('workouts.finished.seeSummary')}
           </Link>
         </Card>
@@ -94,6 +97,7 @@ function StartDay({ dayNumber }: { dayNumber: number }) {
   const today = useClientToday();
   const title = useDayTitle(today.status === 'ready' ? today.block : undefined);
   const starter = useStartWorkout();
+  const summary = useDaySummary();
 
   if (today.status === 'loading') {
     return <Spinner />;
@@ -104,19 +108,26 @@ function StartDay({ dayNumber }: { dayNumber: number }) {
       : undefined;
   if (today.status !== 'ready' || day === undefined) {
     return (
-      <div className="flex flex-col gap-4">
-        <EmptyState title={t('workouts.workout.noWorkout')} />
-        <Link to="/client/program" className={buttonClassName('ghost', 'self-start')}>
-          {t('workouts.workout.toProgram')}
-        </Link>
-      </div>
+      <EmptyState
+        title={t('workouts.workout.noWorkout')}
+        action={
+          <Link to="/client/program" className={buttonClassName('secondary')}>
+            {t('workouts.workout.toProgram')}
+          </Link>
+        }
+      />
     );
   }
   return (
-    <Card className="flex flex-col gap-3">
-      <h1 className="text-xl font-semibold">{title(day)}</h1>
+    <Card tone="accent" className="flex flex-col gap-5 p-5">
+      <div className="flex flex-col gap-1.5">
+        <p className="eyebrow text-primary-readable">{t('workouts.workout.title')}</p>
+        <h1 className="text-3xl leading-[1.08] font-semibold">{title(day)}</h1>
+        <p className="numeric text-muted text-sm">{summary({ ...day, name: null })}</p>
+      </div>
       <Button
-        className="self-start"
+        size="lg"
+        className="w-full"
         disabled={!starter.isReady || starter.isPending}
         onClick={() => {
           void starter.start(today.program.id, today.block, day).then(() => {
@@ -124,6 +135,7 @@ function StartDay({ dayNumber }: { dayNumber: number }) {
           });
         }}
       >
+        <Icon name="play" className="size-5" />
         {t('workouts.today.start')}
       </Button>
     </Card>

@@ -2,6 +2,8 @@ import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useProfile } from '@/core/auth';
+import { cn } from '@/core/lib';
+import { Icon } from '@/core/ui';
 
 import { useActiveWorkout } from '../api/useActiveWorkout';
 import { ringRestAlarm } from '../api/rest-alarm';
@@ -17,10 +19,18 @@ import {
 /** Si el descanso acabó hace más que esto, no se avisa dentro de la app: ya sonó la notificación. */
 const LIVE_ALARM_WINDOW_MS = 2000;
 
+const CHIP =
+  'focus-ring numeric bg-foreground/6 hover:bg-foreground/12 min-h-11 rounded-full px-1 text-xs ' +
+  'font-medium transition-[background-color,transform] active:scale-95';
+
+const ROUND =
+  'focus-ring flex size-12 shrink-0 items-center justify-center rounded-full ' +
+  'transition-[transform,background-color] active:scale-90';
+
 /**
- * La barra del descanso (D-123): fija y a la vista mientras se apunta, en
- * cualquier pantalla del entreno. Tiempo que queda, pausar, parar, saltar,
- * ±15 s y los atajos. Se monta como servicio del módulo.
+ * La barra del descanso (D-123): flota sobre la navegación mientras se apunta,
+ * en cualquier pantalla del entreno. La cuenta atrás grande, una barra que se
+ * vacía, pausar, saltar, ±15 s y los atajos. Se monta como servicio del módulo.
  */
 export function RestTimerBar() {
   const { t } = useTranslation();
@@ -28,6 +38,8 @@ export function RestTimerBar() {
   const workout = useActiveWorkout().data ?? null;
   const profile = useProfile().data;
   const [now, setNow] = useState(() => Date.now());
+  // El tiempo más largo visto en este descanso: la referencia de la barra.
+  const [peakMs, setPeakMs] = useState(0);
   const rang = useRef<number | null>(null);
   const bar = useRef<HTMLElement | null>(null);
 
@@ -68,6 +80,11 @@ export function RestTimerBar() {
   const endsAt = timer?.endsAtMs ?? null;
   const left = timer === null ? 0 : remainingMs(timer, now);
   const finished = belongsHere && endsAt !== null && left === 0;
+  // Se ajusta mientras se pinta (patrón de React para derivar de lo anterior).
+  const nextPeak = belongsHere ? Math.max(peakMs, left) : 0;
+  if (nextPeak !== peakMs) {
+    setPeakMs(nextPeak);
+  }
 
   useEffect(() => {
     if (!finished || endsAt === null || rang.current === endsAt) {
@@ -86,86 +103,106 @@ export function RestTimerBar() {
     return null;
   }
   const paused = isPaused(timer);
-  const button =
-    'border-border bg-surface min-h-11 min-w-11 rounded-lg border px-3 text-sm font-semibold';
+  const fraction = nextPeak === 0 ? 0 : left / nextPeak;
 
   return (
     <section
       ref={bar}
       aria-label={t('workouts.rest.label')}
-      className="bg-surface border-border fixed inset-x-2 bottom-[calc(5rem+var(--safe-bottom))] z-40 mx-auto flex max-w-lg flex-col gap-2 rounded-lg border p-3 shadow-lg"
+      className="glass animate-rise fixed inset-x-3 bottom-[calc(5.5rem+var(--safe-bottom))] z-40 mx-auto flex max-w-md flex-col gap-3 rounded-3xl p-3"
     >
-      <div className="flex items-center justify-between gap-2">
-        <p
-          role="timer"
-          aria-live={finished ? 'assertive' : 'off'}
-          className="text-2xl font-bold tabular-nums"
-        >
-          {finished ? t('workouts.rest.done') : formatClock(left)}
-        </p>
-        <div className="flex gap-2">
-          {finished ? null : (
-            <button
-              type="button"
-              className={button}
-              onClick={() => {
-                if (paused) {
-                  restTimerStore.resume();
-                } else {
-                  restTimerStore.pause();
-                }
-              }}
-            >
-              {paused ? t('workouts.rest.resume') : t('workouts.rest.pause')}
-            </button>
-          )}
-          {/* Parar y saltar son lo mismo: se acaba el descanso y no suena nada (D-3.7-1). */}
+      <div className="flex items-center gap-3">
+        <div className="flex min-w-0 flex-1 flex-col gap-1 pl-1">
+          <p className="eyebrow flex items-center gap-1.5">
+            <Icon name="timer" className="size-3.5" />
+            {t('workouts.rest.label')}
+          </p>
+          <p
+            role="timer"
+            aria-live={finished ? 'assertive' : 'off'}
+            className={cn(
+              'numeric leading-none font-medium',
+              finished ? 'text-primary-readable text-2xl' : 'text-4xl',
+              paused && 'text-muted',
+            )}
+          >
+            {finished ? t('workouts.rest.done') : formatClock(left)}
+          </p>
+        </div>
+        {finished ? null : (
           <button
             type="button"
-            className={button}
+            aria-label={paused ? t('workouts.rest.resume') : t('workouts.rest.pause')}
+            className={cn(ROUND, 'surface-raised')}
             onClick={() => {
-              restTimerStore.stop();
+              if (paused) {
+                restTimerStore.resume();
+              } else {
+                restTimerStore.pause();
+              }
             }}
           >
-            {finished ? t('workouts.rest.close') : t('workouts.rest.skip')}
+            <Icon name={paused ? 'play' : 'pause'} className="size-5" />
           </button>
-        </div>
+        )}
+        {/* Parar y saltar son lo mismo: se acaba el descanso y no suena nada (D-3.7-1). */}
+        <button
+          type="button"
+          aria-label={finished ? t('workouts.rest.close') : t('workouts.rest.skip')}
+          className={cn(
+            ROUND,
+            'bg-primary text-on-primary shadow-[0_8px_22px_-8px_var(--color-primary-glow)]',
+          )}
+          onClick={() => {
+            restTimerStore.stop();
+          }}
+        >
+          <Icon name={finished ? 'check' : 'skip'} className="size-5" />
+        </button>
       </div>
       {finished ? null : (
-        <div className="flex flex-wrap gap-2">
-          <button
-            type="button"
-            className={button}
-            aria-label={t('workouts.rest.minus', { seconds: REST_ADJUST_SECONDS })}
-            onClick={() => {
-              restTimerStore.adjust(-REST_ADJUST_SECONDS);
-            }}
-          >
-            −{REST_ADJUST_SECONDS} s
-          </button>
-          <button
-            type="button"
-            className={button}
-            aria-label={t('workouts.rest.plus', { seconds: REST_ADJUST_SECONDS })}
-            onClick={() => {
-              restTimerStore.adjust(REST_ADJUST_SECONDS);
-            }}
-          >
-            +{REST_ADJUST_SECONDS} s
-          </button>
-          {REST_SHORTCUTS.map((seconds) => (
+        <>
+          <div aria-hidden="true" className="bg-foreground/10 h-1 overflow-hidden rounded-full">
+            <div
+              className="bg-primary h-full rounded-full transition-[width] duration-300 ease-linear"
+              style={{ width: `${String(fraction * 100)}%` }}
+            />
+          </div>
+          <div className="grid grid-cols-6 gap-1.5">
             <button
-              key={seconds}
               type="button"
-              className={button}
+              className={CHIP}
+              aria-label={t('workouts.rest.minus', { seconds: REST_ADJUST_SECONDS })}
               onClick={() => {
-                restTimerStore.preset(seconds);
+                restTimerStore.adjust(-REST_ADJUST_SECONDS);
               }}
             >
-              {formatClock(seconds * 1000)}
+              −{REST_ADJUST_SECONDS}
             </button>
-          ))}
-        </div>
+            <button
+              type="button"
+              className={CHIP}
+              aria-label={t('workouts.rest.plus', { seconds: REST_ADJUST_SECONDS })}
+              onClick={() => {
+                restTimerStore.adjust(REST_ADJUST_SECONDS);
+              }}
+            >
+              +{REST_ADJUST_SECONDS}
+            </button>
+            {REST_SHORTCUTS.map((seconds) => (
+              <button
+                key={seconds}
+                type="button"
+                className={CHIP}
+                onClick={() => {
+                  restTimerStore.preset(seconds);
+                }}
+              >
+                {formatClock(seconds * 1000)}
+              </button>
+            ))}
+          </div>
+        </>
       )}
     </section>
   );

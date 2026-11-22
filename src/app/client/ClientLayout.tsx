@@ -14,6 +14,8 @@ import { useShellNav } from '../useShellNav';
 export function ClientLayout() {
   const items = useShellNav('client');
   const { pathname } = useLocation();
+  // Entrenando, la pantalla es solo para las series y el descanso: sin barra.
+  const isTraining = pathname.startsWith('/client/workout');
 
   return (
     <div className="flex flex-1 flex-col">
@@ -28,7 +30,7 @@ export function ClientLayout() {
           <Outlet />
         </div>
       </main>
-      <BottomNav items={items} />
+      {isTraining ? null : <BottomNav items={items} />}
     </div>
   );
 }

@@ -1,6 +1,6 @@
 import { cn } from '../lib';
 
-export type ButtonVariant = 'primary' | 'secondary' | 'ghost';
+export type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'danger';
 export type ButtonSize = 'md' | 'lg';
 
 const BASE =
@@ -22,6 +22,8 @@ const VARIANTS: Record<ButtonVariant, string> = {
     'shadow-[inset_0_1px_0_rgb(255_255_255/0.3),0_10px_28px_-10px_var(--color-primary-glow)]',
   secondary: 'surface-raised text-foreground hover:bg-raised hover:border-border-strong',
   ghost: 'text-foreground hover:bg-foreground/8',
+  // Lo que no tiene vuelta atrás: descartar, borrar.
+  danger: 'bg-danger text-background hover:brightness-110',
 };
 
 /** Clases de un botón. También sirve para enlaces que deben parecer un botón. */

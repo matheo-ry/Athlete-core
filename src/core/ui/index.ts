@@ -17,4 +17,5 @@ export { PasswordInput } from './PasswordInput';
 export { Pill } from './Pill';
 export { Spinner } from './Spinner';
 export { Stat } from './Stat';
+export { StateOrbit } from './StateOrbit';
 export { useOnlineStatus } from './useOnlineStatus';

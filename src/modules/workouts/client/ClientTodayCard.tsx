@@ -74,6 +74,7 @@ export function ClientTodayCard() {
       </Card>
     );
   }
+  const isRecovery = Boolean(today.isRecovery);
   return (
     <Card tone="accent" className="flex flex-col gap-4 p-5">
       <div className="flex items-start justify-between gap-3">
@@ -81,6 +82,7 @@ export function ClientTodayCard() {
           <p className="eyebrow text-primary-readable">{t('workouts.today.title')}</p>
           <Link to={`/client/program?day=${String(day.dayNumber)}`} className={TITLE_LINK}>
             {title(day)}
+            {isRecovery ? ` ${t('workouts.today.recoverSuffix')}` : null}
           </Link>
         </div>
         <IconBubble name="dumbbell" tone="primary" />

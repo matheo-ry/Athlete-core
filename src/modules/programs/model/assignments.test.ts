@@ -123,4 +123,48 @@ describe('routineProgress', () => {
     if (done === undefined) throw new Error('falta la rutina');
     expect(routineProgress(done, TODAY)).toMatchObject({ lap: 3, isRepeating: true });
   });
+
+  it('con regla shift y días faltados, endsOn se retrasa los días correspondientes', () => {
+    const [p] = parseClientPrograms([
+      {
+        ...row('p-shift', 'bruno', '2026-11-09'),
+        program_blocks: [{ id: 'b1', position: 1, cycle_days: 7, laps: 4 }],
+        program_missed_day_rules: [{ rule: 'shift', starts_on: '2026-11-09' }],
+        program_missed_days: [{ day_number: 1, missed_on: '2026-11-16' }],
+      },
+    ]);
+    if (p === undefined) throw new Error('falta la rutina');
+    // Sin saltos terminaba el 2026-12-06. Con 1 salto termina el 2026-12-07 (+1 día)
+    const progress = routineProgress(p, TODAY);
+    expect(progress?.endsOn).toBe('2026-12-07');
+  });
+
+  it('en modo lista, el bloque y la vuelta avanzan según los entrenos completados (D-125)', () => {
+    const [listProg] = parseClientPrograms([
+      {
+        ...row('p-list', 'diego', '2026-11-01'),
+        mode: 'list',
+        program_blocks: [
+          { id: 'b1', position: 1, cycle_days: 7, laps: 4 },
+          { id: 'b2', position: 2, cycle_days: 7, laps: 4 },
+        ],
+        workouts: Array.from({ length: 16 }, (_, i) => ({
+          id: `w-${String(i)}`,
+          performed_on: '2026-11-10',
+          closed_at: '2026-11-10T10:00:00Z',
+        })),
+      },
+    ]);
+    if (listProg === undefined) throw new Error('falta la rutina');
+    expect(listProg.completedWorkoutsCount).toBe(16);
+
+    // Con 16 entrenos hechos de 4 por vuelta (4 laps * 4 training days = 16 entrenos en b1):
+    // Pasa al bloque 2
+    const progress = routineProgress(listProg, TODAY, { trainingDaysPerBlock: [4, 4] });
+    expect(progress).toMatchObject({
+      blockNumber: 2,
+      lap: 1,
+      endsOn: null,
+    });
+  });
 });

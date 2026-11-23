@@ -16,7 +16,18 @@ interface CurrentProgramDaysProps {
  */
 export function CurrentProgramDays({ program, today }: CurrentProgramDaysProps) {
   const document = useProgram(program.id);
-  const position = calendarPosition(program.blocks, program.startsOn, today, program.startBlockId);
+  const options = {
+    rules: program.missedDayRules,
+    missedDays: program.missedDays,
+    completedWorkouts: program.completedWorkoutsCount,
+  };
+  const position = calendarPosition(
+    program.blocks,
+    program.startsOn,
+    today,
+    program.startBlockId,
+    options,
+  );
   const blockIndex = position.status === 'running' ? position.blockIndex : 0;
   const block = document.data?.blocks[blockIndex] ?? document.data?.blocks[0];
 
@@ -29,5 +40,14 @@ export function CurrentProgramDays({ program, today }: CurrentProgramDaysProps) 
   const todayNumber =
     program.mode === 'calendar' && position.status === 'running' ? position.dayNumber : null;
 
-  return <BlockDays block={block} todayNumber={todayNumber} />;
+  return (
+    <BlockDays
+      block={block}
+      todayNumber={todayNumber}
+      program={program}
+      blockIndex={blockIndex}
+      lap={position.status === 'running' ? position.lap : 1}
+      today={today}
+    />
+  );
 }

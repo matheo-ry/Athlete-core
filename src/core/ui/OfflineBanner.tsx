@@ -5,7 +5,7 @@ import { useOnlineStatus } from './useOnlineStatus';
 
 /**
  * Franja fija "Sin conexión" (DECISIONES D-061). Lo ya cargado se sigue viendo;
- * los formularios avisan al enviar.
+ * los formularios avisan al enviar. Una píldora centrada, discreta pero visible.
  */
 export function OfflineBanner() {
   const { t } = useTranslation();
@@ -15,12 +15,11 @@ export function OfflineBanner() {
     return null;
   }
   return (
-    <div
-      role="status"
-      className="bg-foreground text-background sticky top-0 z-50 flex items-center justify-center gap-2 px-4 py-2 text-sm font-medium"
-    >
-      <WifiOff aria-hidden="true" className="size-4" />
-      {t('core.network.offline')}
+    <div role="status" className="flex justify-center px-4 pt-2">
+      <span className="bg-foreground text-background animate-rise inline-flex items-center gap-2 rounded-full px-4 py-1.5 text-xs font-semibold shadow-lg">
+        <WifiOff aria-hidden="true" className="size-3.5" />
+        {t('core.network.offline')}
+      </span>
     </div>
   );
 }

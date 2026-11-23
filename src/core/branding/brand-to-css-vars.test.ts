@@ -83,8 +83,9 @@ describe('applyBrandToElement', () => {
     applyBrandToElement(LIGHT_BRAND, element);
 
     expect(element.style.getPropertyValue('--brand-primary')).toBe('#fde047');
-    expect(element.style.getPropertyValue('--brand-background')).toBe('#f6f7f9');
+    expect(element.style.getPropertyValue('--brand-background')).toBe('#f4f0e9');
     expect(element.style.colorScheme).toBe('light');
+    expect(element.dataset.mode).toBe('light');
   });
 
   it('sustituye la marca anterior al cambiar de coach', () => {

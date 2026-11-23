@@ -7,6 +7,9 @@ import { defineConfig } from 'vitest/config';
 export default defineConfig({
   plugins: [react(), tailwindcss()],
   resolve: {
+    // Una sola copia de React: sin esto, el optimizador de Vite empaqueta dos al
+    // añadirse `motion` y la app se rompe con "Invalid hook call" (D-ux1-2).
+    dedupe: ['react', 'react-dom'],
     // El alias "@/" apunta a "src/". Tiene que coincidir con "paths" de
     // tsconfig.app.json y con scripts/eslint-alias-resolver.cjs.
     alias: {

@@ -1,4 +1,8 @@
 @import 'tailwindcss';
+/* Fuentes propias, empaquetadas con la app: no piden nada a un servidor de
+   terceros y funcionan sin conexión en el móvil (D-ux1-1). */
+@import '@fontsource-variable/instrument-sans';
+@import '@fontsource-variable/geist-mono';
 
 /*
  * Variables de tema por defecto (marca de la plataforma, modo oscuro).
@@ -9,34 +13,54 @@
 :root {
   --brand-primary: #2563eb;
   --brand-on-primary: #ffffff;
-  --brand-primary-readable: #4f81ef;
+  --brand-primary-readable: #467aee;
   --brand-accent: #ff7a1a;
   --brand-on-accent: #000000;
-  --brand-background: #0f1115;
-  --brand-surface: #181b21;
-  --brand-foreground: #f3f4f6;
-  --brand-muted: #a3a8b3;
-  --brand-border: #2c313a;
-  --brand-danger: #f87171;
+  --brand-background: #0e0d0b;
+  --brand-surface: #171512;
+  --brand-raised: #211e1a;
+  --brand-foreground: #f5f1ea;
+  --brand-muted: #a59e93;
+  --brand-border: #2c2824;
+  --brand-danger: #ff8a78;
   color-scheme: dark;
 }
 
 /*
  * Colores de Tailwind enlazados a las variables de tema. Los componentes usan
  * SOLO estas clases (bg-primary, text-foreground…), nunca un color fijo.
+ * Los tonos "soft" y "strong" se derivan del color del coach con `color-mix`,
+ * así que funcionan con cualquier marca sin tocar el código.
  */
 @theme inline {
   --color-primary: var(--brand-primary);
   --color-on-primary: var(--brand-on-primary);
   --color-primary-readable: var(--brand-primary-readable);
+  --color-primary-soft: color-mix(in oklab, var(--brand-primary) 16%, transparent);
+  --color-primary-glow: color-mix(in oklab, var(--brand-primary) 55%, transparent);
   --color-accent: var(--brand-accent);
   --color-on-accent: var(--brand-on-accent);
+  --color-accent-soft: color-mix(in oklab, var(--brand-accent) 18%, transparent);
   --color-background: var(--brand-background);
   --color-surface: var(--brand-surface);
+  --color-raised: var(--brand-raised);
   --color-foreground: var(--brand-foreground);
   --color-muted: var(--brand-muted);
   --color-border: var(--brand-border);
+  --color-border-strong: color-mix(in oklab, var(--brand-foreground) 20%, var(--brand-border));
   --color-danger: var(--brand-danger);
+  --color-danger-soft: color-mix(in oklab, var(--brand-danger) 16%, transparent);
+
+  --font-sans:
+    'Instrument Sans Variable', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto,
+    sans-serif;
+  --font-mono:
+    'Geist Mono Variable', ui-monospace, 'SFMono-Regular', 'Cascadia Mono', Menlo, Consolas,
+    monospace;
+
+  /* Curvas de movimiento: frenan al final (salida) o van y vuelven (resorte). */
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 /*
@@ -52,10 +76,162 @@
   --safe-right: var(--safe-area-inset-right, env(safe-area-inset-right, 0px));
 }
 
-body {
-  /* Con el móvil en horizontal, la cámara o los gestos pueden ir a los lados. */
-  padding-left: var(--safe-left);
-  padding-right: var(--safe-right);
-  background-color: var(--brand-background);
-  color: var(--brand-foreground);
+/*
+ * Profundidad. Las capas se separan con un reflejo de luz en el borde superior y
+ * una sombra suave, no con líneas gruesas. `light-dark()` sigue el `color-scheme`
+ * que pone la marca, así que sirve igual en modo claro y oscuro.
+ */
+:root {
+  --surface-sheen: light-dark(rgb(255 255 255 / 0.9), rgb(255 255 255 / 0.05));
+  --surface-edge: light-dark(rgb(255 255 255 / 1), rgb(255 255 255 / 0.07));
+  --surface-shadow:
+    inset 0 1px 0 var(--surface-edge), 0 1px 2px light-dark(rgb(26 23 20 / 0.06), rgb(0 0 0 / 0.5)),
+    0 14px 32px -16px light-dark(rgb(26 23 20 / 0.16), rgb(0 0 0 / 0.65));
+}
+
+@layer base {
+  html {
+    -webkit-tap-highlight-color: transparent;
+    text-size-adjust: 100%;
+  }
+
+  body {
+    font-family: var(--font-sans);
+    font-optical-sizing: auto;
+    font-feature-settings:
+      'ss01' 1,
+      'cv11' 1;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    /* Con el móvil en horizontal, la cámara o los gestos pueden ir a los lados. */
+    padding-left: var(--safe-left);
+    padding-right: var(--safe-right);
+    background-color: var(--brand-background);
+    color: var(--brand-foreground);
+    /* Un resplandor del color del coach asoma por arriba: la pantalla tiene
+       atmósfera sin gastar un solo borde. */
+    background-image:
+      radial-gradient(
+        70% 38% at 50% -8%,
+        color-mix(in oklab, var(--brand-primary) 20%, transparent),
+        transparent 72%
+      ),
+      radial-gradient(
+        46% 26% at 100% 0%,
+        color-mix(in oklab, var(--brand-accent) 9%, transparent),
+        transparent 70%
+      );
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+  }
+
+  h1,
+  h2,
+  h3 {
+    letter-spacing: -0.022em;
+    text-wrap: balance;
+  }
+
+  /* Los números de una tabla o una serie no deben bailar al cambiar. */
+  input[type='number'],
+  .tabular {
+    font-variant-numeric: tabular-nums;
+  }
+
+  ::selection {
+    background: color-mix(in oklab, var(--brand-primary) 40%, transparent);
+  }
+}
+
+/* Superficie: la tarjeta base. Un degradado casi invisible y un borde de luz. */
+@utility surface {
+  background: linear-gradient(180deg, var(--surface-sheen), transparent 55%), var(--brand-surface);
+  border: 1px solid var(--brand-border);
+  box-shadow: var(--surface-shadow);
+}
+
+/* Capa elevada: campos, chips y lo que debe destacar sobre una superficie. */
+@utility surface-raised {
+  background: linear-gradient(180deg, var(--surface-sheen), transparent 70%), var(--brand-raised);
+  border: 1px solid var(--brand-border);
+  box-shadow: var(--surface-shadow);
+}
+
+/* Tarjeta destacada: la superficie normal bañada por el color del coach. */
+@utility surface-accent {
+  background:
+    linear-gradient(150deg, var(--color-primary-soft), transparent 75%),
+    linear-gradient(180deg, var(--surface-sheen), transparent 55%), var(--brand-surface);
+  border: 1px solid color-mix(in oklab, var(--brand-primary) 38%, var(--brand-border));
+  box-shadow:
+    var(--surface-shadow),
+    0 18px 44px -24px var(--color-primary-glow);
+}
+
+/* Vidrio mate para lo que flota (menús, barras): se ve lo que pasa por detrás. */
+@utility glass {
+  background: color-mix(in oklab, var(--brand-surface) 74%, transparent);
+  -webkit-backdrop-filter: blur(22px) saturate(1.5);
+  backdrop-filter: blur(22px) saturate(1.5);
+  border: 1px solid color-mix(in oklab, var(--brand-foreground) 11%, transparent);
+  box-shadow:
+    inset 0 1px 0 var(--surface-edge),
+    0 18px 40px -14px light-dark(rgb(26 23 20 / 0.28), rgb(0 0 0 / 0.75));
+}
+
+/* Etiqueta pequeña en mayúsculas y monoespaciada: el "instrumento" de la app. */
+@utility eyebrow {
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  line-height: 1rem;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--brand-muted);
+}
+
+/* Cifras: monoespaciadas, con los dígitos a igual ancho. */
+@utility numeric {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+}
+
+/* Foco visible y coherente en toda la app. */
+@utility focus-ring {
+  &:focus-visible {
+    outline: 2px solid var(--brand-primary-readable);
+    outline-offset: 2px;
+  }
+}
+
+/* Entrada de una pantalla o de un bloque: sube un poco y aparece. */
+@keyframes rise-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* `backwards` y no `both`: al acabar se quita el `transform`, que si no crearía un
+   contenedor para los elementos `fixed` y `sticky` de dentro. */
+@utility animate-rise {
+  animation: rise-in 0.5s var(--ease-out-expo) backwards;
+  animation-delay: var(--rise-delay, 0ms);
+}
+
+/* "Reducir movimiento" del sistema: sin desplazamientos ni resortes. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  ::before,
+  ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }

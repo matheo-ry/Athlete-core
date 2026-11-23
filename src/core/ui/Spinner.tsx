@@ -1,4 +1,3 @@
-import { LoaderCircle } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
 import { cn } from '../lib';
@@ -9,6 +8,7 @@ interface SpinnerProps {
   className?: string;
 }
 
+/** Un arco del color del coach que gira sobre un aro tenue. */
 export function Spinner({ label, className }: SpinnerProps) {
   const { t } = useTranslation();
 
@@ -16,9 +16,12 @@ export function Spinner({ label, className }: SpinnerProps) {
     <div
       role="status"
       aria-label={label ?? t('core.ui.loading')}
-      className={cn('text-muted flex items-center justify-center p-6', className)}
+      className={cn('flex items-center justify-center p-6', className)}
     >
-      <LoaderCircle aria-hidden="true" className="size-6 animate-spin" />
+      <span
+        aria-hidden="true"
+        className="border-border-strong border-t-primary-readable size-7 animate-spin rounded-full border-2"
+      />
     </div>
   );
 }

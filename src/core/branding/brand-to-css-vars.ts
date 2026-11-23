@@ -8,28 +8,34 @@ import { ensureContrast, pickReadableOn } from './contrast';
 interface ModePalette {
   background: string;
   surface: string;
+  /** Capa por encima de la superficie: campos, chips y tarjetas destacadas. */
+  raised: string;
   foreground: string;
   muted: string;
   border: string;
   danger: string;
 }
 
+// Neutros cálidos (tirando a piedra, no a azul): dan profundidad y dejan que el
+// color del coach sea la única luz de la pantalla.
 const MODE_PALETTES: Record<BrandMode, ModePalette> = {
   dark: {
-    background: '#0f1115',
-    surface: '#181b21',
-    foreground: '#f3f4f6',
-    muted: '#a3a8b3',
-    border: '#2c313a',
-    danger: '#f87171',
+    background: '#0e0d0b',
+    surface: '#171512',
+    raised: '#211e1a',
+    foreground: '#f5f1ea',
+    muted: '#a59e93',
+    border: '#2c2824',
+    danger: '#ff8a78',
   },
   light: {
-    background: '#f6f7f9',
-    surface: '#ffffff',
-    foreground: '#14171c',
-    muted: '#5b6270',
-    border: '#d9dde3',
-    danger: '#b91c1c',
+    background: '#f4f0e9',
+    surface: '#fffdf9',
+    raised: '#ffffff',
+    foreground: '#1a1714',
+    muted: '#675f55',
+    border: '#e2dcd2',
+    danger: '#b42318',
   },
 };
 
@@ -41,6 +47,7 @@ export const BRAND_CSS_VARIABLES = [
   '--brand-on-accent',
   '--brand-background',
   '--brand-surface',
+  '--brand-raised',
   '--brand-foreground',
   '--brand-muted',
   '--brand-border',
@@ -71,6 +78,7 @@ export function brandToCssVars(brand: Brand): BrandCssVars {
     '--brand-on-accent': pickReadableOn(accent),
     '--brand-background': palette.background,
     '--brand-surface': palette.surface,
+    '--brand-raised': palette.raised,
     '--brand-foreground': palette.foreground,
     '--brand-muted': palette.muted,
     '--brand-border': palette.border,
@@ -86,4 +94,6 @@ export function applyBrandToElement(brand: Brand, element: HTMLElement): void {
   }
   // Para que los controles nativos (scroll, selects) sigan el modo de la marca.
   element.style.colorScheme = brand.mode;
+  // Para los estilos que dependen del modo y no son un color (el grano de fondo).
+  element.dataset.mode = brand.mode;
 }

@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { cn } from '../lib';
 
 import { Button } from './Button';
+import { StateOrbit } from './StateOrbit';
 
 interface ErrorStateProps {
   /** Por defecto, un mensaje genérico traducido. */
@@ -21,13 +22,22 @@ export function ErrorState({ title, description, onRetry, className }: ErrorStat
   return (
     <div
       role="alert"
-      className={cn('flex flex-col items-center gap-2 px-4 py-10 text-center', className)}
+      className={cn(
+        'animate-rise flex flex-col items-center gap-2 px-4 py-10 text-center',
+        className,
+      )}
     >
-      <TriangleAlert aria-hidden="true" className="text-danger size-8" />
-      <p className="text-foreground font-semibold">{title ?? t('core.ui.errorTitle')}</p>
-      <p className="text-muted max-w-sm text-sm">{description ?? t('core.ui.errorDescription')}</p>
+      <StateOrbit tone="danger">
+        <TriangleAlert className="text-danger size-7" strokeWidth={1.6} />
+      </StateOrbit>
+      <p className="text-foreground mt-3 text-lg font-semibold">
+        {title ?? t('core.ui.errorTitle')}
+      </p>
+      <p className="text-muted max-w-sm text-sm leading-6">
+        {description ?? t('core.ui.errorDescription')}
+      </p>
       {onRetry ? (
-        <Button variant="secondary" onClick={onRetry} className="mt-2">
+        <Button variant="secondary" onClick={onRetry} className="mt-3">
           {t('core.ui.retry')}
         </Button>
       ) : null}

@@ -22,3 +22,13 @@ export function formatDateTime(value: Date | string, locale: string, timeZone?: 
     timeZone,
   }).format(toDate(value));
 }
+
+/** Día de la semana y fecha sin año, para cabeceras: "Sunday, November 22" o "domingo, 22 de noviembre". */
+export function formatDayLabel(value: Date | string, locale: string, timeZone?: string): string {
+  return new Intl.DateTimeFormat(locale, {
+    weekday: 'long',
+    day: 'numeric',
+    month: 'long',
+    timeZone,
+  }).format(toDate(value));
+}

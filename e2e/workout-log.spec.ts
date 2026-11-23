@@ -205,15 +205,15 @@ test('Bruno cambia un ejercicio, salta otro y lo deshace (PR 3.8)', async ({ pag
   // Criterio 3: cambiar el primer ejercicio por otro de sus rutinas (la lista es la que
   // permite ver el RLS al cliente: solo los ejercicios de sus rutinas).
   await exercises.first().click();
-  await expect(page.getByRole('heading', { name: 'Press francés' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Skull crusher' })).toBeVisible();
   await page.getByRole('button', { name: 'Change exercise' }).click();
   await page
     .getByRole('list', { name: /^Change/ })
     .getByRole('button')
-    .filter({ hasNotText: 'Press francés' })
+    .filter({ hasNotText: 'Skull crusher' })
     .first()
     .click();
-  await expect(page.getByText('Instead of Press francés')).toBeVisible();
+  await expect(page.getByText('Instead of Skull crusher')).toBeVisible();
   await page.getByRole('link', { name: 'Back to summary' }).click();
   await expect(page.getByText(/^Replaced by /)).toBeVisible();
 

@@ -337,6 +337,25 @@
       "sameLabel": "Qué copia «Igual»",
       "samePrevious": "La serie de la vez anterior",
       "sameToday": "La serie anterior de hoy"
+    },
+    "healthConsent": {
+      "title": "Tus datos de salud",
+      "body": "Tu peso, tus medidas y las notas que escribas (que pueden incluir molestias o lesiones) son solo entre tú y tu coach, para que pueda mejorar su servicio y su asesoramiento. ATHLETE CORE los guarda por encargo de tu coach y no los usa para nada más. Puedes retirar este permiso cuando quieras en tu Perfil.",
+      "accept": "Acepto",
+      "notNow": "Ahora no"
+    },
+    "healthData": {
+      "title": "Datos de salud",
+      "description": "Tu peso, tus medidas y las notas del día. Solo los ves tú y {{coach}}.",
+      "statusGranted": "Permiso dado el {{date}}.",
+      "statusNone": "Todavía no has dado el permiso. Puedes entrenar igual, pero no apuntar peso, medidas ni notas.",
+      "statusWithdrawn": "Permiso retirado el {{date}}. Se borraron tu peso, tus medidas y tus notas de {{coach}}.",
+      "give": "Dar permiso",
+      "withdraw": "Retirar permiso",
+      "confirmTitle": "¿Retirar el permiso?",
+      "confirmBody": "Se borrarán tu peso, tus medidas y tus notas del día de {{coach}}. No se puede deshacer.",
+      "confirmWithdraw": "Retirar y borrar",
+      "cancel": "Cancelar"
     }
   }
 }

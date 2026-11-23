@@ -132,7 +132,7 @@ export function ProgramEditor({ saved, justSaved, onSaved, onReload }: ProgramEd
       ) : null}
       {isConflict ? (
         // D-079: no se pisa lo guardado desde otro dispositivo.
-        <div role="alert" className="border-danger flex flex-col gap-2 rounded-lg border p-3">
+        <div role="alert" className="border-danger flex flex-col gap-2 rounded-xl border p-3">
           <p className="text-sm font-medium">{t('programs.editor.conflict')}</p>
           <div>
             <Button variant="secondary" onClick={onReload}>

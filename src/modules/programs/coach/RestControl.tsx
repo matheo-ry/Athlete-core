@@ -59,8 +59,8 @@ export function RestControl({ name, seconds, onChange }: RestControlProps) {
               aria-pressed={seconds === shortcut}
               onClick={() => onChange(shortcut)}
               className={cn(
-                'min-h-11 rounded-lg px-3 text-sm font-medium tabular-nums',
-                'focus-visible:outline-primary-readable focus-visible:outline-2',
+                'min-h-11 rounded-xl px-3 text-sm font-medium tabular-nums',
+                'focus-ring',
                 seconds === shortcut
                   ? 'bg-primary text-on-primary'
                   : 'bg-background text-foreground',

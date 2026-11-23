@@ -2,6 +2,7 @@ import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router';
 
+import { brandInitials } from '@/core/branding';
 import { useLanguage } from '@/core/i18n';
 import { useTenantMembers } from '@/core/tenancy';
 import { Card } from '@/core/ui';
@@ -61,20 +62,28 @@ export function CoachAlertsCard() {
   };
 
   return (
-    <Card className="flex flex-col gap-2">
+    <Card className="flex flex-col gap-3">
       <h2 className="text-lg font-semibold">{t('programs.home.alertsTitle')}</h2>
       {alerts.length === 0 ? (
         <p className="text-muted">{t('programs.home.allGood')}</p>
       ) : (
         <ul aria-label={t('programs.home.alertsTitle')}>
           {alerts.map((alert) => (
-            <li key={alert.clientId} className="border-border border-b last:border-b-0">
+            <li key={alert.clientId}>
               <Link
                 to={`/coach/clients/${alert.clientId}`}
-                className="hover:bg-background focus-visible:outline-primary-readable flex min-h-11 flex-col justify-center rounded-lg px-2 py-2 focus-visible:outline-2"
+                className="focus-ring hover:bg-foreground/5 flex min-h-14 items-center gap-3 rounded-2xl px-2 py-2 transition-colors"
               >
-                <span className="font-medium break-words">{alert.clientName}</span>
-                <span className="text-muted text-sm">{detail(alert)}</span>
+                <span aria-hidden="true" className="relative">
+                  <span className="bg-primary-soft text-primary-readable ring-primary/20 flex size-10 shrink-0 items-center justify-center rounded-full text-xs font-semibold ring-1">
+                    {brandInitials(alert.clientName)}
+                  </span>
+                  <span className="bg-accent ring-surface absolute -top-0.5 -right-0.5 size-3 rounded-full ring-2" />
+                </span>
+                <span className="flex min-w-0 flex-1 flex-col">
+                  <span className="font-semibold break-words">{alert.clientName}</span>
+                  <span className="text-muted text-sm">{detail(alert)}</span>
+                </span>
               </Link>
             </li>
           ))}

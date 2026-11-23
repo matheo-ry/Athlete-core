@@ -59,7 +59,7 @@ export function BlockDays({
             aria-current={day.dayNumber === todayNumber ? 'date' : undefined}
             className={cn(
               'border-border flex flex-col border-b px-2 py-2 last:border-b-0',
-              day.dayNumber === todayNumber ? 'bg-background rounded-lg' : null,
+              day.dayNumber === todayNumber ? 'bg-background rounded-xl' : null,
             )}
           >
             <span className="font-medium">

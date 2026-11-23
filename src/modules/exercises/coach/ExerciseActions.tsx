@@ -105,7 +105,7 @@ export function ExerciseActions({ exercise, onDone, onDuplicated }: ExerciseActi
         </Button>
       </div>
       {isConfirmingRestore ? (
-        <div className="border-border flex flex-col gap-2 rounded-lg border p-3">
+        <div className="bg-background/50 border-border flex flex-col gap-3 rounded-2xl border p-4">
           <p className="text-sm">
             {t('exercises.actions.restoreConfirm', {
               name: exercise.libraryName?.[language] ?? '',

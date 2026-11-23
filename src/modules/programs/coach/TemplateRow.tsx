@@ -81,7 +81,7 @@ export function TemplateRow({ template, onDone }: TemplateRowProps) {
   };
 
   return (
-    <li className="border-border flex flex-col gap-3 border-b py-3 last:border-b-0">
+    <li className="border-border/60 flex flex-col gap-3 border-b px-2 py-4 last:border-b-0">
       {isRenaming ? (
         <form noValidate onSubmit={rename} className="flex flex-col gap-3">
           <Input
@@ -115,7 +115,7 @@ export function TemplateRow({ template, onDone }: TemplateRowProps) {
             {/* Pulsar el nombre abre el editor (PR 2.8). */}
             <Link
               to={`/coach/programs/${template.id}`}
-              className="text-foreground focus-visible:outline-primary-readable rounded font-medium break-words underline-offset-4 hover:underline focus-visible:outline-2"
+              className="focus-ring text-foreground rounded-md text-lg font-semibold tracking-tight break-words underline-offset-4 hover:underline"
             >
               {template.name}
             </Link>

@@ -99,7 +99,7 @@ export function DayCopyActions({ block, day, onChange }: DayCopyActionsProps) {
       ) : null}
 
       {pending !== null ? (
-        <div className="border-border flex flex-col gap-2 rounded-lg border p-3">
+        <div className="bg-background/50 border-border flex flex-col gap-3 rounded-2xl border p-4">
           <p className="text-sm">
             {t('programs.copy.replaceConfirm', {
               day: label(pending.target.dayNumber),

@@ -49,7 +49,7 @@ export function AssignDialog({ title, onClose, children }: AssignDialogProps) {
         role="dialog"
         aria-modal="true"
         aria-labelledby={titleId}
-        className="bg-surface border-border flex w-full flex-col gap-4 overflow-y-auto p-4 md:max-h-[90dvh] md:max-w-xl md:rounded-lg md:border md:p-6 md:shadow-lg"
+        className="bg-surface flex w-full flex-col gap-4 overflow-y-auto p-5 md:surface md:max-h-[90dvh] md:max-w-xl md:rounded-3xl md:p-7"
       >
         <div className="flex items-start justify-between gap-3">
           <h2 id={titleId} className="text-xl font-semibold break-words">

@@ -3,8 +3,16 @@ import { useTranslation } from 'react-i18next';
 
 import { useLanguage } from '@/core/i18n';
 import { useTenantMembers } from '@/core/tenancy';
-import { Card, EmptyState, ErrorState, Input, Spinner } from '@/core/ui';
-import { cn } from '@/core/lib';
+import {
+  Card,
+  EmptyState,
+  ErrorState,
+  Input,
+  PageHeader,
+  segmentClassName,
+  SEGMENTED_GROUP_CLASS,
+  Spinner,
+} from '@/core/ui';
 
 import { visibleClients } from '../model/client-list';
 import type { ClientTab } from '../model/client-list';
@@ -31,27 +39,22 @@ export function ClientListPage() {
   const hasAnyInTab = visibleClients(members.data ?? [], tab, '', language).length > 0;
 
   return (
-    <section className="flex flex-col gap-4">
-      <header>
-        <h1 className="text-2xl font-bold">{t('clients.list.title')}</h1>
-        <p className="text-muted">{t('clients.list.description')}</p>
-      </header>
+    <section className="flex max-w-4xl flex-col gap-5">
+      <PageHeader title={t('clients.list.title')} description={t('clients.list.description')} />
 
-      {members.data !== undefined ? <SeatsSummary members={members.data} /> : null}
-      <InviteCodeCard />
+      <div className="grid gap-4 md:grid-cols-[minmax(0,2fr)_minmax(0,3fr)] md:items-start">
+        {members.data !== undefined ? <SeatsSummary members={members.data} /> : null}
+        <InviteCodeCard />
+      </div>
 
-      <div role="group" aria-label={t('clients.list.tabsLabel')} className="flex gap-2">
+      <div role="group" aria-label={t('clients.list.tabsLabel')} className={SEGMENTED_GROUP_CLASS}>
         {TABS.map((option) => (
           <button
             key={option}
             type="button"
             aria-pressed={tab === option}
             onClick={() => setTab(option)}
-            className={cn(
-              'min-h-11 rounded-lg px-4 text-sm font-medium',
-              'focus-visible:outline-primary-readable focus-visible:outline-2',
-              tab === option ? 'bg-primary text-on-primary' : 'bg-surface text-muted',
-            )}
+            className={segmentClassName(tab === option)}
           >
             {t(`clients.list.tabs.${option}`)}
           </button>
@@ -66,7 +69,7 @@ export function ClientListPage() {
         onChange={(event) => setQuery(event.target.value)}
       />
 
-      <Card>
+      <Card className="p-2 md:p-2">
         {members.isPending ? <Spinner /> : null}
         {members.isError ? <ErrorState onRetry={() => void members.refetch()} /> : null}
         {members.isSuccess && !hasAnyInTab ? (

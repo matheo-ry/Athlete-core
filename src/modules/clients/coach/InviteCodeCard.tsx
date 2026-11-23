@@ -71,23 +71,23 @@ export function InviteCodeCard() {
   };
 
   return (
-    <Card>
-      <div className="flex flex-col gap-3">
-        <div>
-          <h2 className="font-semibold">{t('clients.code.title')}</h2>
+    <Card tone="accent">
+      <div className="flex flex-col gap-4">
+        <div className="flex flex-col gap-1">
+          <h2 className="eyebrow text-primary-readable">{t('clients.code.title')}</h2>
           <p className="text-muted text-sm">{t('clients.code.description')}</p>
         </div>
         <p
           data-testid="invite-code"
-          className="font-mono text-3xl font-bold tracking-widest select-all"
+          className="numeric text-4xl font-medium tracking-[0.18em] select-all md:text-5xl"
         >
           {formatInviteCode(code)}
         </p>
         <div className="flex flex-wrap gap-2">
+          <Button onClick={handleShare}>{t('clients.code.share')}</Button>
           <Button variant="secondary" onClick={handleCopy}>
             {t('clients.code.copy')}
           </Button>
-          <Button onClick={handleShare}>{t('clients.code.share')}</Button>
         </div>
         {notice !== null ? (
           <p role="status" className="text-muted text-sm">
@@ -101,12 +101,12 @@ export function InviteCodeCard() {
         ) : null}
 
         {role === 'owner' && !isConfirming ? (
-          <Button variant="ghost" onClick={() => setIsConfirming(true)}>
+          <Button variant="ghost" className="self-start" onClick={() => setIsConfirming(true)}>
             {t('clients.code.regenerate')}
           </Button>
         ) : null}
         {role === 'owner' && isConfirming ? (
-          <div className="border-border flex flex-col gap-2 rounded-lg border p-3">
+          <div className="bg-background/50 border-border flex flex-col gap-3 rounded-2xl border p-4">
             <p className="text-sm">{t('clients.code.regenerateConfirm')}</p>
             <div className="flex flex-wrap gap-2">
               <Button onClick={handleRegenerate} disabled={regenerate.isPending}>

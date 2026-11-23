@@ -13,7 +13,7 @@ interface SpaceListProps {
   onChoose: (space: Membership) => void;
 }
 
-const ROW = 'border-border flex min-h-14 w-full items-center gap-3 rounded-lg border p-3 text-left';
+const ROW = 'border-border flex min-h-14 w-full items-center gap-3 rounded-xl border p-3 text-left';
 
 /**
  * La lista de espacios (D-056): cada uno con su distintivo, su nombre y si se
@@ -47,10 +47,7 @@ export function SpaceList({ spaces, currentTenantId = null, onChoose }: SpaceLis
               <button
                 type="button"
                 onClick={() => onChoose(space)}
-                className={cn(
-                  ROW,
-                  'hover:bg-surface focus-visible:outline-primary-readable focus-visible:outline-2',
-                )}
+                className={cn(ROW, 'hover:bg-foreground/5 focus-ring')}
               >
                 {content}
               </button>

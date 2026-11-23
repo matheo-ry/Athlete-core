@@ -31,7 +31,7 @@ export function FirstStepsCard() {
           <li key={step.to}>
             <Link
               to={step.to}
-              className="hover:bg-background focus-visible:outline-primary-readable flex min-h-14 items-center gap-3 rounded-lg px-2 focus-visible:outline-2"
+              className="focus-ring hover:bg-foreground/5 flex min-h-14 items-center gap-3 rounded-xl px-2"
             >
               <span className="flex flex-1 flex-col">
                 <span className="font-medium">{t(`app.coachHome.firstSteps.${step.title}`)}</span>

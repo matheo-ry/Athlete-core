@@ -4,7 +4,15 @@ import { useSearchParams } from 'react-router';
 
 import { useLanguage } from '@/core/i18n';
 import { cn } from '@/core/lib';
-import { Button, Card, EmptyState, ErrorState, Spinner } from '@/core/ui';
+import {
+  Button,
+  Card,
+  EmptyState,
+  ErrorState,
+  segmentClassName,
+  SEGMENTED_GROUP_CLASS,
+  Spinner,
+} from '@/core/ui';
 
 import { useExercises } from '../api/useExercises';
 import {
@@ -73,7 +81,9 @@ export function ExerciseListPage() {
       <div className={cn('flex min-w-0 flex-col gap-4', target !== null && 'hidden lg:flex')}>
         <header className="flex flex-wrap items-start justify-between gap-3">
           <div>
-            <h1 className="text-2xl font-bold">{t('exercises.list.title')}</h1>
+            <h1 className="text-3xl leading-[1.08] font-semibold md:text-4xl">
+              {t('exercises.list.title')}
+            </h1>
             <p className="text-muted">{t('exercises.list.description')}</p>
           </div>
           <Button onClick={() => open({ exercise: 'new' })}>
@@ -87,18 +97,18 @@ export function ExerciseListPage() {
           </p>
         ) : null}
 
-        <div role="group" aria-label={t('exercises.list.tabsLabel')} className="flex gap-2">
+        <div
+          role="group"
+          aria-label={t('exercises.list.tabsLabel')}
+          className={SEGMENTED_GROUP_CLASS}
+        >
           {TABS.map((option) => (
             <button
               key={option}
               type="button"
               aria-pressed={tab === option}
               onClick={() => setTab(option)}
-              className={cn(
-                'flex min-h-11 items-center gap-2 rounded-lg px-4 text-sm font-medium',
-                'focus-visible:outline-primary-readable focus-visible:outline-2',
-                tab === option ? 'bg-primary text-on-primary' : 'bg-surface text-muted',
-              )}
+              className={segmentClassName(tab === option)}
             >
               {t(`exercises.list.tabs.${option}`)}
               {/* El espacio separa el número del nombre para los lectores de pantalla. */}{' '}

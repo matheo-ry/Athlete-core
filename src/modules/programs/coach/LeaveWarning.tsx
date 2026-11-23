@@ -27,7 +27,7 @@ export function LeaveWarning({ onStay, onLeave }: LeaveWarningProps) {
       ref={dialog}
       role="alertdialog"
       aria-labelledby={titleId}
-      className="bg-surface border-border fixed inset-x-4 bottom-24 z-50 mx-auto flex max-w-lg flex-col gap-2 rounded-lg border p-4 shadow-lg lg:bottom-8"
+      className="glass animate-rise fixed inset-x-3 bottom-[calc(5.5rem+var(--safe-bottom))] z-50 mx-auto flex max-w-lg flex-col gap-3 rounded-3xl p-4 lg:bottom-8"
     >
       <p id={titleId} className="font-semibold">
         {t('programs.editor.leaveTitle')}

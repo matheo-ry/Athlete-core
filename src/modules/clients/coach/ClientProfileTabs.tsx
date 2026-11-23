@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { cn } from '@/core/lib';
+import { SEGMENTED_GROUP_CLASS, segmentClassName } from '@/core/ui';
+
 import { ClientProfileTabContent } from '@/core/modules';
 import type { ClientProfileTab } from '@/core/modules';
 import type { TenantMember } from '@/core/tenancy';
@@ -22,18 +23,18 @@ export function ClientProfileTabs({ tabs, client }: ClientProfileTabsProps) {
 
   return (
     <div className="flex flex-col gap-4">
-      <div role="group" aria-label={t('clients.detail.tabsLabel')} className="flex flex-wrap gap-2">
+      <div
+        role="group"
+        aria-label={t('clients.detail.tabsLabel')}
+        className={SEGMENTED_GROUP_CLASS}
+      >
         {tabs.map((tab) => (
           <button
             key={tab.key}
             type="button"
             aria-pressed={tab === selected}
             onClick={() => setSelectedKey(tab.key)}
-            className={cn(
-              'flex min-h-11 items-center rounded-lg px-4 text-sm font-medium',
-              'focus-visible:outline-primary-readable focus-visible:outline-2',
-              tab === selected ? 'bg-primary text-on-primary' : 'bg-surface text-muted',
-            )}
+            className={segmentClassName(tab === selected)}
           >
             {t(tab.labelKey)}
           </button>

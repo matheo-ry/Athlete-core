@@ -18,8 +18,7 @@ interface BlockDurationProps {
 
 const SHORTCUTS = [1, 2, 4] as const;
 
-const CHIP =
-  'min-h-11 rounded-lg px-3 text-sm font-medium focus-visible:outline-primary-readable focus-visible:outline-2';
+const CHIP = 'min-h-11 rounded-xl px-3 text-sm font-medium focus-ring';
 
 /**
  * Cuánto dura un bloque (D-075): atajos de 1, 2 y 4 vueltas (semanas, si el

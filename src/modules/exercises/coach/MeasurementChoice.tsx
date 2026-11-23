@@ -31,7 +31,7 @@ export function MeasurementChoice({ value, onChange, error, disabled }: Measurem
       {MEASUREMENTS.map((option) => (
         <label
           key={option}
-          className="border-border flex min-h-11 cursor-pointer items-start gap-3 rounded-lg border px-3 py-2"
+          className="border-border flex min-h-11 cursor-pointer items-start gap-3 rounded-xl border px-3 py-2"
         >
           <input
             type="radio"

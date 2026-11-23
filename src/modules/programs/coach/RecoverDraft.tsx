@@ -15,7 +15,7 @@ export function RecoverDraft({ onRecover, onDiscard }: RecoverDraftProps) {
     <div
       role="region"
       aria-label={t('programs.editor.recoverTitle')}
-      className="border-primary flex flex-col gap-2 rounded-lg border-2 p-3"
+      className="border-primary flex flex-col gap-2 rounded-xl border-2 p-3"
     >
       <p className="font-semibold">{t('programs.editor.recoverTitle')}</p>
       <p className="text-sm">{t('programs.editor.recoverDescription')}</p>

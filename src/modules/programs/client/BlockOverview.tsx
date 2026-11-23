@@ -3,7 +3,7 @@ import { Link } from 'react-router';
 
 import { useLanguage } from '@/core/i18n';
 import { cn } from '@/core/lib';
-import { Card } from '@/core/ui';
+import { Card, Icon } from '@/core/ui';
 
 import type { ClientProgram } from '../model/assignments';
 import { localToday } from '../model/calendar';
@@ -19,7 +19,10 @@ interface BlockOverviewProps extends ClientBlock {
   today?: string;
 }
 
-/** "Hoy toca" y los días del bloque en que va el cliente (D-084). */
+/**
+ * "Hoy toca" y los días del bloque en que va el cliente (D-084): el de hoy,
+ * destacado con el color del coach; los de descanso, en segundo plano.
+ */
 export function BlockOverview({
   program,
   documentName,
@@ -41,45 +44,46 @@ export function BlockOverview({
     program.mode === 'list' ? block.days.filter((day) => day.kind === 'training') : block.days;
 
   return (
-    <div className="flex flex-col gap-4">
-      <p className="text-muted">{documentName}</p>
-      {todayDay === undefined ? null : (
-        <Card className="flex flex-col gap-1">
-          {todayDay.kind === 'rest' ? (
-            <p className="text-lg font-semibold">{t('programs.client.todayRest')}</p>
-          ) : (
-            <>
-              <p className="text-muted text-sm">{t('programs.client.todayIs')}</p>
-              <Link
-                to={`?day=${String(todayDay.dayNumber)}`}
-                className="focus-visible:outline-primary-readable rounded text-lg font-semibold underline-offset-4 hover:underline focus-visible:outline-2"
-              >
-                {[label(todayDay.dayNumber), todayDay.name]
-                  .filter((part) => part !== null)
-                  .join(' · ')}
-                {isRecovery ? ` ${t('programs.client.recoverSuffix')}` : null}
-              </Link>
-              <p className="text-sm">
-                {[
-                  todayDay.subtitle,
-                  todayDay.place,
-                  t('programs.editor.exercises', { count: dayCounts(todayDay).exercises }),
-                  t('programs.editor.sets', { count: dayCounts(todayDay).sets }),
-                ]
-                  .filter((part) => part !== null)
-                  .join(' · ')}
-              </p>
-            </>
-          )}
+    <div className="flex flex-col gap-5">
+      <p className="text-muted -mt-3 text-lg">{documentName}</p>
+      {todayDay === undefined ? null : todayDay.kind === 'rest' ? (
+        <Card className="flex items-center gap-4">
+          <span className="surface-raised text-muted flex size-12 shrink-0 items-center justify-center rounded-2xl">
+            <Icon name="moon" />
+          </span>
+          <p className="text-xl font-semibold tracking-tight">{t('programs.client.todayRest')}</p>
+        </Card>
+      ) : (
+        <Card tone="accent" className="flex flex-col gap-2 p-5">
+          <p className="eyebrow text-primary-readable">{t('programs.client.todayIs')}</p>
+          <Link
+            to={`?day=${String(todayDay.dayNumber)}`}
+            className="focus-ring rounded-md text-2xl leading-tight font-semibold tracking-tight underline-offset-4 hover:underline"
+          >
+            {[label(todayDay.dayNumber), todayDay.name].filter((part) => part !== null).join(' · ')}
+            {isRecovery ? ` ${t('programs.client.recoverSuffix')}` : null}
+          </Link>
+          <p className="numeric text-muted text-sm">
+            {[
+              todayDay.subtitle,
+              todayDay.place,
+              t('programs.editor.exercises', { count: dayCounts(todayDay).exercises }),
+              t('programs.editor.sets', { count: dayCounts(todayDay).sets }),
+            ]
+              .filter((part) => part !== null)
+              .join(' · ')}
+          </p>
         </Card>
       )}
 
-      <Card>
-        <h2 className="mb-2 font-semibold">
+      <section className="flex flex-col gap-3">
+        <h2 className="eyebrow">
           {program.mode === 'list' ? t('programs.client.trainingDays') : t('programs.client.days')}
         </h2>
-        <ul aria-label={t('programs.client.daysLabel')}>
+        <ul aria-label={t('programs.client.daysLabel')} className="flex flex-col gap-2">
           {days.map((day) => {
+            const isToday = day.dayNumber === todayNumber;
+            const isRest = day.kind === 'rest';
             const status =
               program.mode === 'calendar'
                 ? dayExecutionStatus(day, {
@@ -99,37 +103,53 @@ export function BlockOverview({
               status.kind === 'done_other_day'
                 ? t('programs.client.doneOnWeekday', { name: baseLabel, weekday: status.weekday })
                 : baseLabel;
-
             return (
-              <li key={day.dayNumber} className="border-border border-b last:border-b-0">
+              <li key={day.dayNumber}>
                 <Link
                   to={`?day=${String(day.dayNumber)}`}
-                  aria-current={day.dayNumber === todayNumber ? 'date' : undefined}
+                  aria-current={isToday ? 'date' : undefined}
                   className={cn(
-                    'flex min-h-14 flex-col justify-center rounded-lg px-2 py-2',
-                    'hover:bg-background focus-visible:outline-primary-readable focus-visible:outline-2',
-                    day.dayNumber === todayNumber ? 'bg-background' : null,
+                    'focus-ring group flex min-h-16 items-center gap-3 rounded-2xl px-4 py-3 transition-transform active:scale-[0.99]',
+                    isToday ? 'surface-accent' : isRest ? 'bg-foreground/4' : 'surface',
                   )}
                 >
-                  <span className="font-medium">
-                    {titleText}
-                    {day.dayNumber === todayNumber ? ` · ${t('programs.clientTab.today')}` : null}
-                    {status.kind === 'missed' ? ` · ${t('programs.client.missed')}` : null}
+                  <span className="flex min-w-0 flex-1 flex-col gap-0.5">
+                    <span className={cn('font-semibold', isRest && !isToday && 'text-muted')}>
+                      {titleText}
+                      {isToday ? (
+                        <span className="sr-only">{` · ${t('programs.clientTab.today')}`}</span>
+                      ) : null}
+                      {status.kind === 'missed' ? (
+                        <span className="text-danger">{` · ${t('programs.client.missed')}`}</span>
+                      ) : null}
+                    </span>
+                    <span className="text-muted text-sm">{summary(day)}</span>
                   </span>
-                  <span className={cn('text-sm', day.kind === 'rest' ? 'text-muted' : null)}>
-                    {summary(day)}
-                  </span>
+                  {isToday ? (
+                    <span
+                      aria-hidden="true"
+                      className="bg-primary size-2 shrink-0 rounded-full shadow-[0_0_10px_var(--color-primary-glow)]"
+                    />
+                  ) : null}
+                  {isRest ? (
+                    <Icon name="moon" className="text-muted size-4 shrink-0" />
+                  ) : (
+                    <Icon
+                      name="chevronRight"
+                      className="text-muted size-5 shrink-0 transition-transform group-hover:translate-x-0.5"
+                    />
+                  )}
                 </Link>
               </li>
             );
           })}
         </ul>
         {nextBlockStartsOn === null ? null : (
-          <p className="text-muted mt-3 text-sm">
+          <p className="text-muted text-sm">
             {t('programs.client.nextBlock', { date: shortDate(nextBlockStartsOn, language) })}
           </p>
         )}
-      </Card>
+      </section>
     </div>
   );
 }

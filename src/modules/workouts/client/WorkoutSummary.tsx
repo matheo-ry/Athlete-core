@@ -2,7 +2,8 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, useNavigate } from 'react-router';
 
-import { Button, Card } from '@/core/ui';
+import { cn } from '@/core/lib';
+import { Button, Icon } from '@/core/ui';
 import { useExerciseOptions } from '@/modules/exercises';
 
 import { useDiscardActiveWorkout } from '../api/useActiveWorkout';
@@ -11,10 +12,13 @@ import type { ActiveWorkout } from '../model/active-workout';
 import { SetsRing } from './SetsRing';
 import { useCloseWorkout } from './useCloseWorkout';
 
+/** Con más series que esto, la barra es continua: los segmentos ya no se distinguen. */
+const MAX_SEGMENTS = 36;
+
 /**
- * El resumen del día (D-120): cada ejercicio con su anillo de series hechas
- * ("1/3"), el total ("6/20 series"), "Terminar entreno" y "Descartar entreno"
- * con confirmación (D-119).
+ * El resumen del día (D-120): el total ("6/20 series") con una barra de una
+ * casilla por serie, cada ejercicio con su anillo ("1/3"), "Terminar entreno" y
+ * "Descartar entreno" con confirmación (D-119).
  */
 export function WorkoutSummary({ workout }: { workout: ActiveWorkout }) {
   const { t } = useTranslation();
@@ -23,41 +27,76 @@ export function WorkoutSummary({ workout }: { workout: ActiveWorkout }) {
   const total = setCounts(workout.exercises);
 
   return (
-    <div className="flex flex-col gap-4">
-      <header className="flex items-baseline justify-between gap-2">
-        <h1 className="text-xl font-semibold">{t('workouts.workout.title')}</h1>
-        <p className="font-semibold">{t('workouts.workout.totalSets', total)}</p>
+    <div className="flex flex-col gap-5">
+      <header className="flex flex-col gap-4">
+        <h1 className="text-3xl leading-[1.08] font-semibold">{t('workouts.workout.title')}</h1>
+        <div className="surface flex flex-col gap-3 rounded-3xl p-4">
+          <p className="numeric text-2xl font-medium">{t('workouts.workout.totalSets', total)}</p>
+          <SetsBar done={total.done} total={total.total} />
+        </div>
       </header>
-      <Card>
-        <ol aria-label={t('workouts.workout.exercisesLabel')}>
-          {workout.exercises.map((exercise) => {
-            const counts = setCounts([exercise]);
-            return (
-              <li key={exercise.id} className="border-border border-b last:border-b-0">
-                <Link
-                  to={`?exercise=${String(exercise.position)}`}
-                  className="hover:bg-background focus-visible:outline-primary-readable flex min-h-14 items-center gap-3 rounded-lg px-2 py-2 focus-visible:outline-2"
-                >
-                  <SetsRing done={counts.done} total={counts.total} />
-                  <span className="font-medium">
-                    {options.byId.get(exercise.exerciseId)?.name ?? '…'}
-                  </span>
-                </Link>
-              </li>
-            );
-          })}
-        </ol>
-      </Card>
-      <div className="flex flex-wrap gap-2">
-        <Button
-          variant="secondary"
-          disabled={closer.isPending}
-          onClick={() => void closer.close(workout, 'manual')}
-        >
-          {t('workouts.workout.finish')}
-        </Button>
-      </div>
+      <ol aria-label={t('workouts.workout.exercisesLabel')} className="flex flex-col gap-2">
+        {workout.exercises.map((exercise) => {
+          const counts = setCounts([exercise]);
+          return (
+            <li key={exercise.id}>
+              <Link
+                to={`?exercise=${String(exercise.position)}`}
+                className="surface focus-ring group flex min-h-16 items-center gap-3 rounded-2xl px-3 py-2 transition-transform active:scale-[0.99]"
+              >
+                <SetsRing done={counts.done} total={counts.total} />
+                <span className="min-w-0 flex-1 font-medium">
+                  {options.byId.get(exercise.exerciseId)?.name ?? '…'}
+                </span>
+                <Icon
+                  name="chevronRight"
+                  className="text-muted size-5 shrink-0 transition-transform group-hover:translate-x-0.5"
+                />
+              </Link>
+            </li>
+          );
+        })}
+      </ol>
+      <Button
+        variant="secondary"
+        size="lg"
+        className="w-full"
+        disabled={closer.isPending}
+        onClick={() => void closer.close(workout, 'manual')}
+      >
+        {t('workouts.workout.finish')}
+      </Button>
       <DiscardWorkout workout={workout} />
+    </div>
+  );
+}
+
+/** Una casilla por serie, encendidas las hechas: el entreno de un vistazo. */
+function SetsBar({ done, total }: { done: number; total: number }) {
+  if (total === 0) {
+    return null;
+  }
+  if (total > MAX_SEGMENTS) {
+    return (
+      <div aria-hidden="true" className="bg-foreground/10 h-2 overflow-hidden rounded-full">
+        <div
+          className="bg-primary h-full rounded-full transition-[width] duration-500"
+          style={{ width: `${String((done / total) * 100)}%` }}
+        />
+      </div>
+    );
+  }
+  return (
+    <div aria-hidden="true" className="flex gap-[3px]">
+      {Array.from({ length: total }, (_, index) => (
+        <span
+          key={index}
+          className={cn(
+            'h-2.5 flex-1 rounded-[3px] transition-colors duration-300',
+            index < done ? 'bg-primary' : 'bg-foreground/10',
+          )}
+        />
+      ))}
     </div>
   );
 }
@@ -71,16 +110,24 @@ function DiscardWorkout({ workout }: { workout: ActiveWorkout }) {
 
   if (!isConfirming) {
     return (
-      <Button variant="ghost" className="self-start" onClick={() => setIsConfirming(true)}>
+      <button
+        type="button"
+        className="focus-ring text-muted hover:text-danger min-h-11 self-center rounded-full px-5 text-sm font-semibold transition-colors"
+        onClick={() => setIsConfirming(true)}
+      >
         {t('workouts.discard.button')}
-      </Button>
+      </button>
     );
   }
   return (
-    <div role="alert" className="border-border flex flex-col gap-2 rounded-lg border p-3">
-      <p className="text-sm">{t('workouts.discard.confirm')}</p>
+    <div
+      role="alert"
+      className="border-danger/40 bg-danger-soft animate-rise flex flex-col gap-3 rounded-3xl border p-4"
+    >
+      <p className="text-sm leading-6">{t('workouts.discard.confirm')}</p>
       <div className="flex flex-wrap gap-2">
         <Button
+          variant="danger"
           disabled={discard.isPending}
           onClick={() => {
             void discard.mutateAsync(workout).then(() => navigate('/client', { replace: true }));

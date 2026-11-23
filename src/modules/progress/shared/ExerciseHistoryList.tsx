@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 
 import { useLanguage } from '@/core/i18n';
 import { formatDate } from '@/core/lib';
-import { buttonClassName } from '@/core/ui';
+import { Icon } from '@/core/ui';
 
 import type { ExerciseSessionHistory } from '../model/exercise-history';
 
@@ -19,40 +19,41 @@ export function ExerciseHistoryList({ exerciseId, history }: ExerciseHistoryList
   const [open, setOpen] = useState(true);
 
   return (
-    <div className="flex flex-col gap-2 border-t border-border pt-2">
-      <div className="flex items-center justify-between">
-        <span className="text-xs font-semibold tracking-wider text-muted uppercase">
+    <div className="border-border flex flex-col gap-2 border-t pt-3">
+      <div className="flex items-center justify-between gap-2">
+        <span className="eyebrow">
           {t('progress.history.title')} ({history.length})
         </span>
         <button
           type="button"
           aria-expanded={open}
           onClick={() => setOpen((prev) => !prev)}
-          className={buttonClassName('ghost', 'px-2 text-xs')}
+          className="focus-ring text-muted hover:text-foreground min-h-11 rounded-full px-3 text-xs font-semibold transition-colors"
         >
           {open ? t('progress.history.hideHistory') : t('progress.history.showHistory')}
         </button>
       </div>
 
       {open ? (
-        <ul className="flex flex-col gap-2 font-mono text-sm" data-testid={`history-${exerciseId}`}>
+        <ul className="flex flex-col gap-1.5" data-testid={`history-${exerciseId}`}>
           {history.map((sess) => (
             <li
               key={`${sess.workoutId}-${sess.sessionNumber}`}
-              className="flex flex-col gap-1 rounded border border-border bg-background p-2"
+              className="bg-background/60 border-border flex flex-col gap-1.5 rounded-xl border px-3 py-2.5"
             >
-              <div className="flex flex-wrap items-baseline justify-between gap-2">
-                <div className="flex items-baseline gap-2">
-                  <span className="font-bold text-foreground">{sess.label}: </span>
+              <div className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
+                <div className="numeric flex items-baseline gap-2 text-sm">
+                  <span className="text-muted font-medium">{sess.label}: </span>
                   <span className="text-foreground">{sess.setsText}</span>
                 </div>
-                <div className="flex items-center gap-2 font-sans text-xs text-muted">
+                <div className="text-muted flex items-center gap-2 text-xs">
                   {sess.hasNote ? (
                     <span
-                      className="inline-flex items-center gap-1 font-medium text-primary-readable"
+                      className="text-primary-readable inline-flex items-center gap-1 font-medium"
                       data-testid="note-mark"
                     >
-                      <span aria-hidden="true">📝</span> {t('progress.history.note')}
+                      <Icon name="note" className="size-3.5" />
+                      {t('progress.history.note')}
                     </span>
                   ) : null}
                   <span>{formatDate(sess.performedOn, language)}</span>
@@ -60,12 +61,12 @@ export function ExerciseHistoryList({ exerciseId, history }: ExerciseHistoryList
               </div>
 
               {sess.hasNote && sess.dayNote ? (
-                <div
-                  className="mt-1 rounded border-l-2 border-primary bg-surface px-2 py-1 font-sans text-xs text-muted italic"
+                <p
+                  className="border-accent text-muted border-l-2 pl-2.5 text-sm leading-6"
                   data-testid="session-note"
                 >
-                  "{sess.dayNote}"
-                </div>
+                  “{sess.dayNote}”
+                </p>
               ) : null}
             </li>
           ))}

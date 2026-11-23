@@ -16,8 +16,8 @@ function riseDelay(index: number): CSSProperties {
 }
 
 /**
- * Inicio del cliente: la fecha de hoy, su coach y las tarjetas que aportan los
- * módulos activos, como "Hoy toca" (PR 2.18).
+ * Inicio del cliente: la fecha de hoy, primero las tarjetas que aportan los
+ * módulos activos, como "Hoy toca" (PR 2.18), y al final su coach.
  */
 export function ClientHomePage() {
   const { t, i18n } = useTranslation();
@@ -32,8 +32,17 @@ export function ClientHomePage() {
         title={t('app.clientHome.title')}
         description={t('app.clientHome.description')}
       />
+      {cards.map((card, index) => (
+        <div key={card.key} className="animate-rise" style={riseDelay(index)}>
+          <HomeCardContent card={card} />
+        </div>
+      ))}
       {tenant ? (
-        <Card tone="raised" className="animate-rise flex items-center gap-4" style={riseDelay(0)}>
+        <Card
+          tone="raised"
+          className="animate-rise flex items-center gap-4"
+          style={riseDelay(cards.length + 1)}
+        >
           <BrandBadge brand={brand} />
           <div className="min-w-0">
             <p className="eyebrow">{t('app.clientHome.coachLabel')}</p>
@@ -41,11 +50,6 @@ export function ClientHomePage() {
           </div>
         </Card>
       ) : null}
-      {cards.map((card, index) => (
-        <div key={card.key} className="animate-rise" style={riseDelay(index + 1)}>
-          <HomeCardContent card={card} />
-        </div>
-      ))}
     </section>
   );
 }

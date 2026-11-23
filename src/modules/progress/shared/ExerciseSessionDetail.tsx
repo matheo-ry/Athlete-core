@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useLanguage } from '@/core/i18n';
 import { formatDate, formatWeight } from '@/core/lib';
 import type { WeightUnit } from '@/core/lib';
+import { Icon } from '@/core/ui';
 
 import type { ExerciseSessionHistory } from '../model/exercise-history';
 import type { ExerciseChartMetric } from '../model/progress-charts';
@@ -27,28 +28,28 @@ export function ExerciseSessionDetail({ session, metric, unit }: ExerciseSession
 
   return (
     <div
-      className="flex flex-col gap-2 rounded-lg border border-border bg-background p-3"
+      className="surface-raised flex flex-col gap-2.5 rounded-2xl p-3.5"
       data-testid="selected-workout-detail"
     >
-      <div className="flex items-center justify-between gap-2 border-b border-border pb-1.5">
-        <div className="flex items-center gap-2">
-          <span className="text-sm font-bold text-foreground">{session.label}</span>
-          <span className="text-xs text-muted">{formatDate(session.performedOn, language)}</span>
+      <div className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
+        <div className="flex items-baseline gap-2">
+          <span className="text-sm font-semibold">{session.label}</span>
+          <span className="text-muted text-xs">{formatDate(session.performedOn, language)}</span>
         </div>
         {metricText ? (
-          <span className="font-mono text-xs font-bold text-primary-readable">{metricText}</span>
+          <span className="numeric text-primary-readable text-xs font-medium">{metricText}</span>
         ) : null}
       </div>
 
-      <div className="font-mono text-sm text-foreground">{session.setsText}</div>
+      <div className="numeric text-base">{session.setsText}</div>
 
       {session.dayNote ? (
         <div
-          className="mt-1 flex items-start gap-1.5 border-l-2 border-primary py-0.5 pl-2.5 text-xs text-muted italic"
+          className="border-accent text-muted flex items-start gap-2 border-l-2 pl-2.5 text-sm leading-6"
           data-testid="selected-session-note"
         >
-          <span aria-hidden="true">📝</span>
-          <span>"{session.dayNote}"</span>
+          <Icon name="note" className="mt-1 size-3.5 shrink-0" />
+          <span>“{session.dayNote}”</span>
         </div>
       ) : null}
     </div>

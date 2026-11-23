@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import type { WeightUnit } from '@/core/lib';
-import { Button, EmptyState, ErrorState, Icon, Spinner } from '@/core/ui';
+import { Button, EmptyState, ErrorState, Icon, Pill, Spinner } from '@/core/ui';
 
 import { useExportWorkoutsExcel } from '../api/useExportWorkoutsExcel';
 import type { ProgramProgressGroup, RawWorkout } from '../model/exercise-history';
@@ -58,7 +58,7 @@ export function ProgressView({
   return (
     <div className="flex flex-col gap-6">
       {/* Ejercicios o Peso y medidas + Botón Descargar Excel (D-131, D-150) */}
-      <div className="flex flex-col gap-2 border-b border-border pb-2">
+      <div className="flex flex-col gap-2">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <ChoiceChips
             label={t('progress.title')}
@@ -77,7 +77,6 @@ export function ProgressView({
             onClick={handleExportExcel}
             disabled={isExporting}
             data-testid="download-excel-btn"
-            className="min-h-11 inline-flex items-center gap-2 text-sm font-medium"
           >
             <Icon name="download" className="size-4" />
             <span>
@@ -115,20 +114,14 @@ export function ProgressView({
             .filter((group) => group.exercises.length > 0)
             .map((group) => (
               <section key={group.programId} className="flex flex-col gap-3">
-                <header className="flex items-center gap-2 border-b border-border pb-2">
-                  <h2 className="text-xl font-bold">{group.programName}</h2>
-                  <span
-                    className={`rounded-full px-2 py-0.5 text-xs font-medium ${
-                      group.isCurrent
-                        ? 'bg-primary/10 text-primary-readable'
-                        : 'border border-border text-muted'
-                    }`}
-                  >
+                <header className="flex flex-wrap items-center gap-2">
+                  <h2 className="text-2xl leading-tight font-semibold">{group.programName}</h2>
+                  <Pill tone={group.isCurrent ? 'primary' : 'neutral'}>
                     {group.isCurrent ? t('progress.routine.current') : t('progress.routine.past')}
-                  </span>
+                  </Pill>
                 </header>
 
-                <div className="flex flex-col gap-4">
+                <div className="flex flex-col gap-3">
                   {group.exercises.map((exercise) => (
                     <ExerciseProgressCard
                       key={exercise.exerciseId}

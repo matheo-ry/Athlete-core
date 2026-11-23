@@ -69,7 +69,7 @@ function Settings({
       <label className="flex flex-col gap-1.5">
         <span className="text-sm font-medium">{t('app.training.defaultRest')}</span>
         <select
-          className="border-border bg-surface min-h-11 rounded-lg border px-3"
+          className="bg-background border-border-strong focus-ring min-h-12 rounded-xl border px-4 text-base"
           value={profile.defaultRestSeconds}
           onChange={(event) => {
             onChange({ defaultRestSeconds: Number(event.target.value) });
@@ -105,7 +105,7 @@ function Settings({
       />
       <div role="group" aria-label={t('app.training.sameLabel')} className="flex flex-col gap-1.5">
         <span className="text-sm font-medium">{t('app.training.sameLabel')}</span>
-        <div className="flex flex-wrap gap-2">
+        <div className="bg-foreground/6 grid gap-1 rounded-2xl p-1">
           {SAME_BUTTON_MODES.map((mode) => (
             <button
               key={mode}
@@ -115,11 +115,10 @@ function Settings({
                 onChange({ sameButton: mode });
               }}
               className={cn(
-                'min-h-11 rounded-lg px-4 text-sm font-medium',
-                'focus-visible:outline-primary-readable focus-visible:outline-2',
+                'focus-ring min-h-11 rounded-xl px-4 text-left text-sm font-semibold transition-colors',
                 profile.sameButton === mode
                   ? 'bg-primary text-on-primary'
-                  : 'bg-surface text-muted',
+                  : 'text-muted hover:text-foreground',
               )}
             >
               {t(SAME_LABEL_KEYS[mode])}
@@ -148,17 +147,22 @@ function Toggle({
       onClick={() => {
         onChange(!value);
       }}
-      className="focus-visible:outline-primary-readable flex min-h-11 items-center justify-between gap-3 text-left text-sm font-medium focus-visible:outline-2"
+      className="focus-ring flex min-h-11 items-center justify-between gap-3 rounded-lg text-left text-sm font-medium"
     >
       <span>{label}</span>
       <span
         aria-hidden="true"
         className={cn(
-          'flex h-6 w-11 shrink-0 items-center rounded-full p-0.5',
-          value ? 'bg-primary justify-end' : 'bg-border justify-start',
+          'relative h-7 w-12 shrink-0 rounded-full transition-colors duration-200',
+          value ? 'bg-primary' : 'bg-border-strong',
         )}
       >
-        <span className="bg-surface h-5 w-5 rounded-full" />
+        <span
+          className={cn(
+            'bg-raised absolute top-0.5 left-0.5 size-6 rounded-full shadow-md transition-transform duration-200 ease-[var(--ease-spring)]',
+            value && 'translate-x-5',
+          )}
+        />
       </span>
     </button>
   );

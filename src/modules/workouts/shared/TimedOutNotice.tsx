@@ -18,12 +18,12 @@ export function TimedOutNotice() {
   return (
     <div
       role="status"
-      className="bg-surface border-border fixed inset-x-4 top-[calc(5.5rem+var(--safe-top))] z-50 mx-auto flex max-w-lg flex-col gap-2 rounded-lg border p-4 shadow-lg"
+      className="glass animate-rise fixed inset-x-3 top-[calc(5rem+var(--safe-top))] z-50 mx-auto flex max-w-md items-center justify-between gap-3 rounded-3xl p-3 pl-5"
     >
       <p className="text-sm font-semibold">
         {t('workouts.timeout.saved', { day: weekdayName(notice.data.lastChangedAt, language) })}
       </p>
-      <div>
+      <div className="shrink-0">
         <Button
           onClick={() => {
             setNotice.mutate(null);

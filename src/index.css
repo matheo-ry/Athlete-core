@@ -190,6 +190,14 @@
   color: var(--brand-muted);
 }
 
+/* Desplazable sin barra a la vista (chips que no caben en el móvil). */
+@utility no-scrollbar {
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
 /* Cifras: monoespaciadas, con los dígitos a igual ancho. */
 @utility numeric {
   font-family: var(--font-mono);

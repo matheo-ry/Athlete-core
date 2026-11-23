@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { useLanguage } from '@/core/i18n';
 import { formatDate, formatWeight } from '@/core/lib';
 import type { WeightUnit } from '@/core/lib';
-import { Card, LineChart } from '@/core/ui';
+import { Card, Icon, LineChart, Pill } from '@/core/ui';
 import type { ChartPoint } from '@/core/ui';
 
 import type { ExerciseProgressItem, ExerciseSessionHistory } from '../model/exercise-history';
@@ -17,6 +17,7 @@ import type { ExerciseChartMetric, ProgressPeriod } from '../model/progress-char
 import { ChoiceChips } from './ChoiceChips';
 import { ExerciseHistoryList } from './ExerciseHistoryList';
 import { ExerciseSessionDetail } from './ExerciseSessionDetail';
+import { ProgressStat } from './ProgressStat';
 import { usePeriodOptions } from './usePeriodOptions';
 
 interface ExerciseProgressCardProps {
@@ -90,36 +91,52 @@ export function ExerciseProgressCard({ exercise, unit, referenceDate }: Exercise
     );
   }
 
-  let pctClass = 'text-foreground';
-  if (rmProgressPct !== null && rmProgressPct > 0) pctClass = 'text-primary-readable';
-  if (rmProgressPct !== null && rmProgressPct < 0) pctClass = 'text-accent';
+  const pctTone =
+    rmProgressPct !== null && rmProgressPct > 0
+      ? 'up'
+      : rmProgressPct !== null && rmProgressPct < 0
+        ? 'down'
+        : 'neutral';
 
   return (
-    <Card className="flex flex-col gap-4 p-4" data-testid={`exercise-card-${exercise.exerciseId}`}>
-      <header className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-        <div className="flex items-center gap-2">
-          <h3 className="text-base font-bold text-foreground">{exercise.displayName}</h3>
-          {exercise.isUnilateral ? (
-            <span className="rounded-full border border-border px-2 py-0.5 text-xs font-medium text-muted">
-              {t('progress.exercise.unilateral')}
-            </span>
-          ) : null}
+    <Card className="flex flex-col gap-4" data-testid={`exercise-card-${exercise.exerciseId}`}>
+      <header className="flex flex-col gap-2">
+        <div className="flex flex-wrap items-center gap-2">
+          <h3 className="text-lg leading-tight font-semibold">{exercise.displayName}</h3>
+          {exercise.isUnilateral ? <Pill>{t('progress.exercise.unilateral')}</Pill> : null}
         </div>
-
         {recordParts.length > 0 ? (
-          <div className="flex items-center gap-1.5" data-testid={`record-${exercise.exerciseId}`}>
-            <span className="inline-flex items-center rounded-full border border-border bg-background px-2.5 py-0.5 text-xs font-semibold">
-              <span className="mr-1 font-bold text-primary-readable">
-                <span aria-hidden="true">★ </span>
-                {t('progress.stats.record')}:
-              </span>
-              {recordParts.join(' · ')}
+          <p
+            className="text-muted flex items-start gap-1.5 text-sm"
+            data-testid={`record-${exercise.exerciseId}`}
+          >
+            <Icon name="trophy" className="text-accent mt-0.5 size-4 shrink-0" />
+            <span>
+              <span className="text-foreground font-semibold">{t('progress.stats.record')}:</span>{' '}
+              <span className="numeric">{recordParts.join(' · ')}</span>
             </span>
-          </div>
+          </p>
         ) : null}
       </header>
 
-      <div className="flex flex-wrap items-center justify-between gap-2 border-y border-border py-2">
+      <div className="grid grid-cols-2 gap-2">
+        <ProgressStat label={t('progress.stats.last')}>
+          {selectedSession?.maxRm != null
+            ? formatWeight(selectedSession.maxRm, unit, language)
+            : '—'}
+        </ProgressStat>
+        <ProgressStat
+          label={t('progress.stats.progressRm')}
+          tone={pctTone}
+          testId="rm-progress-badge"
+        >
+          {rmProgressPct !== null
+            ? `${rmProgressPct > 0 ? '+' : ''}${String(rmProgressPct)} %`
+            : '—'}
+        </ProgressStat>
+      </div>
+
+      <div className="flex flex-col gap-2">
         <ChoiceChips
           label={t('progress.metric.label')}
           options={metricOptions}
@@ -139,28 +156,6 @@ export function ExerciseProgressCard({ exercise, unit, referenceDate }: Exercise
         />
       </div>
 
-      <div className="flex flex-wrap items-center gap-4 text-sm font-medium">
-        {selectedSession?.maxRm != null ? (
-          <div className="flex items-center gap-1">
-            <span className="text-muted">{t('progress.stats.last')}:</span>
-            <span className="font-bold text-foreground">
-              {formatWeight(selectedSession.maxRm, unit, language)}
-            </span>
-          </div>
-        ) : null}
-
-        <div className="flex items-center gap-1.5" data-testid="rm-progress-badge">
-          <span className="text-muted">{t('progress.stats.progressRm')}:</span>
-          {rmProgressPct !== null ? (
-            <span className={`font-bold ${pctClass}`}>
-              {rmProgressPct > 0 ? `+${rmProgressPct}` : rmProgressPct} %
-            </span>
-          ) : (
-            <span className="text-muted">—</span>
-          )}
-        </div>
-      </div>
-
       <div className="flex flex-col gap-1">
         <LineChart
           data={chartPoints}
@@ -170,7 +165,7 @@ export function ExerciseProgressCard({ exercise, unit, referenceDate }: Exercise
           emptyMessage={t('progress.chart.empty')}
           ariaLabel={`${exercise.displayName}: ${metricOptions.find((o) => o.key === metric)?.label ?? ''}`}
         />
-        <p className="text-center text-xs text-muted italic">{t('progress.chart.tapHint')}</p>
+        <p className="text-muted text-center text-xs">{t('progress.chart.tapHint')}</p>
       </div>
 
       {selectedSession ? (

@@ -23,6 +23,7 @@ import {
 } from '../model/progress-charts';
 import type { ProgressPeriod } from '../model/progress-charts';
 import { ChoiceChips } from './ChoiceChips';
+import { ProgressStat } from './ProgressStat';
 import type { ChoiceOption } from './ChoiceChips';
 import { usePeriodOptions } from './usePeriodOptions';
 
@@ -53,8 +54,8 @@ export function HealthProgressSection({
   // protege los datos es el RLS de body_weights y body_measurements.
   if (!query.data.hasConsent) {
     return (
-      <Card className="p-4">
-        <p className="text-sm text-muted" data-testid="no-health-consent-msg">
+      <Card>
+        <p className="text-muted text-sm leading-6" data-testid="no-health-consent-msg">
           {isCoach ? t('progress.health.noConsentCoach') : t('progress.health.noConsentClient')}
         </p>
       </Card>
@@ -132,10 +133,21 @@ function HealthCharts({ data, unit, referenceDate }: HealthChartsProps) {
     metricOptions.find((o) => o.key === metric)?.label ?? t('progress.health.measurements');
 
   return (
-    <Card className="flex flex-col gap-4 p-4" data-testid="health-progress-card">
-      <h2 className="text-lg font-bold text-foreground">{t('progress.health.title')}</h2>
+    <Card className="flex flex-col gap-4" data-testid="health-progress-card">
+      <h2 className="text-lg leading-tight font-semibold">{t('progress.health.title')}</h2>
 
-      <div className="flex flex-wrap items-center justify-between gap-3 border-y border-border py-2">
+      {summary ? (
+        <div className="grid grid-cols-2 gap-2">
+          <ProgressStat label={t('progress.stats.last')}>{summary.last}</ProgressStat>
+          {summary.change !== null ? (
+            <ProgressStat label={t('progress.health.change')} tone="up" testId="health-diff-stat">
+              {summary.change}
+            </ProgressStat>
+          ) : null}
+        </div>
+      ) : null}
+
+      <div className="flex flex-col gap-2">
         <ChoiceChips
           label={t('progress.metric.label')}
           options={metricOptions}
@@ -152,21 +164,6 @@ function HealthCharts({ data, unit, referenceDate }: HealthChartsProps) {
         />
       </div>
 
-      {summary ? (
-        <div className="flex flex-wrap items-center gap-4 text-sm font-medium">
-          <div className="flex items-center gap-1">
-            <span className="text-muted">{t('progress.stats.last')}:</span>
-            <span className="font-bold text-foreground">{summary.last}</span>
-          </div>
-          {summary.change !== null ? (
-            <div className="flex items-center gap-1" data-testid="health-diff-stat">
-              <span className="text-muted">{t('progress.health.change')}:</span>
-              <span className="font-bold text-primary-readable">{summary.change}</span>
-            </div>
-          ) : null}
-        </div>
-      ) : null}
-
       <div className="flex flex-col gap-1">
         <LineChart
           data={points}
@@ -174,7 +171,7 @@ function HealthCharts({ data, unit, referenceDate }: HealthChartsProps) {
           emptyMessage={t('progress.chart.empty')}
           ariaLabel={metricLabel}
         />
-        <p className="text-center text-xs text-muted italic">{t('progress.chart.tapHint')}</p>
+        <p className="text-muted text-center text-xs">{t('progress.chart.tapHint')}</p>
       </div>
     </Card>
   );

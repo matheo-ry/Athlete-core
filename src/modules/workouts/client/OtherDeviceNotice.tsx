@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next';
 
-import { Button, Card } from '@/core/ui';
+import { Button, Card, Icon } from '@/core/ui';
 
 import { useSaveActiveWorkout } from '../api/useActiveWorkout';
 import { useExerciseInfo } from '../api/useStartWorkout';
@@ -24,11 +24,15 @@ export function OtherDeviceNotice({
   const { exerciseInfo, isPending } = useExerciseInfo();
 
   return (
-    <Card role="alert" className="flex flex-col gap-3">
-      <p className="font-semibold">{t('workouts.device.elsewhere')}</p>
-      {save.isError ? <p className="text-sm">{t('workouts.device.error')}</p> : null}
+    <Card tone="raised" role="alert" className="flex flex-col gap-4 p-5">
+      <p className="flex items-start gap-3 text-lg font-semibold">
+        <Icon name="smartphone" className="text-primary-readable mt-1 size-5 shrink-0" />
+        {t('workouts.device.elsewhere')}
+      </p>
+      {save.isError ? <p className="text-danger text-sm">{t('workouts.device.error')}</p> : null}
       <Button
-        className="self-start"
+        size="lg"
+        className="w-full"
         disabled={isPending || save.isPending}
         onClick={() => {
           save.mutate(

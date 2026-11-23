@@ -1,17 +1,21 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { cn } from '@/core/lib';
+import { Icon } from '@/core/ui';
+
 import { stepValue } from '../model/active-workout';
 
 interface StepperFieldProps {
   label: string;
   value: number | null;
-  /** Lo que se enseña si aún no hay nada apuntado: lo prescrito (y, en el PR 3.5b, la vez anterior). */
+  /** Lo que se enseña si aún no hay nada apuntado: la vez anterior o lo prescrito. */
   placeholder: number | null;
   step: number;
   max: number;
   decimals: boolean;
   onChange: (value: number) => void;
+  className?: string;
 }
 
 /** Lo que se escribe con el teclado: coma o punto, según la costumbre de cada uno. */
@@ -24,13 +28,18 @@ function parseNumber(text: string, decimals: boolean): number | null {
   return decimals ? value : Math.round(value);
 }
 
+const STEP_BUTTON =
+  'focus-ring text-muted hover:text-foreground hover:bg-foreground/8 flex size-11 shrink-0 ' +
+  'items-center justify-center rounded-xl transition-[transform,background-color] active:scale-90';
+
 /**
- * Un dato de una serie (D-120): − y + grandes (44 px o más) y, al tocar el
- * número, el teclado del móvil.
+ * Un dato de una serie (D-120): una baldosa con su etiqueta, − y + de 44 px y,
+ * en medio, la cifra grande; al tocarla, el teclado del móvil. Lo de referencia
+ * se ve atenuado hasta que se apunta algo.
  */
 export function StepperField(props: StepperFieldProps) {
   const { t } = useTranslation();
-  const { label, value, placeholder, step, max, decimals, onChange } = props;
+  const { label, value, placeholder, step, max, decimals, onChange, className } = props;
   // Lo que se está escribiendo; vacío mientras no se escribe (manda `value`).
   const [draft, setDraft] = useState<string | null>(null);
   const base = value ?? placeholder ?? 0;
@@ -48,23 +57,28 @@ export function StepperField(props: StepperFieldProps) {
   };
 
   return (
-    <div className="flex flex-col items-center gap-1">
-      <span className="text-muted text-xs">{label}</span>
-      <div className="flex items-center gap-1">
+    <div
+      className={cn(
+        'bg-background/70 border-border flex min-w-0 flex-col gap-0.5 rounded-2xl border p-1',
+        className,
+      )}
+    >
+      <span className="eyebrow truncate px-2 pt-1.5">{label}</span>
+      <div className="flex items-center">
         <button
           type="button"
-          className="border-border bg-surface h-11 w-11 rounded-lg border text-xl font-semibold"
+          className={STEP_BUTTON}
           aria-label={t('workouts.set.decrease', { field: label })}
           onClick={() => {
             bump(-1);
           }}
         >
-          −
+          <Icon name="minus" className="size-5" />
         </button>
         <input
           aria-label={label}
           inputMode={decimals ? 'decimal' : 'numeric'}
-          className="border-border bg-background h-11 w-16 rounded-lg border text-center text-lg font-semibold"
+          className="numeric text-foreground placeholder:text-muted/45 h-11 w-full min-w-0 flex-1 rounded-lg bg-transparent text-center text-2xl font-medium outline-none focus-visible:bg-foreground/5"
           value={draft ?? (value === null ? '' : String(value))}
           placeholder={placeholder === null ? '' : String(placeholder)}
           onFocus={(event) => {
@@ -85,13 +99,13 @@ export function StepperField(props: StepperFieldProps) {
         />
         <button
           type="button"
-          className="border-border bg-surface h-11 w-11 rounded-lg border text-xl font-semibold"
+          className={STEP_BUTTON}
           aria-label={t('workouts.set.increase', { field: label })}
           onClick={() => {
             bump(1);
           }}
         >
-          +
+          <Icon name="plus" className="size-5" />
         </button>
       </div>
     </div>

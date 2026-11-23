@@ -1,5 +1,7 @@
 import { useTranslation } from 'react-i18next';
 
+import { PageHeader } from '@/core/ui';
+
 import { AccountSection } from '../AccountSection';
 import { MySpacesSection } from '../MySpacesSection';
 import { TrainingSettingsSection } from '../TrainingSettingsSection';
@@ -12,10 +14,8 @@ export function ClientProfilePage() {
   const { t } = useTranslation();
 
   return (
-    <section className="flex flex-col gap-4">
-      <header>
-        <h1 className="text-2xl font-bold">{t('app.clientProfile.title')}</h1>
-      </header>
+    <section className="flex flex-col gap-5">
+      <PageHeader title={t('app.clientProfile.title')} />
       <MySpacesSection />
       <TrainingSettingsSection />
       <AccountSection />

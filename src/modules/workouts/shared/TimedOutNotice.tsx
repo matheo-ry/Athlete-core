@@ -18,7 +18,7 @@ export function TimedOutNotice() {
   return (
     <div
       role="status"
-      className="bg-surface border-border fixed inset-x-4 top-[calc(5.5rem+var(--safe-top))] z-50 mx-auto flex max-w-lg flex-col gap-2 rounded-lg border p-4 shadow-lg"
+      className="glass-float animate-enter fixed inset-x-4 top-[calc(5rem+var(--safe-top))] z-50 mx-auto flex max-w-lg flex-col gap-3 rounded-[1.6rem] p-5"
     >
       <p className="text-sm font-semibold">
         {t('workouts.timeout.saved', { day: weekdayName(notice.data.lastChangedAt, language) })}

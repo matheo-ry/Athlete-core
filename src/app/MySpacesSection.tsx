@@ -21,13 +21,13 @@ export function MySpacesSection() {
   return (
     <Card>
       <div className="flex flex-col gap-4">
-        <h2 className="text-lg font-semibold">{t('app.spaces.title')}</h2>
+        <h2 className="display text-[1.6rem]">{t('app.spaces.title')}</h2>
         <SpaceList
           spaces={sortedSpaces(memberships)}
           currentTenantId={tenancy.tenant?.id ?? null}
           onChoose={choose}
         />
-        <div className="flex flex-col gap-2">
+        <div className="grid gap-2 sm:grid-cols-2">
           <Link to="/join" className={buttonClassName('secondary')}>
             {t('app.spaces.addCoach')}
           </Link>

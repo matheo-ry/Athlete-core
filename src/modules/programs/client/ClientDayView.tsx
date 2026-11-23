@@ -2,7 +2,7 @@ import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router';
 
 import { canLogWorkouts } from '@/core/native';
-import { Card, EmptyState, buttonClassName } from '@/core/ui';
+import { BackLink, Card, EmptyState, ROW_LINK_CLASS, buttonClassName } from '@/core/ui';
 import { useExerciseOptions } from '@/modules/exercises';
 
 import type { ClientProgram } from '../model/assignments';
@@ -33,11 +33,7 @@ export function ClientDayView({ program, document, today, dayNumber }: ClientDay
   const options = useExerciseOptions();
   const day = block?.days.find((item) => item.dayNumber === dayNumber);
 
-  const back = (
-    <Link to="?" className={buttonClassName('ghost', 'self-start')}>
-      {t('programs.client.backToProgram')}
-    </Link>
-  );
+  const back = <BackLink to="?">{t('programs.client.backToProgram')}</BackLink>;
   if (day === undefined) {
     return (
       <div className="flex flex-col gap-4">
@@ -48,21 +44,21 @@ export function ClientDayView({ program, document, today, dayNumber }: ClientDay
   }
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-5">
       {back}
-      <header>
-        <h2 className="text-xl font-semibold">
-          {[label(day.dayNumber), day.name].filter((part) => part !== null).join(' · ')}
-        </h2>
+      <header className="animate-enter flex flex-col gap-2">
         {day.subtitle === null && day.place === null ? null : (
-          <p className="text-muted">
+          <p className="eyebrow text-muted">
             {[day.subtitle, day.place].filter((part) => part !== null).join(' · ')}
           </p>
         )}
+        <h2 className="display text-[2.4rem] break-words">
+          {[label(day.dayNumber), day.name].filter((part) => part !== null).join(' · ')}
+        </h2>
       </header>
       {day.kind === 'rest' ? (
         <Card>
-          <p>{t('programs.client.restDay')}</p>
+          <p className="display text-2xl">{t('programs.client.restDay')}</p>
         </Card>
       ) : (
         <>
@@ -70,27 +66,41 @@ export function ClientDayView({ program, document, today, dayNumber }: ClientDay
           {canLogWorkouts() ? (
             <Link
               to={`/client/workout?day=${String(day.dayNumber)}`}
-              className={buttonClassName('primary', 'self-start')}
+              className={buttonClassName('primary', 'w-full', 'lg')}
             >
               {t('programs.client.startWorkout')}
             </Link>
           ) : (
-            <p className="text-muted text-sm">{t('programs.client.openMobileApp')}</p>
+            <p className="glass text-muted rounded-2xl px-4 py-3 text-sm">
+              {t('programs.client.openMobileApp')}
+            </p>
           )}
-          <Card>
-            <ol aria-label={t('programs.editor.exercisesLabel')}>
+          <Card className="p-2">
+            <ol aria-label={t('programs.editor.exercisesLabel')} className="flex flex-col">
               {day.exercises.map((item, index) => (
-                <li key={item.id ?? index} className="border-border border-b last:border-b-0">
+                <li key={item.id ?? index}>
                   <Link
                     to={`?day=${String(day.dayNumber)}&exercise=${String(index + 1)}`}
-                    className="hover:bg-background focus-visible:outline-primary-readable flex min-h-14 flex-col justify-center rounded-lg px-2 py-2 focus-visible:outline-2"
+                    className={`${ROW_LINK_CLASS} items-start!`}
                   >
-                    <span className="font-medium">
-                      {index + 1}. {options.byId.get(item.exerciseId)?.name ?? '…'}
+                    <span
+                      aria-hidden="true"
+                      className="numeral bg-glass-strong text-muted mt-0.5 flex size-9 shrink-0 items-center justify-center rounded-xl text-sm"
+                    >
+                      {index + 1}
                     </span>
-                    <GroupTag group={groupInfo(day, index)} />
-                    <span className="text-muted text-sm">{summaryOf(item)}</span>
-                    {item.note === null ? null : <span className="text-sm">{item.note}</span>}
+                    <span className="flex min-w-0 flex-col gap-1">
+                      {/* El número también va en el texto: lo lee el lector de pantalla. */}
+                      <span className="font-semibold">
+                        <span className="sr-only">{index + 1}. </span>
+                        {options.byId.get(item.exerciseId)?.name ?? '…'}
+                      </span>
+                      <GroupTag group={groupInfo(day, index)} />
+                      <span className="text-muted text-sm">{summaryOf(item)}</span>
+                      {item.note === null ? null : (
+                        <span className="text-foreground/80 text-sm">{item.note}</span>
+                      )}
+                    </span>
                   </Link>
                 </li>
               ))}

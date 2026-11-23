@@ -1,62 +1,75 @@
+import { ChevronRight } from 'lucide-react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, useNavigate } from 'react-router';
 
-import { Button, Card } from '@/core/ui';
+import { BackLink, Button, Card, ProgressRing, ROW_LINK_CLASS } from '@/core/ui';
 import { useExerciseOptions } from '@/modules/exercises';
 
 import { useDiscardActiveWorkout } from '../api/useActiveWorkout';
 import { setCounts } from '../model/active-workout';
 import type { ActiveWorkout } from '../model/active-workout';
+import { isComplete } from '../model/close-workout';
 import { SetsRing } from './SetsRing';
 import { useCloseWorkout } from './useCloseWorkout';
 
 /**
- * El resumen del día (D-120): cada ejercicio con su anillo de series hechas
- * ("1/3"), el total ("6/20 series"), "Terminar entreno" y "Descartar entreno"
- * con confirmación (D-119).
+ * El resumen del día (D-120): el anillo grande con las series de todo el día,
+ * cada ejercicio con su anillo ("1/3"), "Terminar entreno" y "Descartar
+ * entreno" con confirmación (D-119). "Salir por ahora" vuelve al inicio con el
+ * entreno abierto: en el entreno no hay barra de navegación (D-prime2-1).
  */
 export function WorkoutSummary({ workout }: { workout: ActiveWorkout }) {
   const { t } = useTranslation();
   const options = useExerciseOptions();
   const closer = useCloseWorkout();
   const total = setCounts(workout.exercises);
+  const complete = isComplete(workout);
 
   return (
-    <div className="flex flex-col gap-4">
-      <header className="flex items-baseline justify-between gap-2">
-        <h1 className="text-xl font-semibold">{t('workouts.workout.title')}</h1>
-        <p className="font-semibold">{t('workouts.workout.totalSets', total)}</p>
+    <div className="flex flex-col gap-6">
+      <BackLink to="/client">{t('workouts.workout.leave')}</BackLink>
+      <header className="animate-enter flex items-center justify-between gap-4">
+        <div className="flex min-w-0 flex-col gap-3">
+          <h1 className="display text-[2.4rem]">{t('workouts.workout.title')}</h1>
+          <p className="text-muted text-base font-medium tabular-nums">
+            {t('workouts.workout.totalSets', total)}
+          </p>
+        </div>
+        <ProgressRing value={total.done} max={total.total} size={96} stroke={8}>
+          <span className="numeral text-2xl">
+            {total.total === 0 ? 0 : Math.round((total.done / total.total) * 100)}
+            <span className="text-muted text-sm">%</span>
+          </span>
+        </ProgressRing>
       </header>
-      <Card>
-        <ol aria-label={t('workouts.workout.exercisesLabel')}>
+      <Card className="p-2">
+        <ol aria-label={t('workouts.workout.exercisesLabel')} className="flex flex-col">
           {workout.exercises.map((exercise) => {
             const counts = setCounts([exercise]);
             return (
-              <li key={exercise.id} className="border-border border-b last:border-b-0">
-                <Link
-                  to={`?exercise=${String(exercise.position)}`}
-                  className="hover:bg-background focus-visible:outline-primary-readable flex min-h-14 items-center gap-3 rounded-lg px-2 py-2 focus-visible:outline-2"
-                >
+              <li key={exercise.id}>
+                <Link to={`?exercise=${String(exercise.position)}`} className={ROW_LINK_CLASS}>
                   <SetsRing done={counts.done} total={counts.total} />
-                  <span className="font-medium">
+                  <span className="min-w-0 flex-1 font-semibold break-words">
                     {options.byId.get(exercise.exerciseId)?.name ?? '…'}
                   </span>
+                  <ChevronRight aria-hidden="true" className="text-muted size-5 shrink-0" />
                 </Link>
               </li>
             );
           })}
         </ol>
       </Card>
-      <div className="flex flex-wrap gap-2">
-        <Button
-          variant="secondary"
-          disabled={closer.isPending}
-          onClick={() => void closer.close(workout, 'manual')}
-        >
-          {t('workouts.workout.finish')}
-        </Button>
-      </div>
+      <Button
+        size="lg"
+        variant={complete ? 'primary' : 'secondary'}
+        className="w-full"
+        disabled={closer.isPending}
+        onClick={() => void closer.close(workout, 'manual')}
+      >
+        {t('workouts.workout.finish')}
+      </Button>
       <DiscardWorkout workout={workout} />
     </div>
   );
@@ -71,16 +84,21 @@ function DiscardWorkout({ workout }: { workout: ActiveWorkout }) {
 
   if (!isConfirming) {
     return (
-      <Button variant="ghost" className="self-start" onClick={() => setIsConfirming(true)}>
+      <Button
+        variant="ghost"
+        className="text-muted hover:text-danger self-center"
+        onClick={() => setIsConfirming(true)}
+      >
         {t('workouts.discard.button')}
       </Button>
     );
   }
   return (
-    <div role="alert" className="border-border flex flex-col gap-2 rounded-lg border p-3">
-      <p className="text-sm">{t('workouts.discard.confirm')}</p>
+    <div role="alert" className="bg-danger-soft flex flex-col gap-3 rounded-[1.6rem] p-5">
+      <p className="text-sm font-medium">{t('workouts.discard.confirm')}</p>
       <div className="flex flex-wrap gap-2">
         <Button
+          variant="danger"
           disabled={discard.isPending}
           onClick={() => {
             void discard.mutateAsync(workout).then(() => navigate('/client', { replace: true }));

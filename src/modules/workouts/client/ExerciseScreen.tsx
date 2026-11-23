@@ -1,9 +1,10 @@
+import { ChevronLeft, ChevronRight, MessageSquareQuote } from 'lucide-react';
 import { useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, useNavigate } from 'react-router';
 
 import { cn } from '@/core/lib';
-import { buttonClassName } from '@/core/ui';
+import { BackLink, buttonClassName } from '@/core/ui';
 import { useExerciseOptions } from '@/modules/exercises';
 
 import { useSaveActiveWorkout } from '../api/useActiveWorkout';
@@ -16,6 +17,7 @@ import {
   copyPrevious,
   copySource,
   previousSet,
+  setCounts,
   unmarkSet,
 } from '../model/active-workout';
 import type { ActiveWorkout } from '../model/active-workout';
@@ -57,7 +59,7 @@ export function ExerciseScreen({
 
   return (
     <div
-      className="flex flex-col gap-4"
+      className="flex flex-col gap-6"
       onTouchStart={(event) => {
         touchStart.current = event.touches[0]?.clientX ?? null;
       }}
@@ -70,36 +72,51 @@ export function ExerciseScreen({
         }
       }}
     >
-      <Link to="?" className={buttonClassName('ghost', 'self-start')}>
-        {t('workouts.workout.toSummary')}
-      </Link>
-      <header className="flex flex-col gap-2">
-        <p className="text-muted text-sm">
+      <BackLink to="?">{t('workouts.workout.toSummary')}</BackLink>
+      <header className="animate-enter flex flex-col gap-3">
+        <p className="eyebrow text-muted">
           {t('workouts.workout.exerciseOf', { number: position, count })}
         </p>
-        <nav aria-label={t('workouts.workout.exercisesLabel')} className="flex flex-wrap gap-1">
-          {workout.exercises.map((item) => (
-            <Link
-              key={item.id}
-              to={`?exercise=${String(item.position)}`}
-              replace
-              aria-label={t('workouts.workout.goTo', { number: item.position })}
-              aria-current={item.position === position ? 'step' : undefined}
-              className="flex h-11 w-11 items-center justify-center"
-            >
-              <span
-                className={cn(
-                  'h-3 w-3 rounded-full',
-                  item.position === position ? 'bg-primary' : 'bg-border',
-                )}
-              />
-            </Link>
-          ))}
+        {/* Una raya por ejercicio: llena si está hecho, encendida la de ahora. */}
+        <nav aria-label={t('workouts.workout.exercisesLabel')} className="flex gap-1">
+          {workout.exercises.map((item) => {
+            const counts = setCounts([item]);
+            const isDone = counts.total > 0 && counts.done === counts.total;
+            return (
+              <Link
+                key={item.id}
+                to={`?exercise=${String(item.position)}`}
+                replace
+                aria-label={t('workouts.workout.goTo', { number: item.position })}
+                aria-current={item.position === position ? 'step' : undefined}
+                className="focus-ring flex h-11 min-w-0 flex-1 items-center rounded-full"
+              >
+                <span
+                  className={cn(
+                    'h-1.5 w-full rounded-full transition-[background-color,box-shadow] duration-500',
+                    item.position === position
+                      ? 'bg-primary shadow-[0_0_12px_1px_var(--color-primary-glow)]'
+                      : isDone
+                        ? 'bg-primary/45'
+                        : 'bg-hairline-strong',
+                  )}
+                />
+              </Link>
+            );
+          })}
         </nav>
-        <h1 className="text-xl font-semibold">
+        <h1 className="display text-[2.5rem] break-words">
           {options.byId.get(exercise.exerciseId)?.name ?? '…'}
         </h1>
-        {exercise.coachNote === null ? null : <p className="text-sm">{exercise.coachNote}</p>}
+        {exercise.coachNote === null ? null : (
+          <p className="glass flex gap-3 rounded-2xl px-4 py-3 text-sm leading-relaxed">
+            <MessageSquareQuote
+              aria-hidden="true"
+              className="text-primary-readable mt-0.5 size-4 shrink-0"
+            />
+            <span>{exercise.coachNote}</span>
+          </p>
+        )}
       </header>
       <ol className="flex flex-col gap-3">
         {exercise.sets.map((set) => {
@@ -142,7 +159,11 @@ export function ExerciseScreen({
       {exercise.sets.length >= MAX_SETS ? null : (
         <button
           type="button"
-          className={buttonClassName('secondary', 'self-start')}
+          className={buttonClassName(
+            'ghost',
+            'w-full border border-dashed border-hairline-strong',
+            'lg',
+          )}
           onClick={() => {
             save.mutate(addSet(workout, position, now(), () => crypto.randomUUID()));
           }}
@@ -150,26 +171,28 @@ export function ExerciseScreen({
           {t('workouts.set.add')}
         </button>
       )}
-      <div className="flex justify-between gap-2">
+      <div className="grid grid-cols-2 gap-3">
         <button
           type="button"
-          className={buttonClassName('secondary')}
+          className={buttonClassName('secondary', 'justify-start! pl-3!', 'lg')}
           disabled={position === 1}
           onClick={() => {
             go(position - 1);
           }}
         >
+          <ChevronLeft aria-hidden="true" className="size-5" />
           {t('workouts.workout.previous')}
         </button>
         <button
           type="button"
-          className={buttonClassName('secondary')}
+          className={buttonClassName('primary', 'justify-end! pr-3!', 'lg')}
           disabled={position === count}
           onClick={() => {
             go(position + 1);
           }}
         >
           {t('workouts.workout.next')}
+          <ChevronRight aria-hidden="true" className="size-5" />
         </button>
       </div>
     </div>

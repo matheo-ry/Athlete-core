@@ -1,3 +1,4 @@
+import { Trophy } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -95,12 +96,12 @@ export function ExerciseProgressCard({ exercise, unit, referenceDate }: Exercise
   if (rmProgressPct !== null && rmProgressPct < 0) pctClass = 'text-accent';
 
   return (
-    <Card className="flex flex-col gap-4 p-4" data-testid={`exercise-card-${exercise.exerciseId}`}>
-      <header className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-        <div className="flex items-center gap-2">
-          <h3 className="text-base font-bold text-foreground">{exercise.displayName}</h3>
+    <Card className="flex flex-col gap-5" data-testid={`exercise-card-${exercise.exerciseId}`}>
+      <header className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+        <div className="flex flex-wrap items-center gap-2">
+          <h3 className="display text-foreground text-[1.4rem]">{exercise.displayName}</h3>
           {exercise.isUnilateral ? (
-            <span className="rounded-full border border-border px-2 py-0.5 text-xs font-medium text-muted">
+            <span className="text-muted rounded-full px-2.5 py-0.5 text-xs font-medium shadow-[inset_0_0_0_1px_var(--color-hairline-strong)]">
               {t('progress.exercise.unilateral')}
             </span>
           ) : null}
@@ -108,18 +109,16 @@ export function ExerciseProgressCard({ exercise, unit, referenceDate }: Exercise
 
         {recordParts.length > 0 ? (
           <div className="flex items-center gap-1.5" data-testid={`record-${exercise.exerciseId}`}>
-            <span className="inline-flex items-center rounded-full border border-border bg-background px-2.5 py-0.5 text-xs font-semibold">
-              <span className="mr-1 font-bold text-primary-readable">
-                <span aria-hidden="true">★ </span>
-                {t('progress.stats.record')}:
-              </span>
+            <span className="bg-primary-soft inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold">
+              <Trophy aria-hidden="true" className="text-primary-readable size-3.5" />
+              <span className="text-primary-readable font-bold">{t('progress.stats.record')}:</span>
               {recordParts.join(' · ')}
             </span>
           </div>
         ) : null}
       </header>
 
-      <div className="flex flex-wrap items-center justify-between gap-2 border-y border-border py-2">
+      <div className="flex flex-wrap items-center justify-between gap-2">
         <ChoiceChips
           label={t('progress.metric.label')}
           options={metricOptions}
@@ -139,24 +138,27 @@ export function ExerciseProgressCard({ exercise, unit, referenceDate }: Exercise
         />
       </div>
 
-      <div className="flex flex-wrap items-center gap-4 text-sm font-medium">
+      <div className="grid grid-cols-2 gap-2">
         {selectedSession?.maxRm != null ? (
-          <div className="flex items-center gap-1">
-            <span className="text-muted">{t('progress.stats.last')}:</span>
-            <span className="font-bold text-foreground">
+          <div className="bg-glass flex flex-col gap-1 rounded-2xl px-4 py-3 shadow-[inset_0_0_0_1px_var(--color-hairline)]">
+            <span className="eyebrow text-muted">{t('progress.stats.last')}:</span>
+            <span className="numeral text-foreground text-2xl">
               {formatWeight(selectedSession.maxRm, unit, language)}
             </span>
           </div>
         ) : null}
 
-        <div className="flex items-center gap-1.5" data-testid="rm-progress-badge">
-          <span className="text-muted">{t('progress.stats.progressRm')}:</span>
+        <div
+          className="bg-glass flex flex-col gap-1 rounded-2xl px-4 py-3 shadow-[inset_0_0_0_1px_var(--color-hairline)]"
+          data-testid="rm-progress-badge"
+        >
+          <span className="eyebrow text-muted">{t('progress.stats.progressRm')}:</span>
           {rmProgressPct !== null ? (
-            <span className={`font-bold ${pctClass}`}>
+            <span className={`numeral text-2xl ${pctClass}`}>
               {rmProgressPct > 0 ? `+${rmProgressPct}` : rmProgressPct} %
             </span>
           ) : (
-            <span className="text-muted">—</span>
+            <span className="numeral text-muted text-2xl">—</span>
           )}
         </div>
       </div>

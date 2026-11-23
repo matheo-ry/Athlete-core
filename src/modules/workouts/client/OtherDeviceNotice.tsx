@@ -24,11 +24,12 @@ export function OtherDeviceNotice({
   const { exerciseInfo, isPending } = useExerciseInfo();
 
   return (
-    <Card role="alert" className="flex flex-col gap-3">
-      <p className="font-semibold">{t('workouts.device.elsewhere')}</p>
+    <Card role="alert" tone="float" className="animate-enter flex flex-col gap-4">
+      <p className="display text-2xl">{t('workouts.device.elsewhere')}</p>
       {save.isError ? <p className="text-sm">{t('workouts.device.error')}</p> : null}
       <Button
-        className="self-start"
+        size="lg"
+        className="w-full"
         disabled={isPending || save.isPending}
         onClick={() => {
           save.mutate(

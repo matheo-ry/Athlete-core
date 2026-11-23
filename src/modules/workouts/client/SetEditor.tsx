@@ -1,3 +1,4 @@
+import { Check, History } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
 import { useProfile } from '@/core/auth';
@@ -59,31 +60,56 @@ export function SetEditor({
       aria-label={t('workouts.set.label', { number: set.setNumber })}
       data-done={set.isDone}
       className={cn(
-        'flex flex-col gap-2 rounded-lg border p-3',
-        set.isDone ? 'border-primary bg-primary/15' : 'border-border',
+        'group relative flex flex-col gap-3 rounded-[1.6rem] p-4 transition-[box-shadow,background-color] duration-500',
+        set.isDone
+          ? 'bg-primary-soft shadow-[inset_0_0_0_1.5px_var(--brand-primary),0_18px_40px_-22px_var(--color-primary-glow)]'
+          : 'glass',
       )}
     >
       <div className="flex items-center justify-between gap-2">
         <button
           type="button"
-          className="min-h-11 text-left text-sm font-semibold"
+          className="focus-ring flex min-h-11 items-center gap-2.5 rounded-full pr-2 text-left"
           aria-pressed={set.isDone}
           disabled={!set.isDone}
           aria-label={t('workouts.set.unmark', { number: set.setNumber })}
           onClick={onUnmark}
         >
-          {t('workouts.set.label', { number: set.setNumber })}
+          <span
+            aria-hidden="true"
+            className={cn(
+              'flex size-9 items-center justify-center rounded-full transition-[background-color,color,transform] duration-500',
+              set.isDone
+                ? 'bg-primary text-on-primary scale-105 shadow-[0_6px_16px_-6px_var(--color-primary-glow)]'
+                : 'bg-glass-strong text-muted',
+            )}
+          >
+            {set.isDone ? (
+              <Check className="size-5" strokeWidth={3} />
+            ) : (
+              <span className="numeral text-base">{set.setNumber}</span>
+            )}
+          </span>
+          <span className="text-sm font-semibold">
+            {t('workouts.set.label', { number: set.setNumber })}
+          </span>
         </button>
-        <div className="flex items-center gap-2">
+        <div className="flex min-w-0 items-center gap-2">
           {previous === null ? null : (
-            <span className="text-muted text-sm" data-testid="previous">
-              {previousText(previous, exercise.measurement, unit, t('workouts.set.failureShort'))}
+            <span
+              className="text-muted flex min-w-0 items-center gap-1 text-sm"
+              data-testid="previous"
+            >
+              <History aria-hidden="true" className="size-3.5 shrink-0" />
+              <span className="truncate tabular-nums">
+                {previousText(previous, exercise.measurement, unit, t('workouts.set.failureShort'))}
+              </span>
             </span>
           )}
           {copySource === null ? null : (
             <button
               type="button"
-              className="border-border bg-surface h-11 rounded-lg border px-3 text-sm font-semibold"
+              className="focus-ring bg-glass-strong hover:bg-glass-hover h-11 shrink-0 rounded-full px-4 text-sm font-semibold shadow-[var(--glass-edge)] transition-colors"
               onClick={onCopy}
             >
               {t('workouts.set.same')}
@@ -91,7 +117,7 @@ export function SetEditor({
           )}
         </div>
       </div>
-      <div className="flex flex-wrap justify-center gap-3">
+      <div className="grid grid-cols-2 gap-2.5">
         {byWeight ? (
           <>
             <StepperField
@@ -122,62 +148,70 @@ export function SetEditor({
               }}
             />
           </>
-        ) : exercise.measurement === 'time' ? (
-          <StepperField
-            label={t('workouts.set.seconds')}
-            value={set.durationSeconds}
-            placeholder={reference?.durationSeconds ?? null}
-            step={STEPS.seconds}
-            max={86_400}
-            decimals={false}
-            onChange={(value) => {
-              onChange({ durationSeconds: value });
-            }}
-          />
         ) : (
-          <StepperField
-            label={t('workouts.set.meters')}
-            value={set.distanceMeters}
-            placeholder={reference?.distanceMeters ?? null}
-            step={STEPS.meters}
-            max={1_000_000}
-            decimals={false}
-            onChange={(value) => {
-              onChange({ distanceMeters: value });
-            }}
-          />
+          <div className="col-span-2">
+            {exercise.measurement === 'time' ? (
+              <StepperField
+                label={t('workouts.set.seconds')}
+                value={set.durationSeconds}
+                placeholder={reference?.durationSeconds ?? null}
+                step={STEPS.seconds}
+                max={86_400}
+                decimals={false}
+                onChange={(value) => {
+                  onChange({ durationSeconds: value });
+                }}
+              />
+            ) : (
+              <StepperField
+                label={t('workouts.set.meters')}
+                value={set.distanceMeters}
+                placeholder={reference?.distanceMeters ?? null}
+                step={STEPS.meters}
+                max={1_000_000}
+                decimals={false}
+                onChange={(value) => {
+                  onChange({ distanceMeters: value });
+                }}
+              />
+            )}
+          </div>
         )}
-        {atFailure ? null : (
-          <StepperField
-            label={t(`workouts.set.${intensityScale}`)}
-            value={set.intensityValue}
-            placeholder={reference?.intensityValue ?? null}
-            step={STEPS[intensityScale]}
-            max={10}
-            decimals={intensityScale === 'rpe'}
-            onChange={(value) => {
-              onChange({ intensityType: intensityScale, intensityValue: value });
-            }}
-          />
-        )}
-        <button
-          type="button"
-          aria-pressed={atFailure}
-          aria-label={t('workouts.set.failure')}
-          className={cn(
-            'h-11 min-w-11 self-end rounded-lg border px-3 font-semibold',
-            atFailure ? 'border-primary bg-primary text-on-primary' : 'border-border bg-surface',
+        <div className="col-span-2 flex items-end gap-2.5 [&>*:first-child]:flex-1">
+          {atFailure ? null : (
+            <StepperField
+              label={t(`workouts.set.${intensityScale}`)}
+              value={set.intensityValue}
+              placeholder={reference?.intensityValue ?? null}
+              step={STEPS[intensityScale]}
+              max={10}
+              decimals={intensityScale === 'rpe'}
+              onChange={(value) => {
+                onChange({ intensityType: intensityScale, intensityValue: value });
+              }}
+            />
           )}
-          onClick={() => {
-            onChange(
+          <button
+            type="button"
+            aria-pressed={atFailure}
+            aria-label={t('workouts.set.failure')}
+            className={cn(
+              'focus-ring numeral h-14 min-w-14 rounded-[1.15rem] px-4 text-xl transition-[background-color,color,box-shadow] duration-300',
               atFailure
-                ? { intensityType: null, intensityValue: null }
-                : { intensityType: 'failure', intensityValue: null },
-            );
-          }}
-        >
-          {t('workouts.set.failureShort')}
-        </button>
+                ? 'bg-primary text-on-primary shadow-[0_8px_22px_-10px_var(--color-primary-glow)]'
+                : 'bg-glass text-muted hover:text-foreground shadow-[inset_0_0_0_1px_var(--color-hairline)]',
+            )}
+            onClick={() => {
+              onChange(
+                atFailure
+                  ? { intensityType: null, intensityValue: null }
+                  : { intensityType: 'failure', intensityValue: null },
+              );
+            }}
+          >
+            {t('workouts.set.failureShort')}
+          </button>
+        </div>
       </div>
     </li>
   );

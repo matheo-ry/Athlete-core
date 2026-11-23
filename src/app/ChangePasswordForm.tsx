@@ -69,7 +69,7 @@ export function ChangePasswordForm() {
 
   return (
     <form onSubmit={handleSubmit} noValidate className="flex flex-col gap-3">
-      <h3 className="font-semibold">{t('app.changePassword.title')}</h3>
+      <h3 className="eyebrow text-muted">{t('app.changePassword.title')}</h3>
       {needsCurrent ? (
         <PasswordInput
           label={t('app.changePassword.currentLabel')}

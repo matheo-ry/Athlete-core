@@ -23,15 +23,17 @@ export function AccountSection() {
   return (
     <Card>
       <div className="flex flex-col gap-5">
-        <h2 className="text-lg font-semibold">{t('app.account.title')}</h2>
+        <h2 className="display text-[1.6rem]">{t('app.account.title')}</h2>
 
         {profile.isPending ? <Spinner /> : null}
         {profile.isError ? <ErrorState onRetry={() => void profile.refetch()} /> : null}
         {profile.data !== undefined ? (
           <>
             <ProfileNameForm initialName={profile.data.displayName} />
-            <div className="flex flex-col gap-1.5">
-              <span className="text-sm font-medium">{t('app.account.languageLabel')}</span>
+            <div className="flex flex-col gap-2">
+              <span className="text-foreground/85 text-sm font-medium">
+                {t('app.account.languageLabel')}
+              </span>
               {/* Cambia la app al momento y se guarda en el perfil (ProfileLanguageSync). */}
               <LanguageSwitcher />
             </div>
@@ -39,19 +41,27 @@ export function AccountSection() {
           </>
         ) : null}
 
-        <div className="flex flex-col gap-1">
-          <span className="text-sm font-medium">{t('app.account.emailLabel')}</span>
-          <span data-testid="account-email">{user?.email}</span>
+        <div className="bg-glass flex flex-col gap-1 rounded-2xl px-4 py-3 shadow-[inset_0_0_0_1px_var(--color-hairline)]">
+          <span className="eyebrow text-muted">{t('app.account.emailLabel')}</span>
+          <span data-testid="account-email" className="font-medium break-all">
+            {user?.email}
+          </span>
           <span className="text-muted text-sm">{t('app.account.emailHint')}</span>
         </div>
 
         <ChangePasswordForm />
 
         <nav aria-label={t('app.account.legalTitle')} className="flex flex-wrap gap-4 text-sm">
-          <Link to="/legal/terms" className="text-primary-readable underline">
+          <Link
+            to="/legal/terms"
+            className="text-muted hover:text-foreground focus-ring rounded underline underline-offset-4"
+          >
             {t('app.account.terms')}
           </Link>
-          <Link to="/legal/privacy" className="text-primary-readable underline">
+          <Link
+            to="/legal/privacy"
+            className="text-muted hover:text-foreground focus-ring rounded underline underline-offset-4"
+          >
             {t('app.account.privacy')}
           </Link>
         </nav>

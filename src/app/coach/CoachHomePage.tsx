@@ -29,7 +29,7 @@ export function CoachHomePage() {
 
   return (
     <>
-      <HeroBackdrop photo="dumbbells" className="h-[62svh] md:h-[560px]" />
+      <HeroBackdrop photo="dumbbells" size="short" />
       <section className="flex flex-col gap-8 pt-[12svh] md:pt-24">
         <PageHeader
           onPhoto

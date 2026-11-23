@@ -21,7 +21,8 @@ const VARIANTS: Record<ButtonVariant, string> = {
     'bg-primary text-on-primary shadow-[inset_0_1px_0_rgb(255_255_255/0.35),inset_0_-1px_0_rgb(0_0_0/0.15),0_10px_30px_-10px_var(--color-primary-glow)] hover:brightness-110',
   secondary: 'glass text-foreground hover:bg-glass-hover',
   ghost: 'text-foreground hover:bg-glass',
-  danger: 'bg-danger-soft text-danger hover:bg-danger hover:text-background',
+  danger:
+    'bg-danger text-background shadow-[inset_0_1px_0_rgb(255_255_255/0.3),0_10px_26px_-12px_var(--brand-danger)] hover:brightness-110',
 };
 
 /** Clases de un botón. También sirve para enlaces que deben parecer un botón. */

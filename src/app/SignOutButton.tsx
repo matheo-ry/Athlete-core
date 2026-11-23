@@ -49,7 +49,7 @@ export function SignOutButton({ className }: SignOutButtonProps) {
         type="button"
         onClick={() => (pending > 0 ? setIsAsking(true) : close())}
         disabled={isPending || isAsking}
-        className="text-muted hover:text-foreground focus-visible:outline-primary-readable inline-flex min-h-11 items-center gap-2 rounded-lg px-2 text-sm font-medium focus-visible:outline-2 disabled:opacity-50"
+        className="text-muted hover:text-danger focus-ring hover:bg-danger-soft inline-flex min-h-11 items-center gap-2 rounded-full px-4 text-sm font-semibold transition-colors disabled:opacity-50"
       >
         <LogOut aria-hidden="true" className="size-4" />
         {t('app.shell.signOut')}
@@ -92,7 +92,7 @@ function PendingUploadsWarning({ isPending, onCancel, onConfirm }: PendingUpload
       ref={dialog}
       role="alertdialog"
       aria-labelledby={titleId}
-      className="border-border flex flex-col gap-2 rounded-lg border p-3"
+      className="bg-danger-soft flex flex-col gap-3 rounded-[1.4rem] p-4"
     >
       <p id={titleId} className="text-sm font-semibold">
         {t('app.shell.pendingUploads')}

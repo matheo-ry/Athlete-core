@@ -1,5 +1,6 @@
 export { Ambient } from './Ambient';
 export { Avatar } from './Avatar';
+export { BackLink } from './BackLink';
 export { initialsOf } from './initials';
 export { Button } from './Button';
 export { buttonClassName } from './button-styles';
@@ -25,5 +26,6 @@ export { Photo } from './Photo';
 export { PHOTOS, photoFor } from './photos';
 export type { PhotoName } from './photos';
 export { ProgressRing } from './ProgressRing';
+export { SEGMENTED_GROUP_CLASS, segmentClassName } from './segmented';
 export { Spinner } from './Spinner';
 export { useOnlineStatus } from './useOnlineStatus';

@@ -83,6 +83,7 @@
     "setsDone": "{{done}} of {{total}} sets done",
     "finish": "Finish workout",
     "toSummary": "Back to summary",
+    "leave": "Leave for now",
     "exerciseOf": "Exercise {{number}} of {{count}}",
     "goTo": "Go to exercise {{number}}",
     "previous": "Previous",

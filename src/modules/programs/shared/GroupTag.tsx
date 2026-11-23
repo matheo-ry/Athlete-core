@@ -12,7 +12,7 @@ export function GroupTag({ group }: { group: GroupInfo | null }) {
     return null;
   }
   return (
-    <span className="bg-primary text-on-primary self-start rounded-full px-2 py-0.5 text-xs font-semibold">
+    <span className="bg-primary-soft text-primary-readable self-start rounded-full px-2.5 py-0.5 text-xs font-semibold">
       {t(`programs.supersets.${group.kind}`)} ·{' '}
       {t('programs.supersets.position', { position: group.position, size: group.size })}
     </span>

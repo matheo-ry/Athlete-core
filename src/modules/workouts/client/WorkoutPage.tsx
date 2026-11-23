@@ -2,7 +2,17 @@ import { useTranslation } from 'react-i18next';
 import { Link, useNavigate, useSearchParams } from 'react-router';
 
 import { canLogWorkouts } from '@/core/native';
-import { Button, Card, EmptyState, ErrorState, Spinner, buttonClassName } from '@/core/ui';
+import {
+  BackLink,
+  Button,
+  Card,
+  EmptyState,
+  ErrorState,
+  HeroBackdrop,
+  Spinner,
+  buttonClassName,
+  photoFor,
+} from '@/core/ui';
 import { useClientToday, useDayTitle } from '@/modules/programs';
 
 import { useActiveWorkout, useFinishedWorkout } from '../api/useActiveWorkout';
@@ -30,7 +40,12 @@ export function WorkoutPage() {
   const ownership = useWorkoutOwnership();
 
   if (!canLogWorkouts()) {
-    return <EmptyState title={t('workouts.today.openMobileApp')} />;
+    return (
+      <div className="flex flex-col gap-4">
+        <BackLink to="/client">{t('workouts.workout.leave')}</BackLink>
+        <EmptyState title={t('workouts.today.openMobileApp')} />
+      </div>
+    );
   }
   if (active.isPending) {
     return <Spinner />;
@@ -75,9 +90,9 @@ function OpenWorkout({ workout, position }: { workout: ActiveWorkout; position: 
   return (
     <div className="flex flex-col gap-4">
       {isComplete(workout) ? (
-        <Card role="status" className="flex flex-col gap-2">
+        <Card role="status" tone="float" className="animate-enter flex flex-col gap-3">
           <p className="font-semibold">{t('workouts.finished.allDone')}</p>
-          <Link to="?" replace className={buttonClassName('primary', 'self-start')}>
+          <Link to="?" replace className={buttonClassName('primary', 'w-full', 'lg')}>
             {t('workouts.finished.seeSummary')}
           </Link>
         </Card>
@@ -106,26 +121,37 @@ function StartDay({ dayNumber }: { dayNumber: number }) {
     return (
       <div className="flex flex-col gap-4">
         <EmptyState title={t('workouts.workout.noWorkout')} />
-        <Link to="/client/program" className={buttonClassName('ghost', 'self-start')}>
+        <Link to="/client/program" className={buttonClassName('secondary', 'self-center')}>
           {t('workouts.workout.toProgram')}
         </Link>
       </div>
     );
   }
   return (
-    <Card className="flex flex-col gap-3">
-      <h1 className="text-xl font-semibold">{title(day)}</h1>
-      <Button
-        className="self-start"
-        disabled={!starter.isReady || starter.isPending}
-        onClick={() => {
-          void starter.start(today.program.id, today.block, day).then(() => {
-            void navigate('/client/workout', { replace: true });
-          });
-        }}
-      >
-        {t('workouts.today.start')}
-      </Button>
-    </Card>
+    <>
+      <HeroBackdrop photo={photoFor(day.dayNumber)} />
+      <div className="flex min-h-[calc(100svh-var(--safe-top)-4rem)] flex-col gap-6">
+        <BackLink to="/client/program" tone="photo">
+          {t('workouts.workout.toProgram')}
+        </BackLink>
+        <div className="mt-auto flex flex-col gap-6">
+          <h1 className="display text-on-photo animate-enter text-[3.2rem] break-words">
+            {title(day)}
+          </h1>
+          <Button
+            size="lg"
+            className="w-full"
+            disabled={!starter.isReady || starter.isPending}
+            onClick={() => {
+              void starter.start(today.program.id, today.block, day).then(() => {
+                void navigate('/client/workout', { replace: true });
+              });
+            }}
+          >
+            {t('workouts.today.start')}
+          </Button>
+        </div>
+      </div>
+    </>
   );
 }

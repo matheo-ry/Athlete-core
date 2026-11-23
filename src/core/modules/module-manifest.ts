@@ -13,6 +13,11 @@ export interface ModuleRoute {
   path: string;
   /** Carga la pantalla solo cuando se visita. */
   lazy: () => Promise<{ Component: ComponentType }>;
+  /**
+   * Pantalla "a pantalla completa" (D-prime2-1): la carcasa oculta su barra de
+   * navegación y la marca para que nada estorbe (por ejemplo, apuntar un entreno).
+   */
+  immersive?: boolean;
 }
 
 export interface ModuleNavItem {

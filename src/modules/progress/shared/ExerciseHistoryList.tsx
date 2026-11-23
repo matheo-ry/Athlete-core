@@ -1,3 +1,4 @@
+import { NotebookPen } from 'lucide-react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -19,9 +20,9 @@ export function ExerciseHistoryList({ exerciseId, history }: ExerciseHistoryList
   const [open, setOpen] = useState(true);
 
   return (
-    <div className="flex flex-col gap-2 border-t border-border pt-2">
+    <div className="flex flex-col gap-2">
       <div className="flex items-center justify-between">
-        <span className="text-xs font-semibold tracking-wider text-muted uppercase">
+        <span className="eyebrow text-muted">
           {t('progress.history.title')} ({history.length})
         </span>
         <button
@@ -35,24 +36,25 @@ export function ExerciseHistoryList({ exerciseId, history }: ExerciseHistoryList
       </div>
 
       {open ? (
-        <ul className="flex flex-col gap-2 font-mono text-sm" data-testid={`history-${exerciseId}`}>
+        <ul className="flex flex-col gap-1.5 text-sm" data-testid={`history-${exerciseId}`}>
           {history.map((sess) => (
             <li
               key={`${sess.workoutId}-${sess.sessionNumber}`}
-              className="flex flex-col gap-1 rounded border border-border bg-background p-2"
+              className="bg-glass flex flex-col gap-1 rounded-2xl px-4 py-3 tabular-nums shadow-[inset_0_0_0_1px_var(--color-hairline)]"
             >
               <div className="flex flex-wrap items-baseline justify-between gap-2">
                 <div className="flex items-baseline gap-2">
                   <span className="font-bold text-foreground">{sess.label}: </span>
                   <span className="text-foreground">{sess.setsText}</span>
                 </div>
-                <div className="flex items-center gap-2 font-sans text-xs text-muted">
+                <div className="text-muted flex items-center gap-2 text-xs">
                   {sess.hasNote ? (
                     <span
                       className="inline-flex items-center gap-1 font-medium text-primary-readable"
                       data-testid="note-mark"
                     >
-                      <span aria-hidden="true">📝</span> {t('progress.history.note')}
+                      <NotebookPen aria-hidden="true" className="size-3.5" />{' '}
+                      {t('progress.history.note')}
                     </span>
                   ) : null}
                   <span>{formatDate(sess.performedOn, language)}</span>
@@ -61,7 +63,7 @@ export function ExerciseHistoryList({ exerciseId, history }: ExerciseHistoryList
 
               {sess.hasNote && sess.dayNote ? (
                 <div
-                  className="mt-1 rounded border-l-2 border-primary bg-surface px-2 py-1 font-sans text-xs text-muted italic"
+                  className="border-primary text-muted mt-1 border-l-2 py-0.5 pl-3 text-xs italic"
                   data-testid="session-note"
                 >
                   "{sess.dayNote}"

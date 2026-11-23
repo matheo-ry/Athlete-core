@@ -83,6 +83,7 @@
     "setsDone": "{{done}} de {{total}} series hechas",
     "finish": "Terminar entreno",
     "toSummary": "Volver al resumen",
+    "leave": "Salir por ahora",
     "exerciseOf": "Ejercicio {{number}} de {{count}}",
     "goTo": "Ir al ejercicio {{number}}",
     "previous": "Anterior",

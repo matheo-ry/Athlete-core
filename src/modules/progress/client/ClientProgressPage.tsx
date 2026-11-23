@@ -1,6 +1,7 @@
 import { useTranslation } from 'react-i18next';
 
 import { useAuth, useProfile } from '@/core/auth';
+import { PageHeader } from '@/core/ui';
 
 import { useClientProgress } from '../api/useClientProgress';
 import { ProgressView } from '../shared/ProgressView';
@@ -20,10 +21,8 @@ export function ClientProgressPage() {
   const clientName = profile.data?.displayName || user?.email?.split('@')[0];
 
   return (
-    <section className="flex flex-col gap-4">
-      <header className="flex flex-col gap-1">
-        <h1 className="text-2xl font-bold">{t('progress.title')}</h1>
-      </header>
+    <section className="flex flex-col gap-6">
+      <PageHeader title={t('progress.title')} />
 
       <ProgressView
         clientId={user?.id ?? null}

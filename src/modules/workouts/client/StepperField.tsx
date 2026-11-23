@@ -1,3 +1,4 @@
+import { Minus, Plus } from 'lucide-react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -24,9 +25,14 @@ function parseNumber(text: string, decimals: boolean): number | null {
   return decimals ? value : Math.round(value);
 }
 
+const KEY =
+  'focus-ring flex size-11 shrink-0 items-center justify-center rounded-[0.9rem] text-foreground ' +
+  'transition-[background-color,transform] duration-150 hover:bg-glass-strong active:scale-90 active:bg-glass-hover';
+
 /**
- * Un dato de una serie (D-120): − y + grandes (44 px o más) y, al tocar el
- * número, el teclado del móvil.
+ * Un dato de una serie (D-120): una tecla de cristal con − y + grandes (44 px)
+ * y la cifra en medio; al tocar la cifra, el teclado del móvil. Con la serie
+ * hecha, la tecla se tiñe del color del coach (D-prime2-4).
  */
 export function StepperField(props: StepperFieldProps) {
   const { t } = useTranslation();
@@ -48,23 +54,23 @@ export function StepperField(props: StepperFieldProps) {
   };
 
   return (
-    <div className="flex flex-col items-center gap-1">
-      <span className="text-muted text-xs">{label}</span>
-      <div className="flex items-center gap-1">
+    <div className="flex min-w-0 flex-col gap-1.5">
+      <span className="eyebrow text-muted truncate px-1">{label}</span>
+      <div className="bg-glass group-data-[done=true]:bg-primary-soft flex h-14 items-center gap-0.5 rounded-[1.15rem] p-1.5 shadow-[inset_0_0_0_1px_var(--color-hairline)] transition-colors duration-300">
         <button
           type="button"
-          className="border-border bg-surface h-11 w-11 rounded-lg border text-xl font-semibold"
+          className={KEY}
           aria-label={t('workouts.set.decrease', { field: label })}
           onClick={() => {
             bump(-1);
           }}
         >
-          −
+          <Minus aria-hidden="true" className="size-5" strokeWidth={2.4} />
         </button>
         <input
           aria-label={label}
           inputMode={decimals ? 'decimal' : 'numeric'}
-          className="border-border bg-background h-11 w-16 rounded-lg border text-center text-lg font-semibold"
+          className="numeral placeholder:text-muted/55 h-full w-full min-w-0 flex-1 bg-transparent text-center text-[1.6rem] outline-none"
           value={draft ?? (value === null ? '' : String(value))}
           placeholder={placeholder === null ? '' : String(placeholder)}
           onFocus={(event) => {
@@ -85,13 +91,13 @@ export function StepperField(props: StepperFieldProps) {
         />
         <button
           type="button"
-          className="border-border bg-surface h-11 w-11 rounded-lg border text-xl font-semibold"
+          className={KEY}
           aria-label={t('workouts.set.increase', { field: label })}
           onClick={() => {
             bump(1);
           }}
         >
-          +
+          <Plus aria-hidden="true" className="size-5" strokeWidth={2.4} />
         </button>
       </div>
     </div>

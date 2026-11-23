@@ -1,7 +1,6 @@
 import { useTranslation } from 'react-i18next';
-import { Link } from 'react-router';
 
-import { Card, EmptyState, buttonClassName } from '@/core/ui';
+import { BackLink, Card, EmptyState, buttonClassName } from '@/core/ui';
 import { useExerciseOptions } from '@/modules/exercises';
 
 import type { ClientProgram } from '../model/assignments';
@@ -34,9 +33,7 @@ export function ClientExerciseView(props: ClientExerciseViewProps) {
   const exercise = item === undefined ? undefined : options.byId.get(item.exerciseId);
 
   const back = (
-    <Link to={`?day=${String(props.dayNumber)}`} className={buttonClassName('ghost', 'self-start')}>
-      {t('programs.client.backToDay')}
-    </Link>
+    <BackLink to={`?day=${String(props.dayNumber)}`}>{t('programs.client.backToDay')}</BackLink>
   );
   if (item === undefined) {
     return (
@@ -48,14 +45,17 @@ export function ClientExerciseView(props: ClientExerciseViewProps) {
   }
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-5">
       {back}
-      <h2 className="text-xl font-semibold">{exercise?.name ?? '…'}</h2>
-      <Card className="flex flex-col gap-2">
-        <h3 className="font-semibold">{t('programs.client.sets')}</h3>
-        <ol aria-label={t('programs.client.sets')}>
+      <h2 className="display animate-enter text-[2.4rem] break-words">{exercise?.name ?? '…'}</h2>
+      <Card className="flex flex-col gap-3">
+        <h3 className="eyebrow text-muted">{t('programs.client.sets')}</h3>
+        <ol aria-label={t('programs.client.sets')} className="flex flex-col gap-1.5">
           {item.sets.map((set, index) => (
-            <li key={set.id ?? index} className="border-border border-b py-2 last:border-b-0">
+            <li
+              key={set.id ?? index}
+              className="bg-glass rounded-2xl px-4 py-3 font-medium tabular-nums shadow-[inset_0_0_0_1px_var(--color-hairline)]"
+            >
               {t('programs.client.setLine', {
                 number: index + 1,
                 // El resumen de una sola serie, sin el "1 ×" ni el descanso.
@@ -71,14 +71,14 @@ export function ClientExerciseView(props: ClientExerciseViewProps) {
         )}
       </Card>
       {item.note === null ? null : (
-        <Card className="flex flex-col gap-1">
-          <h3 className="font-semibold">{t('programs.client.coachNote')}</h3>
+        <Card className="flex flex-col gap-2">
+          <h3 className="eyebrow text-primary-readable">{t('programs.client.coachNote')}</h3>
           <p className="whitespace-pre-line">{item.note}</p>
         </Card>
       )}
       {exercise?.instructions === null || exercise?.instructions === undefined ? null : (
-        <Card className="flex flex-col gap-1">
-          <h3 className="font-semibold">{t('programs.client.instructions')}</h3>
+        <Card className="flex flex-col gap-2">
+          <h3 className="eyebrow text-muted">{t('programs.client.instructions')}</h3>
           <p className="whitespace-pre-line">{exercise.instructions}</p>
         </Card>
       )}
@@ -87,7 +87,7 @@ export function ClientExerciseView(props: ClientExerciseViewProps) {
           href={exercise.videoUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className={buttonClassName('secondary', 'self-start')}
+          className={buttonClassName('secondary', 'w-full', 'lg')}
         >
           {t('programs.client.watchVideo')}
         </a>

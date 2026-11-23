@@ -13,7 +13,8 @@ interface SpaceListProps {
   onChoose: (space: Membership) => void;
 }
 
-const ROW = 'border-border flex min-h-14 w-full items-center gap-3 rounded-lg border p-3 text-left';
+const ROW =
+  'flex min-h-16 w-full items-center gap-3 rounded-2xl p-3 text-left transition-colors duration-200';
 
 /**
  * La lista de espacios (D-056): cada uno con su distintivo, su nombre y si se
@@ -27,9 +28,9 @@ export function SpaceList({ spaces, currentTenantId = null, onChoose }: SpaceLis
       {spaces.map((space) => {
         const content = (
           <>
-            <BrandBadge brand={space.tenant?.branding ?? DEFAULT_BRAND} />
+            <BrandBadge brand={space.tenant?.branding ?? DEFAULT_BRAND} round />
             <span className="flex flex-1 flex-col">
-              <span className="font-medium">{space.tenantName}</span>
+              <span className="font-semibold">{space.tenantName}</span>
               <span className="text-muted text-sm">
                 {t(space.role === 'client' ? 'app.spaces.roleClient' : 'app.spaces.roleCoach')}
               </span>
@@ -39,18 +40,21 @@ export function SpaceList({ spaces, currentTenantId = null, onChoose }: SpaceLis
         return (
           <li key={space.tenantId}>
             {space.tenantId === currentTenantId ? (
-              <div aria-current="true" className={cn(ROW, 'bg-surface')}>
+              <div
+                aria-current="true"
+                className={cn(
+                  ROW,
+                  'bg-primary-soft shadow-[inset_0_0_0_1px_var(--color-hairline)]',
+                )}
+              >
                 {content}
-                <span className="text-sm font-medium">{t('app.spaces.current')}</span>
+                <span className="eyebrow text-primary-readable">{t('app.spaces.current')}</span>
               </div>
             ) : (
               <button
                 type="button"
                 onClick={() => onChoose(space)}
-                className={cn(
-                  ROW,
-                  'hover:bg-surface focus-visible:outline-primary-readable focus-visible:outline-2',
-                )}
+                className={cn(ROW, 'glass focus-ring hover:bg-glass-hover active:scale-[0.99]')}
               >
                 {content}
               </button>

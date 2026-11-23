@@ -5,6 +5,7 @@ import { canLogWorkouts, getUploadQueue, useUploadQueue } from '@/core/native';
 import { cn } from '@/core/lib';
 import { Button, useOnlineStatus } from '@/core/ui';
 
+import { LiveWorkoutPill } from './LiveWorkoutPill';
 import { RestTimerBar } from './RestTimerBar';
 import { useOfflineSnapshotRefresh, useUploadPending } from '../api/useWorkoutSync';
 import { TimedOutNotice } from './TimedOutNotice';
@@ -31,6 +32,7 @@ function SyncForUser({ userId }: { userId: string }) {
     <>
       <TimedOutNotice />
       <RestTimerBar />
+      <LiveWorkoutPill />
       <PendingUploadsBadge userId={userId} />
       <RejectedUploadsNotice userId={userId} />
     </>
@@ -54,11 +56,12 @@ function PendingUploadsBadge({ userId }: { userId: string }) {
     <p
       role="status"
       className={cn(
-        'bg-surface border-border text-foreground fixed right-4 z-50 rounded-full border px-3 py-1 text-xs font-semibold shadow',
+        'glass-float text-foreground fixed right-4 z-50 flex items-center gap-2 rounded-full px-3.5 py-1.5 text-xs font-semibold',
         // Debajo de la franja "Sin conexión" (D-061), que va arriba del todo.
         isOnline ? 'top-[calc(0.5rem+var(--safe-top))]' : 'top-[calc(3rem+var(--safe-top))]',
       )}
     >
+      <span aria-hidden="true" className="bg-accent size-1.5 animate-pulse rounded-full" />
       {t('workouts.sync.pending')}
     </p>
   );
@@ -81,7 +84,7 @@ function RejectedUploadsNotice({ userId }: { userId: string }) {
   return (
     <div
       role="alert"
-      className="bg-surface border-border fixed inset-x-4 bottom-[calc(5rem+var(--safe-bottom))] z-50 mx-auto flex max-w-lg flex-col gap-2 rounded-lg border p-4 shadow-lg lg:bottom-8"
+      className="glass-float fixed inset-x-4 bottom-[calc(6.25rem+var(--safe-bottom))] z-50 mx-auto flex max-w-lg flex-col gap-3 rounded-[1.6rem] p-5 lg:bottom-8"
     >
       {noAccess.map((name) => (
         <p key={name} className="text-sm font-semibold">

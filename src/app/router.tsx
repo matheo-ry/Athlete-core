@@ -43,7 +43,12 @@ function moduleRoutes(modules: readonly ModuleManifest[], profile: Profile): Rou
     .filter((module) => module.routes[profile].length > 0)
     .map((module) => ({
       element: <ModuleGate moduleKey={module.key} profile={profile} />,
-      children: module.routes[profile].map(({ path, lazy }) => ({ path, lazy })),
+      children: module.routes[profile].map(({ path, lazy, immersive }) => ({
+        path,
+        lazy,
+        // La carcasa lo lee con `useImmersive` (D-prime2-1).
+        handle: { immersive: immersive === true },
+      })),
     }));
 }
 

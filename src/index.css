@@ -238,11 +238,12 @@
   line-height: 0.92;
 }
 
-/* Cifras grandes: más estrechas, para que quepan "142,5" o "12/20". */
+/* Cifras grandes: Mona Sans y no Hubot, porque el cero de Hubot lleva un punto
+   y "10" se podría leer "18" en mitad de un entreno. */
 @utility numeral {
-  font-family: var(--font-display);
-  font-stretch: 92%;
-  font-weight: 760;
+  font-family: var(--font-sans);
+  font-stretch: 108%;
+  font-weight: 740;
   letter-spacing: -0.03em;
   font-variant-numeric: tabular-nums;
   line-height: 1;

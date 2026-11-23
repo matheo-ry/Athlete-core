@@ -132,10 +132,10 @@ function HealthCharts({ data, unit, referenceDate }: HealthChartsProps) {
     metricOptions.find((o) => o.key === metric)?.label ?? t('progress.health.measurements');
 
   return (
-    <Card className="flex flex-col gap-4 p-4" data-testid="health-progress-card">
-      <h2 className="text-lg font-bold text-foreground">{t('progress.health.title')}</h2>
+    <Card className="flex flex-col gap-5" data-testid="health-progress-card">
+      <h2 className="display text-foreground text-[1.75rem]">{t('progress.health.title')}</h2>
 
-      <div className="flex flex-wrap items-center justify-between gap-3 border-y border-border py-2">
+      <div className="flex flex-wrap items-center justify-between gap-3">
         <ChoiceChips
           label={t('progress.metric.label')}
           options={metricOptions}
@@ -153,15 +153,18 @@ function HealthCharts({ data, unit, referenceDate }: HealthChartsProps) {
       </div>
 
       {summary ? (
-        <div className="flex flex-wrap items-center gap-4 text-sm font-medium">
-          <div className="flex items-center gap-1">
-            <span className="text-muted">{t('progress.stats.last')}:</span>
-            <span className="font-bold text-foreground">{summary.last}</span>
+        <div className="grid grid-cols-2 gap-2">
+          <div className="bg-glass flex flex-col gap-1 rounded-2xl px-4 py-3 shadow-[inset_0_0_0_1px_var(--color-hairline)]">
+            <span className="eyebrow text-muted">{t('progress.stats.last')}:</span>
+            <span className="numeral text-foreground text-2xl">{summary.last}</span>
           </div>
           {summary.change !== null ? (
-            <div className="flex items-center gap-1" data-testid="health-diff-stat">
-              <span className="text-muted">{t('progress.health.change')}:</span>
-              <span className="font-bold text-primary-readable">{summary.change}</span>
+            <div
+              className="bg-glass flex flex-col gap-1 rounded-2xl px-4 py-3 shadow-[inset_0_0_0_1px_var(--color-hairline)]"
+              data-testid="health-diff-stat"
+            >
+              <span className="eyebrow text-muted">{t('progress.health.change')}:</span>
+              <span className="numeral text-primary-readable text-2xl">{summary.change}</span>
             </div>
           ) : null}
         </div>

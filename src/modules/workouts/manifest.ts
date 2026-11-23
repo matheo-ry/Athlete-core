@@ -17,6 +17,8 @@ export const workoutsModule = defineModule({
         path: 'workout',
         lazy: () =>
           import('./client/WorkoutPage').then((page) => ({ Component: page.WorkoutPage })),
+        // Mientras se entrena, sin barra de navegación (D-prime2-1).
+        immersive: true,
       },
     ],
   },

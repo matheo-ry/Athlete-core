@@ -2,8 +2,14 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 import { useTenancy } from '@/core/tenancy';
 
-import { assignProgram, fetchClientPrograms, fetchProgramsOfClient } from './assignments-api';
+import {
+  assignProgram,
+  fetchClientPrograms,
+  fetchProgramsOfClient,
+  setMissedDayRule,
+} from './assignments-api';
 import type { AssignInput, AssignResult } from './assignments-api';
+import type { MissedDayRule } from '../model/calendar';
 
 export function clientProgramsQueryKey(tenantId: string | null) {
   return ['programs', 'client-programs', tenantId] as const;
@@ -56,6 +62,43 @@ export function useAssignProgram() {
     onSuccess: async (result) => {
       if (result.status === 'assigned') {
         await queryClient.invalidateQueries({ queryKey: clientProgramsQueryKey(tenantId) });
+      }
+    },
+  });
+}
+
+/** Cambiar la regla del día saltado (D-125, D-139). */
+export function useSetMissedDayRule(clientId?: string) {
+  const { tenant } = useTenancy();
+  const queryClient = useQueryClient();
+  const tenantId = tenant?.id ?? null;
+
+  return useMutation({
+    mutationFn: async ({
+      programId,
+      rule,
+      today,
+    }: {
+      programId: string;
+      rule: MissedDayRule;
+      today: string;
+    }) => {
+      if (!navigator.onLine) {
+        return { status: 'offline' as const };
+      }
+      if (tenantId === null) {
+        return { status: 'error' as const };
+      }
+      return setMissedDayRule(tenantId, programId, rule, today);
+    },
+    onSuccess: async (result) => {
+      if (result.status === 'done') {
+        await queryClient.invalidateQueries({ queryKey: clientProgramsQueryKey(tenantId) });
+        if (clientId) {
+          await queryClient.invalidateQueries({
+            queryKey: programsOfClientQueryKey(tenantId, clientId),
+          });
+        }
       }
     },
   });

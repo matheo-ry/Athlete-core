@@ -26,6 +26,8 @@
 | Directorio público "Encuentra tu coach" | **Sigue el no** hasta tener decenas de coaches | D-053, D-134 |
 | Resúmenes con IA, valoración inicial, reseñas, venta de extras, modo pausa, informe pre-renovación, importar Excel en 24 h, app propia en las tiendas | Sin decidir. Ideas para más adelante | — |
 
+**Segunda tanda (2026-11-20):** nutrición, IA, entreno en sala, copiloto del coach, pruebas gratuitas y vídeos 3D. Lo decidido de cada una está en `docs/cambios/ideas-gemini-decisiones.md`.
+
 ---
 
 ## El texto original de Gemini

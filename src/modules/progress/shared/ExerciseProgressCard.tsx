@@ -123,22 +123,25 @@ export function ExerciseProgressCard({ exercise, unit, referenceDate }: Exercise
         ) : null}
       </header>
 
-      <div className="grid grid-cols-2 gap-2">
-        <ProgressStat label={t('progress.stats.last')}>
-          {selectedSession?.maxRm != null
-            ? formatWeight(selectedSession.maxRm, unit, language)
-            : '—'}
-        </ProgressStat>
-        <ProgressStat
-          label={t('progress.stats.progressRm')}
-          tone={pctTone}
-          testId="rm-progress-badge"
-        >
-          {rmProgressPct !== null
-            ? `${rmProgressPct > 0 ? '+' : ''}${String(rmProgressPct)} %`
-            : '—'}
-        </ProgressStat>
-      </div>
+      {/* Sin RM (peso corporal sin lastre) las dos cifras serían "—": no se enseñan. */}
+      {selectedSession?.maxRm != null || rmProgressPct !== null ? (
+        <div className="grid grid-cols-2 gap-2">
+          <ProgressStat label={t('progress.stats.last')}>
+            {selectedSession?.maxRm != null
+              ? formatWeight(selectedSession.maxRm, unit, language)
+              : '—'}
+          </ProgressStat>
+          <ProgressStat
+            label={t('progress.stats.progressRm')}
+            tone={pctTone}
+            testId="rm-progress-badge"
+          >
+            {rmProgressPct !== null
+              ? `${rmProgressPct > 0 ? '+' : ''}${String(rmProgressPct)} %`
+              : '—'}
+          </ProgressStat>
+        </div>
+      ) : null}
 
       <div className="flex flex-col gap-2">
         <ChoiceChips

@@ -123,7 +123,7 @@ function StartDay({ dayNumber }: { dayNumber: number }) {
       <div className="flex flex-col gap-1.5">
         <p className="eyebrow text-primary-readable">{t('workouts.workout.title')}</p>
         <h1 className="text-3xl leading-[1.08] font-semibold">{title(day)}</h1>
-        <p className="numeric text-muted text-sm">{summary({ ...day, name: null })}</p>
+        <p className="text-muted text-sm">{summary({ ...day, name: null })}</p>
       </div>
       <Button
         size="lg"

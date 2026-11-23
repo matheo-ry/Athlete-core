@@ -195,7 +195,12 @@ export function SetEditor({
             );
           }}
         >
-          <span className={cn('eyebrow truncate px-2 pt-1.5', atFailure && 'text-on-primary/80')}>
+          <span
+            className={cn(
+              'truncate px-2 pt-1.5 text-xs font-medium',
+              atFailure ? 'text-on-primary/80' : 'text-muted',
+            )}
+          >
             {t('workouts.set.failure')}
           </span>
           <span className="numeric flex h-11 items-center px-2 text-2xl font-medium">

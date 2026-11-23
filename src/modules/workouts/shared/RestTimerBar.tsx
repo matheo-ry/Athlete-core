@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useLocation } from 'react-router';
 
 import { useProfile } from '@/core/auth';
 import { cn } from '@/core/lib';
@@ -35,6 +36,8 @@ const ROUND =
 export function RestTimerBar() {
   const { t } = useTranslation();
   const timer = useRestTimer();
+  // En la pantalla del entreno no hay barra de navegación: la del descanso baja.
+  const isTraining = useLocation().pathname.startsWith('/client/workout');
   const workout = useActiveWorkout().data ?? null;
   const profile = useProfile().data;
   const [now, setNow] = useState(() => Date.now());
@@ -109,7 +112,12 @@ export function RestTimerBar() {
     <section
       ref={bar}
       aria-label={t('workouts.rest.label')}
-      className="glass animate-rise fixed inset-x-3 bottom-[calc(5.5rem+var(--safe-bottom))] z-40 mx-auto flex max-w-md flex-col gap-3 rounded-3xl p-3"
+      className={cn(
+        'glass animate-rise fixed inset-x-3 z-40 mx-auto flex max-w-md flex-col gap-3 rounded-3xl p-3',
+        isTraining
+          ? 'bottom-[calc(0.75rem+var(--safe-bottom))]'
+          : 'bottom-[calc(5.5rem+var(--safe-bottom))]',
+      )}
     >
       <div className="flex items-center gap-3">
         <div className="flex min-w-0 flex-1 flex-col gap-1 pl-1">

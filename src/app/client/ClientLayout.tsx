@@ -1,5 +1,7 @@
 import { Outlet, useLocation } from 'react-router';
 
+import { cn } from '@/core/lib';
+
 import { BottomNav } from '../BottomNav';
 import { BrandMark } from '../BrandMark';
 import { useShellNav } from '../useShellNav';
@@ -21,7 +23,14 @@ export function ClientLayout() {
         <BrandMark />
       </header>
       {/* Deja sitio a la barra inferior flotante y a la de gestos del móvil. */}
-      <main className="mx-auto w-full max-w-xl flex-1 px-5 pt-5 pb-[calc(6.5rem+var(--safe-bottom))]">
+      <main
+        className={cn(
+          'mx-auto w-full max-w-xl flex-1 px-5 pt-5',
+          isTraining
+            ? 'pb-[calc(2rem+var(--safe-bottom))]'
+            : 'pb-[calc(6.5rem+var(--safe-bottom))]',
+        )}
+      >
         {/* Cada pantalla entra con un pequeño ascenso; al cambiar de ruta, de nuevo. */}
         <div key={pathname} className="animate-rise">
           <Outlet />

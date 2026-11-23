@@ -39,7 +39,7 @@ export function ExerciseFilterBar({ filters, onChange }: ExerciseFilterBarProps)
         onClick={() => setIsOpen((open) => !open)}
         className={buttonClassName('secondary', 'self-start sm:hidden')}
       >
-        <Icon name="settings" className="size-4" />
+        <Icon name="sliders" className="size-4" />
         {active > 0
           ? t('exercises.list.filtersActive', { count: active })
           : t('exercises.list.filters')}

@@ -63,7 +63,7 @@ export function StepperField(props: StepperFieldProps) {
         className,
       )}
     >
-      <span className="eyebrow truncate px-2 pt-1.5">{label}</span>
+      <span className="text-muted truncate px-2 pt-1.5 text-xs font-medium">{label}</span>
       <div className="flex items-center">
         <button
           type="button"
@@ -80,8 +80,7 @@ export function StepperField(props: StepperFieldProps) {
           inputMode={decimals ? 'decimal' : 'numeric'}
           className="numeric text-foreground placeholder:text-muted/45 h-11 w-full min-w-0 flex-1 rounded-lg bg-transparent text-center text-2xl font-medium outline-none focus-visible:bg-foreground/5"
           value={draft ?? (value === null ? '' : String(value))}
-          // Sin referencia, un guion: el campo se lee como vacío a propósito, no roto.
-          placeholder={placeholder === null ? '—' : String(placeholder)}
+          placeholder={placeholder === null ? '' : String(placeholder)}
           onFocus={(event) => {
             event.target.select();
           }}

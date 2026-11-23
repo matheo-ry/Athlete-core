@@ -349,6 +349,7 @@
   "missedDayRule": {
     "title": "If a workout is missed",
     "subtitle": "What happens when a training day passes without your client logging it.",
+    "error": "Could not change the rule. Please try again.",
     "rules": {
       "lose": {
         "label": "Skipped",

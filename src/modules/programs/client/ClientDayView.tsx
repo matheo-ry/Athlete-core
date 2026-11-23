@@ -51,7 +51,14 @@ export function ClientDayView({ program, document, today, dayNumber }: ClientDay
 
   const status =
     program.mode === 'calendar'
-      ? dayExecutionStatus(day, program, language)
+      ? dayExecutionStatus(day, {
+          program,
+          blockId: block?.id ?? null,
+          blockIndex: current?.blockIndex ?? 0,
+          lap: current?.lap ?? 1,
+          today,
+          language,
+        })
       : { kind: 'normal' as const };
   const baseLabel =
     status.kind === 'done_other_day'

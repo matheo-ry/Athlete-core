@@ -4,6 +4,7 @@ import { useLanguage } from '@/core/i18n';
 import { cn } from '@/core/lib';
 
 import type { ClientProgram } from '../model/assignments';
+import { localToday } from '../model/calendar';
 import { dayExecutionStatus } from '../model/client-view';
 import type { ProgramBlock } from '../model/program-document';
 import { useDayLabel, useDaySummary } from '../shared/useDayText';
@@ -13,10 +14,20 @@ interface BlockDaysProps {
   /** El día que toca hoy, marcado; vacío en modo lista o si aún no ha empezado. */
   todayNumber: number | null;
   program?: ClientProgram;
+  blockIndex?: number;
+  lap?: number;
+  today?: string;
 }
 
 /** Los días de un bloque, en lectura, con su resumen (PR 2.14). */
-export function BlockDays({ block, todayNumber, program }: BlockDaysProps) {
+export function BlockDays({
+  block,
+  todayNumber,
+  program,
+  blockIndex = 0,
+  lap = 1,
+  today,
+}: BlockDaysProps) {
   const { t } = useTranslation();
   const language = useLanguage();
   const label = useDayLabel(block);
@@ -27,7 +38,14 @@ export function BlockDays({ block, todayNumber, program }: BlockDaysProps) {
       {block.days.map((day) => {
         const status =
           program && program.mode === 'calendar'
-            ? dayExecutionStatus(day, program, language)
+            ? dayExecutionStatus(day, {
+                program,
+                blockId: block.id,
+                blockIndex,
+                lap,
+                today: today ?? localToday(),
+                language,
+              })
             : { kind: 'normal' as const };
         const baseLabel = label(day.dayNumber);
         const titleText =

@@ -6,6 +6,7 @@ import { cn } from '@/core/lib';
 import { Card } from '@/core/ui';
 
 import type { ClientProgram } from '../model/assignments';
+import { localToday } from '../model/calendar';
 import { dayExecutionStatus } from '../model/client-view';
 import type { ClientBlock } from '../model/client-view';
 import { dayCounts } from '../model/cycle-editor';
@@ -15,6 +16,7 @@ import { shortDate } from '../shared/useProgressText';
 interface BlockOverviewProps extends ClientBlock {
   program: ClientProgram;
   documentName: string;
+  today?: string;
 }
 
 /** "Hoy toca" y los días del bloque en que va el cliente (D-084). */
@@ -25,9 +27,13 @@ export function BlockOverview({
   todayNumber,
   nextBlockStartsOn,
   isRecovery,
+  blockIndex = 0,
+  lap = 1,
+  today,
 }: BlockOverviewProps) {
   const language = useLanguage();
   const { t } = useTranslation();
+  const currentDate = today ?? localToday();
   const label = useDayLabel(block);
   const summary = useDaySummary();
   const todayDay = block.days.find((day) => day.dayNumber === todayNumber);
@@ -76,7 +82,14 @@ export function BlockOverview({
           {days.map((day) => {
             const status =
               program.mode === 'calendar'
-                ? dayExecutionStatus(day, program, language)
+                ? dayExecutionStatus(day, {
+                    program,
+                    blockId: block.id,
+                    blockIndex,
+                    lap,
+                    today: currentDate,
+                    language,
+                  })
                 : { kind: 'normal' as const };
             const baseLabel =
               program.mode === 'list'

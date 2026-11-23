@@ -389,3 +389,160 @@ export function calendarPosition(
     isRecovery: false,
   };
 }
+
+/**
+ * Calcula la fecha prevista en el calendario para un día concreto (bloque, vuelta y día) (D-125).
+ * Devuelve null si ese día no existe en esa vuelta (por ejemplo, lunes en una semana a medias que empezó en miércoles).
+ */
+export function scheduledDateForDay(
+  blocks: readonly CalendarBlock[],
+  startsOn: string,
+  startBlockId: string | null = null,
+  options: {
+    blockIndex: number;
+    lap: number;
+    dayNumber: number;
+    rules?: readonly MissedDayRuleHistory[];
+    missedDays?: readonly MissedDayRecord[];
+  },
+): string | null {
+  const schedule = scheduleBlocks(blocks, startsOn, startBlockId, {
+    rules: options.rules,
+    missedDays: options.missedDays,
+  });
+  const scheduledBlock = schedule.find((s) => s.index === options.blockIndex);
+  if (scheduledBlock === undefined) {
+    return null;
+  }
+  const cycleDays = blocks[options.blockIndex]?.cycleDays ?? 7;
+
+  let targetLogicalOffset: number;
+  if (options.lap === 0) {
+    const weekday = weekdayIndex(scheduledBlock.startsOn);
+    const offset = options.dayNumber - 1 - weekday;
+    if (offset < 0 || offset >= scheduledBlock.partialDays) {
+      return null;
+    }
+    targetLogicalOffset = offset;
+  } else {
+    targetLogicalOffset =
+      scheduledBlock.partialDays + (options.lap - 1) * cycleDays + (options.dayNumber - 1);
+  }
+
+  let d = addDays(scheduledBlock.startsOn, targetLogicalOffset);
+  if (options.missedDays && options.missedDays.length > 0) {
+    const countShifts = (date: string) =>
+      options.missedDays!.filter(
+        (m) =>
+          m.missedOn >= scheduledBlock.startsOn &&
+          m.missedOn < date &&
+          doesMissedDayShift(m.missedOn, options.rules, date),
+      ).length;
+
+    let shifts = countShifts(d);
+    while (daysBetween(scheduledBlock.startsOn, d) - shifts < targetLogicalOffset) {
+      d = addDays(d, 1);
+      shifts = countShifts(d);
+    }
+  }
+
+  return d;
+}
+
+export interface MissedDayToSync {
+  program_day_id: string;
+  missed_on: string;
+  day_number: number;
+  block_id: string | null;
+}
+
+/**
+ * Función pura que calcula los días de entreno faltados que deben registrarse en la BD (D-125).
+ * Cada día saltado se añade al acumulado de simulación para que los siguientes días proyecten
+ * con exactitud los desplazamientos ('shift') o recuperaciones ('recover').
+ */
+export function calculateMissedDaysToSync(
+  program: {
+    startsOn: string;
+    mode: 'calendar' | 'list';
+    startBlockId: string | null;
+    blocks: readonly CalendarBlock[];
+    missedDayRules?: readonly MissedDayRuleHistory[];
+    missedDays?: readonly MissedDayRecord[];
+    workouts?: readonly {
+      performedOn?: string;
+      closedAt?: string | null;
+    }[];
+  },
+  document: {
+    blocks: readonly {
+      id?: string | null;
+      days: readonly {
+        id?: string | null;
+        dayNumber: number;
+        kind: 'training' | 'rest';
+      }[];
+    }[];
+  },
+  today: string,
+): MissedDayToSync[] {
+  if (program.mode !== 'calendar' || daysBetween(program.startsOn, today) <= 0) {
+    return [];
+  }
+
+  const currentMissedDays: MissedDayRecord[] = [...(program.missedDays ?? [])];
+  const recordedMissedDates = new Set(currentMissedDays.map((m) => m.missedOn));
+  const performedDates = new Set(
+    program.workouts
+      ?.filter((w) => w.closedAt !== null && w.performedOn !== undefined)
+      .map((w) => w.performedOn!) ?? [],
+  );
+  const toSync: MissedDayToSync[] = [];
+
+  let cur = program.startsOn;
+  const minDate = addDays(today, -60);
+  if (cur < minDate) {
+    cur = minDate;
+  }
+  const yesterday = addDays(today, -1);
+
+  const isRestDay = (blockIndex: number, dayNumber: number) => {
+    const docBlock = document.blocks[blockIndex];
+    const day = docBlock?.days.find((d) => d.dayNumber === dayNumber);
+    return day?.kind === 'rest';
+  };
+
+  while (cur <= yesterday) {
+    if (!recordedMissedDates.has(cur) && !performedDates.has(cur)) {
+      const pos = calendarPosition(program.blocks, program.startsOn, cur, program.startBlockId, {
+        rules: program.missedDayRules,
+        missedDays: currentMissedDays,
+        isRestDay,
+      });
+
+      if (pos.status === 'running') {
+        const docBlock = document.blocks[pos.blockIndex];
+        const day = docBlock?.days.find((d) => d.dayNumber === pos.dayNumber);
+        if (day?.kind === 'training' && day.id) {
+          const item: MissedDayToSync = {
+            program_day_id: day.id,
+            missed_on: cur,
+            day_number: day.dayNumber,
+            block_id: docBlock?.id ?? null,
+          };
+          toSync.push(item);
+          currentMissedDays.push({
+            programDayId: day.id,
+            dayNumber: day.dayNumber,
+            blockId: docBlock?.id ?? null,
+            missedOn: cur,
+          });
+          recordedMissedDates.add(cur);
+        }
+      }
+    }
+    cur = addDays(cur, 1);
+  }
+
+  return toSync;
+}

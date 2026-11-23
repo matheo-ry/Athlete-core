@@ -150,6 +150,7 @@ describe('routineProgress', () => {
         ],
         workouts: Array.from({ length: 16 }, (_, i) => ({
           id: `w-${String(i)}`,
+          performed_on: '2026-11-10',
           closed_at: '2026-11-10T10:00:00Z',
         })),
       },

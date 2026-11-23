@@ -40,5 +40,14 @@ export function CurrentProgramDays({ program, today }: CurrentProgramDaysProps) 
   const todayNumber =
     program.mode === 'calendar' && position.status === 'running' ? position.dayNumber : null;
 
-  return <BlockDays block={block} todayNumber={todayNumber} program={program} />;
+  return (
+    <BlockDays
+      block={block}
+      todayNumber={todayNumber}
+      program={program}
+      blockIndex={blockIndex}
+      lap={position.status === 'running' ? position.lap : 1}
+      today={today}
+    />
+  );
 }

@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { Card } from '@/core/ui';
@@ -28,13 +29,29 @@ export function MissedDayRuleSection({
 }: MissedDayRuleSectionProps) {
   const { t } = useTranslation();
   const setRule = useSetMissedDayRule(clientId);
+  const [failure, setFailure] = useState<string | null>(null);
   const currentRule = activeMissedDayRule(program.missedDayRules, today);
 
   const handleChange = (rule: MissedDayRule) => {
     if (disabled || setRule.isPending || rule === currentRule) {
       return;
     }
-    void setRule.mutate({ programId: program.id, rule, today });
+    setFailure(null);
+    setRule.mutate(
+      { programId: program.id, rule, today },
+      {
+        onSuccess: (result) => {
+          if (result.status === 'offline') {
+            setFailure(t('core.errors.offline'));
+          } else if (result.status !== 'done') {
+            setFailure(t('programs.missedDayRule.error'));
+          }
+        },
+        onError: () => {
+          setFailure(t('core.errors.unexpected'));
+        },
+      },
+    );
   };
 
   return (
@@ -43,6 +60,11 @@ export function MissedDayRuleSection({
         <h3 className="font-semibold">{t('programs.missedDayRule.title')}</h3>
         <p className="text-muted text-sm">{t('programs.missedDayRule.subtitle')}</p>
       </div>
+      {failure === null ? null : (
+        <p role="alert" className="text-danger text-sm font-medium">
+          {failure}
+        </p>
+      )}
       <fieldset className="flex flex-col gap-3" disabled={disabled || setRule.isPending}>
         <legend className="sr-only">{t('programs.missedDayRule.title')}</legend>
         {RULES.map((rule) => {

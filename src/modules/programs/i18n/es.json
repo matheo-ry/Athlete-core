@@ -349,6 +349,7 @@
   "missedDayRule": {
     "title": "Si falta a un entreno",
     "subtitle": "Qué pasa cuando pasa un día de entreno sin que tu cliente lo registre.",
+    "error": "No se pudo cambiar la regla. Vuelve a intentarlo.",
     "rules": {
       "lose": {
         "label": "Se pierde",

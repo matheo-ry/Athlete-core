@@ -3,12 +3,14 @@ import { describe, expect, it } from 'vitest';
 import {
   activeMissedDayRule,
   addDays,
+  calculateMissedDaysToSync,
   calendarPosition,
   daysBetween,
   listPosition,
   localToday,
   programEndsOn,
   scheduleBlocks,
+  scheduledDateForDay,
 } from './calendar';
 import type { CalendarBlock } from './calendar';
 
@@ -353,6 +355,136 @@ describe('modo lista: avance por entrenos hechos (D-125)', () => {
       expect(activeMissedDayRule(rules, '2026-11-15')).toBe('recover');
       expect(activeMissedDayRule(rules, '2026-11-20')).toBe('shift');
       expect(activeMissedDayRule(rules, '2026-11-25')).toBe('shift');
+    });
+  });
+
+  describe('scheduledDateForDay (D-125)', () => {
+    it('calcula la fecha exacta de un día en una rutina que empieza en lunes', () => {
+      const blocks = [weekly(2)];
+      expect(
+        scheduledDateForDay(blocks, MONDAY, null, { blockIndex: 0, lap: 1, dayNumber: 1 }),
+      ).toBe('2026-11-16');
+      expect(
+        scheduledDateForDay(blocks, MONDAY, null, { blockIndex: 0, lap: 1, dayNumber: 2 }),
+      ).toBe('2026-11-17');
+      expect(
+        scheduledDateForDay(blocks, MONDAY, null, { blockIndex: 0, lap: 2, dayNumber: 1 }),
+      ).toBe('2026-11-23');
+    });
+
+    it('en una rutina que empieza en miércoles, lap 0 maneja la semana parcial', () => {
+      const blocks = [weekly(2)];
+      // Lunes y martes no existen en la semana a medias (lap 0)
+      expect(
+        scheduledDateForDay(blocks, WEDNESDAY, null, { blockIndex: 0, lap: 0, dayNumber: 1 }),
+      ).toBeNull();
+      expect(
+        scheduledDateForDay(blocks, WEDNESDAY, null, { blockIndex: 0, lap: 0, dayNumber: 2 }),
+      ).toBeNull();
+      // Miércoles de lap 0 es el día de inicio
+      expect(
+        scheduledDateForDay(blocks, WEDNESDAY, null, { blockIndex: 0, lap: 0, dayNumber: 3 }),
+      ).toBe('2026-11-18');
+      // Lap 1 empieza el lunes siguiente
+      expect(
+        scheduledDateForDay(blocks, WEDNESDAY, null, { blockIndex: 0, lap: 1, dayNumber: 1 }),
+      ).toBe('2026-11-23');
+    });
+
+    it('con un ciclo de 8 días calcula correctamente las fechas sin asumir lunes', () => {
+      const blocks = [cycle8(2)];
+      // Lap 1 día 8
+      expect(
+        scheduledDateForDay(blocks, MONDAY, null, { blockIndex: 0, lap: 1, dayNumber: 8 }),
+      ).toBe('2026-11-23');
+      // Lap 2 día 1 (martes 24)
+      expect(
+        scheduledDateForDay(blocks, MONDAY, null, { blockIndex: 0, lap: 2, dayNumber: 1 }),
+      ).toBe('2026-11-24');
+    });
+
+    it('con regla shift desplaza la fecha de los días siguientes si hubo días saltados', () => {
+      const blocks = [weekly(2)];
+      const missed = [{ dayNumber: 1, missedOn: '2026-11-16' }];
+      const rules = [{ rule: 'shift' as const, startsOn: '2026-11-16' }];
+      // El día 2 se desplaza al miércoles 18
+      expect(
+        scheduledDateForDay(blocks, MONDAY, null, {
+          blockIndex: 0,
+          lap: 1,
+          dayNumber: 2,
+          rules,
+          missedDays: missed,
+        }),
+      ).toBe('2026-11-18');
+    });
+  });
+
+  describe('calculateMissedDaysToSync (D-125) - 3 días seguidos sin abrir', () => {
+    const document = {
+      blocks: [
+        {
+          id: 'b1',
+          days: [
+            { id: 'd1', dayNumber: 1, kind: 'training' as const },
+            { id: 'd2', dayNumber: 2, kind: 'rest' as const },
+            { id: 'd3', dayNumber: 3, kind: 'training' as const },
+            { id: 'd4', dayNumber: 4, kind: 'rest' as const },
+          ],
+        },
+      ],
+    };
+
+    const baseProgram = {
+      startsOn: '2026-11-16', // Lunes 16
+      mode: 'calendar' as const,
+      startBlockId: null,
+      blocks: [{ id: 'b1', cycleDays: 7, laps: 4 }],
+      workouts: [],
+    };
+
+    // Abre el jueves 19: los días anteriores sin abrir son lunes 16, martes 17 y miércoles 18
+    const THURSDAY = '2026-11-19';
+
+    it('con regla "Se pierde", apunta solo los días de entreno de su fecha fija (lunes y miércoles)', () => {
+      const toSync = calculateMissedDaysToSync(
+        { ...baseProgram, missedDayRules: [{ rule: 'lose', startsOn: '2026-11-16' }] },
+        document,
+        THURSDAY,
+      );
+
+      expect(toSync).toEqual([
+        { program_day_id: 'd1', missed_on: '2026-11-16', day_number: 1, block_id: 'b1' },
+        { program_day_id: 'd3', missed_on: '2026-11-18', day_number: 3, block_id: 'b1' },
+      ]);
+    });
+
+    it('con regla "Se mueve todo", cada día saltado retrasa el calendario y apunta el día 1 los 3 días', () => {
+      const toSync = calculateMissedDaysToSync(
+        { ...baseProgram, missedDayRules: [{ rule: 'shift', startsOn: '2026-11-16' }] },
+        document,
+        THURSDAY,
+      );
+
+      expect(toSync).toEqual([
+        { program_day_id: 'd1', missed_on: '2026-11-16', day_number: 1, block_id: 'b1' },
+        { program_day_id: 'd1', missed_on: '2026-11-17', day_number: 1, block_id: 'b1' },
+        { program_day_id: 'd1', missed_on: '2026-11-18', day_number: 1, block_id: 'b1' },
+      ]);
+    });
+
+    it('con regla "Se recupera", el descanso del martes recupera el lunes faltado y se apunta si se salta', () => {
+      const toSync = calculateMissedDaysToSync(
+        { ...baseProgram, missedDayRules: [{ rule: 'recover', startsOn: '2026-11-16' }] },
+        document,
+        THURSDAY,
+      );
+
+      expect(toSync).toEqual([
+        { program_day_id: 'd1', missed_on: '2026-11-16', day_number: 1, block_id: 'b1' },
+        { program_day_id: 'd1', missed_on: '2026-11-17', day_number: 1, block_id: 'b1' },
+        { program_day_id: 'd3', missed_on: '2026-11-18', day_number: 3, block_id: 'b1' },
+      ]);
     });
   });
 });

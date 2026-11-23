@@ -22,7 +22,7 @@ const PROGRAM_SELECT = `
   ${BLOCKS}(id, position, cycle_days, laps),
   ${RULES}(rule, starts_on),
   ${MISSED_DAYS}(id, block_id, program_day_id, day_number, missed_on),
-  ${WORKOUTS}(id, program_day_id, day_number, performed_on, closed_at)
+  ${WORKOUTS}(program_day_id, performed_on, closed_at)
 `;
 
 /** Las rutinas abiertas de los clientes del negocio: vigentes y próximas. */

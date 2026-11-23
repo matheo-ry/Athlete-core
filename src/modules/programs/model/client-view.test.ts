@@ -135,63 +135,229 @@ describe('clientBlock', () => {
   });
 
   describe('dayExecutionStatus (D-125)', () => {
+    const baseProgram = {
+      startsOn: '2026-11-16',
+      mode: 'calendar' as const,
+      startBlockId: null,
+      blocks: [{ id: 'b1', cycleDays: 7, laps: 4 }],
+      missedDayRules: [],
+      missedDays: [],
+      workouts: [],
+    };
+
     it('un día de descanso siempre devuelve normal', () => {
-      const status = dayExecutionStatus({ dayNumber: 2, kind: 'rest' }, {}, 'es');
+      const status = dayExecutionStatus(
+        { dayNumber: 2, kind: 'rest' },
+        {
+          program: baseProgram,
+          blockId: 'b1',
+          blockIndex: 0,
+          lap: 1,
+          today: '2026-11-17',
+          language: 'es',
+        },
+      );
       expect(status.kind).toBe('normal');
     });
 
-    it('un día de entreno sin faltar ni hacer devuelve normal', () => {
-      const status = dayExecutionStatus({ dayNumber: 1, kind: 'training' }, {}, 'es');
+    it('un día de entreno futuro devuelve normal', () => {
+      const status = dayExecutionStatus(
+        { dayNumber: 3, kind: 'training' },
+        {
+          program: baseProgram,
+          blockId: 'b1',
+          blockIndex: 0,
+          lap: 1,
+          today: '2026-11-17', // Miércoles 18 aún no ha llegado
+          language: 'es',
+        },
+      );
       expect(status.kind).toBe('normal');
     });
 
     it('un día de entreno faltado sin completar devuelve missed', () => {
       const status = dayExecutionStatus(
         { dayNumber: 1, kind: 'training' },
-        { missedDays: [{ dayNumber: 1, missedOn: '2026-11-16' }] },
-        'es',
+        {
+          program: {
+            ...baseProgram,
+            missedDays: [{ dayNumber: 1, missedOn: '2026-11-16', blockId: 'b1' }],
+          },
+          blockId: 'b1',
+          blockIndex: 0,
+          lap: 1,
+          today: '2026-11-17',
+          language: 'es',
+        },
       );
       expect(status.kind).toBe('missed');
     });
 
     it('un día de entreno faltado el lunes y hecho el martes devuelve done_other_day', () => {
       const status = dayExecutionStatus(
-        { dayNumber: 1, kind: 'training' },
+        { id: 'd1', dayNumber: 1, kind: 'training' },
         {
-          missedDays: [{ dayNumber: 1, missedOn: '2026-11-16' }],
-          workouts: [
-            {
-              id: 'w1',
-              dayNumber: 1,
-              programDayId: null,
-              performedOn: '2026-11-17', // Martes
-              closedAt: '2026-11-17T18:00:00Z',
-            },
-          ],
+          program: {
+            ...baseProgram,
+            missedDays: [
+              { dayNumber: 1, missedOn: '2026-11-16', blockId: 'b1', programDayId: 'd1' },
+            ],
+            workouts: [
+              {
+                programDayId: 'd1',
+                performedOn: '2026-11-17', // Martes
+                closedAt: '2026-11-17T18:00:00Z',
+              },
+            ],
+          },
+          blockId: 'b1',
+          blockIndex: 0,
+          lap: 1,
+          today: '2026-11-18',
+          language: 'es',
         },
-        'es',
       );
       expect(status).toEqual({ kind: 'done_other_day', weekday: 'martes' });
     });
 
     it('en inglés devuelve el nombre del día traducido', () => {
       const status = dayExecutionStatus(
-        { dayNumber: 1, kind: 'training' },
+        { id: 'd1', dayNumber: 1, kind: 'training' },
         {
-          missedDays: [{ dayNumber: 1, missedOn: '2026-11-16' }],
-          workouts: [
-            {
-              id: 'w1',
-              dayNumber: 1,
-              programDayId: null,
-              performedOn: '2026-11-17',
-              closedAt: '2026-11-17T18:00:00Z',
-            },
-          ],
+          program: {
+            ...baseProgram,
+            missedDays: [
+              { dayNumber: 1, missedOn: '2026-11-16', blockId: 'b1', programDayId: 'd1' },
+            ],
+            workouts: [
+              {
+                programDayId: 'd1',
+                performedOn: '2026-11-17',
+                closedAt: '2026-11-17T18:00:00Z',
+              },
+            ],
+          },
+          blockId: 'b1',
+          blockIndex: 0,
+          lap: 1,
+          today: '2026-11-18',
+          language: 'en',
         },
-        'en',
       );
       expect(status).toEqual({ kind: 'done_other_day', weekday: 'Tuesday' });
+    });
+
+    it('dos bloques: un lunes faltado en el bloque 1 no marca como faltado el día 1 del bloque 2', () => {
+      const twoBlockProgram = {
+        ...baseProgram,
+        blocks: [
+          { id: 'b1', cycleDays: 7, laps: 1 },
+          { id: 'b2', cycleDays: 7, laps: 1 },
+        ],
+        missedDays: [{ dayNumber: 1, missedOn: '2026-11-16', blockId: 'b1' }],
+      };
+      // En el bloque 2 (que empieza el 2026-11-23), el día 1 toca el 23
+      const status = dayExecutionStatus(
+        { dayNumber: 1, kind: 'training' },
+        {
+          program: twoBlockProgram,
+          blockId: 'b2',
+          blockIndex: 1,
+          lap: 1,
+          today: '2026-11-23',
+          language: 'es',
+        },
+      );
+      // El día 1 del bloque 2 es hoy (23), no está faltado
+      expect(status.kind).toBe('normal');
+    });
+
+    it('dos vueltas: un entreno completado en la vuelta 1 no da por hecho el día en la vuelta 2', () => {
+      const twoLapsProgram = {
+        ...baseProgram,
+        blocks: [{ id: 'b1', cycleDays: 7, laps: 2 }],
+        workouts: [
+          {
+            programDayId: 'd1',
+            performedOn: '2026-11-16', // Vuelta 1 lunes
+            closedAt: '2026-11-16T18:00:00Z',
+          },
+        ],
+      };
+      // En la vuelta 2, el lunes tocaba el 2026-11-23. Hoy es 24 y no se hizo.
+      const status = dayExecutionStatus(
+        { id: 'd1', dayNumber: 1, kind: 'training' },
+        {
+          program: twoLapsProgram,
+          blockId: 'b1',
+          blockIndex: 0,
+          lap: 2,
+          today: '2026-11-24',
+          language: 'es',
+        },
+      );
+      expect(status.kind).toBe('missed');
+    });
+
+    it('un ciclo de 8 días calcula correctamente las fechas sin asumir lunes', () => {
+      const eightDayProgram = {
+        ...baseProgram,
+        blocks: [{ id: 'b1', cycleDays: 8, laps: 2 }],
+        workouts: [
+          {
+            programDayId: 'd8',
+            performedOn: '2026-11-24', // Se hizo el martes en vez del lunes 23
+            closedAt: '2026-11-24T18:00:00Z',
+          },
+        ],
+      };
+      const status = dayExecutionStatus(
+        { id: 'd8', dayNumber: 8, kind: 'training' },
+        {
+          program: eightDayProgram,
+          blockId: 'b1',
+          blockIndex: 0,
+          lap: 1,
+          today: '2026-11-25',
+          language: 'es',
+        },
+      );
+      expect(status).toEqual({ kind: 'done_other_day', weekday: 'martes' });
+    });
+
+    it('una rutina que empieza un miércoles maneja correctamente la semana parcial', () => {
+      const wednesdayProgram = {
+        ...baseProgram,
+        startsOn: '2026-11-18', // Miércoles 18
+        blocks: [{ id: 'b1', cycleDays: 7, laps: 2 }],
+      };
+      // En lap 0 (semana parcial), el lunes (día 1) no existe
+      const mondayLap0 = dayExecutionStatus(
+        { dayNumber: 1, kind: 'training' },
+        {
+          program: wednesdayProgram,
+          blockId: 'b1',
+          blockIndex: 0,
+          lap: 0,
+          today: '2026-11-19',
+          language: 'es',
+        },
+      );
+      expect(mondayLap0.kind).toBe('normal');
+
+      // En lap 1, el lunes tocaba el 2026-11-23. Si hoy es 24 y no se hizo, es missed
+      const mondayLap1 = dayExecutionStatus(
+        { dayNumber: 1, kind: 'training' },
+        {
+          program: wednesdayProgram,
+          blockId: 'b1',
+          blockIndex: 0,
+          lap: 1,
+          today: '2026-11-24',
+          language: 'es',
+        },
+      );
+      expect(mondayLap1.kind).toBe('missed');
     });
   });
 });

@@ -1,10 +1,11 @@
 import type { ClientProgram } from './assignments';
 import {
+  addDays,
   calendarPosition,
   formatWeekdayName,
   listPosition,
   scheduleBlocks,
-  weekdayIndex,
+  scheduledDateForDay,
 } from './calendar';
 import type { CalendarOptions } from './calendar';
 import type { ProgramBlock, ProgramDocument } from './program-document';
@@ -19,6 +20,10 @@ export interface ClientBlock {
   nextBlockStartsOn: string | null;
   /** Si hoy toca recuperación de un día faltado (D-125). */
   isRecovery?: boolean;
+  /** Índice del bloque activo en la rutina (PR 3.12). */
+  blockIndex?: number;
+  /** Vuelta activa en el bloque (PR 3.12). */
+  lap?: number;
 }
 
 /**
@@ -85,53 +90,103 @@ export function clientBlock(
   const nextBlockStartsOn =
     position.status === 'running' ? (schedule[place + 1]?.startsOn ?? null) : null;
 
-  return { block, todayNumber, nextBlockStartsOn, isRecovery };
+  return {
+    block,
+    todayNumber,
+    nextBlockStartsOn,
+    isRecovery,
+    blockIndex: index,
+    lap: position.status === 'running' ? position.lap : 1,
+  };
 }
 
 export type DayStatus =
   { kind: 'normal' } | { kind: 'missed' } | { kind: 'done_other_day'; weekday: string };
 
+export interface DayExecutionStatusOptions {
+  program: Pick<
+    ClientProgram,
+    'startsOn' | 'mode' | 'startBlockId' | 'blocks' | 'missedDayRules' | 'missedDays' | 'workouts'
+  >;
+  blockId?: string | null;
+  blockIndex: number;
+  lap: number;
+  today: string;
+  language: string;
+}
+
 /**
  * Determina el estado de ejecución de un día para la vista del cliente o coach (D-125):
- * - normal: el día no se ha saltado
+ * - normal: el día se hizo en su fecha prevista o aún no ha llegado
  * - missed: el día se saltó y no se ha recuperado ("Faltado")
  * - done_other_day: el día se hizo en otro día de la semana ("Lunes, hecho el martes")
  */
 export function dayExecutionStatus(
   day: { id?: string | null; dayNumber: number; kind: 'training' | 'rest' },
-  program: Pick<ClientProgram, 'missedDays' | 'workouts'>,
-  language: string,
+  options: DayExecutionStatusOptions,
 ): DayStatus {
-  if (day.kind === 'rest') {
+  if (day.kind === 'rest' || options.program.mode !== 'calendar') {
     return { kind: 'normal' };
   }
 
-  const missedRecord = program.missedDays?.find(
-    (m) =>
-      m.dayNumber === day.dayNumber ||
-      (day.id !== null && day.id !== undefined && m.programDayId === day.id),
+  const scheduledDate = scheduledDateForDay(
+    options.program.blocks,
+    options.program.startsOn,
+    options.program.startBlockId,
+    {
+      blockIndex: options.blockIndex,
+      lap: options.lap,
+      dayNumber: day.dayNumber,
+      rules: options.program.missedDayRules,
+      missedDays: options.program.missedDays,
+    },
   );
 
-  const completedWorkout = program.workouts?.find(
-    (w) =>
-      w.closedAt !== null &&
-      (w.dayNumber === day.dayNumber ||
-        (day.id !== null && day.id !== undefined && w.programDayId === day.id)),
-  );
+  if (scheduledDate === null) {
+    return { kind: 'normal' };
+  }
 
-  if (completedWorkout && completedWorkout.performedOn) {
-    const performedWeekday = weekdayIndex(completedWorkout.performedOn);
-    const scheduledWeekday = (day.dayNumber - 1) % 7;
-    if (missedRecord !== undefined || performedWeekday !== scheduledWeekday) {
-      return {
-        kind: 'done_other_day',
-        weekday: formatWeekdayName(completedWorkout.performedOn, language),
-      };
+  const isDayMatch = (item: { programDayId?: string | null; dayNumber?: number | null }) => {
+    if (day.id !== null && day.id !== undefined && item.programDayId) {
+      return item.programDayId === day.id;
     }
+    return item.dayNumber === day.dayNumber;
+  };
+
+  const missedRecord = options.program.missedDays?.find(
+    (m) =>
+      m.missedOn === scheduledDate &&
+      (m.blockId === null || options.blockId === null || m.blockId === options.blockId) &&
+      isDayMatch(m),
+  );
+
+  const completedWorkouts = (options.program.workouts ?? []).filter(
+    (w) => w.closedAt !== null && isDayMatch(w) && Boolean(w.performedOn),
+  );
+
+  // Entreno hecho a tiempo en su fecha prevista
+  const onTimeWorkout = completedWorkouts.find((w) => w.performedOn === scheduledDate);
+  if (onTimeWorkout) {
     return { kind: 'normal' };
   }
 
-  if (missedRecord !== undefined) {
+  // Entreno hecho en otra fecha (recuperación o hecho otro día en una ventana de 7 días)
+  const otherDayWorkout = completedWorkouts.find(
+    (w) =>
+      w.performedOn! !== scheduledDate &&
+      w.performedOn! >= scheduledDate &&
+      w.performedOn! <= addDays(scheduledDate, 7),
+  );
+
+  if (otherDayWorkout && otherDayWorkout.performedOn) {
+    return {
+      kind: 'done_other_day',
+      weekday: formatWeekdayName(otherDayWorkout.performedOn, options.language),
+    };
+  }
+
+  // Si no se hizo y está registrado como faltado (o pasó su fecha prevista)
+  if (missedRecord !== undefined || scheduledDate < options.today) {
     return { kind: 'missed' };
   }
 

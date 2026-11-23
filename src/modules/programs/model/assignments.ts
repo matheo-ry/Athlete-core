@@ -18,7 +18,7 @@ export const PROGRAM_MODES = ['calendar', 'list'] as const;
 export type ProgramMode = (typeof PROGRAM_MODES)[number];
 
 export interface ClientProgramWorkout {
-  id: string;
+  id?: string;
   programDayId?: string | null;
   dayNumber?: number;
   performedOn?: string;
@@ -88,7 +88,7 @@ const rowSchema = z.object({
   workouts: z
     .array(
       z.object({
-        id: z.string(),
+        id: z.string().optional(),
         program_day_id: z.string().nullable().optional(),
         day_number: z.number().optional(),
         performed_on: z.string().optional(),
@@ -138,7 +138,7 @@ export const clientProgramSchema: z.ZodType<ClientProgram> = z.object({
   workouts: z
     .array(
       z.object({
-        id: z.string(),
+        id: z.string().optional(),
         programDayId: z.string().nullable().optional(),
         dayNumber: z.number().optional(),
         performedOn: z.string().optional(),
@@ -165,14 +165,19 @@ export function parseClientPrograms(rows: unknown): ClientProgram[] {
         dayNumber: m.day_number,
         missedOn: m.missed_on,
       }));
-      const workouts = (row.workouts ?? []).map((w) => ({
-        id: w.id,
-        programDayId: w.program_day_id ?? null,
-        dayNumber: w.day_number,
-        performedOn: w.performed_on,
-        closedAt: w.closed_at ?? null,
-      }));
-      const completedWorkoutsCount = workouts.filter((w) => w.closedAt !== null).length;
+      const workouts = (row.workouts ?? [])
+        .filter(
+          (w) =>
+            w.closed_at !== null &&
+            w.closed_at !== undefined &&
+            (w.performed_on === undefined || w.performed_on >= row.starts_on),
+        )
+        .map((w) => ({
+          programDayId: w.program_day_id ?? null,
+          performedOn: w.performed_on,
+          closedAt: w.closed_at ?? null,
+        }));
+      const completedWorkoutsCount = workouts.length;
 
       return {
         id: row.id,

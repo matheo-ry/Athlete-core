@@ -1,12 +1,13 @@
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router';
 
+import { useLanguage } from '@/core/i18n';
 import { canLogWorkouts } from '@/core/native';
 import { Card, EmptyState, buttonClassName } from '@/core/ui';
 import { useExerciseOptions } from '@/modules/exercises';
 
 import type { ClientProgram } from '../model/assignments';
-import { clientBlock } from '../model/client-view';
+import { clientBlock, dayExecutionStatus } from '../model/client-view';
 import type { ProgramDocument } from '../model/program-document';
 import { groupInfo } from '../model/supersets';
 import { useDayLabel } from '../shared/useDayText';
@@ -26,6 +27,7 @@ interface ClientDayViewProps {
  */
 export function ClientDayView({ program, document, today, dayNumber }: ClientDayViewProps) {
   const { t } = useTranslation();
+  const language = useLanguage();
   const current = clientBlock(program, document, today);
   const block = current?.block ?? document.blocks[0];
   const label = useDayLabel(block);
@@ -47,12 +49,29 @@ export function ClientDayView({ program, document, today, dayNumber }: ClientDay
     );
   }
 
+  const status =
+    program.mode === 'calendar'
+      ? dayExecutionStatus(day, {
+          program,
+          blockId: block?.id ?? null,
+          blockIndex: current?.blockIndex ?? 0,
+          lap: current?.lap ?? 1,
+          today,
+          language,
+        })
+      : { kind: 'normal' as const };
+  const baseLabel =
+    status.kind === 'done_other_day'
+      ? t('programs.client.doneOnWeekday', { name: label(day.dayNumber), weekday: status.weekday })
+      : label(day.dayNumber);
+
   return (
     <div className="flex flex-col gap-4">
       {back}
       <header>
         <h2 className="text-xl font-semibold">
-          {[label(day.dayNumber), day.name].filter((part) => part !== null).join(' · ')}
+          {[baseLabel, day.name].filter((part) => part !== null).join(' · ')}
+          {status.kind === 'missed' ? ` · ${t('programs.client.missed')}` : null}
         </h2>
         {day.subtitle === null && day.place === null ? null : (
           <p className="text-muted">

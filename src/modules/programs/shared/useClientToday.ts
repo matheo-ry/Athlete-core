@@ -8,6 +8,7 @@ import type { ProgramBlock, ProgramDay, ProgramDocument } from '../model/program
 import { useDayLabel, useDaySummary } from './useDayText';
 import { useClientPrograms } from '../api/useAssignments';
 import { useProgram } from '../api/useProgram';
+import { useSyncMissedDays } from '../api/useSyncMissedDays';
 
 export type ClientToday =
   | { status: 'loading' }
@@ -20,6 +21,8 @@ export type ClientToday =
       block: ProgramBlock;
       /** El día que toca hoy; vacío en modo lista (D-082). */
       today: ProgramDay | null;
+      /** Si hoy toca recuperación de un día faltado (D-125). */
+      isRecovery?: boolean;
     };
 
 /**
@@ -33,6 +36,8 @@ export function useClientToday(): ClientToday {
   const routines = [...routinesByClient(programs.data ?? [], date).values()][0];
   const current = routines?.current ?? null;
   const document = useProgram(current?.id ?? '');
+
+  useSyncMissedDays(current, document.data, date);
 
   if (!programs.isSuccess) {
     return { status: 'loading' };
@@ -48,7 +53,14 @@ export function useClientToday(): ClientToday {
     return { status: 'none', next: null };
   }
   const today = placed.block.days.find((day) => day.dayNumber === placed.todayNumber) ?? null;
-  return { status: 'ready', program: current, document: document.data, block: placed.block, today };
+  return {
+    status: 'ready',
+    program: current,
+    document: document.data,
+    block: placed.block,
+    today,
+    isRecovery: placed.isRecovery,
+  };
 }
 
 /** "Lunes · Empuje" o "Día 3": el título de un día, en el idioma del usuario. */

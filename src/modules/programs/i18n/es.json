@@ -292,7 +292,11 @@
     "watchVideo": "Ver vídeo",
     "nextBlock": "El siguiente bloque empieza el {{date}}.",
     "startWorkout": "Iniciar entreno",
-    "openMobileApp": "Para entrenar, abre la app en tu móvil"
+    "openMobileApp": "Para entrenar, abre la app en tu móvil",
+    "recoverSuffix": "(recuperar)",
+    "missed": "Faltado",
+    "doneOnWeekday": "{{name}}, hecho el {{weekday}}",
+    "doneOnWeekdayShort": "Hecho el {{weekday}}"
   },
   "blocks": {
     "label": "Bloques de la rutina",
@@ -341,5 +345,24 @@
     "exerciseChanged": "Cambió {{exerciseName}} {{times}} veces en 4 semanas",
     "endsOn": "Termina la rutina el {{date}}",
     "repeating": "Terminada: se repite hasta que la cambies"
+  },
+  "missedDayRule": {
+    "title": "Si falta a un entreno",
+    "subtitle": "Qué pasa cuando pasa un día de entreno sin que tu cliente lo registre.",
+    "error": "No se pudo cambiar la regla. Vuelve a intentarlo.",
+    "rules": {
+      "lose": {
+        "label": "Se pierde",
+        "hint": "El calendario no se mueve. El entreno queda como faltado."
+      },
+      "recover": {
+        "label": "Se recupera en el siguiente descanso",
+        "hint": "El siguiente día de descanso pasa a ser el entreno saltado."
+      },
+      "shift": {
+        "label": "Se mueve todo",
+        "hint": "El resto del calendario y el fin del bloque se retrasan un día."
+      }
+    }
   }
 }

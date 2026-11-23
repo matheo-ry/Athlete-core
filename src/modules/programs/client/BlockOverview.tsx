@@ -6,6 +6,8 @@ import { cn } from '@/core/lib';
 import { Card, Icon } from '@/core/ui';
 
 import type { ClientProgram } from '../model/assignments';
+import { localToday } from '../model/calendar';
+import { dayExecutionStatus } from '../model/client-view';
 import type { ClientBlock } from '../model/client-view';
 import { dayCounts } from '../model/cycle-editor';
 import { useDayLabel, useDaySummary } from '../shared/useDayText';
@@ -14,6 +16,7 @@ import { shortDate } from '../shared/useProgressText';
 interface BlockOverviewProps extends ClientBlock {
   program: ClientProgram;
   documentName: string;
+  today?: string;
 }
 
 /**
@@ -26,9 +29,14 @@ export function BlockOverview({
   block,
   todayNumber,
   nextBlockStartsOn,
+  isRecovery,
+  blockIndex = 0,
+  lap = 1,
+  today,
 }: BlockOverviewProps) {
   const language = useLanguage();
   const { t } = useTranslation();
+  const currentDate = today ?? localToday();
   const label = useDayLabel(block);
   const summary = useDaySummary();
   const todayDay = block.days.find((day) => day.dayNumber === todayNumber);
@@ -53,6 +61,7 @@ export function BlockOverview({
             className="focus-ring rounded-md text-2xl leading-tight font-semibold tracking-tight underline-offset-4 hover:underline"
           >
             {[label(todayDay.dayNumber), todayDay.name].filter((part) => part !== null).join(' · ')}
+            {isRecovery ? ` ${t('programs.client.recoverSuffix')}` : null}
           </Link>
           <p className="text-muted text-sm">
             {[
@@ -75,6 +84,25 @@ export function BlockOverview({
           {days.map((day) => {
             const isToday = day.dayNumber === todayNumber;
             const isRest = day.kind === 'rest';
+            const status =
+              program.mode === 'calendar'
+                ? dayExecutionStatus(day, {
+                    program,
+                    blockId: block.id,
+                    blockIndex,
+                    lap,
+                    today: currentDate,
+                    language,
+                  })
+                : { kind: 'normal' as const };
+            const baseLabel =
+              program.mode === 'list'
+                ? (day.name ?? t('programs.editor.day', { number: day.dayNumber }))
+                : label(day.dayNumber);
+            const titleText =
+              status.kind === 'done_other_day'
+                ? t('programs.client.doneOnWeekday', { name: baseLabel, weekday: status.weekday })
+                : baseLabel;
             return (
               <li key={day.dayNumber}>
                 <Link
@@ -87,11 +115,12 @@ export function BlockOverview({
                 >
                   <span className="flex min-w-0 flex-1 flex-col gap-0.5">
                     <span className={cn('font-semibold', isRest && !isToday && 'text-muted')}>
-                      {program.mode === 'list'
-                        ? (day.name ?? t('programs.editor.day', { number: day.dayNumber }))
-                        : label(day.dayNumber)}
+                      {titleText}
                       {isToday ? (
                         <span className="sr-only">{` · ${t('programs.clientTab.today')}`}</span>
+                      ) : null}
+                      {status.kind === 'missed' ? (
+                        <span className="text-danger">{` · ${t('programs.client.missed')}`}</span>
                       ) : null}
                     </span>
                     <span className="text-muted text-sm">{summary(day)}</span>

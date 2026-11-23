@@ -75,6 +75,7 @@
     "startsOn": "Tu rutina empieza el {{date}}",
     "start": "Iniciar entreno",
     "continue": "Continuar entreno",
+    "recoverSuffix": "(recuperar)",
     "openMobileApp": "Para entrenar, abre la app en tu móvil"
   },
   "workout": {

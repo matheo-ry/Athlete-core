@@ -12,6 +12,7 @@ import type { ClientProgram } from '../model/assignments';
 import { localToday } from '../model/calendar';
 import { ClientProgramActions } from './ClientProgramActions';
 import { CurrentProgramDays } from './CurrentProgramDays';
+import { MissedDayRuleSection } from './MissedDayRuleSection';
 import { shortDate, useProgressText } from '../shared/useProgressText';
 
 /**
@@ -83,6 +84,15 @@ export function ClientProgramTab({ clientId, clientName, isActive }: ClientProfi
           </>
         )}
       </Card>
+
+      {current !== null && current.mode === 'calendar' ? (
+        <MissedDayRuleSection
+          program={current}
+          clientId={clientId}
+          today={today}
+          disabled={!isActive}
+        />
+      ) : null}
 
       {next === null ? null : (
         <Card className="flex flex-col gap-1">

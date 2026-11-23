@@ -1,0 +1,165 @@
+import { useTranslation } from 'react-i18next';
+
+import { SAME_BUTTON_MODES, useProfile, useUpdateProfile } from '@/core/auth';
+import type { ProfilePatch, SameButtonMode, UserProfile } from '@/core/auth';
+import { cn } from '@/core/lib';
+import { Card, ErrorState, Spinner } from '@/core/ui';
+
+/** Descansos que se ofrecen (en segundos); el actual se añade si es otro. */
+const REST_OPTIONS = [30, 45, 60, 90, 120, 150, 180, 240, 300];
+
+const SAME_LABEL_KEYS: Record<SameButtonMode, string> = {
+  previous: 'app.training.samePrevious',
+  previous_then_today: 'app.training.sameToday',
+};
+
+function clock(seconds: number): string {
+  return `${String(Math.floor(seconds / 60))}:${String(seconds % 60).padStart(2, '0')}`;
+}
+
+/**
+ * Perfil → "Entreno" (D-120 y D-123): descanso por defecto, arrancar el
+ * descanso solo, sonido, vibración y qué copia "Igual". Se guardan al momento
+ * en el perfil y valen en todos sus espacios.
+ */
+export function TrainingSettingsSection() {
+  const { t } = useTranslation();
+  const profile = useProfile();
+  const update = useUpdateProfile();
+  const failure = update.data?.ok === false ? update.data.reason : null;
+
+  return (
+    <Card>
+      <div className="flex flex-col gap-4">
+        <h2 className="text-lg font-semibold">{t('app.training.title')}</h2>
+        {profile.isPending ? <Spinner /> : null}
+        {profile.isError ? <ErrorState onRetry={() => void profile.refetch()} /> : null}
+        {profile.data === undefined ? null : (
+          <Settings
+            profile={profile.data}
+            onChange={(patch) => {
+              update.mutate(patch);
+            }}
+          />
+        )}
+        {failure === null ? null : (
+          <p role="alert" className="text-danger text-sm font-medium">
+            {t(failure === 'offline' ? 'core.errors.offline' : 'core.errors.unexpected')}
+          </p>
+        )}
+      </div>
+    </Card>
+  );
+}
+
+function Settings({
+  profile,
+  onChange,
+}: {
+  profile: UserProfile;
+  onChange: (patch: ProfilePatch) => void;
+}) {
+  const { t } = useTranslation();
+  const options = REST_OPTIONS.includes(profile.defaultRestSeconds)
+    ? REST_OPTIONS
+    : [...REST_OPTIONS, profile.defaultRestSeconds].sort((a, b) => a - b);
+
+  return (
+    <>
+      <label className="flex flex-col gap-1.5">
+        <span className="text-sm font-medium">{t('app.training.defaultRest')}</span>
+        <select
+          className="border-border bg-surface min-h-11 rounded-lg border px-3"
+          value={profile.defaultRestSeconds}
+          onChange={(event) => {
+            onChange({ defaultRestSeconds: Number(event.target.value) });
+          }}
+        >
+          {options.map((seconds) => (
+            <option key={seconds} value={seconds}>
+              {clock(seconds)}
+            </option>
+          ))}
+        </select>
+      </label>
+      <Toggle
+        label={t('app.training.autostart')}
+        value={profile.restAutostart}
+        onChange={(restAutostart) => {
+          onChange({ restAutostart });
+        }}
+      />
+      <Toggle
+        label={t('app.training.sound')}
+        value={profile.restSound}
+        onChange={(restSound) => {
+          onChange({ restSound });
+        }}
+      />
+      <Toggle
+        label={t('app.training.vibration')}
+        value={profile.restVibration}
+        onChange={(restVibration) => {
+          onChange({ restVibration });
+        }}
+      />
+      <div role="group" aria-label={t('app.training.sameLabel')} className="flex flex-col gap-1.5">
+        <span className="text-sm font-medium">{t('app.training.sameLabel')}</span>
+        <div className="flex flex-wrap gap-2">
+          {SAME_BUTTON_MODES.map((mode) => (
+            <button
+              key={mode}
+              type="button"
+              aria-pressed={profile.sameButton === mode}
+              onClick={() => {
+                onChange({ sameButton: mode });
+              }}
+              className={cn(
+                'min-h-11 rounded-lg px-4 text-sm font-medium',
+                'focus-visible:outline-primary-readable focus-visible:outline-2',
+                profile.sameButton === mode
+                  ? 'bg-primary text-on-primary'
+                  : 'bg-surface text-muted',
+              )}
+            >
+              {t(SAME_LABEL_KEYS[mode])}
+            </button>
+          ))}
+        </div>
+      </div>
+    </>
+  );
+}
+
+function Toggle({
+  label,
+  value,
+  onChange,
+}: {
+  label: string;
+  value: boolean;
+  onChange: (value: boolean) => void;
+}) {
+  return (
+    <button
+      type="button"
+      role="switch"
+      aria-checked={value}
+      onClick={() => {
+        onChange(!value);
+      }}
+      className="focus-visible:outline-primary-readable flex min-h-11 items-center justify-between gap-3 text-left text-sm font-medium focus-visible:outline-2"
+    >
+      <span>{label}</span>
+      <span
+        aria-hidden="true"
+        className={cn(
+          'flex h-6 w-11 shrink-0 items-center rounded-full p-0.5',
+          value ? 'bg-primary justify-end' : 'bg-border justify-start',
+        )}
+      >
+        <span className="bg-surface h-5 w-5 rounded-full" />
+      </span>
+    </button>
+  );
+}

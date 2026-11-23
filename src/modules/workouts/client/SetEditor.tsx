@@ -19,6 +19,8 @@ interface SetEditorProps {
   set: ActiveSet;
   /** Lo de la vez anterior en esta serie (D-120); `null` si no hay. */
   previous: PreviousSetValues | null;
+  /** Lo que copia "Igual" según el ajuste del Perfil; `null` si no hay nada que copiar. */
+  copySource: PreviousSetValues | null;
   onChange: (patch: SetPatch) => void;
   /** "Igual": copia lo gris. */
   onCopy: () => void;
@@ -33,7 +35,15 @@ const round = (value: number) => Number(value.toFixed(1));
  * RIR o RPE según el negocio, con "F" al fallo. Cambiar cualquier dato la
  * ilumina con el color de la marca: no hay botón "Marcar serie hecha".
  */
-export function SetEditor({ exercise, set, previous, onChange, onCopy, onUnmark }: SetEditorProps) {
+export function SetEditor({
+  exercise,
+  set,
+  previous,
+  copySource,
+  onChange,
+  onCopy,
+  onUnmark,
+}: SetEditorProps) {
   const { t } = useTranslation();
   const unit = useProfile().data?.weightUnit ?? DEFAULT_WEIGHT_UNIT;
   const { intensityScale } = useTenantSettings();
@@ -64,11 +74,13 @@ export function SetEditor({ exercise, set, previous, onChange, onCopy, onUnmark 
         >
           {t('workouts.set.label', { number: set.setNumber })}
         </button>
-        {previous === null ? null : (
-          <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2">
+          {previous === null ? null : (
             <span className="text-muted text-sm" data-testid="previous">
               {previousText(previous, exercise.measurement, unit, t('workouts.set.failureShort'))}
             </span>
+          )}
+          {copySource === null ? null : (
             <button
               type="button"
               className="border-border bg-surface h-11 rounded-lg border px-3 text-sm font-semibold"
@@ -76,8 +88,8 @@ export function SetEditor({ exercise, set, previous, onChange, onCopy, onUnmark 
             >
               {t('workouts.set.same')}
             </button>
-          </div>
-        )}
+          )}
+        </div>
       </div>
       <div className="flex flex-wrap justify-center gap-3">
         {byWeight ? (

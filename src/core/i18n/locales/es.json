@@ -327,6 +327,16 @@
       "logoRemove": "Quitar logo",
       "logoTooLarge": "El logo no puede pasar de 2 MB.",
       "logoInvalidType": "Formato no admitido. Usa PNG, JPG o WebP."
+    },
+    "training": {
+      "title": "Entreno",
+      "defaultRest": "Descanso por defecto",
+      "autostart": "Arrancar el descanso solo",
+      "sound": "Sonido al acabar el descanso",
+      "vibration": "Vibración al acabar el descanso",
+      "sameLabel": "Qué copia «Igual»",
+      "samePrevious": "La serie de la vez anterior",
+      "sameToday": "La serie anterior de hoy"
     }
   }
 }

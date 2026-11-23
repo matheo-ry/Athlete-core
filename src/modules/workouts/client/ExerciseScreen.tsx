@@ -7,12 +7,14 @@ import { buttonClassName } from '@/core/ui';
 import { useExerciseOptions } from '@/modules/exercises';
 
 import { useSaveActiveWorkout } from '../api/useActiveWorkout';
+import { useRestControls } from '../api/useRestControls';
 import { usePreviousPerformance } from '../api/usePreviousPerformance';
 import {
   MAX_SETS,
   addSet,
   changeSet,
   copyPrevious,
+  copySource,
   previousSet,
   unmarkSet,
 } from '../model/active-workout';
@@ -38,6 +40,7 @@ export function ExerciseScreen({
   const navigate = useNavigate();
   const options = useExerciseOptions();
   const save = useSaveActiveWorkout();
+  const rest = useRestControls();
   const touchStart = useRef<number | null>(null);
   const exercise = workout.exercises[position - 1];
   const previous = usePreviousPerformance(exercise?.exerciseId ?? '', workout.dayNumber);
@@ -101,15 +104,26 @@ export function ExerciseScreen({
       <ol className="flex flex-col gap-3">
         {exercise.sets.map((set) => {
           const before = previousSet(previous, set.setNumber);
+          const source = copySource(rest.sameButton, exercise, set.setNumber, before);
+          // Solo el primer cambio de una serie (o "Igual") arranca el descanso (D-123).
+          const startRest = () => {
+            rest.afterSet({
+              workoutId: workout.id,
+              coachSeconds: exercise.restSeconds,
+              wasDone: set.isDone,
+            });
+          };
           return (
             <SetEditor
               key={set.id}
               exercise={exercise}
               set={set}
               previous={before}
+              copySource={source}
               onCopy={() => {
-                if (before !== null) {
-                  save.mutate(copyPrevious(workout, position, set.setNumber, before, now()));
+                if (source !== null) {
+                  save.mutate(copyPrevious(workout, position, set.setNumber, source, now()));
+                  startRest();
                 }
               }}
               onUnmark={() => {
@@ -119,6 +133,7 @@ export function ExerciseScreen({
                 save.mutate(
                   changeSet(workout, position, set.setNumber, patch, new Date().toISOString()),
                 );
+                startRest();
               }}
             />
           );

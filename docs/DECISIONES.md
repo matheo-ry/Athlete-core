@@ -101,6 +101,7 @@ Si una decisión de este archivo cambia, el archivo nuevo de `docs/cambios/` dic
 - **Fecha:** 2026-11-12
 - **Decisión:** `free` (3 clientes), `starter` (10), `pro` (30) y `studio` (sin límite). El límite se comprueba en la base de datos.
 - **Revisar si:** siempre que se cambien los precios. Son valores de partida.
+- **Sustituida en parte por D-ideas-15** (`docs/cambios/ideas-gemini-decisiones.md`): los planes de coach (un solo coach) llegan como máximo a 500 clientes, y hay planes aparte para gimnasios.
 
 ### D-018 · Dependencias entre módulos
 - **Fecha:** 2026-11-12
@@ -1094,6 +1095,7 @@ Si una decisión de este archivo cambia, el archivo nuevo de `docs/cambios/` dic
   - **La fecha del entreno es la del último dato cambiado**, en la zona horaria del móvil: si entrenó el lunes y lo cierra el martes, queda como entreno del lunes.
   - **Un entreno sin ninguna serie hecha** no se guarda al cerrarlo.
   - **El calentamiento no se apunta**: solo las series efectivas.
+- **Sustituida en parte por D-ideas-2** (`docs/cambios/ideas-gemini-decisiones.md`): el calentamiento sí se puede apuntar, pero no cuenta para el progreso.
 - **Por qué:** así entrena el propietario: abre la app ya en el gimnasio y quiere estar en el ejercicio en un toque.
 - **Consecuencias:** la tarjeta "Hoy toca" del inicio del cliente pasa de `programs` a `workouts` (que usa a `programs`), con "Iniciar entreno" o "Continuar". En los días de "Entreno", `programs` enseña un enlace a la ruta de `workouts`, sin importar el módulo.
 
@@ -1251,6 +1253,7 @@ Si una decisión de este archivo cambia, el archivo nuevo de `docs/cambios/` dic
   - **Tarjetas de récords para Instagram:** después de la Fase 3 (necesitan generar una imagen con la marca del coach y compartirla desde el móvil).
   - **Chat, nutrición, hábitos, check-ins, fotos y subir vídeos:** a futuro, cada uno en su fase. **Hosting, vídeos, notificaciones y demás servicios:** se eligen en su fase.
   - Se crea la **Fase 6 — Crecimiento** en ESTADO: Modo Alumni, retos, pase para un amigo, embajadores, tarjetas de récords y el directorio (con su condición).
+- **Sustituida en parte por D-ideas-5** (`docs/cambios/ideas-gemini-decisiones.md`): los retos (pruebas gratuitas) pasan a la Fase 5.
 - **Por qué:** son buenas ideas para crecer, pero ninguna hace falta para validar el producto con los primeros coaches.
 
 ### D-135 · Librerías de la Fase 3

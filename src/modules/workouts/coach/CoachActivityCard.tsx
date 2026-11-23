@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router';
 
 import { brandInitials } from '@/core/branding';
+import { formatDate } from '@/core/lib';
 import { useLanguage } from '@/core/i18n';
 import type { Language } from '@/core/i18n';
 import { useTenantMembers } from '@/core/tenancy';
@@ -39,12 +40,16 @@ function formatDayName(dayNumber: number, customName: string | null, language: L
  * Lo último arriba: "Ana terminó Lunes · 2 récords · cambió 1 ejercicio · 1 nota".
  * Lo no abierto, marcado; al abrirlo deja de estarlo. Cada línea lleva al entreno.
  */
+/** Las que se ven sin pulsar "Ver todo": el inicio no se llena de líneas. */
+const RECENT = 6;
+
 export function CoachActivityCard() {
   const { t } = useTranslation();
   const language = useLanguage();
   const members = useTenantMembers();
   const activityQuery = useCoachActivity();
   const [openedIds, setOpenedIds] = useState(() => getOpenedWorkoutIds());
+  const [showAll, setShowAll] = useState(false);
 
   const clientsById = useMemo(() => {
     const map = new Map<string, string>();
@@ -115,8 +120,12 @@ export function CoachActivityCard() {
           >
             {brandInitials(clientName)}
           </span>
-          <span className="min-w-0 flex-1 text-sm leading-6 font-medium break-words">
-            {parts.join(' · ')}
+          <span className="flex min-w-0 flex-1 flex-col">
+            <span className="text-sm leading-6 font-medium break-words">{parts.join(' · ')}</span>
+            {/* La fecha del entreno es un día, sin hora: se lee en UTC para no correrlo. */}
+            <span className="text-muted text-xs">
+              {formatDate(workout.performedOn, language, 'UTC')}
+            </span>
           </span>
           {isNew ? <Pill tone="primary">{t('workouts.home.newBadge')}</Pill> : null}
         </Link>
@@ -130,9 +139,22 @@ export function CoachActivityCard() {
       {activeWorkouts.length === 0 ? (
         <p className="text-muted">{t('workouts.home.noActivity')}</p>
       ) : (
-        <ul aria-label={t('workouts.home.activityTitle')}>
-          {activeWorkouts.map((workout) => renderWorkoutLine(workout, activeWorkouts))}
-        </ul>
+        <>
+          <ul aria-label={t('workouts.home.activityTitle')}>
+            {(showAll ? activeWorkouts : activeWorkouts.slice(0, RECENT)).map((workout) =>
+              renderWorkoutLine(workout, activeWorkouts),
+            )}
+          </ul>
+          {!showAll && activeWorkouts.length > RECENT ? (
+            <button
+              type="button"
+              onClick={() => setShowAll(true)}
+              className="focus-ring text-primary-readable min-h-11 self-start rounded-full px-2 text-sm font-semibold"
+            >
+              {t('workouts.home.showAll', { count: activeWorkouts.length })}
+            </button>
+          ) : null}
+        </>
       )}
     </Card>
   );

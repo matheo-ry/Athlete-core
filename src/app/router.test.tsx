@@ -112,7 +112,7 @@ describe('la app', () => {
     const { user } = await renderApp('/coach');
     expect(await screen.findByRole('heading', { name: 'Coach dashboard' })).toBeInTheDocument();
 
-    // La carcasa de coach tiene el selector dos veces (menú lateral y cabecera de móvil).
+    // La carcasa de coach tiene el selector en el menú lateral (en el móvil, en Ajustes).
     const [spanish] = screen.getAllByRole('button', { name: 'Español' });
     await user.click(spanish as HTMLElement);
 

@@ -291,6 +291,7 @@
       "accentCustomLabel": "Your own accent color",
       "customHint": "Like #1E5BD8.",
       "pickerLabel": "Or choose it on the color wheel",
+      "moreColors": "Use another color",
       "colorInvalid": "Write a color like #1E5BD8.",
       "modeLabel": "Mode",
       "modeDark": "Dark",

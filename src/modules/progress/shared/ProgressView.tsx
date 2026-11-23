@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import type { WeightUnit } from '@/core/lib';
-import { Button, EmptyState, ErrorState, Icon, Pill, Spinner } from '@/core/ui';
+import { Button, EmptyState, ErrorState, Icon, Pill, SkeletonCard } from '@/core/ui';
 
 import { useExportWorkoutsExcel } from '../api/useExportWorkoutsExcel';
 import type { ProgramProgressGroup, RawWorkout } from '../model/exercise-history';
@@ -100,7 +100,7 @@ export function ProgressView({
           isCoach={isCoach}
         />
       ) : isPending ? (
-        <Spinner />
+        <SkeletonCard />
       ) : isError ? (
         <ErrorState onRetry={onRetry} />
       ) : !hasAnyExercise ? (

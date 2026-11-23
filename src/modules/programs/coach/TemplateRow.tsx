@@ -121,7 +121,7 @@ export function TemplateRow({ template, onDone }: TemplateRowProps) {
             </Link>
             <span className="text-muted text-sm">{details.join(' · ')}</span>
           </div>
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap items-center gap-1">
             {isArchived ? null : (
               <Button
                 aria-label={`${t('programs.list.assign')}: ${template.name}`}
@@ -132,7 +132,7 @@ export function TemplateRow({ template, onDone }: TemplateRowProps) {
             )}
             {isArchived ? null : (
               <Button
-                variant="secondary"
+                variant="ghost"
                 aria-label={`${t('programs.list.rename')}: ${template.name}`}
                 onClick={() => setIsRenaming(true)}
               >
@@ -142,7 +142,7 @@ export function TemplateRow({ template, onDone }: TemplateRowProps) {
             {/* Una plantilla nueva igual que esta: "Copia de …" (PR 2.11). */}
             {isArchived ? null : (
               <Button
-                variant="secondary"
+                variant="ghost"
                 disabled={action.isPending}
                 aria-label={`${t('programs.list.duplicate')}: ${template.name}`}
                 onClick={() => {
@@ -156,7 +156,7 @@ export function TemplateRow({ template, onDone }: TemplateRowProps) {
               </Button>
             )}
             <Button
-              variant="secondary"
+              variant="ghost"
               disabled={action.isPending}
               aria-label={`${t(isArchived ? 'programs.list.unarchive' : 'programs.list.archive')}: ${template.name}`}
               onClick={() =>

@@ -11,7 +11,7 @@ import {
   Input,
   segmentClassName,
   SEGMENTED_GROUP_CLASS,
-  Spinner,
+  SkeletonList,
 } from '@/core/ui';
 
 import { useTemplates } from '../api/useTemplates';
@@ -112,7 +112,7 @@ export function TemplateListPage() {
           />
 
           <Card>
-            {templates.isPending ? <Spinner /> : null}
+            {templates.isPending ? <SkeletonList rows={2} /> : null}
             {templates.isError ? <ErrorState onRetry={() => void templates.refetch()} /> : null}
             {templates.isSuccess && counts[templateTab] === 0 ? (
               <EmptyState

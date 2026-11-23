@@ -291,6 +291,7 @@
       "accentCustomLabel": "Tu propio color de acento",
       "customHint": "Como #1E5BD8.",
       "pickerLabel": "O elígelo en la rueda de colores",
+      "moreColors": "Usar otro color",
       "colorInvalid": "Escribe un color como #1E5BD8.",
       "modeLabel": "Modo",
       "modeDark": "Oscuro",

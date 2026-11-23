@@ -1,8 +1,9 @@
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useSearchParams } from 'react-router';
 
 import { useLanguage } from '@/core/i18n';
-import { Card, EmptyState, ErrorState, PageHeader, Spinner } from '@/core/ui';
+import { Card, EmptyState, ErrorState, PageHeader, SkeletonCard } from '@/core/ui';
 
 import { useClientPrograms } from '../api/useAssignments';
 import { routinesByClient } from '../model/assignments';
@@ -20,6 +21,7 @@ export function ClientProgramPage() {
   const language = useLanguage();
   const today = useMemo(() => localToday(), []);
   const programs = useClientPrograms();
+  const [params] = useSearchParams();
 
   // El cliente solo lee sus propias rutinas (RLS): hay como mucho un cliente.
   const routines = [...routinesByClient(programs.data ?? [], today).values()][0];
@@ -28,8 +30,13 @@ export function ClientProgramPage() {
 
   return (
     <section className="flex flex-col gap-5">
-      <PageHeader title={t('programs.client.title')} />
-      {programs.isPending ? <Spinner /> : null}
+      {/* Dentro de un día, "Entreno" sigue siendo el h1 de la página, pero no se
+          ve: encima del día ya está "← Entreno" y repetirlo era ruido. */}
+      <PageHeader
+        title={t('programs.client.title')}
+        className={params.has('day') ? 'sr-only' : undefined}
+      />
+      {programs.isPending ? <SkeletonCard /> : null}
       {programs.isError ? <ErrorState onRetry={() => void programs.refetch()} /> : null}
       {programs.isSuccess && current === null && next === null ? (
         <Card>

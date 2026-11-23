@@ -33,7 +33,11 @@ export function ExerciseProgressCard({ exercise, unit, referenceDate }: Exercise
   const language = useLanguage();
   const periodOptions = usePeriodOptions();
 
-  const [metric, setMetric] = useState<ExerciseChartMetric>('estimated_rm');
+  const [metric, setMetric] = useState<ExerciseChartMetric>(() =>
+    exercise.measurement === 'bodyweight_reps' && !(exercise.records.maxWeightKg ?? 0)
+      ? 'reps'
+      : 'estimated_rm',
+  );
   const [period, setPeriod] = useState<ProgressPeriod>('all');
   const [selectedPointId, setSelectedPointId] = useState<string | null>(null);
 

@@ -1,7 +1,5 @@
 import { Outlet, useLocation } from 'react-router';
 
-import { LanguageSwitcher } from '@/core/i18n';
-
 import { BottomNav } from '../BottomNav';
 import { BrandMark } from '../BrandMark';
 import { useShellNav } from '../useShellNav';
@@ -19,9 +17,8 @@ export function ClientLayout() {
 
   return (
     <div className="flex flex-1 flex-col">
-      <header className="flex items-center justify-between gap-2 px-5 pt-4">
+      <header className="flex items-center gap-2 px-5 pt-4">
         <BrandMark />
-        <LanguageSwitcher />
       </header>
       {/* Deja sitio a la barra inferior flotante y a la de gestos del móvil. */}
       <main className="mx-auto w-full max-w-xl flex-1 px-5 pt-5 pb-[calc(6.5rem+var(--safe-bottom))]">

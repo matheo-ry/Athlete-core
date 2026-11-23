@@ -56,7 +56,8 @@
     "changedExercises_other": "changed {{count}} exercises",
     "notes_one": "{{count}} note",
     "notes_other": "{{count}} notes",
-    "newBadge": "New"
+    "newBadge": "New",
+    "showAll": "Show all ({{count}})"
   },
   "sync": {
     "noAccess": "Couldn't save: you no longer have access to {{name}}.",

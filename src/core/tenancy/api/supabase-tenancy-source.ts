@@ -4,6 +4,11 @@ import { isNetworkError } from '../../auth/auth-errors';
 import { LOGO_BUCKET, checkLogoFile, logoPathFor } from '../../branding/logo';
 import { logger } from '../../lib';
 import { getSupabaseClient } from '../../supabase';
+import {
+  fetchHealthConsent,
+  grantHealthConsent,
+  withdrawHealthConsent,
+} from './health-consent-api';
 import { normalizeInviteCode } from '../invite-code';
 import { parseInvitePreview, parseJoinResult } from '../invite';
 import { parseMembers, parsePlanLimit } from '../members';
@@ -252,6 +257,10 @@ export function createSupabaseTenancySource(): TenancySource {
         logger.warn('Tenancy: could not delete an old logo file', { status: error.status });
       }
     },
+
+    getHealthConsent: fetchHealthConsent,
+    grantHealthConsent,
+    withdrawHealthConsent,
   };
 }
 

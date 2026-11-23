@@ -90,7 +90,19 @@
     "next": "Next",
     "loadError": "Could not open the workout",
     "noWorkout": "No open workout",
-    "toProgram": "Go to my program"
+    "toProgram": "Go to my program",
+    "group": {
+      "superset": "Superset · {{position}} of {{size}}",
+      "circuit": "Circuit · {{position}} of {{size}}"
+    },
+    "replace": "Change exercise",
+    "replaceTitle": "Change “{{name}}” for…",
+    "replaces": "Instead of {{name}}",
+    "replacedBy": "Replaced by {{name}}",
+    "skip": "Skip exercise",
+    "unskip": "Undo",
+    "skippedNote": "You skipped this exercise: it does not count in today’s workout.",
+    "skippedTag": "Skipped"
   },
   "set": {
     "label": "Set {{number}}",
@@ -107,7 +119,11 @@
     "increase": "Increase {{field}}",
     "same": "Same",
     "add": "+ Set",
-    "unmark": "Unmark set {{number}}"
+    "unmark": "Unmark set {{number}}",
+    "side": {
+      "right": "Right",
+      "left": "Left"
+    }
   },
   "finished": {
     "title": "Workout finished",

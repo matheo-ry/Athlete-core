@@ -10,6 +10,7 @@ const NOW = Date.parse('2026-11-16T09:00:00.000Z');
 const NONE: ReadonlySet<string> = new Set();
 
 const values = {
+  side: 'none' as const,
   weightKg: 40,
   reps: 8,
   durationSeconds: null,
@@ -63,6 +64,8 @@ function remote(overrides: Partial<RemoteWorkout> = {}): RemoteWorkout {
         restSeconds: null,
         coachNote: null,
         prescribedSets: [{}, {}, {}],
+        isSkipped: false,
+        replacesExerciseId: null,
         changedAt: '2026-11-16T08:30:00.000Z',
         sets: [remoteSet(1, '2026-11-16T08:10:00.000Z'), remoteSet(2, '2026-11-16T08:30:00.000Z')],
       },
@@ -97,6 +100,8 @@ function local(overrides: Partial<ActiveWorkout> = {}): ActiveWorkout {
         restSeconds: null,
         coachNote: null,
         prescribedSets: [{}, {}, {}],
+        isSkipped: false,
+        replacesExerciseId: null,
         changedAt: '2026-11-16T08:40:00.000Z',
         sets: [
           localSet(1, '2026-11-16T08:40:00.000Z', 10),
@@ -163,5 +168,76 @@ describe('takeOver', () => {
     expect(takeOver({ ...input, remote: ahead, local: null }).deviceSince).toBe(
       '2026-11-16T10:00:00.001Z',
     );
+  });
+});
+
+describe('takeOver con lados, saltados y cambiados (PR 3.8)', () => {
+  const info = {
+    now: '2026-11-16T09:00:00.000Z',
+    newId: () => 'new-set',
+  };
+  const oneSided = {
+    ...info,
+    exerciseInfo: () => ({ measurement: 'weight_reps' as const, isUnilateral: false }),
+  };
+  const bothSides = {
+    ...info,
+    exerciseInfo: () => ({ measurement: 'weight_reps' as const, isUnilateral: true }),
+  };
+
+  function withExercise(overrides: Partial<RemoteWorkout['exercises'][number]>): RemoteWorkout {
+    const cloud = remote();
+    const first = cloud.exercises[0];
+    if (first === undefined) {
+      throw new Error('fixture');
+    }
+    return { ...cloud, exercises: [{ ...first, ...overrides }] };
+  }
+
+  it('une cada serie por número y lado, y deja vacío el lado que falta', () => {
+    const cloud = withExercise({
+      prescribedSets: [{}, {}],
+      sets: [{ ...remoteSet(1, '2026-11-16T08:10:00.000Z'), side: 'right' }],
+    });
+    const taken = takeOver({ ...bothSides, remote: cloud, local: null });
+    expect(
+      taken.exercises[0]?.sets.map((item) => [item.setNumber, item.side, item.isDone]),
+    ).toEqual([
+      [1, 'right', true],
+      [1, 'left', false],
+      [2, 'right', false],
+      [2, 'left', false],
+    ]);
+  });
+
+  it('lo de saltar lo decide el cambio más nuevo', () => {
+    const cloud = withExercise({ isSkipped: true });
+    // Aquí el cambio es más nuevo (08:40) y no estaba saltado.
+    expect(takeOver({ ...oneSided, remote: cloud, local: local() }).exercises[0]?.isSkipped).toBe(
+      false,
+    );
+    const older = local({
+      exercises: local().exercises.map((exercise) => ({
+        ...exercise,
+        changedAt: '2026-11-16T08:00:00.000Z',
+      })),
+    });
+    expect(takeOver({ ...oneSided, remote: cloud, local: older }).exercises[0]?.isSkipped).toBe(
+      true,
+    );
+  });
+
+  it('con otro ejercicio elegido más tarde, valen las series del elegido', () => {
+    const cloud = withExercise({});
+    const swapped = local({
+      exercises: local().exercises.map((exercise) => ({
+        ...exercise,
+        exerciseId: 'ex-2',
+        replacesExerciseId: 'ex-1',
+      })),
+    });
+    const taken = takeOver({ ...oneSided, remote: cloud, local: swapped });
+    expect(taken.exercises[0]).toMatchObject({ exerciseId: 'ex-2', replacesExerciseId: 'ex-1' });
+    expect(taken.exercises[0]?.sets.map((item) => item.reps)).toEqual([10, 3, 8]);
   });
 });

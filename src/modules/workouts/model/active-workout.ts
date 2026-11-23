@@ -13,9 +13,16 @@ const jsonSchema = z.json();
 /** Un valor que se puede pasar a JSON: lo que acepta la cola de subida. */
 export type JsonValue = z.infer<typeof jsonSchema>;
 
+/** Los unilaterales se apuntan por lado (D-121); el resto, sin lado. */
+export const sideSchema = z.enum(['none', 'right', 'left']);
+
+export type Side = z.infer<typeof sideSchema>;
+
 const activeSetSchema = z.object({
   id: z.string(),
   setNumber: z.number().int().min(1).max(10),
+  /** Lo guardado antes del PR 3.8 no trae lado: sin lado. */
+  side: sideSchema.default('none'),
   weightKg: z.number().nullable(),
   reps: z.number().int().nullable(),
   durationSeconds: z.number().int().nullable(),
@@ -42,6 +49,10 @@ const activeExerciseSchema = z.object({
   coachNote: z.string().nullable(),
   /** Lo prescrito, tal cual, para que el historial no cambie si el coach edita la rutina. */
   prescribedSets: z.array(jsonSchema),
+  /** "Saltar ejercicio" (D-122): no cuenta para cerrar el entreno. */
+  isSkipped: z.boolean().default(false),
+  /** El ejercicio de la rutina, si hoy se hizo otro en su lugar ("Cambiar ejercicio", D-122). */
+  replacesExerciseId: z.string().nullable().default(null),
   changedAt: z.string(),
   sets: z.array(activeSetSchema),
 });
@@ -85,10 +96,16 @@ export interface StartInput {
   newId: () => string;
 }
 
-export function emptySet(id: string, setNumber: number, isExtra: boolean): ActiveSet {
+export function emptySet(
+  id: string,
+  setNumber: number,
+  isExtra: boolean,
+  side: Side = 'none',
+): ActiveSet {
   return {
     id,
     setNumber,
+    side,
     weightKg: null,
     reps: null,
     durationSeconds: null,
@@ -99,6 +116,30 @@ export function emptySet(id: string, setNumber: number, isExtra: boolean): Activ
     isExtra,
     recordedAt: null,
   };
+}
+
+/** Los lados en que se apunta cada serie: derecha e izquierda en un unilateral (D-121). */
+export function sidesOf(isUnilateral: boolean): readonly Side[] {
+  return isUnilateral ? ['right', 'left'] : ['none'];
+}
+
+/** Series vacías numeradas desde 1, una por lado si es unilateral; las de `firstExtra` en adelante son extra. */
+export function emptySets(
+  isUnilateral: boolean,
+  count: number,
+  newId: () => string,
+  firstExtra = Number.POSITIVE_INFINITY,
+): ActiveSet[] {
+  return Array.from({ length: count }, (_, index) =>
+    sidesOf(isUnilateral).map((side) =>
+      emptySet(newId(), index + 1, index + 1 >= firstExtra, side),
+    ),
+  ).flat();
+}
+
+/** Los números de serie de un ejercicio, sin repetir y en orden. */
+export function setNumbers(exercise: Pick<ActiveExercise, 'sets'>): number[] {
+  return [...new Set(exercise.sets.map((set) => set.setNumber))].sort((a, b) => a - b);
 }
 
 /** Un entreno nuevo del día, con sus series prescritas vacías (D-119). */
@@ -117,19 +158,24 @@ export function startWorkout(input: StartInput): ActiveWorkout {
     closeReason: null,
     deviceSince: null,
     lastExercise: 1,
-    exercises: day.exercises.map((item, index) => ({
-      id: newId(),
-      position: index + 1,
-      exerciseId: item.exerciseId,
-      programDayExerciseId: item.id,
-      ...input.exerciseInfo(item.exerciseId),
-      supersetGroup: item.supersetGroup,
-      restSeconds: item.restSeconds,
-      coachNote: item.note,
-      prescribedSets: item.sets,
-      changedAt: now,
-      sets: item.sets.map((_, setIndex) => emptySet(newId(), setIndex + 1, false)),
-    })),
+    exercises: day.exercises.map((item, index) => {
+      const info = input.exerciseInfo(item.exerciseId);
+      return {
+        id: newId(),
+        position: index + 1,
+        exerciseId: item.exerciseId,
+        programDayExerciseId: item.id,
+        ...info,
+        supersetGroup: item.supersetGroup,
+        restSeconds: item.restSeconds,
+        coachNote: item.note,
+        prescribedSets: item.sets,
+        isSkipped: false,
+        replacesExerciseId: null,
+        changedAt: now,
+        sets: emptySets(info.isUnilateral, item.sets.length, newId),
+      };
+    }),
   };
 }
 
@@ -140,7 +186,8 @@ export type SetPatch = Partial<
   >
 >;
 
-function withExercise(
+/** Cambia un ejercicio del entreno y apunta cuándo, para el cierre y la subida (D-119). */
+export function withExercise(
   workout: ActiveWorkout,
   position: number,
   now: string,
@@ -156,29 +203,45 @@ function withExercise(
   };
 }
 
-/** Cambiar un dato de una serie la ilumina: queda hecha, sin botón (D-120). */
+/**
+ * Cambiar un dato de una serie la ilumina: queda hecha, sin botón (D-120). En
+ * un unilateral, `side` es el lado que se toca.
+ */
 export function changeSet(
   workout: ActiveWorkout,
   position: number,
   setNumber: number,
   patch: SetPatch,
   now: string,
+  side: Side = 'none',
 ): ActiveWorkout {
   return withExercise(workout, position, now, (exercise) => ({
     ...exercise,
     sets: exercise.sets.map((set) =>
-      set.setNumber === setNumber ? { ...set, ...patch, isDone: true, recordedAt: now } : set,
+      set.setNumber === setNumber && set.side === side
+        ? { ...set, ...patch, isDone: true, recordedAt: now }
+        : set,
     ),
   }));
 }
 
-/** Series hechas y totales: de un ejercicio, o de todo el entreno. */
+/**
+ * Series hechas y totales: de un ejercicio, o de todo el entreno. Un
+ * unilateral cuenta una serie cuando están hechos los dos lados (D-121), y un
+ * ejercicio saltado no cuenta (D-122).
+ */
 export function setCounts(exercises: readonly ActiveExercise[]): { done: number; total: number } {
   let done = 0;
   let total = 0;
   for (const exercise of exercises) {
-    total += exercise.sets.length;
-    done += exercise.sets.filter((set) => set.isDone).length;
+    if (exercise.isSkipped) {
+      continue;
+    }
+    for (const number of setNumbers(exercise)) {
+      total += 1;
+      const sets = exercise.sets.filter((set) => set.setNumber === number);
+      done += sets.every((set) => set.isDone) ? 1 : 0;
+    }
   }
   return { done, total };
 }
@@ -242,10 +305,11 @@ export function toSyncPayload(
       prescribed_sets: exercise.prescribedSets,
       prescribed_rest_seconds: exercise.restSeconds,
       coach_note: exercise.coachNote,
-      is_skipped: false,
+      is_skipped: exercise.isSkipped,
+      replaces_exercise_id: exercise.replacesExerciseId,
       changed_at: exercise.changedAt,
-      // Los unilaterales se apuntan por lado desde el PR 3.8 (D-146).
-      sets: exercise.isUnilateral
+      // Un ejercicio saltado no sube series; al deshacerlo, vuelven con su fecha.
+      sets: exercise.isSkipped
         ? []
         : exercise.sets
             .filter((set) => set.recordedAt !== null)
@@ -260,7 +324,7 @@ function setPayload(exercise: ActiveExercise, set: ActiveSet): { [key: string]: 
   return {
     id: set.id,
     set_number: set.setNumber,
-    side: 'none',
+    side: set.side,
     // Solo lo que casa con la forma de medir (D-072): la base de datos rechaza el resto.
     weight_kg: byWeight ? set.weightKg : null,
     reps: byWeight ? set.reps : null,
@@ -299,7 +363,8 @@ export function prescribedReference(exercise: ActiveExercise, setNumber: number)
   }
   const set = parsed.data;
   return {
-    weightKg: set.targetLoadKg,
+    // La carga prescrita es del ejercicio de la rutina: no vale para el que lo sustituye (D-122).
+    weightKg: exercise.replacesExerciseId === null ? set.targetLoadKg : null,
     // Con un rango ("8-12"), el tope: es a lo que se apunta.
     reps: set.repsMax ?? set.repsMin,
     durationSeconds: set.durationSeconds,
@@ -308,7 +373,10 @@ export function prescribedReference(exercise: ActiveExercise, setNumber: number)
   };
 }
 
-/** Tocar una serie iluminada la apaga (D-120). Lo escrito se queda, pero no cuenta. */
+/**
+ * Tocar una serie iluminada la apaga (D-120), con sus dos lados si es
+ * unilateral. Lo escrito se queda, pero no cuenta.
+ */
 export function unmarkSet(
   workout: ActiveWorkout,
   position: number,
@@ -333,17 +401,23 @@ export function addSet(
   now: string,
   newId: () => string,
 ): ActiveWorkout {
-  return withExercise(workout, position, now, (exercise) =>
-    exercise.sets.length >= MAX_SETS
+  return withExercise(workout, position, now, (exercise) => {
+    const count = setNumbers(exercise).length;
+    return count >= MAX_SETS
       ? exercise
       : {
           ...exercise,
-          sets: [...exercise.sets, emptySet(newId(), exercise.sets.length + 1, true)],
-        },
-  );
+          sets: [
+            ...exercise.sets,
+            ...sidesOf(exercise.isUnilateral).map((side) =>
+              emptySet(newId(), count + 1, true, side),
+            ),
+          ],
+        };
+  });
 }
 
-/** Una serie de la vez anterior (sin lado, D-121 llega en el PR 3.8). */
+/** Una serie de la vez anterior (en un unilateral, un lado). */
 export interface PreviousSetValues {
   weightKg: number | null;
   reps: number | null;
@@ -353,12 +427,13 @@ export interface PreviousSetValues {
   intensityValue: number | null;
 }
 
-/** La serie con ese número de la vez anterior; `null` si entonces no la hizo. */
+/** La serie con ese número (y lado) de la vez anterior; `null` si entonces no la hizo. */
 export function previousSet(
   previous: { sets: readonly (PreviousSetValues & { setNumber: number; side: string })[] } | null,
   setNumber: number,
+  side: Side = 'none',
 ): PreviousSetValues | null {
-  const set = previous?.sets.find((item) => item.setNumber === setNumber && item.side === 'none');
+  const set = previous?.sets.find((item) => item.setNumber === setNumber && item.side === side);
   return set === undefined
     ? null
     : {
@@ -382,6 +457,24 @@ export function copyPrevious(
   return changeSet(workout, position, setNumber, previous, now);
 }
 
+/** "Igual" en un unilateral (D-121): copia cada lado que tenga algo que copiar. */
+export function copySides(
+  workout: ActiveWorkout,
+  position: number,
+  setNumber: number,
+  sources: Partial<Record<Side, PreviousSetValues | null>>,
+  now: string,
+): ActiveWorkout {
+  let result = workout;
+  for (const side of ['none', 'right', 'left'] as const) {
+    const source = sources[side];
+    if (source !== undefined && source !== null) {
+      result = changeSet(result, position, setNumber, source, now, side);
+    }
+  }
+  return result;
+}
+
 /**
  * El ejercicio que toca al abrir la app (D-119): el último que se tocó si le
  * quedan series; si no, el siguiente con series pendientes (dando la vuelta);
@@ -391,7 +484,8 @@ export function exerciseToResume(workout: ActiveWorkout): number | null {
   const count = workout.exercises.length;
   for (let offset = 0; offset < count; offset += 1) {
     const position = ((workout.lastExercise - 1 + offset) % count) + 1;
-    if (workout.exercises[position - 1]?.sets.some((set) => !set.isDone) === true) {
+    const exercise = workout.exercises[position - 1];
+    if (exercise !== undefined && !exercise.isSkipped && exercise.sets.some((set) => !set.isDone)) {
       return position;
     }
   }
@@ -408,11 +502,12 @@ export function copySource(
   exercise: ActiveExercise,
   setNumber: number,
   previous: PreviousSetValues | null,
+  side: Side = 'none',
 ): PreviousSetValues | null {
   if (mode === 'previous' || setNumber === 1) {
     return previous;
   }
-  const before = exercise.sets.find((set) => set.setNumber === setNumber - 1);
+  const before = exercise.sets.find((set) => set.setNumber === setNumber - 1 && set.side === side);
   if (before === undefined || !before.isDone) {
     return null;
   }

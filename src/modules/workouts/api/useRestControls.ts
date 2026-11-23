@@ -6,9 +6,10 @@ import { restSecondsFor, shouldStartRest } from '../model/rest-timer';
 import { restTimerStore } from './rest-timer-store';
 
 /**
- * Arrancar el descanso al apuntar una serie (D-123). `afterSet` se llama con
- * lo que había ANTES del cambio: solo el primer cambio de una serie (o
- * "Igual") lo arranca; corregirla no lo reinicia.
+ * Arrancar el descanso al apuntar una serie (D-123). `afterSet` dice si ese
+ * cambio acaba la ronda (D-121): la serie hecha por primera vez, con los dos
+ * lados si es unilateral y con todo el grupo si es una superserie o un
+ * circuito. Corregir lo ya hecho no lo reinicia.
  */
 export function useRestControls() {
   const { t } = useTranslation();
@@ -19,8 +20,12 @@ export function useRestControls() {
 
   return {
     sameButton: profile?.sameButton ?? DEFAULT_TRAINING_SETTINGS.sameButton,
-    afterSet(input: { workoutId: string; coachSeconds: number | null; wasDone: boolean }): void {
-      if (!shouldStartRest({ wasDone: input.wasDone, autostart })) {
+    afterSet(input: {
+      workoutId: string;
+      coachSeconds: number | null;
+      roundCompleted: boolean;
+    }): void {
+      if (!shouldStartRest({ wasDone: !input.roundCompleted, autostart })) {
         return;
       }
       const seconds = restSecondsFor({

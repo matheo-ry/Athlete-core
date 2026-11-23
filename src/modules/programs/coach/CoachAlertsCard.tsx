@@ -4,7 +4,7 @@ import { Link } from 'react-router';
 
 import { useLanguage } from '@/core/i18n';
 import { useTenantMembers } from '@/core/tenancy';
-import { Card } from '@/core/ui';
+import { Avatar, Card, ROW_LINK_CLASS, SECTION_TITLE_CLASS } from '@/core/ui';
 
 import { useClientPrograms } from '../api/useAssignments';
 import { useWorkoutAlerts } from '../api/useWorkoutAlerts';
@@ -61,20 +61,20 @@ export function CoachAlertsCard() {
   };
 
   return (
-    <Card className="flex flex-col gap-2">
-      <h2 className="text-lg font-semibold">{t('programs.home.alertsTitle')}</h2>
+    <Card className="flex flex-col gap-3">
+      <h2 className={SECTION_TITLE_CLASS}>{t('programs.home.alertsTitle')}</h2>
       {alerts.length === 0 ? (
         <p className="text-muted">{t('programs.home.allGood')}</p>
       ) : (
-        <ul aria-label={t('programs.home.alertsTitle')}>
+        <ul aria-label={t('programs.home.alertsTitle')} className="-mx-2 flex flex-col">
           {alerts.map((alert) => (
-            <li key={alert.clientId} className="border-border border-b last:border-b-0">
-              <Link
-                to={`/coach/clients/${alert.clientId}`}
-                className="hover:bg-background focus-visible:outline-primary-readable flex min-h-11 flex-col justify-center rounded-lg px-2 py-2 focus-visible:outline-2"
-              >
-                <span className="font-medium break-words">{alert.clientName}</span>
-                <span className="text-muted text-sm">{detail(alert)}</span>
+            <li key={alert.clientId}>
+              <Link to={`/coach/clients/${alert.clientId}`} className={ROW_LINK_CLASS}>
+                <Avatar name={alert.clientName} />
+                <span className="flex min-w-0 flex-col">
+                  <span className="font-semibold break-words">{alert.clientName}</span>
+                  <span className="text-muted text-sm">{detail(alert)}</span>
+                </span>
               </Link>
             </li>
           ))}

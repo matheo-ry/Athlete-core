@@ -21,13 +21,15 @@ export function ErrorState({ title, description, onRetry, className }: ErrorStat
   return (
     <div
       role="alert"
-      className={cn('flex flex-col items-center gap-2 px-4 py-10 text-center', className)}
+      className={cn('flex flex-col items-center gap-3 px-4 py-12 text-center', className)}
     >
-      <TriangleAlert aria-hidden="true" className="text-danger size-8" />
-      <p className="text-foreground font-semibold">{title ?? t('core.ui.errorTitle')}</p>
+      <span className="bg-danger-soft text-danger flex size-14 items-center justify-center rounded-full">
+        <TriangleAlert aria-hidden="true" className="size-6" strokeWidth={1.8} />
+      </span>
+      <p className="display text-foreground mt-2 text-2xl">{title ?? t('core.ui.errorTitle')}</p>
       <p className="text-muted max-w-sm text-sm">{description ?? t('core.ui.errorDescription')}</p>
       {onRetry ? (
-        <Button variant="secondary" onClick={onRetry} className="mt-2">
+        <Button variant="secondary" onClick={onRetry} className="mt-3">
           {t('core.ui.retry')}
         </Button>
       ) : null}

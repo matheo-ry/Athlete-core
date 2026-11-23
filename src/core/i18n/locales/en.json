@@ -78,6 +78,8 @@
       "title": "Coach dashboard",
       "description": "Your clients and their programs, at a glance.",
       "businessLabel": "Your business",
+      "activeClients_one": "active client",
+      "activeClients_other": "active clients",
       "firstSteps": {
         "title": "First steps",
         "shareCode": "Share your code",

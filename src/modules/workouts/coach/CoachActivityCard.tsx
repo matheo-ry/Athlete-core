@@ -5,7 +5,7 @@ import { Link } from 'react-router';
 import { useLanguage } from '@/core/i18n';
 import type { Language } from '@/core/i18n';
 import { useTenantMembers } from '@/core/tenancy';
-import { Card } from '@/core/ui';
+import { Avatar, Card, ROW_LINK_CLASS, SECTION_TITLE_CLASS } from '@/core/ui';
 
 import { useCoachActivity } from '../api/useCoachActivity';
 import {
@@ -102,15 +102,20 @@ export function CoachActivityCard() {
     const isNew = !openedIds.has(workout.id);
 
     return (
-      <li key={workout.id} className="border-border border-b last:border-b-0">
+      <li key={workout.id}>
         <Link
           to={`/coach/clients/${workout.clientId}?workout=${workout.id}`}
           onClick={() => handleOpenWorkout(workout.id)}
-          className="hover:bg-background focus-visible:outline-primary-readable flex min-h-11 items-center justify-between gap-2 rounded-lg px-2 py-2 focus-visible:outline-2"
+          className={ROW_LINK_CLASS}
         >
-          <span className="font-medium break-words">{parts.join(' · ')}</span>
+          <Avatar name={clientName} />
+          <span className="min-w-0 flex-1 font-medium break-words">{parts.join(' · ')}</span>
           {isNew ? (
-            <span className="bg-primary/10 text-primary-readable shrink-0 rounded px-1.5 py-0.5 text-xs font-semibold">
+            <span className="bg-primary-soft text-primary-readable eyebrow flex shrink-0 items-center gap-1.5 rounded-full px-2.5 py-1 tracking-[0.08em]">
+              <span
+                aria-hidden="true"
+                className="bg-primary size-1.5 rounded-full shadow-[0_0_8px_1px_var(--color-primary-glow)]"
+              />
               {t('workouts.home.newBadge')}
             </span>
           ) : null}
@@ -120,12 +125,12 @@ export function CoachActivityCard() {
   };
 
   return (
-    <Card className="flex flex-col gap-2">
-      <h2 className="text-lg font-semibold">{t('workouts.home.activityTitle')}</h2>
+    <Card className="flex flex-col gap-3">
+      <h2 className={SECTION_TITLE_CLASS}>{t('workouts.home.activityTitle')}</h2>
       {activeWorkouts.length === 0 ? (
         <p className="text-muted">{t('workouts.home.noActivity')}</p>
       ) : (
-        <ul aria-label={t('workouts.home.activityTitle')}>
+        <ul aria-label={t('workouts.home.activityTitle')} className="-mx-2 flex flex-col">
           {activeWorkouts.map((workout) => renderWorkoutLine(workout, activeWorkouts))}
         </ul>
       )}

@@ -1,38 +1,28 @@
-import { useTranslation } from 'react-i18next';
 import { Outlet } from 'react-router';
 
-import { LanguageSwitcher } from '@/core/i18n';
-
 import { BrandMark } from '../BrandMark';
-import { ShellNavLink } from '../ShellNavLink';
+import { ShellDock } from '../ShellDock';
 import { useShellNav } from '../useShellNav';
 
 /**
  * Carcasa del perfil CLIENTE: pensada para móvil y para usarse en mitad de un
- * entreno. Barra inferior siempre, contenido en una columna (ARQUITECTURA §7).
+ * entreno (ARQUITECTURA §7). Sin barra de título: la marca del coach flota
+ * arriba como una píldora y cada pantalla pone su titular grande. Abajo, la
+ * barra de navegación flotante (D-prime1-6). El idioma está en el Perfil.
  */
 export function ClientLayout() {
-  const { t } = useTranslation();
   const items = useShellNav('client');
 
   return (
-    <div className="flex flex-1 flex-col">
-      <header className="border-border bg-surface flex items-center justify-between gap-2 border-b px-4 py-2">
-        <BrandMark />
-        <LanguageSwitcher />
+    <div className="relative flex flex-1 flex-col">
+      <header className="relative z-10 mx-auto flex w-full max-w-xl items-center justify-between px-5 pt-[calc(var(--safe-top)+1rem)]">
+        <BrandMark variant="chip" />
       </header>
-      {/* Deja sitio a la barra inferior fija y a la de gestos del móvil. */}
-      <main className="mx-auto w-full max-w-xl flex-1 p-4 pb-[calc(5rem+var(--safe-bottom))]">
+      {/* Deja sitio a la barra flotante y a la de gestos del móvil. */}
+      <main className="relative mx-auto w-full max-w-xl flex-1 px-5 pt-8 pb-[var(--dock-space)]">
         <Outlet />
       </main>
-      <nav
-        aria-label={t('app.nav.label')}
-        className="border-border bg-surface fixed inset-x-0 bottom-0 flex border-t pb-[var(--safe-bottom)]"
-      >
-        {items.map((item) => (
-          <ShellNavLink key={item.to} item={item} layout="bottom" />
-        ))}
-      </nav>
+      <ShellDock items={items} />
     </div>
   );
 }

@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router';
 
 import { countActiveClients, useTenancy, useTenantMembers } from '@/core/tenancy';
-import { Card } from '@/core/ui';
+import { Card, ROW_LINK_CLASS, SECTION_TITLE_CLASS } from '@/core/ui';
 
 const STEPS = [
   { to: '/coach/clients', title: 'shareCode', hint: 'shareCodeHint' },
@@ -24,15 +24,15 @@ export function FirstStepsCard() {
   }
 
   return (
-    <Card>
-      <h2 className="mb-2 font-semibold">{t('app.coachHome.firstSteps.title')}</h2>
-      <ul className="flex flex-col">
-        {STEPS.map((step) => (
+    <Card className="flex flex-col gap-3 lg:col-span-2">
+      <h2 className={SECTION_TITLE_CLASS}>{t('app.coachHome.firstSteps.title')}</h2>
+      <ul className="-mx-2 grid gap-1 md:grid-cols-2">
+        {STEPS.map((step, index) => (
           <li key={step.to}>
-            <Link
-              to={step.to}
-              className="hover:bg-background focus-visible:outline-primary-readable flex min-h-14 items-center gap-3 rounded-lg px-2 focus-visible:outline-2"
-            >
+            <Link to={step.to} className={ROW_LINK_CLASS}>
+              <span className="numeral text-primary-readable w-8 text-center text-2xl">
+                {index + 1}
+              </span>
               <span className="flex flex-1 flex-col">
                 <span className="font-medium">{t(`app.coachHome.firstSteps.${step.title}`)}</span>
                 <span className="text-muted text-sm">

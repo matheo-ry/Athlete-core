@@ -7,6 +7,8 @@ import { cn } from '@/core/lib';
 interface BrandBadgeProps {
   brand: Brand;
   size?: 'sm' | 'lg';
+  /** Redondo (en una píldora) en vez de con esquinas. */
+  round?: boolean;
   /**
    * Solo para la vista previa de la marca: la imagen elegida y aún sin guardar
    * (`null`: se acaba de quitar el logo). Si no se pasa, el logo guardado.
@@ -21,12 +23,13 @@ interface BrandBadgeProps {
  * ejemplo, en una lista de espacios). El texto, blanco o negro: el que más
  * contraste dé (D-028). Es decoración: el nombre va siempre al lado.
  */
-export function BrandBadge({ brand, size = 'sm', logoSrc }: BrandBadgeProps) {
+export function BrandBadge({ brand, size = 'sm', round = false, logoSrc }: BrandBadgeProps) {
   const saved = brand.logoPath === null ? null : logoUrl(brand.logoPath);
   const src = logoSrc === undefined ? saved : logoSrc;
   // La dirección que no se pudo cargar: para ella, las iniciales.
   const [failedSrc, setFailedSrc] = useState<string | null>(null);
-  const sizeClass = size === 'sm' ? 'size-8 text-sm' : 'size-16 text-2xl';
+  const sizeClass = size === 'sm' ? 'size-8 text-xs' : 'size-16 text-2xl';
+  const shapeClass = round ? 'rounded-full' : size === 'sm' ? 'rounded-[0.65rem]' : 'rounded-2xl';
 
   if (src !== null && src !== failedSrc) {
     return (
@@ -36,7 +39,7 @@ export function BrandBadge({ brand, size = 'sm', logoSrc }: BrandBadgeProps) {
         aria-hidden="true"
         data-testid="brand-logo"
         onError={() => setFailedSrc(src)}
-        className={cn('bg-surface shrink-0 rounded-lg object-contain', sizeClass)}
+        className={cn('bg-surface shrink-0 object-contain', shapeClass, sizeClass)}
       />
     );
   }
@@ -49,7 +52,11 @@ export function BrandBadge({ brand, size = 'sm', logoSrc }: BrandBadgeProps) {
         backgroundColor: brand.colors.primary,
         color: pickReadableOn(brand.colors.primary),
       }}
-      className={cn('flex shrink-0 items-center justify-center rounded-lg font-bold', sizeClass)}
+      className={cn(
+        'display flex shrink-0 items-center justify-center tracking-normal shadow-[inset_0_1px_0_rgb(255_255_255/0.3)]',
+        shapeClass,
+        sizeClass,
+      )}
     >
       {brandInitials(brand.appName)}
     </span>

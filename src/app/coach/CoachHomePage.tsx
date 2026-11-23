@@ -1,37 +1,62 @@
 import { useTranslation } from 'react-i18next';
 
+import { useLanguage } from '@/core/i18n';
 import { HomeCardContent, collectHomeCards } from '@/core/modules';
-import { useTenancy } from '@/core/tenancy';
-import { Card } from '@/core/ui';
+import { countActiveClients, useTenancy, useTenantMembers } from '@/core/tenancy';
+import { HeroBackdrop, PageHeader, enterDelay } from '@/core/ui';
 
 import { useActiveModules } from '../useActiveModules';
 import { FirstStepsCard } from './FirstStepsCard';
 
 /**
- * Inicio del coach: su negocio, al empezar los primeros pasos (D-049) y las
- * tarjetas que aportan los módulos activos, como los avisos de rutinas (PR 2.18).
+ * Inicio del coach (D-prime1-7): la foto de cabecera con su negocio y el titular,
+ * la cifra de clientes activos y, debajo, los primeros pasos (D-049) y las
+ * tarjetas de los módulos activos (avisos, actividad), en dos columnas en
+ * escritorio.
  */
 export function CoachHomePage() {
   const { t } = useTranslation();
+  const language = useLanguage();
   const { tenant } = useTenancy();
+  const members = useTenantMembers();
   const cards = collectHomeCards(useActiveModules(), 'coach');
+  const dateLabel = new Intl.DateTimeFormat(language, {
+    weekday: 'long',
+    day: 'numeric',
+    month: 'long',
+  }).format(new Date());
+  const activeClients = members.data === undefined ? null : countActiveClients(members.data);
 
   return (
-    <section className="flex flex-col gap-4">
-      <header>
-        <h1 className="text-2xl font-bold">{t('app.coachHome.title')}</h1>
-        <p className="text-muted">{t('app.coachHome.description')}</p>
-      </header>
-      {tenant ? (
-        <Card>
-          <p className="text-muted text-sm">{t('app.coachHome.businessLabel')}</p>
-          <p className="text-lg font-semibold">{tenant.name}</p>
-        </Card>
-      ) : null}
-      <FirstStepsCard />
-      {cards.map((card) => (
-        <HomeCardContent key={card.key} card={card} />
-      ))}
-    </section>
+    <>
+      <HeroBackdrop photo="dumbbells" className="h-[62svh] md:h-[560px]" />
+      <section className="flex flex-col gap-8 pt-[12svh] md:pt-24">
+        <PageHeader
+          onPhoto
+          eyebrow={tenant ? `${tenant.name} · ${dateLabel}` : dateLabel}
+          title={t('app.coachHome.title')}
+          description={t('app.coachHome.description')}
+          actions={
+            activeClients === null ? null : (
+              <p className="glass-photo flex items-baseline gap-3 rounded-3xl px-5 py-4">
+                <span className="numeral text-5xl">{activeClients}</span>
+                <span className="text-on-photo-muted max-w-28 text-sm leading-tight">
+                  {t('app.coachHome.activeClients', { count: activeClients })}
+                </span>
+              </p>
+            )
+          }
+        />
+        <div
+          className="animate-enter over-photo grid items-start gap-4 lg:grid-cols-2"
+          style={enterDelay(120)}
+        >
+          <FirstStepsCard />
+          {cards.map((card) => (
+            <HomeCardContent key={card.key} card={card} />
+          ))}
+        </div>
+      </section>
+    </>
   );
 }

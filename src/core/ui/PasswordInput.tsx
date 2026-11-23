@@ -3,7 +3,7 @@ import { useId, useState } from 'react';
 import type { InputHTMLAttributes } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { cn } from '../lib';
+import { FIELD_LABEL_CLASS, fieldClassName } from './field-styles';
 
 interface PasswordInputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'id' | 'type'> {
   label: string;
@@ -25,8 +25,8 @@ export function PasswordInput({ label, hint, error, className, ...rest }: Passwo
   const toggleLabel = isVisible ? t('core.ui.hidePassword') : t('core.ui.showPassword');
 
   return (
-    <div className="flex flex-col gap-1.5">
-      <label htmlFor={id} className="text-foreground text-sm font-medium">
+    <div className="flex flex-col gap-2">
+      <label htmlFor={id} className={FIELD_LABEL_CLASS}>
         {label}
       </label>
       <div className="relative">
@@ -35,13 +35,7 @@ export function PasswordInput({ label, hint, error, className, ...rest }: Passwo
           type={isVisible ? 'text' : 'password'}
           aria-invalid={error ? true : undefined}
           aria-describedby={describedBy || undefined}
-          className={cn(
-            'bg-surface text-foreground min-h-11 w-full rounded-lg border py-2 pr-12 pl-3 text-base',
-            'placeholder:text-muted focus-visible:outline-primary-readable',
-            'focus-visible:outline-2 focus-visible:outline-offset-2',
-            error ? 'border-danger' : 'border-border',
-            className,
-          )}
+          className={fieldClassName(Boolean(error), `pr-14 ${className ?? ''}`)}
           {...rest}
         />
         <button
@@ -49,7 +43,7 @@ export function PasswordInput({ label, hint, error, className, ...rest }: Passwo
           aria-label={toggleLabel}
           aria-pressed={isVisible}
           onClick={() => setIsVisible((current) => !current)}
-          className="text-muted hover:text-foreground focus-visible:outline-primary-readable absolute inset-y-0 right-0 flex w-11 items-center justify-center rounded-r-lg focus-visible:outline-2"
+          className="text-muted hover:text-foreground focus-ring absolute inset-y-0 right-1 my-auto flex size-11 items-center justify-center rounded-full"
         >
           {isVisible ? (
             <EyeOff aria-hidden="true" className="size-5" />

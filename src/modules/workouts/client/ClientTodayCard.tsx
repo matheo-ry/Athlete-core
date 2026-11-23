@@ -1,3 +1,5 @@
+import { ArrowRight } from 'lucide-react';
+import type { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, useNavigate } from 'react-router';
 
@@ -11,8 +13,28 @@ import { useActiveWorkout } from '../api/useActiveWorkout';
 import { useStartWorkout } from '../api/useStartWorkout';
 import { useWorkoutOwnership } from '../api/useWorkoutOwnership';
 
-const LINK =
-  'focus-visible:outline-primary-readable rounded text-lg font-semibold underline-offset-4 hover:underline focus-visible:outline-2';
+const LINK = 'focus-ring rounded-md underline-offset-[6px] decoration-2 hover:underline';
+
+/** La tarjeta va encima de la foto del inicio: cristal oscuro y texto blanco (D-prime1-7). */
+function HeroCard({ children }: { children: ReactNode }) {
+  return (
+    <Card tone="photo" className="animate-enter flex flex-col gap-5 p-6">
+      {children}
+    </Card>
+  );
+}
+
+/** El botón principal a todo el ancho, con la flecha en su círculo. */
+// Con `!`: `cn` no resuelve choques y el botón base centra el contenido.
+const START_CLASS = 'w-full justify-between! pr-2! pl-6!';
+
+function StartArrow() {
+  return (
+    <span className="flex size-10 items-center justify-center rounded-full bg-scrim/15">
+      <ArrowRight aria-hidden="true" className="size-5" />
+    </span>
+  );
+}
 
 /**
  * La tarjeta del inicio del cliente (PR 2.18, D-084), de `workouts` desde el
@@ -32,50 +54,61 @@ export function ClientTodayCard() {
   }
   if (today.status === 'none') {
     return (
-      <Card>
-        <p className="font-semibold">
+      <HeroCard>
+        <p className="display text-2xl">
           {today.next === null
             ? t('workouts.today.noProgram')
             : t('workouts.today.startsOn', { date: shortDate(today.next.startsOn, language) })}
         </p>
-      </Card>
+      </HeroCard>
     );
   }
   const day = today.today;
   if (day === null) {
     // Modo lista: sin "Hoy toca" (D-082).
     return (
-      <Card className="flex flex-col gap-1">
-        <p className="text-muted text-sm">{t('workouts.today.listProgram')}</p>
-        <Link to="/client/program" className={LINK}>
+      <HeroCard>
+        <p className="eyebrow text-on-photo-muted">{t('workouts.today.listProgram')}</p>
+        <Link to="/client/program" className={`${LINK} display text-4xl`}>
           {today.program.name}
         </Link>
-      </Card>
+      </HeroCard>
     );
   }
   if (day.kind === 'rest') {
     return (
-      <Card className="flex flex-col gap-1">
-        <p className="text-lg font-semibold">{t('workouts.today.rest')}</p>
-        <Link to="/client/program" className={LINK}>
+      <HeroCard>
+        <p className="display text-4xl">{t('workouts.today.rest')}</p>
+        <Link
+          to="/client/program"
+          className={buttonClassName('secondary', `${START_CLASS} text-on-photo`, 'lg')}
+        >
           {t('workouts.today.open')}
+          <StartArrow />
         </Link>
-      </Card>
+      </HeroCard>
     );
   }
   return (
-    <Card className="flex flex-col gap-1">
-      <p className="text-muted text-sm">{t('workouts.today.title')}</p>
-      <Link to={`/client/program?day=${String(day.dayNumber)}`} className={LINK}>
-        {title(day)}
-      </Link>
-      <p className="text-sm">{summary({ ...day, name: null })}</p>
+    <HeroCard>
+      <div className="flex flex-col gap-3">
+        <p className="eyebrow text-on-photo-muted">{t('workouts.today.title')}</p>
+        <Link
+          to={`/client/program?day=${String(day.dayNumber)}`}
+          className={`${LINK} display text-[2.6rem] break-words`}
+        >
+          {title(day)}
+        </Link>
+        <p className="text-on-photo-muted text-[0.9375rem]">{summary({ ...day, name: null })}</p>
+      </div>
       {canLogWorkouts() ? (
         <StartButton start={() => ({ programId: today.program.id, block: today.block, day })} />
       ) : (
-        <p className="text-muted text-sm">{t('workouts.today.openMobileApp')}</p>
+        <p className="text-on-photo-muted rounded-2xl bg-on-photo/5 px-4 py-3 text-sm">
+          {t('workouts.today.openMobileApp')}
+        </p>
       )}
-    </Card>
+    </HeroCard>
   );
 }
 
@@ -92,14 +125,16 @@ function StartButton({ start }: { start: StartArgs }) {
   // Con uno abierto en otro móvil tampoco se empieza otro (D-119, D-124).
   if (open !== null || ownership.kind === 'elsewhere') {
     return (
-      <Link to="/client/workout" className={buttonClassName('primary', 'mt-2 self-start')}>
+      <Link to="/client/workout" className={buttonClassName('primary', START_CLASS, 'lg')}>
         {t('workouts.today.continue')}
+        <StartArrow />
       </Link>
     );
   }
   return (
     <Button
-      className="mt-2 self-start"
+      size="lg"
+      className={START_CLASS}
       disabled={!starter.isReady || starter.isPending}
       onClick={() => {
         const { programId, block, day } = start();
@@ -111,6 +146,7 @@ function StartButton({ start }: { start: StartArgs }) {
       }}
     >
       {t('workouts.today.start')}
+      <StartArrow />
     </Button>
   );
 }

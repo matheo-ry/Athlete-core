@@ -78,6 +78,8 @@
       "title": "Panel del coach",
       "description": "Tus clientes y sus rutinas, de un vistazo.",
       "businessLabel": "Tu negocio",
+      "activeClients_one": "cliente activo",
+      "activeClients_other": "clientes activos",
       "firstSteps": {
         "title": "Primeros pasos",
         "shareCode": "Comparte tu código",

@@ -1,4 +1,13 @@
 @import 'tailwindcss';
+/* Tipografía PRIME (D-prime1-2): Mona Sans para leer y Hubot Sans para los
+   titulares y las cifras. Las dos con eje de anchura (75 % a 125 %), empaquetadas
+   con la app: no piden nada a terceros y funcionan sin conexión. */
+@import '@fontsource-variable/mona-sans/wdth.css';
+@import '@fontsource-variable/hubot-sans/wdth.css';
+
+/* `light:` para lo que cambia en modo claro y no es un color (opacidades,
+   mezclas). `data-mode` lo pone la marca en <html> (core/branding). */
+@custom-variant light (&:where([data-mode='light'], [data-mode='light'] *));
 
 /*
  * Variables de tema por defecto (marca de la plataforma, modo oscuro).
@@ -9,34 +18,91 @@
 :root {
   --brand-primary: #2563eb;
   --brand-on-primary: #ffffff;
-  --brand-primary-readable: #4f81ef;
+  --brand-primary-readable: #5584f0;
   --brand-accent: #ff7a1a;
   --brand-on-accent: #000000;
-  --brand-background: #0f1115;
-  --brand-surface: #181b21;
-  --brand-foreground: #f3f4f6;
-  --brand-muted: #a3a8b3;
-  --brand-border: #2c313a;
-  --brand-danger: #f87171;
+  --brand-background: #050506;
+  --brand-surface: #121215;
+  --brand-foreground: #f5f5f7;
+  --brand-muted: #9d9da6;
+  --brand-border: #2a2a30;
+  --brand-danger: #ff6b6b;
   color-scheme: dark;
 }
 
 /*
  * Colores de Tailwind enlazados a las variables de tema. Los componentes usan
  * SOLO estas clases (bg-primary, text-foreground…), nunca un color fijo.
+ * El cristal, los halos y los tonos suaves se derivan del color del coach o del
+ * modo con `color-mix` y `light-dark()`: funcionan con cualquier marca.
  */
 @theme inline {
   --color-primary: var(--brand-primary);
   --color-on-primary: var(--brand-on-primary);
   --color-primary-readable: var(--brand-primary-readable);
+  --color-primary-soft: color-mix(in oklab, var(--brand-primary) 18%, transparent);
+  --color-primary-glow: color-mix(in oklab, var(--brand-primary) 55%, transparent);
   --color-accent: var(--brand-accent);
   --color-on-accent: var(--brand-on-accent);
+  --color-accent-soft: color-mix(in oklab, var(--brand-accent) 18%, transparent);
   --color-background: var(--brand-background);
   --color-surface: var(--brand-surface);
   --color-foreground: var(--brand-foreground);
   --color-muted: var(--brand-muted);
   --color-border: var(--brand-border);
   --color-danger: var(--brand-danger);
+  --color-danger-soft: color-mix(in oklab, var(--brand-danger) 16%, transparent);
+
+  /* Cristal: un velo del color del texto sobre lo que haya detrás. */
+  --color-glass: light-dark(rgb(255 255 255 / 0.66), rgb(255 255 255 / 0.065));
+  --color-glass-strong: light-dark(rgb(255 255 255 / 0.84), rgb(255 255 255 / 0.11));
+  --color-glass-hover: light-dark(rgb(255 255 255 / 0.92), rgb(255 255 255 / 0.15));
+  --color-hairline: light-dark(rgb(10 10 14 / 0.1), rgb(255 255 255 / 0.1));
+  --color-hairline-strong: light-dark(rgb(10 10 14 / 0.18), rgb(255 255 255 / 0.2));
+
+  /* Sobre una foto (siempre oscura) el texto es blanco en los dos modos. */
+  --color-on-photo: #ffffff;
+  --color-on-photo-muted: rgb(255 255 255 / 0.74);
+  /* El velo negro que oscurece una foto para que el texto se lea. */
+  --color-scrim: #000000;
+
+  --font-sans:
+    'Mona Sans Variable', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-display:
+    'Hubot Sans Variable', 'Mona Sans Variable', ui-sans-serif, system-ui, -apple-system, sans-serif;
+
+  --radius-panel: 1.75rem;
+  --radius-control: 1.125rem;
+
+  /* Movimiento: frena al final, o un muelle que se pasa un poco y vuelve. */
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-spring: linear(
+    0,
+    0.009,
+    0.035 2.1%,
+    0.141,
+    0.281 6.7%,
+    0.723 12.9%,
+    0.938 16.7%,
+    1.017,
+    1.077,
+    1.121,
+    1.149 24.3%,
+    1.159,
+    1.163,
+    1.161,
+    1.154 29.9%,
+    1.129 32.8%,
+    1.051 39.6%,
+    1.017 43.1%,
+    0.991,
+    0.977 51%,
+    0.974 53.8%,
+    0.975 57.1%,
+    0.997 69.8%,
+    1.003 76.9%,
+    1
+  );
 }
 
 /*
@@ -50,12 +116,236 @@
   --safe-bottom: var(--safe-area-inset-bottom, env(safe-area-inset-bottom, 0px));
   --safe-left: var(--safe-area-inset-left, env(safe-area-inset-left, 0px));
   --safe-right: var(--safe-area-inset-right, env(safe-area-inset-right, 0px));
+
+  /* Lo que ocupa la barra de navegación flotante: para que nada quede debajo. */
+  --dock-space: calc(6.5rem + var(--safe-bottom));
+
+  /*
+   * Material de cristal. Un reflejo de luz en el canto de arriba, un filo fino
+   * alrededor y una sombra que lo separa del fondo: sin líneas gruesas.
+   */
+  --glass-edge:
+    inset 0 1px 0 0 light-dark(rgb(255 255 255 / 0.95), rgb(255 255 255 / 0.16)),
+    inset 0 0 0 1px light-dark(rgb(255 255 255 / 0.6), rgb(255 255 255 / 0.07));
+  --glass-shadow:
+    0 1px 2px light-dark(rgb(16 16 24 / 0.06), rgb(0 0 0 / 0.4)),
+    0 22px 50px -26px light-dark(rgb(16 16 24 / 0.28), rgb(0 0 0 / 0.85));
+  --glass-sheen: linear-gradient(
+    180deg,
+    light-dark(rgb(255 255 255 / 0.55), rgb(255 255 255 / 0.07)),
+    transparent 46%
+  );
+
+  /* Grano de película: ruido de SVG, sin pedir ninguna imagen. */
+  --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0.55 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 
-body {
-  /* Con el móvil en horizontal, la cámara o los gestos pueden ir a los lados. */
-  padding-left: var(--safe-left);
-  padding-right: var(--safe-right);
-  background-color: var(--brand-background);
-  color: var(--brand-foreground);
+@layer base {
+  html {
+    -webkit-tap-highlight-color: transparent;
+    text-size-adjust: 100%;
+    background-color: var(--brand-background);
+  }
+
+  body {
+    font-family: var(--font-sans);
+    font-optical-sizing: auto;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    /* Con el móvil en horizontal, la cámara o los gestos pueden ir a los lados. */
+    padding-left: var(--safe-left);
+    padding-right: var(--safe-right);
+    background-color: var(--brand-background);
+    color: var(--brand-foreground);
+  }
+
+  h1,
+  h2,
+  h3 {
+    text-wrap: balance;
+  }
+
+  /* Los números de una tabla o una serie no deben bailar al cambiar. */
+  input[type='number'],
+  .tabular {
+    font-variant-numeric: tabular-nums;
+  }
+
+  ::selection {
+    background: color-mix(in oklab, var(--brand-primary) 45%, transparent);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 1ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 1ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+/* Cristal sobre el fondo de la app: tarjetas y paneles. Sin desenfoque propio:
+   el fondo ya va desenfocado, una lista larga no cuesta en el móvil y, sobre
+   todo, un `backdrop-filter` encerraría los `fixed` de dentro (diálogos). Donde
+   el cristal pasa sobre una foto nítida, la pantalla le añade `over-photo`. */
+@utility glass {
+  background-color: var(--color-glass);
+  background-image: var(--glass-sheen);
+  box-shadow: var(--glass-edge), var(--glass-shadow);
+}
+
+/* Contenedor encima de una foto: su cristal desenfoca lo de detrás. Solo para
+   tarjetas sin diálogos dentro (los inicios). */
+@utility over-photo {
+  & .glass {
+    -webkit-backdrop-filter: blur(20px) saturate(1.5);
+    backdrop-filter: blur(20px) saturate(1.5);
+  }
+}
+
+/* Cristal que flota sobre algo nítido (una foto, la lista al desplazarse):
+   menús, barras, avisos y tarjetas encima de una foto. Desenfoca lo de detrás. */
+@utility glass-float {
+  background-color: light-dark(rgb(255 255 255 / 0.7), rgb(22 22 26 / 0.5));
+  background-image: var(--glass-sheen);
+  box-shadow: var(--glass-edge), var(--glass-shadow);
+  -webkit-backdrop-filter: blur(26px) saturate(1.8);
+  backdrop-filter: blur(26px) saturate(1.8);
+}
+
+/* Cristal sobre una foto: siempre oscuro, para que el texto blanco se lea. */
+@utility glass-photo {
+  background-color: rgb(14 14 18 / 0.34);
+  background-image: linear-gradient(180deg, rgb(255 255 255 / 0.12), transparent 50%);
+  box-shadow:
+    inset 0 1px 0 0 rgb(255 255 255 / 0.22),
+    inset 0 0 0 1px rgb(255 255 255 / 0.1),
+    0 24px 60px -30px rgb(0 0 0 / 0.9);
+  -webkit-backdrop-filter: blur(22px) saturate(1.6);
+  backdrop-filter: blur(22px) saturate(1.6);
+  color: var(--color-on-photo);
+}
+
+/* Titulares: Hubot Sans ancha y pesada, apretada. */
+@utility display {
+  font-family: var(--font-display);
+  font-stretch: 118%;
+  font-weight: 820;
+  letter-spacing: -0.035em;
+  line-height: 0.92;
+}
+
+/* Cifras grandes: más estrechas, para que quepan "142,5" o "12/20". */
+@utility numeral {
+  font-family: var(--font-display);
+  font-stretch: 92%;
+  font-weight: 760;
+  letter-spacing: -0.03em;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+}
+
+/* Etiqueta pequeña en mayúsculas: la voz de "instrumento" de la app. */
+@utility eyebrow {
+  font-family: var(--font-display);
+  font-stretch: 110%;
+  font-size: 0.6875rem;
+  line-height: 1rem;
+  font-weight: 650;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+/* Velo de una foto con texto al pie: oscuro arriba (barra de estado), claro en
+   el centro y casi negro abajo, donde va el texto. */
+@utility scrim-bottom {
+  background: linear-gradient(
+    180deg,
+    rgb(0 0 0 / 0.5) 0%,
+    rgb(0 0 0 / 0) 26%,
+    rgb(0 0 0 / 0.2) 52%,
+    rgb(0 0 0 / 0.9) 100%
+  );
+}
+
+/* Velo de la foto de cabecera en pantallas anchas: el texto va a la izquierda. */
+@utility scrim-side {
+  background: linear-gradient(90deg, rgb(0 0 0 / 0.72) 0%, rgb(0 0 0 / 0.35) 45%, transparent 75%);
+}
+
+/* Grano de película encima de una foto o del fondo. */
+@utility grain {
+  background-image: var(--grain);
+  background-size: 180px 180px;
+  mix-blend-mode: overlay;
+  pointer-events: none;
+}
+
+/* Anillo de foco común: el color del coach, separado del borde. */
+@utility focus-ring {
+  outline: 2px solid transparent;
+  outline-offset: 3px;
+  transition: outline-color 120ms;
+  &:focus-visible {
+    outline-color: var(--brand-primary-readable);
+  }
+}
+
+/* Desplazable sin barra a la vista (chips que no caben en el móvil). */
+@utility no-scrollbar {
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+/* Entrada de cada pantalla: sube un poco y se enfoca. `backwards` (no `both`)
+   para no dejar un `transform` que rompa los `fixed` y `sticky` de dentro. */
+@utility animate-enter {
+  animation: enter 640ms var(--ease-out-expo) backwards;
+  animation-delay: var(--enter-delay, 0ms);
+}
+
+@keyframes enter {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+    filter: blur(6px);
+  }
+}
+
+/* La foto de cabecera se aleja despacio al desplazar (solo donde el navegador
+   sabe animar con el desplazamiento; en el resto se queda quieta). */
+@keyframes hero-drift {
+  to {
+    transform: translateY(18%) scale(1.08);
+    opacity: 0.35;
+  }
+}
+
+@supports (animation-timeline: scroll()) {
+  .hero-drift {
+    animation: hero-drift linear both;
+    animation-timeline: scroll(root);
+    animation-range: 0 70vh;
+  }
+}
+
+@keyframes ambient-breathe {
+  0%,
+  100% {
+    transform: scale(1.15) translate3d(0, 0, 0);
+  }
+  50% {
+    transform: scale(1.22) translate3d(-1.5%, 1%, 0);
+  }
+}
+
+@keyframes spin-arc {
+  to {
+    transform: rotate(360deg);
+  }
 }

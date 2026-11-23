@@ -28,6 +28,16 @@ const blocks = (page: Page) =>
 const days = (page: Page) =>
   page.getByRole('list', { name: 'Days of the cycle' }).getByRole('button');
 
+/**
+ * Espera a que el bloque N (desde 1) sea el elegido en pantalla. El bloque
+ * elegido va en la dirección y React Router lo pinta en una transición: la
+ * lista de bloques cambia antes que la selección y, con la CPU ocupada, lo que
+ * se escribe justo después cae en el bloque anterior.
+ */
+async function expectSelectedBlock(page: Page, number: number) {
+  await expect(blocks(page).nth(number - 1)).toHaveAttribute('aria-current', 'true');
+}
+
 async function save(page: Page) {
   await page.getByRole('button', { name: 'Save changes' }).click();
   await expect(page.getByRole('status')).toHaveText('Changes saved.');
@@ -56,7 +66,7 @@ test('añade bloques, les pone duración, los ordena y se guardan así', async (
   await expect(page.getByText('28 days in total.')).toBeVisible();
   await page.getByRole('button', { name: 'Duplicate the last one' }).click();
   await expect(blocks(page)).toHaveText(['Block 14 weeks', 'Block 24 weeks']);
-  await expect(blocks(page).nth(1)).toHaveAttribute('aria-current', 'true');
+  await expectSelectedBlock(page, 2);
   await expect(days(page).first()).toContainText('1 exercise · 3 sets');
 
   // Se le cambia un ejercicio al segundo; el primero no cambia.
@@ -72,23 +82,28 @@ test('añade bloques, les pone duración, los ordena y se guardan así', async (
   // Criterio 3: un tercero, con un ciclo de 8 días y 2 vueltas: 16 días.
   await page.getByRole('button', { name: 'Empty block' }).click();
   await expect(blocks(page)).toHaveCount(3);
+  await expectSelectedBlock(page, 3);
   await page.getByLabel('Days in the cycle').fill('8');
   await page.getByRole('button', { name: 'Change', exact: true }).click();
+  await expect(page.getByText('8-day cycle', { exact: true })).toBeVisible();
   await page.getByLabel('Rounds').fill('2');
   await expect(page.getByText('16 days in total.')).toBeVisible();
 
   // Criterio 4: sube al segundo puesto y, tras guardar y recargar, sigue ahí.
   await page.getByRole('button', { name: 'Move block 3 earlier' }).click();
   await expect(blocks(page)).toHaveText(['Block 14 weeks', 'Block 22 rounds', 'Block 34 weeks']);
+  await expectSelectedBlock(page, 2);
   await save(page);
   await page.reload();
   await expect(blocks(page)).toHaveText(['Block 14 weeks', 'Block 22 rounds', 'Block 34 weeks']);
 
   // Cada bloque conserva lo suyo: el primero "Lat pulldown"; el tercero, "Leg press".
   await blocks(page).nth(0).click();
+  await expectSelectedBlock(page, 1);
   await days(page).first().click();
   await expect(page.getByText('1. Lat pulldown', { exact: true })).toBeVisible();
   await blocks(page).nth(2).click();
+  await expectSelectedBlock(page, 3);
   await days(page).first().click();
   await expect(page.getByText('1. Leg press', { exact: true })).toBeVisible();
 });

@@ -19,5 +19,7 @@ export function ProgramOverview({ program, document, today }: ProgramOverviewPro
   if (current === null) {
     return null;
   }
-  return <BlockOverview program={program} documentName={document.name} {...current} />;
+  return (
+    <BlockOverview program={program} documentName={document.name} today={today} {...current} />
+  );
 }

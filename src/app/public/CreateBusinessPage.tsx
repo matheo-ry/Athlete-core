@@ -77,8 +77,10 @@ export function CreateBusinessPage() {
 
   return (
     <>
-      <header>
-        <h1 className="text-2xl font-bold">{t('app.createBusiness.title')}</h1>
+      <header className="flex flex-col gap-2">
+        <h1 className="text-3xl leading-[1.08] font-semibold md:text-4xl">
+          {t('app.createBusiness.title')}
+        </h1>
         <p className="text-muted">{t('app.createBusiness.description')}</p>
       </header>
       <form onSubmit={handleSubmit} noValidate className="flex flex-col gap-4">
@@ -119,7 +121,7 @@ export function CreateBusinessPage() {
             {failure}
           </p>
         ) : null}
-        <Button type="submit" disabled={createBusiness.isPending}>
+        <Button type="submit" size="lg" disabled={createBusiness.isPending}>
           {createBusiness.isPending
             ? t('app.createBusiness.submitting')
             : t('app.createBusiness.submit')}

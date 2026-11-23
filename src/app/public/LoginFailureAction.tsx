@@ -33,7 +33,7 @@ export function LoginFailureAction({ reason, email, password }: LoginFailureActi
       <Link
         to={`/reset-password${location.search}`}
         state={{ email }}
-        className={buttonClassName('primary')}
+        className={buttonClassName('primary', undefined, 'lg')}
       >
         {t('app.login.forgotPassword')}
       </Link>

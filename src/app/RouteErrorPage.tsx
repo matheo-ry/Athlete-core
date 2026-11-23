@@ -20,7 +20,7 @@ export function RouteErrorPage() {
   }, [error]);
 
   return (
-    <div className="bg-background text-foreground flex min-h-dvh flex-col items-center justify-center">
+    <div className="text-foreground flex min-h-dvh flex-col items-center justify-center px-5">
       <ErrorState onRetry={() => window.location.reload()} />
     </div>
   );

@@ -61,7 +61,7 @@ export function SignupPage() {
         <Link
           to={`/reset-password${location.search}`}
           state={{ email: form.fields.email }}
-          className={buttonClassName('primary')}
+          className={buttonClassName('primary', undefined, 'lg')}
         >
           {t('app.login.forgotPassword')}
         </Link>
@@ -81,8 +81,10 @@ export function SignupPage() {
 
   return (
     <>
-      <header>
-        <h1 className="text-2xl font-bold">{t('app.signup.title')}</h1>
+      <header className="flex flex-col gap-2">
+        <h1 className="text-3xl leading-[1.08] font-semibold md:text-4xl">
+          {t('app.signup.title')}
+        </h1>
         <p className="text-muted">{t('app.signup.description')}</p>
       </header>
       <form onSubmit={form.handleSubmit} noValidate className="flex flex-col gap-4">
@@ -146,6 +148,7 @@ export function SignupPage() {
         <FailureMessage reason={form.failure} action={failureAction} />
         <Button
           type="submit"
+          size="lg"
           variant={form.failure === null ? 'primary' : 'secondary'}
           disabled={form.isSubmitting}
         >

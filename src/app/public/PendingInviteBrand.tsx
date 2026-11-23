@@ -19,7 +19,7 @@ export function PendingInviteBrand() {
   return (
     <>
       {pending !== null ? (
-        <div className="bg-surface border-border flex items-center gap-3 rounded-lg border p-3">
+        <div className="bg-surface border-border flex items-center gap-3 rounded-xl border p-3">
           <BrandBadge brand={pending.branding} />
           <p className="text-sm">{t('app.pendingInvite.joining', { name: pending.name })}</p>
         </div>

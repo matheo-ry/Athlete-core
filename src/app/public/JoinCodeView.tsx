@@ -104,10 +104,12 @@ export function JoinCodeView({ code, onOtherCode }: JoinCodeViewProps) {
 
   return (
     <>
-      <Card>
+      <Card tone="accent" className="p-5">
         <div className="flex items-center gap-4">
           <BrandBadge brand={preview.branding} size="lg" />
-          <p className="text-lg font-semibold">{t('app.join.trainWith', { name: preview.name })}</p>
+          <p className="text-2xl leading-tight font-semibold tracking-tight">
+            {t('app.join.trainWith', { name: preview.name })}
+          </p>
         </div>
       </Card>
 
@@ -130,7 +132,7 @@ export function JoinCodeView({ code, onOtherCode }: JoinCodeViewProps) {
               {t('app.join.goToBusiness')}
             </Button>
           ) : (
-            <Button onClick={handleJoin} disabled={isJoining}>
+            <Button size="lg" onClick={handleJoin} disabled={isJoining}>
               {isJoining ? t('app.join.joining') : t('app.join.submit')}
             </Button>
           )}
@@ -140,7 +142,7 @@ export function JoinCodeView({ code, onOtherCode }: JoinCodeViewProps) {
           <Link
             to={`/signup?${next}`}
             onClick={rememberCode}
-            className={buttonClassName('primary')}
+            className={buttonClassName('primary', undefined, 'lg')}
           >
             {t('app.join.createAccount')}
           </Link>

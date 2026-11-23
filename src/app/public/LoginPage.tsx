@@ -67,13 +67,15 @@ export function LoginPage() {
 
   return (
     <>
-      <header>
-        <h1 className="text-2xl font-bold">{t('app.login.title')}</h1>
+      <header className="flex flex-col gap-2">
+        <h1 className="text-3xl leading-[1.08] font-semibold md:text-4xl">
+          {t('app.login.title')}
+        </h1>
         <p className="text-muted">{t('app.login.description')}</p>
       </header>
 
       {signedOutReason === 'expired' ? (
-        <p role="status" className="bg-surface border-border rounded-lg border p-3 text-sm">
+        <p role="status" className="surface rounded-2xl p-4 text-sm leading-6">
           {t('app.login.sessionExpired')}
         </p>
       ) : null}
@@ -103,6 +105,7 @@ export function LoginPage() {
         />
         <Button
           type="submit"
+          size="lg"
           variant={hasHighlightedAction(failure) ? 'secondary' : 'primary'}
           disabled={signIn.isPending}
         >

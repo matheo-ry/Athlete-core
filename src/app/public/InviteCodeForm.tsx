@@ -36,12 +36,14 @@ export function InviteCodeForm({ initialCode = '', onSubmit }: InviteCodeFormPro
         autoComplete="off"
         autoCapitalize="characters"
         spellCheck={false}
-        className="text-lg tracking-widest uppercase"
+        className="numeric min-h-14 text-center text-2xl tracking-[0.3em] uppercase"
         value={code}
         onChange={(event) => setCode(event.target.value)}
         error={error}
       />
-      <Button type="submit">{t('app.inviteForm.submit')}</Button>
+      <Button type="submit" size="lg">
+        {t('app.inviteForm.submit')}
+      </Button>
     </form>
   );
 }

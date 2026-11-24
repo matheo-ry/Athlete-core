@@ -12,6 +12,7 @@ import type {
   Reference,
   SetPatch,
 } from '../model/active-workout';
+import { BallastTotal } from './BallastTotal';
 import { StepperField } from './StepperField';
 
 const round = (value: number) => Number(value.toFixed(1));
@@ -163,6 +164,13 @@ export function SetSideFields({ exercise, set, previous, onChange }: SetSideFiel
           {t('workouts.set.failureShort')}
         </span>
       </button>
+      {exercise.measurement === 'bodyweight_reps' ? (
+        <BallastTotal
+          className="col-span-2"
+          ballastKg={set.weightKg ?? referenceKg}
+          isReference={set.weightKg === null}
+        />
+      ) : null}
     </div>
   );
 }

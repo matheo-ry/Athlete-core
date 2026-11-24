@@ -108,6 +108,7 @@
     "label": "Set {{number}}",
     "weight": "Weight ({{unit}})",
     "extraLoad": "Added load ({{unit}})",
+    "ballastTotal": "Added load {{ballast}} · Total {{total}}",
     "reps": "Reps",
     "seconds": "Seconds",
     "meters": "Meters",
@@ -153,6 +154,51 @@
     "elsewhere": "This workout is open on another device",
     "continueHere": "Continue here",
     "error": "Couldn't continue here. Please try again."
+  },
+  "body": {
+    "title": "Body",
+    "eyebrow": "Weight and measurements",
+    "tabsLabel": "What to log",
+    "tabWeight": "Weight",
+    "tabMeasurements": "Measurements",
+    "date": "Date",
+    "save": "Save",
+    "saving": "Saving…",
+    "history": "History",
+    "delete": "Delete",
+    "deleteLabel": "Delete the entry from {{date}}",
+    "deleteAsk": "Delete?",
+    "deleteYes": "Yes, delete",
+    "deleteNo": "No",
+    "deleted": "Deleted.",
+    "weight": {
+      "field": "Weight ({{unit}})",
+      "last": "{{weight}} · logged on {{date}}",
+      "none": "You haven't logged your weight yet.",
+      "add": "Log weight",
+      "update": "Update",
+      "saved": "Weight logged.",
+      "historyEmpty": "No weights logged yet.",
+      "invalid": "Enter your weight, for example 82.5.",
+      "range": "Weight has to be between {{min}} and {{max}} {{unit}}."
+    },
+    "measure": {
+      "which": "Measurement",
+      "field": "Value ({{unit}})",
+      "saved": "Measurement logged.",
+      "none": "You haven't logged any measurement yet.",
+      "invalid": "Enter the measurement, for example 82.5.",
+      "range": "The measurement has to be above 0 and at most {{max}} {{unit}}."
+    },
+    "card": {
+      "title": "Body weight",
+      "measurements": "Measurements"
+    },
+    "errors": {
+      "dateInvalid": "Pick a valid day.",
+      "dateFuture": "You can't log a day that hasn't come yet.",
+      "noConsent": "Without your health data permission this can't be saved."
+    }
   },
   "rest": {
     "label": "Rest timer",

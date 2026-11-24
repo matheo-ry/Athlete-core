@@ -11,7 +11,7 @@ export type {
   HealthConsentPromptValue,
 } from './health-consent-prompt-context';
 export { HealthConsentPromptProvider } from './HealthConsentPromptProvider';
-export { healthConsentQueryKey, useHealthConsent } from './useHealthConsent';
+export { healthConsentQueryKey, healthDataQueryKey, useHealthConsent } from './useHealthConsent';
 export { useHealthConsentPrompt } from './useHealthConsentPrompt';
 export { parseInvitePreview, parseJoinResult } from './invite';
 export type { InvitePreview, JoinResult } from './invite';

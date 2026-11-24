@@ -225,5 +225,21 @@
     "minus": "Restar {{seconds}} segundos",
     "notificationTitle": "Descanso terminado",
     "notificationBody": "Toca la siguiente serie"
+  },
+  "nav": {
+    "clientHistory": "Mis entrenos"
+  },
+  "history": {
+    "title": "Mis entrenos",
+    "empty": "Aún no has registrado ningún entreno",
+    "correct": "Corregir",
+    "correctTitle": "Corregir entreno",
+    "pendingUpload": "Pendiente de subir",
+    "save": "Guardar cambios",
+    "cancel": "Cancelar",
+    "dayNote": "Nota del día",
+    "weight": "Peso",
+    "reps": "Reps",
+    "intensity": "RIR / Intensidad"
   }
 }

@@ -33,7 +33,11 @@ export function ExerciseProgressCard({ exercise, unit, referenceDate }: Exercise
   const language = useLanguage();
   const periodOptions = usePeriodOptions();
 
-  const [metric, setMetric] = useState<ExerciseChartMetric>('estimated_rm');
+  const [metric, setMetric] = useState<ExerciseChartMetric>(() =>
+    exercise.measurement === 'bodyweight_reps' && !(exercise.records.maxWeightKg ?? 0)
+      ? 'reps'
+      : 'estimated_rm',
+  );
   const [period, setPeriod] = useState<ProgressPeriod>('all');
   const [selectedPointId, setSelectedPointId] = useState<string | null>(null);
 
@@ -119,22 +123,25 @@ export function ExerciseProgressCard({ exercise, unit, referenceDate }: Exercise
         ) : null}
       </header>
 
-      <div className="grid grid-cols-2 gap-2">
-        <ProgressStat label={t('progress.stats.last')}>
-          {selectedSession?.maxRm != null
-            ? formatWeight(selectedSession.maxRm, unit, language)
-            : '—'}
-        </ProgressStat>
-        <ProgressStat
-          label={t('progress.stats.progressRm')}
-          tone={pctTone}
-          testId="rm-progress-badge"
-        >
-          {rmProgressPct !== null
-            ? `${rmProgressPct > 0 ? '+' : ''}${String(rmProgressPct)} %`
-            : '—'}
-        </ProgressStat>
-      </div>
+      {/* Sin RM (peso corporal sin lastre) las dos cifras serían "—": no se enseñan. */}
+      {selectedSession?.maxRm != null || rmProgressPct !== null ? (
+        <div className="grid grid-cols-2 gap-2">
+          <ProgressStat label={t('progress.stats.last')}>
+            {selectedSession?.maxRm != null
+              ? formatWeight(selectedSession.maxRm, unit, language)
+              : '—'}
+          </ProgressStat>
+          <ProgressStat
+            label={t('progress.stats.progressRm')}
+            tone={pctTone}
+            testId="rm-progress-badge"
+          >
+            {rmProgressPct !== null
+              ? `${rmProgressPct > 0 ? '+' : ''}${String(rmProgressPct)} %`
+              : '—'}
+          </ProgressStat>
+        </div>
+      ) : null}
 
       <div className="flex flex-col gap-2">
         <ChoiceChips

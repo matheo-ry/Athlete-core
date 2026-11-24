@@ -16,6 +16,8 @@
     "equipment": "Material",
     "allEquipment": "Todo el material",
     "origin": "Origen",
+    "filters": "Filtros",
+    "filtersActive": "Filtros ({{count}})",
     "origins": {
       "all": "Todos",
       "own": "Míos",

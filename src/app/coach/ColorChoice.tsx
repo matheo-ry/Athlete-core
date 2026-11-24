@@ -2,7 +2,7 @@ import { useTranslation } from 'react-i18next';
 
 import { BRAND_PALETTE, normalizeHexColor, pickReadableOn } from '@/core/branding';
 import { cn } from '@/core/lib';
-import { Input } from '@/core/ui';
+import { Icon, Input } from '@/core/ui';
 
 interface ColorChoiceProps {
   /** Para distinguir los campos de cada color (principal o acento). */
@@ -55,26 +55,37 @@ export function ColorChoice({
           </button>
         ))}
       </div>
-      <Input
-        label={customLabel}
-        hint={t('app.brand.customHint')}
-        name={`brand-${name}`}
-        autoComplete="off"
-        spellCheck={false}
-        maxLength={7}
-        value={value}
-        onChange={(event) => onChange(event.target.value)}
-        error={error}
-      />
-      <label className="flex min-h-11 items-center gap-3 text-sm">
-        <input
-          type="color"
-          value={(current ?? '#000000').toLowerCase()}
-          onChange={(event) => onChange(event.target.value.toUpperCase())}
-          className="border-border-strong h-11 w-14 shrink-0 cursor-pointer rounded-xl border"
-        />
-        {t('app.brand.pickerLabel')}
-      </label>
+      <details
+        className="group flex flex-col gap-3"
+        open={current === null || !BRAND_PALETTE.some((color) => color.hex === current)}
+      >
+        <summary className="focus-ring text-primary-readable flex min-h-11 cursor-pointer list-none items-center gap-2 rounded-full text-sm font-semibold">
+          <Icon name="chevronRight" className="size-4 transition-transform group-open:rotate-90" />
+          {t('app.brand.moreColors')}
+        </summary>
+        <div className="flex flex-col gap-3 pt-1">
+          <Input
+            label={customLabel}
+            hint={t('app.brand.customHint')}
+            name={`brand-${name}`}
+            autoComplete="off"
+            spellCheck={false}
+            maxLength={7}
+            value={value}
+            onChange={(event) => onChange(event.target.value)}
+            error={error}
+          />
+          <label className="flex min-h-11 items-center gap-3 text-sm">
+            <input
+              type="color"
+              value={(current ?? '#000000').toLowerCase()}
+              onChange={(event) => onChange(event.target.value.toUpperCase())}
+              className="border-border-strong h-11 w-14 shrink-0 cursor-pointer rounded-xl border"
+            />
+            {t('app.brand.pickerLabel')}
+          </label>
+        </div>
+      </details>
     </fieldset>
   );
 }

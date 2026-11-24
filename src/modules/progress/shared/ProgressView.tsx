@@ -3,7 +3,7 @@ import { useSearchParams } from 'react-router';
 
 import type { WeightUnit } from '@/core/lib';
 import { useTenantSettings } from '@/core/tenancy';
-import { Button, EmptyState, ErrorState, Icon, Pill, Spinner } from '@/core/ui';
+import { Button, EmptyState, ErrorState, Icon, Pill, SkeletonCard } from '@/core/ui';
 
 import { useExportWorkoutsExcel } from '../api/useExportWorkoutsExcel';
 import type { ProgramProgressGroup, RawWorkout } from '../model/exercise-history';
@@ -132,7 +132,7 @@ export function ProgressView({
           isCoach={isCoach}
         />
       ) : isPending ? (
-        <Spinner />
+        <SkeletonCard />
       ) : isError ? (
         <ErrorState onRetry={onRetry} />
       ) : !hasAnyExercise ? (

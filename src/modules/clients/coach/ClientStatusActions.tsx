@@ -63,16 +63,21 @@ export function ClientStatusActions({ client }: ClientStatusActionsProps) {
       ) : null}
 
       {client.status === 'active' && !isConfirming ? (
-        <Button variant="secondary" onClick={() => setIsConfirming(true)}>
+        // Dar de baja no es lo principal de la ficha: discreto, y rojo al pasar por encima.
+        <button
+          type="button"
+          onClick={() => setIsConfirming(true)}
+          className="focus-ring text-muted hover:text-danger min-h-11 self-start rounded-full px-1 text-sm font-semibold transition-colors"
+        >
           {t('clients.detail.archive')}
-        </Button>
+        </button>
       ) : null}
 
       {client.status === 'active' && isConfirming ? (
-        <div className="bg-background/50 border-border flex flex-col gap-3 rounded-2xl border p-4">
+        <div className="border-danger/40 bg-danger-soft flex flex-col gap-3 rounded-2xl border p-4">
           <p className="text-sm">{t('clients.detail.archiveConfirm')}</p>
           <div className="flex flex-wrap gap-2">
-            <Button onClick={handleArchive} disabled={archive.isPending}>
+            <Button variant="danger" onClick={handleArchive} disabled={archive.isPending}>
               {archive.isPending ? t('clients.detail.archiving') : t('clients.detail.archiveYes')}
             </Button>
             <Button variant="ghost" onClick={() => setIsConfirming(false)}>

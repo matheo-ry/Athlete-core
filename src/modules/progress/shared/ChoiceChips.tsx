@@ -1,3 +1,5 @@
+import { useEffect, useRef } from 'react';
+
 import { cn } from '@/core/lib';
 
 export interface ChoiceOption<K extends string> {
@@ -16,7 +18,8 @@ interface ChoiceChipsProps<K extends string> {
 
 /**
  * Control segmentado para elegir una opción (métrica, periodo, pestaña): una
- * píldora hundida con la elegida encendida; si no caben, se desliza de lado. min-h-11 = 44 px de zona táctil
+ * píldora hundida con la elegida encendida; si no caben, se desliza de lado y
+ * la elegida queda siempre a la vista. min-h-11 = 44 px de zona táctil
  * (AGENTS §4) y aria-pressed para anunciar la elegida.
  */
 export function ChoiceChips<K extends string>({
@@ -26,8 +29,25 @@ export function ChoiceChips<K extends string>({
   onChange,
   testIdPrefix,
 }: ChoiceChipsProps<K>) {
+  const group = useRef<HTMLDivElement | null>(null);
+
+  // Solo se mueve la fila (scrollLeft), nunca la página.
+  useEffect(() => {
+    const container = group.current;
+    const active = container?.querySelector<HTMLElement>('[aria-pressed="true"]');
+    if (!container || !active) {
+      return;
+    }
+    const left = active.offsetLeft - container.offsetLeft;
+    const right = left + active.offsetWidth;
+    if (left < container.scrollLeft || right > container.scrollLeft + container.clientWidth) {
+      container.scrollLeft = Math.max(0, left - 8);
+    }
+  }, [value]);
+
   return (
     <div
+      ref={group}
       className="bg-foreground/6 no-scrollbar inline-flex max-w-full items-center gap-0.5 self-start overflow-x-auto rounded-full p-1"
       role="group"
       aria-label={label}

@@ -1,6 +1,6 @@
 import { Outlet, useLocation } from 'react-router';
 
-import { LanguageSwitcher } from '@/core/i18n';
+import { cn } from '@/core/lib';
 import { HealthConsentPromptProvider } from '@/core/tenancy';
 
 import { BottomNav } from '../BottomNav';
@@ -16,22 +16,30 @@ import { HealthConsentDialog } from './HealthConsentDialog';
 export function ClientLayout() {
   const items = useShellNav('client');
   const { pathname } = useLocation();
+  // Entrenando, la pantalla es solo para las series y el descanso: sin barra.
+  const isTraining = pathname.startsWith('/client/workout');
 
   return (
     <HealthConsentPromptProvider>
       <div className="flex flex-1 flex-col">
-        <header className="flex items-center justify-between gap-2 px-5 pt-4">
+        <header className="flex items-center gap-2 px-5 pt-4">
           <BrandMark />
-          <LanguageSwitcher />
         </header>
         {/* Deja sitio a la barra inferior flotante y a la de gestos del móvil. */}
-        <main className="mx-auto w-full max-w-xl flex-1 px-5 pt-5 pb-[calc(6.5rem+var(--safe-bottom))]">
+        <main
+          className={cn(
+            'mx-auto w-full max-w-xl flex-1 px-5 pt-5',
+            isTraining
+              ? 'pb-[calc(2rem+var(--safe-bottom))]'
+              : 'pb-[calc(6.5rem+var(--safe-bottom))]',
+          )}
+        >
           {/* Cada pantalla entra con un pequeño ascenso; al cambiar de ruta, de nuevo. */}
           <div key={pathname} className="animate-rise">
             <Outlet />
           </div>
         </main>
-        <BottomNav items={items} />
+        {isTraining ? null : <BottomNav items={items} />}
         <HealthConsentDialog />
       </div>
     </HealthConsentPromptProvider>

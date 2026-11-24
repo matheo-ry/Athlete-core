@@ -63,7 +63,7 @@ export function StepperField(props: StepperFieldProps) {
         className,
       )}
     >
-      <span className="eyebrow truncate px-2 pt-1.5">{label}</span>
+      <span className="text-muted truncate px-2 pt-1.5 text-xs font-medium">{label}</span>
       <div className="flex items-center">
         <button
           type="button"

@@ -63,7 +63,7 @@ export function BlockOverview({
             {[label(todayDay.dayNumber), todayDay.name].filter((part) => part !== null).join(' · ')}
             {isRecovery ? ` ${t('programs.client.recoverSuffix')}` : null}
           </Link>
-          <p className="numeric text-muted text-sm">
+          <p className="text-muted text-sm">
             {[
               todayDay.subtitle,
               todayDay.place,

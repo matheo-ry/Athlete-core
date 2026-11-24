@@ -1,13 +1,10 @@
 import type { CSSProperties } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { useBrand } from '@/core/branding';
 import { formatDayLabel } from '@/core/lib';
 import { HomeCardContent, collectHomeCards } from '@/core/modules';
-import { useTenancy } from '@/core/tenancy';
-import { Card, PageHeader } from '@/core/ui';
+import { PageHeader } from '@/core/ui';
 
-import { BrandBadge } from '../BrandBadge';
 import { useActiveModules } from '../useActiveModules';
 
 /** Retraso de entrada de cada bloque: la pantalla se va "montando" de arriba abajo. */
@@ -16,13 +13,11 @@ function riseDelay(index: number): CSSProperties {
 }
 
 /**
- * Inicio del cliente: la fecha de hoy, primero las tarjetas que aportan los
- * módulos activos, como "Hoy toca" (PR 2.18), y al final su coach.
+ * Inicio del cliente: la fecha de hoy, las tarjetas que aportan los
+ * módulos activos, como "Hoy toca" (PR 2.18). El coach ya está en la cabecera.
  */
 export function ClientHomePage() {
   const { t, i18n } = useTranslation();
-  const { tenant } = useTenancy();
-  const brand = useBrand();
   const cards = collectHomeCards(useActiveModules(), 'client');
 
   return (
@@ -37,19 +32,6 @@ export function ClientHomePage() {
           <HomeCardContent card={card} />
         </div>
       ))}
-      {tenant ? (
-        <Card
-          tone="raised"
-          className="animate-rise flex items-center gap-4"
-          style={riseDelay(cards.length + 1)}
-        >
-          <BrandBadge brand={brand} />
-          <div className="min-w-0">
-            <p className="eyebrow">{t('app.clientHome.coachLabel')}</p>
-            <p className="truncate text-lg font-semibold">{tenant.name}</p>
-          </div>
-        </Card>
-      ) : null}
     </section>
   );
 }

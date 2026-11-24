@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import type { ComponentType } from 'react';
 
 import { logger } from '../lib';
-import { Spinner } from '../ui';
+import { SkeletonCard } from '../ui';
 
 import type { HomeCard } from './module-manifest';
 
@@ -42,7 +42,7 @@ export function HomeCardContent({ card }: { card: HomeCard }) {
     return null;
   }
   if (loaded === null || loaded.card !== card) {
-    return <Spinner />;
+    return <SkeletonCard />;
   }
   const { Component } = loaded;
   return <Component />;

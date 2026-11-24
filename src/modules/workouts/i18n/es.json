@@ -56,7 +56,8 @@
     "changedExercises_other": "cambió {{count}} ejercicios",
     "notes_one": "{{count}} nota",
     "notes_other": "{{count}} notas",
-    "newBadge": "Nuevo"
+    "newBadge": "Nuevo",
+    "showAll": "Ver todo ({{count}})"
   },
   "sync": {
     "noAccess": "No se pudo guardar: ya no tienes acceso a {{name}}.",

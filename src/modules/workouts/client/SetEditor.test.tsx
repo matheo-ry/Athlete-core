@@ -23,6 +23,7 @@ const mockExercise: ActiveExercise = {
   supersetGroup: null,
   restSeconds: null,
   coachNote: null,
+  dayNote: null,
   prescribedSets: [],
   isSkipped: false,
   replacesExerciseId: null,

@@ -225,5 +225,21 @@
     "minus": "Subtract {{seconds}} seconds",
     "notificationTitle": "Rest over",
     "notificationBody": "Time for your next set"
+  },
+  "nav": {
+    "clientHistory": "My workouts"
+  },
+  "history": {
+    "title": "My workouts",
+    "empty": "No workouts recorded yet",
+    "correct": "Edit",
+    "correctTitle": "Edit workout",
+    "pendingUpload": "Pending upload",
+    "save": "Save changes",
+    "cancel": "Cancel",
+    "dayNote": "Day note",
+    "weight": "Weight",
+    "reps": "Reps",
+    "intensity": "RIR / Intensity"
   }
 }

@@ -18,6 +18,7 @@ import {
   prescribedReference,
   setCounts,
   setDayNote,
+  setWorkoutNote,
   startWorkout,
   stepValue,
   toSyncPayload,
@@ -388,6 +389,28 @@ describe('setDayNote (D-122)', () => {
     const payload = toSyncPayload(updated);
     const exercises = payload.exercises as Array<Record<string, unknown>>;
     expect(exercises[0]?.day_note).toBe('Molestia leve');
+  });
+});
+
+describe('setWorkoutNote (D-ideas-10)', () => {
+  it('guarda la nota final del entreno y actualiza lastChangedAt', () => {
+    const initial = workout();
+    const updated = setWorkoutNote(initial, '  Gran entreno  ', '2026-11-20T11:00:00.000Z');
+    expect(updated.note).toBe('Gran entreno');
+    expect(updated.lastChangedAt).toBe('2026-11-20T11:00:00.000Z');
+  });
+
+  it('limita a 500 caracteres y vacío se guarda como null', () => {
+    const long = setWorkoutNote(workout(), 'x'.repeat(600), '2026-11-20T11:00:00.000Z');
+    expect(long.note).toHaveLength(500);
+    const cleared = setWorkoutNote(long, '   ', '2026-11-20T11:05:00.000Z');
+    expect(cleared.note).toBeNull();
+  });
+
+  it('se serializa en toSyncPayload como note', () => {
+    const updated = setWorkoutNote(workout(), 'Energía alta', '2026-11-20T11:00:00.000Z');
+    const payload = toSyncPayload(updated);
+    expect(payload.note).toBe('Energía alta');
   });
 });
 

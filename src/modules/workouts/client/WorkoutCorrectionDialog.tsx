@@ -3,6 +3,7 @@ import type { KeyboardEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useExerciseOptions } from '@/modules/exercises';
+import { useHealthConsent, useHealthConsentPrompt } from '@/core/tenancy';
 import { Button, Card, Icon } from '@/core/ui';
 
 import type { ClientWorkoutRecord } from '../model/workout-correction';
@@ -42,6 +43,8 @@ function CorrectionDialogContent({
 }) {
   const { t } = useTranslation();
   const exerciseOptions = useExerciseOptions();
+  const { ensure } = useHealthConsentPrompt();
+  const { isGranted } = useHealthConsent();
   const titleId = useId();
   const panelRef = useRef<HTMLDivElement>(null);
 
@@ -130,6 +133,37 @@ function CorrectionDialogContent({
         </div>
 
         <div className="flex-1 overflow-y-auto py-4 flex flex-col gap-5">
+          <div className="flex flex-col gap-1.5">
+            <label htmlFor="correction-workout-note" className="text-xs font-medium text-muted">
+              {t('workouts.history.workoutNote')}
+            </label>
+            <textarea
+              id="correction-workout-note"
+              rows={2}
+              maxLength={500}
+              value={draft.note ?? ''}
+              onFocus={() => {
+                void (async () => {
+                  if (!isGranted) {
+                    const ok = await ensure();
+                    if (!ok) {
+                      (document.activeElement as HTMLElement)?.blur();
+                    }
+                  }
+                })();
+              }}
+              onChange={(e) => {
+                const val = e.target.value;
+                setDraft((prev) => ({
+                  ...prev,
+                  note: val.trim() === '' ? null : val.slice(0, 500),
+                }));
+              }}
+              placeholder={t('workouts.workout.workoutNotePlaceholder')}
+              className="rounded-lg border border-border bg-surface px-3 py-2 text-xs text-foreground resize-none"
+              data-testid="workout-note-input"
+            />
+          </div>
           {draft.workout_exercises.map((we, exIndex) => {
             const opt = exerciseOptions.byId.get(we.exercise_id);
             const exName = opt?.name ?? t('workouts.coachTab.unknownExercise');

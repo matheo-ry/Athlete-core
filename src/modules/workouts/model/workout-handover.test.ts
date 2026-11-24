@@ -89,6 +89,7 @@ function local(overrides: Partial<ActiveWorkout> = {}): ActiveWorkout {
     closeReason: null,
     deviceSince: null,
     lastExercise: 1,
+    note: null,
     exercises: [
       {
         id: 'e1',

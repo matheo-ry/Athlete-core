@@ -54,6 +54,7 @@ const workoutSchema = z.object({
   last_changed_at: z.string(),
   open_device_id: z.string().nullable(),
   device_since: z.string().nullable(),
+  note: z.string().nullable().default(null),
   workout_exercises: z.array(exerciseSchema),
 });
 
@@ -69,6 +70,7 @@ function toRemote(row: z.infer<typeof workoutSchema>): RemoteWorkout {
     lastChangedAt: row.last_changed_at,
     openDeviceId: row.open_device_id,
     deviceSince: row.device_since,
+    note: row.note,
     exercises: row.workout_exercises.map((exercise) => ({
       id: exercise.id,
       position: exercise.position,
@@ -107,7 +109,7 @@ export async function fetchOpenWorkouts(
   const { data, error } = await getSupabaseClient()
     .from('workouts')
     .select(
-      `id, tenant_id, program_id, block_id, program_day_id, day_number, started_at, last_changed_at, open_device_id, device_since, ${EXERCISES}(id, position, exercise_id, program_day_exercise_id, superset_group, prescribed_sets, prescribed_rest_seconds, coach_note, is_skipped, replaces_exercise_id, changed_at, ${SETS}(id, set_number, side, weight_kg, reps, duration_seconds, distance_meters, intensity_type, intensity_value, is_extra, is_done, recorded_at))`,
+      `id, tenant_id, program_id, block_id, program_day_id, day_number, started_at, last_changed_at, open_device_id, device_since, note, ${EXERCISES}(id, position, exercise_id, program_day_exercise_id, superset_group, prescribed_sets, prescribed_rest_seconds, coach_note, is_skipped, replaces_exercise_id, changed_at, ${SETS}(id, set_number, side, weight_kg, reps, duration_seconds, distance_meters, intensity_type, intensity_value, is_extra, is_done, recorded_at))`,
     )
     .eq('tenant_id', tenantId)
     // Quien es coach y cliente a la vez lee más entrenos que los suyos.

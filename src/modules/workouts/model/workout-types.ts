@@ -50,6 +50,7 @@ export const workoutRecordSchema = z.object({
   edited_at: z.string().nullable(),
   close_reason: z.string().nullable(),
   last_changed_at: z.string(),
+  note: z.string().nullable().default(null),
   workout_exercises: z.array(workoutExerciseSchema).default([]),
 });
 

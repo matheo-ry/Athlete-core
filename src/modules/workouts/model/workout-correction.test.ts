@@ -83,6 +83,7 @@ describe('workout-correction', () => {
         edited_at: null,
         close_reason: 'completed',
         last_changed_at: '2026-11-23T11:00:00.000Z',
+        note: 'Buen entreno general',
         workout_exercises: [
           {
             id: 'we-1',
@@ -121,6 +122,7 @@ describe('workout-correction', () => {
       const payload = buildCorrectionSyncPayload(workout, 'device-123', now);
 
       expect(payload.id).toBe('w-1');
+      expect(payload.note).toBe('Buen entreno general');
       expect(payload.last_changed_at).toBe(now);
       expect(payload.device_id).toBe('device-123');
       expect(payload.close_reason).toBe('completed');

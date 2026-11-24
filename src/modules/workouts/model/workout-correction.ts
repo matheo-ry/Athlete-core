@@ -33,6 +33,7 @@ export interface ClientWorkoutRecord {
   edited_at: string | null;
   close_reason: string | null;
   last_changed_at: string;
+  note: string | null;
   programs?: { id: string; name: string } | null;
   program_days?: { id: string; name: string | null } | null;
   workout_exercises: ClientWorkoutExercise[];
@@ -97,6 +98,7 @@ export function buildCorrectionSyncPayload(
     close_reason: workout.close_reason ?? 'manual',
     device_id: deviceId,
     device_since: workout.started_at,
+    note: workout.note,
     exercises: workout.workout_exercises.map((exercise) => ({
       id: exercise.id,
       position: exercise.position,

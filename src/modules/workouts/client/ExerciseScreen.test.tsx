@@ -96,6 +96,7 @@ function makeWorkout(overrides?: Partial<ActiveWorkout>): ActiveWorkout {
     closeReason: null,
     deviceSince: null,
     lastExercise: 1,
+    note: null,
     exercises: [
       {
         id: '00000000-0000-4000-8000-000000000100',

@@ -3,13 +3,13 @@ import { useTranslation } from 'react-i18next';
 import { Link, useNavigate } from 'react-router';
 
 import { cn } from '@/core/lib';
-import { useTenantSettings } from '@/core/tenancy';
+import { useHealthConsent, useHealthConsentPrompt, useTenantSettings } from '@/core/tenancy';
 import { Button, Icon } from '@/core/ui';
 import { useExerciseOptions } from '@/modules/exercises';
 
-import { useDiscardActiveWorkout } from '../api/useActiveWorkout';
+import { useDiscardActiveWorkout, useSaveActiveWorkout } from '../api/useActiveWorkout';
 import { useWorkoutMiniAchievements } from '../api/useWorkoutMiniAchievements';
-import { setCounts } from '../model/active-workout';
+import { setCounts, setWorkoutNote } from '../model/active-workout';
 import type { ActiveWorkout } from '../model/active-workout';
 import { groupLabel } from '../model/superset-rounds';
 import { SetsRing } from './SetsRing';
@@ -94,6 +94,7 @@ export function WorkoutSummary({ workout }: { workout: ActiveWorkout }) {
           );
         })}
       </ol>
+      <SummaryWorkoutNote workout={workout} />
       <Button
         variant="secondary"
         size="lg"
@@ -104,6 +105,76 @@ export function WorkoutSummary({ workout }: { workout: ActiveWorkout }) {
         {t('workouts.workout.finish')}
       </Button>
       <DiscardWorkout workout={workout} />
+    </div>
+  );
+}
+
+/** Nota del entreno entero desde el resumen (D-ideas-10, D-126). */
+function SummaryWorkoutNote({ workout }: { workout: ActiveWorkout }) {
+  const { t } = useTranslation();
+  const save = useSaveActiveWorkout();
+  const { ensure } = useHealthConsentPrompt();
+  const { isGranted } = useHealthConsent();
+  const [draft, setDraft] = useState(workout.note ?? '');
+  const [prevNote, setPrevNote] = useState(workout.note);
+
+  if (workout.note !== prevNote) {
+    setPrevNote(workout.note);
+    setDraft(workout.note ?? '');
+  }
+
+  return (
+    <div
+      className="flex flex-col gap-2 rounded-2xl border border-border bg-background/50 p-3.5"
+      data-testid="summary-workout-note"
+    >
+      <div className="flex items-center justify-between">
+        <label htmlFor={`summary-note-${workout.id}`} className="eyebrow text-xs font-semibold">
+          {t('workouts.workout.workoutNote')}
+        </label>
+        <span className="text-muted text-xs">
+          {t('workouts.exercise.dayNoteLimit', { count: draft.length })}
+        </span>
+      </div>
+      <textarea
+        id={`summary-note-${workout.id}`}
+        rows={2}
+        maxLength={500}
+        aria-label={t('workouts.workout.workoutNote')}
+        placeholder={t('workouts.workout.workoutNotePlaceholder')}
+        className="focus-ring border-border bg-background/80 text-foreground w-full resize-none rounded-xl border p-2.5 text-sm outline-none"
+        value={draft}
+        onFocus={() => {
+          void (async () => {
+            if (!isGranted) {
+              const ok = await ensure();
+              if (!ok) {
+                (document.activeElement as HTMLElement)?.blur();
+              }
+            }
+          })();
+        }}
+        onChange={(e) => {
+          setDraft(e.target.value);
+        }}
+        onBlur={() => {
+          void (async () => {
+            if (!isGranted) {
+              const ok = await ensure();
+              if (!ok) {
+                setDraft(workout.note ?? '');
+                return;
+              }
+            }
+            if (draft.trim() !== (workout.note ?? '').trim()) {
+              save.mutate(setWorkoutNote(workout, draft, new Date().toISOString()));
+            }
+          })();
+        }}
+      />
+      {!isGranted ? (
+        <p className="text-muted text-xs">{t('workouts.finished.noteNoConsent')}</p>
+      ) : null}
     </div>
   );
 }

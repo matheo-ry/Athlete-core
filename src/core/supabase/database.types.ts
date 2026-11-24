@@ -1321,6 +1321,7 @@ export type Database = {
           edited_at: string | null;
           id: string;
           last_changed_at: string;
+          note: string | null;
           open_device_id: string | null;
           performed_on: string;
           program_day_id: string | null;
@@ -1341,6 +1342,7 @@ export type Database = {
           edited_at?: string | null;
           id: string;
           last_changed_at: string;
+          note?: string | null;
           open_device_id?: string | null;
           performed_on: string;
           program_day_id?: string | null;
@@ -1360,6 +1362,7 @@ export type Database = {
           edited_at?: string | null;
           id?: string;
           last_changed_at?: string;
+          note?: string | null;
           open_device_id?: string | null;
           performed_on?: string;
           program_day_id?: string | null;

@@ -169,6 +169,14 @@ export function ClientWorkoutsPage() {
                 {/* Detalle del entreno */}
                 {isExpanded ? (
                   <div className="flex flex-col gap-3 pt-3 border-t border-border">
+                    {workout.note ? (
+                      <p
+                        className="text-xs font-medium text-primary-readable"
+                        data-testid={`workout-note-${workout.id}`}
+                      >
+                        {t('workouts.coachTab.workoutNote', { note: workout.note })}
+                      </p>
+                    ) : null}
                     {workout.workout_exercises.map((we) => {
                       const opt = exerciseOptions.byId.get(we.exercise_id);
                       const exName = opt?.name ?? t('workouts.coachTab.unknownExercise');

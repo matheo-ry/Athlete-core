@@ -74,6 +74,7 @@ const clientWorkoutRowSchema = z.object({
   edited_at: z.string().nullable(),
   close_reason: z.string().nullable(),
   last_changed_at: z.string(),
+  note: z.string().nullable().default(null),
   programs: programRelationSchema,
   program_days: programDayRelationSchema,
   workout_exercises: z.array(clientWorkoutExerciseSchema).default([]),
@@ -91,7 +92,7 @@ export async function fetchClientHistoryWorkouts(
     .select(
       `
       id, tenant_id, client_id, program_id, block_id, program_day_id, day_number,
-      performed_on, started_at, closed_at, edited_at, close_reason, last_changed_at,
+      performed_on, started_at, closed_at, edited_at, close_reason, last_changed_at, note,
       programs ( id, name ),
       program_days ( id, name ),
       workout_exercises (

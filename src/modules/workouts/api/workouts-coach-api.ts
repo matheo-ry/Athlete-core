@@ -38,7 +38,7 @@ export async function fetchClientWorkouts(
     .select(
       `
       id, tenant_id, client_id, program_id, block_id, program_day_id, day_number,
-      performed_on, started_at, closed_at, edited_at, close_reason, last_changed_at,
+      performed_on, started_at, closed_at, edited_at, close_reason, last_changed_at, note,
       workout_exercises (
         id, workout_id, position, exercise_id, replaces_exercise_id, superset_group,
         prescribed_sets, prescribed_rest_seconds, coach_note, day_note, is_skipped, changed_at,

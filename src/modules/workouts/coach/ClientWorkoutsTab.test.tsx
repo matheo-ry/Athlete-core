@@ -96,6 +96,7 @@ const mockWorkout: WorkoutRecord = {
   edited_at: null,
   close_reason: 'completed',
   last_changed_at: '2026-11-16T10:45:00Z',
+  note: null,
   workout_exercises: [
     {
       id: 'we1',

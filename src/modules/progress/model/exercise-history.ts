@@ -17,6 +17,7 @@ export const rawWorkoutSetSchema = z.object({
   distance_meters: z.number().nullable(),
   intensity_type: z.string().nullable(),
   intensity_value: z.number().nullable(),
+  is_warmup: z.boolean().optional(),
   is_done: z.boolean(),
   recorded_at: z.string(),
 });
@@ -234,9 +235,9 @@ export function groupWorkoutsByProgram(
         const sessionNumber = idx + 1;
         const label = dayLabel(sessionNumber);
 
-        // Ordenar series de la sesión
+        // Ordenar series efectivas de la sesión (las de calentamiento no cuentan, D-ideas-2)
         const doneSets = (sess.wex.workout_sets ?? [])
-          .filter((s) => s.is_done !== false)
+          .filter((s) => s.is_done !== false && !s.is_warmup)
           .sort((a, b) => {
             if (a.set_number !== b.set_number) {
               return a.set_number - b.set_number;

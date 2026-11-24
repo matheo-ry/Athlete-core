@@ -31,6 +31,7 @@ const activeSetSchema = z.object({
   intensityValue: z.number().nullable(),
   isDone: z.boolean(),
   isExtra: z.boolean(),
+  isWarmup: z.boolean().optional(),
   /** Vacío = no se ha tocado: no se sube. */
   recordedAt: z.string().nullable(),
 });
@@ -96,6 +97,7 @@ export interface StartInput {
   block: ProgramBlock;
   day: ProgramDay;
   exerciseInfo: (exerciseId: string) => ExerciseInfo;
+  previousWarmupCount?: (exerciseId: string) => number;
   now: string;
   newId: () => string;
 }
@@ -105,6 +107,7 @@ export function emptySet(
   setNumber: number,
   isExtra: boolean,
   side: Side = 'none',
+  isWarmup = false,
 ): ActiveSet {
   return {
     id,
@@ -118,6 +121,7 @@ export function emptySet(
     intensityValue: null,
     isDone: false,
     isExtra,
+    isWarmup,
     recordedAt: null,
   };
 }
@@ -141,9 +145,21 @@ export function emptySets(
   ).flat();
 }
 
-/** Los números de serie de un ejercicio, sin repetir y en orden. */
+/** Los números de serie efectiva de un ejercicio, sin repetir y en orden. */
 export function setNumbers(exercise: Pick<ActiveExercise, 'sets'>): number[] {
-  return [...new Set(exercise.sets.map((set) => set.setNumber))].sort((a, b) => a - b);
+  return [
+    ...new Set(exercise.sets.filter((set) => !set.isWarmup).map((set) => set.setNumber)),
+  ].sort((a, b) => a - b);
+}
+
+/** Máximo de series de calentamiento por ejercicio (D-ideas-2). */
+export const MAX_WARMUP_SETS = 5;
+
+/** Las series de calentamiento de un ejercicio, ordenadas. */
+export function warmupSets(exercise: Pick<ActiveExercise, 'sets'>): ActiveSet[] {
+  return exercise.sets
+    .filter((set) => Boolean(set.isWarmup))
+    .sort((a, b) => a.setNumber - b.setNumber);
 }
 
 /** Un entreno nuevo del día, con sus series prescritas vacías (D-119). */
@@ -165,6 +181,13 @@ export function startWorkout(input: StartInput): ActiveWorkout {
     note: null,
     exercises: day.exercises.map((item, index) => {
       const info = input.exerciseInfo(item.exerciseId);
+      const warmupCount = Math.min(
+        MAX_WARMUP_SETS,
+        Math.max(0, input.previousWarmupCount?.(item.exerciseId) ?? 0),
+      );
+      const warmups = Array.from({ length: warmupCount }, (_, wIndex) =>
+        emptySet(newId(), wIndex + 1, false, 'none', true),
+      );
       return {
         id: newId(),
         position: index + 1,
@@ -179,7 +202,7 @@ export function startWorkout(input: StartInput): ActiveWorkout {
         isSkipped: false,
         replacesExerciseId: null,
         changedAt: now,
-        sets: emptySets(info.isUnilateral, item.sets.length, newId),
+        sets: [...warmups, ...emptySets(info.isUnilateral, item.sets.length, newId)],
       };
     }),
   };
@@ -224,7 +247,7 @@ export function changeSet(
   return withExercise(workout, position, now, (exercise) => ({
     ...exercise,
     sets: exercise.sets.map((set) =>
-      set.setNumber === setNumber && set.side === side
+      !set.isWarmup && set.setNumber === setNumber && set.side === side
         ? { ...set, ...patch, isDone: true, recordedAt: now }
         : set,
     ),
@@ -293,7 +316,7 @@ export function setCounts(exercises: readonly ActiveExercise[]): { done: number;
     }
     for (const number of setNumbers(exercise)) {
       total += 1;
-      const sets = exercise.sets.filter((set) => set.setNumber === number);
+      const sets = exercise.sets.filter((set) => !set.isWarmup && set.setNumber === number);
       done += sets.every((set) => set.isDone) ? 1 : 0;
     }
   }
@@ -380,15 +403,16 @@ function setPayload(exercise: ActiveExercise, set: ActiveSet): { [key: string]: 
   return {
     id: set.id,
     set_number: set.setNumber,
-    side: set.side,
+    side: set.isWarmup ? 'none' : set.side,
     // Solo lo que casa con la forma de medir (D-072): la base de datos rechaza el resto.
     weight_kg: byWeight ? set.weightKg : null,
     reps: byWeight ? set.reps : null,
     duration_seconds: exercise.measurement === 'time' ? set.durationSeconds : null,
     distance_meters: exercise.measurement === 'distance' ? set.distanceMeters : null,
-    intensity_type: set.intensityType,
-    intensity_value: set.intensityType === 'failure' ? null : set.intensityValue,
-    is_extra: set.isExtra,
+    intensity_type: set.isWarmup ? null : set.intensityType,
+    intensity_value: set.isWarmup || set.intensityType === 'failure' ? null : set.intensityValue,
+    is_extra: set.isWarmup ? false : set.isExtra,
+    is_warmup: Boolean(set.isWarmup),
     is_done: set.isDone,
     recorded_at: set.recordedAt,
   };
@@ -442,9 +466,89 @@ export function unmarkSet(
   return withExercise(workout, position, now, (exercise) => ({
     ...exercise,
     sets: exercise.sets.map((set) =>
-      set.setNumber === setNumber ? { ...set, isDone: false, recordedAt: now } : set,
+      !set.isWarmup && set.setNumber === setNumber
+        ? { ...set, isDone: false, recordedAt: now }
+        : set,
     ),
   }));
+}
+
+/** "+ Calentamiento" (D-ideas-2): añade una serie de calentamiento (máximo 5, sin lado ni intensidad). */
+export function addWarmupSet(
+  workout: ActiveWorkout,
+  position: number,
+  now: string,
+  newId: () => string,
+): ActiveWorkout {
+  return withExercise(workout, position, now, (exercise) => {
+    const warmups = warmupSets(exercise);
+    if (warmups.length >= MAX_WARMUP_SETS) {
+      return exercise;
+    }
+    const nextNumber = (warmups.at(-1)?.setNumber ?? 0) + 1;
+    if (nextNumber > MAX_WARMUP_SETS) {
+      return exercise;
+    }
+    return {
+      ...exercise,
+      sets: [emptySet(newId(), nextNumber, false, 'none', true), ...exercise.sets],
+    };
+  });
+}
+
+/** Cambia una serie de calentamiento y la marca como hecha (sin intensidad ni lado, D-ideas-2). */
+export function changeWarmupSet(
+  workout: ActiveWorkout,
+  position: number,
+  setNumber: number,
+  patch: Pick<SetPatch, 'weightKg' | 'reps' | 'durationSeconds' | 'distanceMeters'>,
+  now: string,
+): ActiveWorkout {
+  return withExercise(workout, position, now, (exercise) => ({
+    ...exercise,
+    sets: exercise.sets.map((set) =>
+      set.isWarmup && set.setNumber === setNumber
+        ? { ...set, ...patch, isDone: true, recordedAt: now }
+        : set,
+    ),
+  }));
+}
+
+/** Quita o desmarca una serie de calentamiento (D-ideas-2). */
+export function removeWarmupSet(
+  workout: ActiveWorkout,
+  position: number,
+  setNumber: number,
+  now: string,
+): ActiveWorkout {
+  return withExercise(workout, position, now, (exercise) => {
+    const target = exercise.sets.find((set) => set.isWarmup && set.setNumber === setNumber);
+    if (target === undefined) {
+      return exercise;
+    }
+    if (target.recordedAt !== null) {
+      return {
+        ...exercise,
+        sets: exercise.sets.map((set) =>
+          set.id === target.id ? { ...set, isDone: false, recordedAt: now } : set,
+        ),
+      };
+    }
+    let nextNum = 1;
+    const updatedSets: ActiveSet[] = [];
+    for (const set of exercise.sets) {
+      if (set.id === target.id) {
+        continue;
+      }
+      if (set.isWarmup) {
+        updatedSets.push({ ...set, setNumber: nextNum });
+        nextNum += 1;
+      } else {
+        updatedSets.push(set);
+      }
+    }
+    return { ...exercise, sets: updatedSets };
+  });
 }
 
 /** Como mucho 10 series por ejercicio (D-086). */
@@ -485,11 +589,15 @@ export interface PreviousSetValues {
 
 /** La serie con ese número (y lado) de la vez anterior; `null` si entonces no la hizo. */
 export function previousSet(
-  previous: { sets: readonly (PreviousSetValues & { setNumber: number; side: string })[] } | null,
+  previous: {
+    sets: readonly (PreviousSetValues & { setNumber: number; side: string; isWarmup?: boolean })[];
+  } | null,
   setNumber: number,
   side: Side = 'none',
 ): PreviousSetValues | null {
-  const set = previous?.sets.find((item) => item.setNumber === setNumber && item.side === side);
+  const set = previous?.sets.find(
+    (item) => !item.isWarmup && item.setNumber === setNumber && item.side === side,
+  );
   return set === undefined
     ? null
     : {
@@ -499,6 +607,28 @@ export function previousSet(
         distanceMeters: set.distanceMeters,
         intensityType: set.intensityType,
         intensityValue: set.intensityValue,
+      };
+}
+
+/** Serie de calentamiento `setNumber` de la vez anterior (D-ideas-2). */
+export function previousWarmupSet(
+  previous: {
+    sets: readonly (PreviousSetValues & { setNumber: number; side: string; isWarmup?: boolean })[];
+  } | null,
+  setNumber: number,
+): PreviousSetValues | null {
+  const set = previous?.sets.find(
+    (item) => item.isWarmup === true && item.setNumber === setNumber && item.side === 'none',
+  );
+  return set === undefined
+    ? null
+    : {
+        weightKg: set.weightKg,
+        reps: set.reps,
+        durationSeconds: set.durationSeconds,
+        distanceMeters: set.distanceMeters,
+        intensityType: null,
+        intensityValue: null,
       };
 }
 
@@ -541,7 +671,11 @@ export function exerciseToResume(workout: ActiveWorkout): number | null {
   for (let offset = 0; offset < count; offset += 1) {
     const position = ((workout.lastExercise - 1 + offset) % count) + 1;
     const exercise = workout.exercises[position - 1];
-    if (exercise !== undefined && !exercise.isSkipped && exercise.sets.some((set) => !set.isDone)) {
+    if (
+      exercise !== undefined &&
+      !exercise.isSkipped &&
+      exercise.sets.some((set) => !set.isWarmup && !set.isDone)
+    ) {
       return position;
     }
   }
@@ -563,7 +697,9 @@ export function copySource(
   if (mode === 'previous' || setNumber === 1) {
     return previous;
   }
-  const before = exercise.sets.find((set) => set.setNumber === setNumber - 1 && set.side === side);
+  const before = exercise.sets.find(
+    (set) => !set.isWarmup && set.setNumber === setNumber - 1 && set.side === side,
+  );
   if (before === undefined || !before.isDone) {
     return null;
   }

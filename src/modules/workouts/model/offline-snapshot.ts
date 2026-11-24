@@ -16,6 +16,7 @@ const performedSetSchema = z.object({
   distanceMeters: z.number().int().nullable(),
   intensityType: z.enum(['rir', 'rpe', 'failure']).nullable(),
   intensityValue: z.number().nullable(),
+  isWarmup: z.boolean().optional(),
 });
 
 export type PerformedSet = z.infer<typeof performedSetSchema>;

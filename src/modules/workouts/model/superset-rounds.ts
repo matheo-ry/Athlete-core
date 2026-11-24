@@ -42,12 +42,12 @@ export function groupLabel(workout: ActiveWorkout, position: number): GroupLabel
 }
 
 function hasSet(exercise: ActiveExercise, setNumber: number): boolean {
-  return exercise.sets.some((set) => set.setNumber === setNumber);
+  return exercise.sets.some((set) => !set.isWarmup && set.setNumber === setNumber);
 }
 
 /** Una serie está hecha cuando lo están todos sus lados. */
 export function isSetDone(exercise: ActiveExercise, setNumber: number): boolean {
-  const sets = exercise.sets.filter((set) => set.setNumber === setNumber);
+  const sets = exercise.sets.filter((set) => !set.isWarmup && set.setNumber === setNumber);
   return sets.length > 0 && sets.every((set) => set.isDone);
 }
 
@@ -77,7 +77,8 @@ function pending(exercise: ActiveExercise, setNumber?: number): boolean {
   return (
     !exercise.isSkipped &&
     exercise.sets.some(
-      (set) => (setNumber === undefined || set.setNumber === setNumber) && !set.isDone,
+      (set) =>
+        !set.isWarmup && (setNumber === undefined || set.setNumber === setNumber) && !set.isDone,
     )
   );
 }

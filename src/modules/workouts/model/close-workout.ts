@@ -16,7 +16,12 @@ export const COMPLETE_GRACE_MS = 20_000;
  */
 export function isComplete(workout: ActiveWorkout): boolean {
   const toDo = workout.exercises.filter((exercise) => !exercise.isSkipped);
-  return toDo.length > 0 && toDo.every((exercise) => exercise.sets.every((set) => set.isDone));
+  return (
+    toDo.length > 0 &&
+    toDo.every((exercise) =>
+      exercise.sets.filter((set) => !set.isWarmup).every((set) => set.isDone),
+    )
+  );
 }
 
 /**
@@ -52,7 +57,9 @@ export function finishedSummary(workout: ActiveWorkout): FinishedSummary {
   return {
     minutes: Number.isFinite(elapsed) ? Math.max(0, Math.round(elapsed / 60_000)) : 0,
     setsDone: setCounts(workout.exercises).done,
-    exercisesDone: planned.filter((exercise) => exercise.sets.some((set) => set.isDone)).length,
+    exercisesDone: planned.filter((exercise) =>
+      exercise.sets.some((set) => !set.isWarmup && set.isDone),
+    ).length,
     // Los saltados no cuentan: "5 de 6" no debe parecer un entreno a medias.
     exercisesTotal: planned.length,
   };

@@ -76,4 +76,17 @@ describe('records (D-129)', () => {
     expect(summary.recordsCount).toBe(1);
     expect(summary.exercisesWithRecords).toEqual(['ex-1']);
   });
+
+  it('las series de calentamiento nunca baten récords ni entran en el historial máximo', () => {
+    const records = computeExerciseRecords([
+      { weightKg: 80, reps: 5, rir: 1, isDone: true, isWarmup: false },
+      { weightKg: 120, reps: 10, rir: null, isDone: true, isWarmup: true },
+    ]);
+    expect(records.maxWeightKg).toBe(80);
+    const check = checkSetRecord(
+      { weightKg: 150, reps: 10, rir: null, isDone: true, isWarmup: true },
+      records,
+    );
+    expect(check.isRecord).toBe(false);
+  });
 });

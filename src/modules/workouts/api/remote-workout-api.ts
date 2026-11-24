@@ -23,6 +23,7 @@ const setSchema = z.object({
   intensity_type: z.enum(['rir', 'rpe', 'failure']).nullable(),
   intensity_value: z.number().nullable(),
   is_extra: z.boolean(),
+  is_warmup: z.boolean().default(false),
   is_done: z.boolean(),
   recorded_at: z.string(),
 });
@@ -96,6 +97,7 @@ function toRemote(row: z.infer<typeof workoutSchema>): RemoteWorkout {
         intensityValue: set.intensity_value,
         isDone: set.is_done,
         isExtra: set.is_extra,
+        isWarmup: set.is_warmup,
         recordedAt: set.recorded_at,
       })),
     })),
@@ -109,7 +111,7 @@ export async function fetchOpenWorkouts(
   const { data, error } = await getSupabaseClient()
     .from('workouts')
     .select(
-      `id, tenant_id, program_id, block_id, program_day_id, day_number, started_at, last_changed_at, open_device_id, device_since, note, ${EXERCISES}(id, position, exercise_id, program_day_exercise_id, superset_group, prescribed_sets, prescribed_rest_seconds, coach_note, is_skipped, replaces_exercise_id, changed_at, ${SETS}(id, set_number, side, weight_kg, reps, duration_seconds, distance_meters, intensity_type, intensity_value, is_extra, is_done, recorded_at))`,
+      `id, tenant_id, program_id, block_id, program_day_id, day_number, started_at, last_changed_at, open_device_id, device_since, note, ${EXERCISES}(id, position, exercise_id, program_day_exercise_id, superset_group, prescribed_sets, prescribed_rest_seconds, coach_note, is_skipped, replaces_exercise_id, changed_at, ${SETS}(id, set_number, side, weight_kg, reps, duration_seconds, distance_meters, intensity_type, intensity_value, is_extra, is_warmup, is_done, recorded_at))`,
     )
     .eq('tenant_id', tenantId)
     // Quien es coach y cliente a la vez lee más entrenos que los suyos.

@@ -30,6 +30,7 @@ const rowSchema = z.object({
       distance_meters: z.number().int().nullable(),
       intensity_type: z.enum(['rir', 'rpe', 'failure']).nullable(),
       intensity_value: z.number().nullable(),
+      is_warmup: z.boolean().default(false),
     }),
   ),
 });
@@ -43,7 +44,7 @@ export async function fetchPerformedExercises(
   const { data, error } = await getSupabaseClient()
     .from('workout_exercises')
     .select(
-      `exercise_id, changed_at, ${WORKOUT}(program_id, day_number, performed_on), ${SETS}(set_number, side, weight_kg, reps, duration_seconds, distance_meters, intensity_type, intensity_value)`,
+      `exercise_id, changed_at, ${WORKOUT}(program_id, day_number, performed_on), ${SETS}(set_number, side, weight_kg, reps, duration_seconds, distance_meters, intensity_type, intensity_value, is_warmup)`,
     )
     .eq('tenant_id', tenantId)
     // Quien es coach y cliente a la vez lee más entrenos que los suyos.
@@ -76,6 +77,7 @@ export async function fetchPerformedExercises(
           distanceMeters: set.distance_meters,
           intensityType: set.intensity_type,
           intensityValue: set.intensity_value,
+          isWarmup: set.is_warmup,
         })),
     }));
 }

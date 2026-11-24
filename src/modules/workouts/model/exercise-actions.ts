@@ -6,7 +6,7 @@ import type { ActiveExercise, ActiveWorkout, ExerciseInfo } from './active-worko
 
 /** Solo se salta un ejercicio al que no se le ha apuntado nada: si no, ya se hizo. */
 export function canSkip(exercise: ActiveExercise): boolean {
-  return !exercise.isSkipped && !exercise.sets.some((set) => set.isDone);
+  return !exercise.isSkipped && !exercise.sets.some((set) => !set.isWarmup && set.isDone);
 }
 
 /** "Saltar ejercicio": no cuenta para cerrar el entreno ni en el total de series. */

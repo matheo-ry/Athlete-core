@@ -82,7 +82,7 @@ export function countWorkoutMiniAchievements(
     }
     const previous = previousFor(snapshot, exercise.exerciseId, workout.dayNumber);
     for (const set of exercise.sets) {
-      if (!set.isDone) {
+      if (!set.isDone || set.isWarmup) {
         continue;
       }
       const before = previousSet(previous, set.setNumber, set.side);

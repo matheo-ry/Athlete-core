@@ -14,6 +14,7 @@ import {
   findPreviousExerciseSets,
   formatDurationBetween,
   formatExerciseSetsExcel,
+  formatWarmupSets,
 } from '../model/workout-format';
 import type { HistoryItem, WorkoutRecord } from '../model/workout-types';
 
@@ -276,6 +277,10 @@ export function ClientWorkoutsTab({ clientId }: ClientProfileTabProps) {
                           ? exerciseOptions.byId.get(we.replaces_exercise_id)
                           : null;
                         const setup = workoutsQuery.setupsMap.get(we.exercise_id);
+                        const warmupsText = formatWarmupSets(
+                          we.workout_sets,
+                          t('workouts.set.warmupPrefix'),
+                        );
                         const setsNotation = formatExerciseSetsExcel(we.workout_sets);
                         const prevSets = findPreviousExerciseSets(
                           workoutsQuery.workouts,
@@ -338,6 +343,16 @@ export function ClientWorkoutsTab({ clientId }: ClientProfileTabProps) {
                                 </span>
                               ) : null}
                             </div>
+
+                            {/* Series de calentamiento (en gris, D-ideas-2) */}
+                            {warmupsText !== null ? (
+                              <p
+                                className="text-xs font-mono text-muted pt-1"
+                                data-testid={`coach-warmup-sets-${we.id}`}
+                              >
+                                {t('workouts.coachTab.warmupSets', { sets: warmupsText })}
+                              </p>
+                            ) : null}
 
                             {/* Series como en el Excel */}
                             <div className="text-sm font-mono text-foreground font-medium pt-1">

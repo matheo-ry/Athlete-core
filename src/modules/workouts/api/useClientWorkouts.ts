@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 
-import { useTenancy } from '@/core/tenancy';
+import { healthDataQueryKey, useTenancy } from '@/core/tenancy';
 
 import {
   fetchClientHealthData,
@@ -15,7 +15,7 @@ export function clientWorkoutsQueryKey(tenantId: string | null, clientId: string
 }
 
 export function clientHealthQueryKey(tenantId: string | null, clientId: string | null) {
-  return ['workouts', 'coach-client-health', tenantId, clientId] as const;
+  return healthDataQueryKey(tenantId, 'workouts', 'client-health', clientId);
 }
 
 export function clientSetupsQueryKey(tenantId: string | null, clientId: string) {

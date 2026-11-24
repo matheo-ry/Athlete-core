@@ -9,6 +9,7 @@ import {
   kgToLb,
   lbToKg,
   lengthUnitFor,
+  toCm,
   toKg,
 } from './units';
 
@@ -82,5 +83,11 @@ describe('medidas: fromCm / formatLength', () => {
     expect(lengthUnitFor('lb')).toBe('in');
     expect(fromCm(2.54, 'lb')).toBeCloseTo(1, 6);
     expect(formatLength(80, 'lb', 'en')).toBe('31.5 in');
+  });
+
+  it('toCm deshace fromCm', () => {
+    expect(toCm(80.5, 'kg')).toBe(80.5);
+    expect(toCm(1, 'lb')).toBeCloseTo(2.54, 6);
+    expect(toCm(fromCm(82, 'lb'), 'lb')).toBeCloseTo(82, 6);
   });
 });

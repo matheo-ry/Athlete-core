@@ -18,6 +18,11 @@ export const workoutsModule = defineModule({
         lazy: () =>
           import('./client/WorkoutPage').then((page) => ({ Component: page.WorkoutPage })),
       },
+      // Peso corporal y medidas (PR 3.9b, D-127): también en la web, apuntarlos no es entrenar.
+      {
+        path: 'body',
+        lazy: () => import('./client/BodyPage').then((page) => ({ Component: page.BodyPage })),
+      },
     ],
   },
   nav: {
@@ -54,6 +59,13 @@ export const workoutsModule = defineModule({
         order: 10,
         lazy: () =>
           import('./client/ClientTodayCard').then((card) => ({ Component: card.ClientTodayCard })),
+      },
+      // Peso corporal: el último, "Actualizar" y las medidas (D-127).
+      {
+        key: 'workouts-body-weight',
+        order: 20,
+        lazy: () =>
+          import('./client/BodyWeightCard').then((card) => ({ Component: card.BodyWeightCard })),
       },
     ],
   },

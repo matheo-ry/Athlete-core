@@ -108,6 +108,7 @@
     "label": "Serie {{number}}",
     "weight": "Peso ({{unit}})",
     "extraLoad": "Lastre ({{unit}})",
+    "ballastTotal": "Lastre {{ballast}} · Total {{total}}",
     "reps": "Repeticiones",
     "seconds": "Segundos",
     "meters": "Metros",
@@ -153,6 +154,51 @@
     "elsewhere": "Este entreno está abierto en otro dispositivo",
     "continueHere": "Seguir aquí",
     "error": "No se pudo seguir aquí. Inténtalo otra vez."
+  },
+  "body": {
+    "title": "Cuerpo",
+    "eyebrow": "Peso y medidas",
+    "tabsLabel": "Qué apuntar",
+    "tabWeight": "Peso",
+    "tabMeasurements": "Medidas",
+    "date": "Fecha",
+    "save": "Guardar",
+    "saving": "Guardando…",
+    "history": "Historial",
+    "delete": "Borrar",
+    "deleteLabel": "Borrar lo apuntado el {{date}}",
+    "deleteAsk": "¿Borrar?",
+    "deleteYes": "Sí, borrar",
+    "deleteNo": "No",
+    "deleted": "Borrado.",
+    "weight": {
+      "field": "Peso ({{unit}})",
+      "last": "{{weight}} · apuntado el {{date}}",
+      "none": "Aún no has apuntado tu peso.",
+      "add": "Apuntar peso",
+      "update": "Actualizar",
+      "saved": "Peso apuntado.",
+      "historyEmpty": "Todavía no hay pesos apuntados.",
+      "invalid": "Escribe tu peso, por ejemplo 82,5.",
+      "range": "El peso tiene que estar entre {{min}} y {{max}} {{unit}}."
+    },
+    "measure": {
+      "which": "Medida",
+      "field": "Valor ({{unit}})",
+      "saved": "Medida apuntada.",
+      "none": "Aún no has apuntado ninguna medida.",
+      "invalid": "Escribe la medida, por ejemplo 82,5.",
+      "range": "La medida tiene que ser mayor que 0 y como mucho {{max}} {{unit}}."
+    },
+    "card": {
+      "title": "Peso corporal",
+      "measurements": "Medidas"
+    },
+    "errors": {
+      "dateInvalid": "Elige un día válido.",
+      "dateFuture": "No puedes apuntar un día que aún no ha llegado.",
+      "noConsent": "Sin tu permiso de datos de salud no se puede guardar."
+    }
   },
   "rest": {
     "label": "Cronómetro de descanso",

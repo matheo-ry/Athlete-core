@@ -57,6 +57,11 @@ export function fromCm(cm: number, unit: WeightUnit): number {
   return unit === 'lb' ? cm / CM_PER_IN : cm;
 }
 
+/** Convierte lo que escribe el usuario en su unidad (cm o pulgadas) a cm, para guardarlo. */
+export function toCm(value: number, unit: WeightUnit): number {
+  return unit === 'lb' ? value * CM_PER_IN : value;
+}
+
 /** Texto listo para mostrar: número en el formato del idioma + cm o in. */
 export function formatLength(cm: number, unit: WeightUnit, locale: string): string {
   const formatter = new Intl.NumberFormat(locale, { maximumFractionDigits: 1 });

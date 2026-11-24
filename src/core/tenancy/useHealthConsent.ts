@@ -11,6 +11,15 @@ export function healthConsentQueryKey(tenantId: string | null, userId: string | 
 }
 
 /**
+ * Raíz de las consultas con datos de salud (peso, medidas) de un espacio: los
+ * módulos que las hacen cuelgan su clave de aquí. Así retirar el consentimiento
+ * las borra de la caché (y del teléfono) sin que `core` conozca esos módulos.
+ */
+export function healthDataQueryKey(tenantId: string | null, ...rest: readonly unknown[]) {
+  return ['health-data', tenantId, ...rest] as const;
+}
+
+/**
  * El consentimiento de datos de salud del usuario en el espacio activo (D-126).
  * Lo usan varios módulos: `workouts` para el lastre, las notas y el peso.
  *
@@ -55,6 +64,8 @@ export function useHealthConsent() {
     }
     const result = await source.withdrawHealthConsent(tenantId);
     if (result === 'ok') {
+      // La base de datos ya los borró: que no quede nada en la caché ni en el teléfono.
+      queryClient.removeQueries({ queryKey: healthDataQueryKey(tenantId) });
       queryClient.setQueryData(healthConsentQueryKey(tenantId, userId), {
         status: 'withdrawn',
         withdrawnAt: new Date().toISOString(),

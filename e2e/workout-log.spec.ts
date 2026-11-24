@@ -55,6 +55,20 @@ test('Ana inicia el lunes, apunta la serie 1 y la sigue viendo al recargar', asy
   const previousLoad = /^([\d.]+) × /.exec((await previous.textContent()) ?? '')?.[1] ?? '0';
   await first.getByRole('button', { name: 'Increase Added load (kg)' }).click();
   await expect(first.getByRole('textbox', { name: 'Added load (kg)' })).toHaveValue(previousLoad);
+
+  // PR 3.9b (D-127), criterio 2: Ana dio el consentimiento y tiene peso apuntado,
+  // así que el ejercicio de peso corporal enseña el lastre y el total.
+  const ana = await signInApi('ana@example.com', SEED_PASSWORD);
+  const [latest] = (await select(
+    ana,
+    'body_weights?select=weight_kg&order=measured_on.desc&limit=1',
+  )) as { weight_kg: number }[];
+  const total = new Intl.NumberFormat('en', { maximumFractionDigits: 1 }).format(
+    Math.round(((latest?.weight_kg ?? 0) + Number(previousLoad)) * 100) / 100,
+  );
+  await expect(first.getByTestId('ballast-total')).toHaveText(
+    `Added load ${previousLoad} · Total ${total} kg`,
+  );
   await first.getByRole('textbox', { name: 'Reps' }).fill('12');
   await first.getByRole('textbox', { name: 'Reps' }).press('Enter');
   await expect(first).toHaveAttribute('data-done', 'true');

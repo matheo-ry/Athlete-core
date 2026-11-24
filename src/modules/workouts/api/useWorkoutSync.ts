@@ -7,9 +7,10 @@ import { getUploadQueue, onAppResume, retryDelayMs } from '@/core/native';
 import { useTenancy } from '@/core/tenancy';
 
 import { refreshOfflineSnapshot } from './offline-snapshot-api';
+import { sendSetup } from './setups-api';
 import { sendWorkout } from './sync-workout-api';
 
-const SENDERS = { workout: sendWorkout };
+const SENDERS = { workout: sendWorkout, setup: sendSetup };
 /** Al volver a la app varias veces seguidas, no se descarga todo cada vez. */
 const REFRESH_EVERY_MS = 60_000;
 

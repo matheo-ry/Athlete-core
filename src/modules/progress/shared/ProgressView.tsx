@@ -1,11 +1,13 @@
-import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useSearchParams } from 'react-router';
 
 import type { WeightUnit } from '@/core/lib';
-import { Button, EmptyState, ErrorState, Icon, Pill, Spinner } from '@/core/ui';
+import { useTenantSettings } from '@/core/tenancy';
+import { Button, EmptyState, ErrorState, Icon, Pill, SkeletonCard } from '@/core/ui';
 
 import { useExportWorkoutsExcel } from '../api/useExportWorkoutsExcel';
 import type { ProgramProgressGroup, RawWorkout } from '../model/exercise-history';
+import { AchievementsSection } from './AchievementsSection';
 import { ChoiceChips } from './ChoiceChips';
 import { ExerciseProgressCard } from './ExerciseProgressCard';
 import { HealthProgressSection } from './HealthProgressSection';
@@ -24,7 +26,7 @@ export interface ProgressViewProps {
   isCoach?: boolean;
 }
 
-type ProgressTab = 'exercises' | 'health';
+type ProgressTab = 'exercises' | 'health' | 'achievements';
 
 export function ProgressView({
   clientId,
@@ -40,8 +42,39 @@ export function ProgressView({
   isCoach = false,
 }: ProgressViewProps) {
   const { t } = useTranslation();
-  const [activeTab, setActiveTab] = useState<ProgressTab>('exercises');
+  const { achievementsEnabled } = useTenantSettings();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const paramTab = searchParams.get('tab');
+  const activeTab: ProgressTab =
+    paramTab === 'health' || (paramTab === 'achievements' && achievementsEnabled)
+      ? paramTab
+      : 'exercises';
+
   const { exportExcel, isExporting, errorMessage } = useExportWorkoutsExcel();
+
+  const handleTabChange = (tab: ProgressTab) => {
+    setSearchParams(
+      (prev) => {
+        const next = new URLSearchParams(prev);
+        if (tab === 'exercises') {
+          next.delete('tab');
+        } else {
+          next.set('tab', tab);
+        }
+        return next;
+      },
+      { replace: true },
+    );
+  };
+
+  const tabOptions: { key: ProgressTab; label: string }[] = [
+    { key: 'exercises', label: t('progress.tabs.exercises') },
+    { key: 'health', label: t('progress.tabs.health') },
+  ];
+
+  if (achievementsEnabled) {
+    tabOptions.push({ key: 'achievements', label: t('progress.tabs.achievements') });
+  }
 
   const hasAnyExercise = groups.some((g) => g.exercises.length > 0);
 
@@ -62,12 +95,9 @@ export function ProgressView({
         <div className="flex flex-wrap items-center justify-between gap-3">
           <ChoiceChips
             label={t('progress.title')}
-            options={[
-              { key: 'exercises', label: t('progress.tabs.exercises') },
-              { key: 'health', label: t('progress.tabs.health') },
-            ]}
+            options={tabOptions}
             value={activeTab}
-            onChange={setActiveTab}
+            onChange={handleTabChange}
             testIdPrefix="tab"
           />
 
@@ -92,7 +122,9 @@ export function ProgressView({
         )}
       </div>
 
-      {activeTab === 'health' ? (
+      {activeTab === 'achievements' && achievementsEnabled ? (
+        <AchievementsSection clientId={clientId} rawWorkouts={rawWorkouts} />
+      ) : activeTab === 'health' ? (
         <HealthProgressSection
           clientId={clientId}
           unit={unit}
@@ -100,7 +132,7 @@ export function ProgressView({
           isCoach={isCoach}
         />
       ) : isPending ? (
-        <Spinner />
+        <SkeletonCard />
       ) : isError ? (
         <ErrorState onRetry={onRetry} />
       ) : !hasAnyExercise ? (

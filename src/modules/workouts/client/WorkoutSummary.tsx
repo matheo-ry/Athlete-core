@@ -3,10 +3,12 @@ import { useTranslation } from 'react-i18next';
 import { Link, useNavigate } from 'react-router';
 
 import { cn } from '@/core/lib';
+import { useTenantSettings } from '@/core/tenancy';
 import { Button, Icon } from '@/core/ui';
 import { useExerciseOptions } from '@/modules/exercises';
 
 import { useDiscardActiveWorkout } from '../api/useActiveWorkout';
+import { useWorkoutMiniAchievements } from '../api/useWorkoutMiniAchievements';
 import { setCounts } from '../model/active-workout';
 import type { ActiveWorkout } from '../model/active-workout';
 import { groupLabel } from '../model/superset-rounds';
@@ -23,9 +25,11 @@ const MAX_SEGMENTS = 36;
  */
 export function WorkoutSummary({ workout }: { workout: ActiveWorkout }) {
   const { t } = useTranslation();
+  const { achievementsEnabled } = useTenantSettings();
   const options = useExerciseOptions();
   const closer = useCloseWorkout();
   const total = setCounts(workout.exercises);
+  const miniAchievementsCount = useWorkoutMiniAchievements(workout);
 
   return (
     <div className="flex flex-col gap-5">
@@ -33,6 +37,17 @@ export function WorkoutSummary({ workout }: { workout: ActiveWorkout }) {
         <h1 className="text-3xl leading-[1.08] font-semibold">{t('workouts.workout.title')}</h1>
         <div className="surface flex flex-col gap-3 rounded-3xl p-4">
           <p className="numeric text-2xl font-medium">{t('workouts.workout.totalSets', total)}</p>
+          {achievementsEnabled && miniAchievementsCount > 0 ? (
+            <div
+              data-testid="summary-mini-achievements"
+              className="flex items-center gap-1.5 text-sm font-medium text-amber-500"
+            >
+              <Icon name="sparkles" className="size-4 shrink-0" />
+              <span>
+                {t('workouts.workout.miniAchievementsCount', { count: miniAchievementsCount })}
+              </span>
+            </div>
+          ) : null}
           <SetsBar done={total.done} total={total.total} />
         </div>
       </header>

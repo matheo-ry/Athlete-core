@@ -3,10 +3,12 @@ import { useTranslation } from 'react-i18next';
 import { Link, useNavigate } from 'react-router';
 
 import { cn } from '@/core/lib';
+import { useHealthConsent, useHealthConsentPrompt } from '@/core/tenancy';
 import { Icon, buttonClassName } from '@/core/ui';
 import { ExercisePicker, useExerciseOptions } from '@/modules/exercises';
 
 import { useSaveActiveWorkout } from '../api/useActiveWorkout';
+import { useExerciseSetups } from '../api/useExerciseSetups';
 import { useRestControls } from '../api/useRestControls';
 import { usePreviousPerformance } from '../api/usePreviousPerformance';
 import {
@@ -17,6 +19,7 @@ import {
   copySource,
   previousSet,
   setCounts,
+  setDayNote,
   setNumbers,
   sidesOf,
   unmarkSet,
@@ -70,6 +73,28 @@ export function ExerciseScreen({
   const [advance, setAdvance] = useState<PendingAdvance | null>(null);
   const exercise = workout.exercises[position - 1];
   const previous = usePreviousPerformance(exercise?.exerciseId ?? '', workout.dayNumber);
+  const { ensure } = useHealthConsentPrompt();
+  const { isGranted } = useHealthConsent();
+  const { setups, saveSetup } = useExerciseSetups();
+
+  const instructions = options.byId.get(exercise?.exerciseId ?? '')?.instructions ?? null;
+  const currentSetup = setups[exercise?.exerciseId ?? ''] ?? '';
+  const [setupDraft, setSetupDraft] = useState(currentSetup);
+  const [prevSetup, setPrevSetup] = useState(currentSetup);
+  if (currentSetup !== prevSetup) {
+    setPrevSetup(currentSetup);
+    setSetupDraft(currentSetup);
+  }
+
+  const [noteDraft, setNoteDraft] = useState(exercise?.dayNote ?? '');
+  const [prevExerciseId, setPrevExerciseId] = useState(exercise?.id);
+  const [prevDayNote, setPrevDayNote] = useState(exercise?.dayNote);
+  if (exercise?.id !== prevExerciseId || exercise?.dayNote !== prevDayNote) {
+    setPrevExerciseId(exercise?.id);
+    setPrevDayNote(exercise?.dayNote);
+    setNoteDraft(exercise?.dayNote ?? '');
+  }
+
   const now = () => new Date().toISOString();
 
   useEffect(() => {
@@ -212,10 +237,53 @@ export function ExerciseScreen({
           </p>
         )}
         {exercise.coachNote === null ? null : (
-          <p className="border-accent text-muted border-l-2 pl-3 text-sm leading-6">
+          <p
+            className="border-accent text-muted border-l-2 pl-3 text-sm leading-6"
+            data-testid="coach-note"
+          >
             {exercise.coachNote}
           </p>
         )}
+        {instructions !== null && instructions !== '' ? (
+          <div
+            className="border-border/60 bg-foreground/5 rounded-2xl p-3 text-sm leading-relaxed text-muted"
+            data-testid="exercise-instructions"
+          >
+            <p className="eyebrow text-xs text-muted/80 mb-1">
+              {t('workouts.exercise.instructions')}
+            </p>
+            <p>{instructions}</p>
+          </div>
+        ) : null}
+        <div
+          className="flex flex-col gap-1.5 rounded-2xl bg-foreground/5 p-3"
+          data-testid="exercise-setup"
+        >
+          <label htmlFor={`setup-${exercise.id}`} className="eyebrow text-xs">
+            {t('workouts.exercise.setup')}
+          </label>
+          <input
+            id={`setup-${exercise.id}`}
+            type="text"
+            maxLength={500}
+            aria-label={t('workouts.exercise.setup')}
+            placeholder={t('workouts.exercise.setupPlaceholder')}
+            className="focus-ring border-border bg-background/80 text-foreground h-10 w-full rounded-xl border px-3 text-sm outline-none"
+            value={setupDraft}
+            onChange={(e) => setSetupDraft(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                e.currentTarget.blur();
+              }
+            }}
+            onBlur={() => {
+              if (setupDraft.trim() !== currentSetup.trim()) {
+                void saveSetup(exercise.exerciseId, setupDraft);
+              }
+            }}
+          />
+          <span className="text-muted/60 text-xs">{t('workouts.exercise.setupHelp')}</span>
+        </div>
       </header>
       {exercise.isSkipped ? (
         <SkippedNotice
@@ -286,6 +354,58 @@ export function ExerciseScreen({
           />
         </>
       )}
+      <div
+        className="flex flex-col gap-2 rounded-2xl border border-border bg-background/50 p-3.5"
+        data-testid="day-note-section"
+      >
+        <div className="flex items-center justify-between">
+          <label htmlFor={`day-note-${exercise.id}`} className="eyebrow text-xs font-semibold">
+            {t('workouts.exercise.dayNote')}
+          </label>
+          <span className="text-muted text-xs">
+            {t('workouts.exercise.dayNoteLimit', { count: noteDraft.length })}
+          </span>
+        </div>
+        <textarea
+          id={`day-note-${exercise.id}`}
+          rows={2}
+          maxLength={500}
+          aria-label={t('workouts.exercise.dayNote')}
+          placeholder={t('workouts.exercise.dayNotePlaceholder')}
+          className="focus-ring border-border bg-background/80 text-foreground w-full resize-none rounded-xl border p-2.5 text-sm outline-none"
+          value={noteDraft}
+          onFocus={() => {
+            void (async () => {
+              if (!isGranted) {
+                const ok = await ensure();
+                if (!ok) {
+                  (document.activeElement as HTMLElement)?.blur();
+                }
+              }
+            })();
+          }}
+          onChange={(e) => {
+            setNoteDraft(e.target.value);
+          }}
+          onBlur={() => {
+            void (async () => {
+              if (!isGranted) {
+                const ok = await ensure();
+                if (!ok) {
+                  setNoteDraft(exercise.dayNote ?? '');
+                  return;
+                }
+              }
+              if (noteDraft.trim() !== (exercise.dayNote ?? '').trim()) {
+                save.mutate(setDayNote(workout, position, noteDraft, now()));
+              }
+            })();
+          }}
+        />
+        {!isGranted && (
+          <p className="text-muted text-xs">{t('workouts.exercise.dayNoteNoConsent')}</p>
+        )}
+      </div>
       <div className="grid grid-cols-2 gap-3">
         <button
           type="button"

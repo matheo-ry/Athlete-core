@@ -16,6 +16,8 @@
     "equipment": "Equipment",
     "allEquipment": "All equipment",
     "origin": "Origin",
+    "filters": "Filters",
+    "filtersActive": "Filters ({{count}})",
     "origins": {
       "all": "All",
       "own": "Mine",

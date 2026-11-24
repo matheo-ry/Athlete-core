@@ -38,9 +38,8 @@ export function CoachLayout() {
       </aside>
 
       <div className="flex min-w-0 flex-1 flex-col">
-        <header className="flex items-center justify-between gap-2 px-5 pt-4 md:hidden">
+        <header className="flex items-center gap-2 px-5 pt-4 md:hidden">
           <BrandMark />
-          <LanguageSwitcher />
         </header>
         {/* En el móvil, deja sitio a la barra inferior flotante y a la de gestos. */}
         <main className="flex-1 px-5 pt-5 pb-[calc(6.5rem+var(--safe-bottom))] md:p-10">

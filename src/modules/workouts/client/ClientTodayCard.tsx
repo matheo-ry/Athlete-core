@@ -87,7 +87,7 @@ export function ClientTodayCard() {
         </div>
         <IconBubble name="dumbbell" tone="primary" />
       </div>
-      <p className="numeric text-muted text-sm">{summary({ ...day, name: null })}</p>
+      <p className="text-muted text-sm">{summary({ ...day, name: null })}</p>
       {canLogWorkouts() ? (
         <StartButton start={() => ({ programId: today.program.id, block: today.block, day })} />
       ) : (

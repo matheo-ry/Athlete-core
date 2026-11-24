@@ -1,6 +1,6 @@
 import { useSearchParams } from 'react-router';
 
-import { ErrorState, Spinner } from '@/core/ui';
+import { ErrorState, SkeletonCard } from '@/core/ui';
 
 import { useProgram } from '../api/useProgram';
 import type { ClientProgram } from '../model/assignments';
@@ -21,7 +21,7 @@ export function CurrentProgramView({ program, today }: CurrentProgramViewProps) 
   const exerciseIndex = Number(params.get('exercise') ?? '');
 
   if (document.isPending) {
-    return <Spinner />;
+    return <SkeletonCard />;
   }
   if (document.isError) {
     return <ErrorState onRetry={() => void document.refetch()} />;

@@ -3,15 +3,28 @@ import { describe, expect, it } from 'vitest';
 import { mergeTenantSettings, parseTenantSettings } from './tenant-settings';
 
 describe('los ajustes del negocio (D-076)', () => {
-  it('por defecto, el coach trabaja con RIR', () => {
-    expect(parseTenantSettings({})).toEqual({ intensityScale: 'rir' });
-    expect(parseTenantSettings(null)).toEqual({ intensityScale: 'rir' });
-    expect(parseTenantSettings('roto')).toEqual({ intensityScale: 'rir' });
-    expect(parseTenantSettings({ intensityScale: 'otra' })).toEqual({ intensityScale: 'rir' });
+  it('por defecto, el coach trabaja con RIR y logros activados', () => {
+    expect(parseTenantSettings({})).toEqual({ intensityScale: 'rir', achievementsEnabled: true });
+    expect(parseTenantSettings(null)).toEqual({ intensityScale: 'rir', achievementsEnabled: true });
+    expect(parseTenantSettings('roto')).toEqual({
+      intensityScale: 'rir',
+      achievementsEnabled: true,
+    });
+    expect(parseTenantSettings({ intensityScale: 'otra' })).toEqual({
+      intensityScale: 'rir',
+      achievementsEnabled: true,
+    });
   });
 
-  it('lee la escala guardada', () => {
-    expect(parseTenantSettings({ intensityScale: 'rpe' })).toEqual({ intensityScale: 'rpe' });
+  it('lee la escala guardada y el interruptor de logros', () => {
+    expect(parseTenantSettings({ intensityScale: 'rpe' })).toEqual({
+      intensityScale: 'rpe',
+      achievementsEnabled: true,
+    });
+    expect(parseTenantSettings({ achievementsEnabled: false })).toEqual({
+      intensityScale: 'rir',
+      achievementsEnabled: false,
+    });
   });
 
   it('al guardar un ajuste conserva los demás, también los que no conoce', () => {

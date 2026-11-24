@@ -234,7 +234,9 @@
           "rir": "RIR (reps in reserve)",
           "rpe": "RPE (effort from 1 to 10)"
         },
-        "intensityHint": "The scale you are offered when you write a program. Changing it does not convert what is already written."
+        "intensityHint": "The scale you are offered when you write a program. Changing it does not convert what is already written.",
+        "achievementsLabel": "Achievements and motivation",
+        "achievementsHint": "Weekly streaks, levels, mini-wins, and achievements for your clients. If turned off, they will not see any of this."
       }
     },
     "clientProfile": {
@@ -291,6 +293,7 @@
       "accentCustomLabel": "Your own accent color",
       "customHint": "Like #1E5BD8.",
       "pickerLabel": "Or choose it on the color wheel",
+      "moreColors": "Use another color",
       "colorInvalid": "Write a color like #1E5BD8.",
       "modeLabel": "Mode",
       "modeDark": "Dark",

@@ -39,6 +39,8 @@ const CHART_HEIGHT = 220;
 const FALLBACK_WIDTH = 500;
 // Radio de la zona táctil de cada punto: 22 px reales = 44 px de diámetro (AGENTS §4).
 const HIT_RADIUS = 22;
+/** A partir de aquí, la línea se dibuja sin un círculo en cada sesión. */
+const DENSE_POINTS = 12;
 
 const pointKey = (point: ChartPoint<unknown>, index: number) => point.id ?? `#${index}`;
 
@@ -205,13 +207,19 @@ export function LineChart<T = unknown>({
                   data-testid="chart-focus-ring"
                 />
               ) : null}
-              <circle
-                cx={plot.x}
-                cy={plot.y}
-                r={isActive ? 6 : isSelected ? 5 : 4}
-                className={isActive ? 'fill-primary stroke-primary' : 'fill-surface stroke-primary'}
-                strokeWidth={isActive ? 3 : 2}
-              />
+              {/* Con muchas sesiones, los círculos se amontonan: solo se dibujan el
+                  elegido y el activo (la zona táctil sigue en todos). */}
+              {data.length <= DENSE_POINTS || isActive || isSelected ? (
+                <circle
+                  cx={plot.x}
+                  cy={plot.y}
+                  r={isActive ? 6 : isSelected ? 5 : 4}
+                  className={
+                    isActive ? 'fill-primary stroke-primary' : 'fill-surface stroke-primary'
+                  }
+                  strokeWidth={isActive ? 3 : 2}
+                />
+              ) : null}
             </g>
           );
         })}

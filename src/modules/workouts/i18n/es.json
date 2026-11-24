@@ -56,7 +56,8 @@
     "changedExercises_other": "cambió {{count}} ejercicios",
     "notes_one": "{{count}} nota",
     "notes_other": "{{count}} notas",
-    "newBadge": "Nuevo"
+    "newBadge": "Nuevo",
+    "showAll": "Ver todo ({{count}})"
   },
   "sync": {
     "noAccess": "No se pudo guardar: ya no tienes acceso a {{name}}.",
@@ -80,6 +81,9 @@
   "workout": {
     "title": "Entreno de hoy",
     "totalSets": "{{done}}/{{total}} series",
+    "miniAchievementsCount": "{{count}} minilogros",
+    "miniAchievementsCount_one": "1 minilogro",
+    "miniAchievementsCount_other": "{{count}} minilogros",
     "exercisesLabel": "Ejercicios del entreno",
     "setsDone": "{{done}} de {{total}} series hechas",
     "finish": "Terminar entreno",
@@ -106,6 +110,7 @@
   },
   "set": {
     "label": "Serie {{number}}",
+    "miniAchievement": "Minilogro",
     "weight": "Peso ({{unit}})",
     "extraLoad": "Lastre ({{unit}})",
     "ballastTotal": "Lastre {{ballast}} · Total {{total}}",
@@ -124,7 +129,21 @@
     "side": {
       "right": "Derecha",
       "left": "Izquierda"
-    }
+    },
+    "surePrompt": "¿Seguro? La vez anterior fueron {{previous}}",
+    "sureYes": "Sí",
+    "sureCancel": "Cancelar"
+  },
+  "exercise": {
+    "instructions": "Instrucciones",
+    "coachNote": "Nota del coach",
+    "setup": "Set-up",
+    "setupPlaceholder": "Asiento 2 · Agarre línea 3",
+    "setupHelp": "Compartido entre rutinas",
+    "dayNote": "Nota del día",
+    "dayNotePlaceholder": "Escribe una nota para este ejercicio...",
+    "dayNoteLimit": "{{count}}/500",
+    "dayNoteNoConsent": "Para guardar notas del día hace falta tu consentimiento de datos de salud."
   },
   "finished": {
     "title": "Entreno terminado",
@@ -132,6 +151,7 @@
     "duration": "Duración",
     "sets": "Series hechas",
     "exercises": "Ejercicios",
+    "miniAchievements": "Minilogros",
     "exercisesValue": "{{done}} de {{total}}",
     "done": "Volver al inicio",
     "allDone": "Todas las series hechas. El entreno se cierra solo en unos segundos.",
@@ -211,5 +231,21 @@
     "minus": "Restar {{seconds}} segundos",
     "notificationTitle": "Descanso terminado",
     "notificationBody": "Toca la siguiente serie"
+  },
+  "nav": {
+    "clientHistory": "Mis entrenos"
+  },
+  "history": {
+    "title": "Mis entrenos",
+    "empty": "Aún no has registrado ningún entreno",
+    "correct": "Corregir",
+    "correctTitle": "Corregir entreno",
+    "pendingUpload": "Pendiente de subir",
+    "save": "Guardar cambios",
+    "cancel": "Cancelar",
+    "dayNote": "Nota del día",
+    "weight": "Peso",
+    "reps": "Reps",
+    "intensity": "RIR / Intensidad"
   }
 }

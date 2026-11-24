@@ -23,11 +23,33 @@ export const workoutsModule = defineModule({
         path: 'body',
         lazy: () => import('./client/BodyPage').then((page) => ({ Component: page.BodyPage })),
       },
+      // Historial de entrenos ("Mis entrenos", PR 3.11, D-116, D-124, D-129).
+      {
+        path: 'history',
+        lazy: () =>
+          import('./client/ClientWorkoutsPage').then((page) => ({
+            Component: page.ClientWorkoutsPage,
+          })),
+      },
+      {
+        path: 'workouts',
+        lazy: () =>
+          import('./client/ClientWorkoutsPage').then((page) => ({
+            Component: page.ClientWorkoutsPage,
+          })),
+      },
     ],
   },
   nav: {
     coach: [],
-    client: [],
+    client: [
+      {
+        to: '/client/history',
+        labelKey: 'workouts.nav.clientHistory',
+        icon: 'history',
+        order: 15,
+      },
+    ],
   },
   i18n: {
     en: () => import('./i18n/en.json'),

@@ -182,7 +182,7 @@
 /* Etiqueta pequeña en mayúsculas y monoespaciada: el "instrumento" de la app. */
 @utility eyebrow {
   font-family: var(--font-mono);
-  font-size: 0.6875rem;
+  font-size: 0.75rem;
   line-height: 1rem;
   font-weight: 500;
   letter-spacing: 0.1em;

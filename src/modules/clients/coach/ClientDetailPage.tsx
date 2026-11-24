@@ -6,7 +6,7 @@ import { useLanguage } from '@/core/i18n';
 import { useClientProfileTabs } from '@/core/modules';
 import { formatDate } from '@/core/lib';
 import { useTenancy, useTenantMembers } from '@/core/tenancy';
-import { Card, EmptyState, ErrorState, Spinner, buttonClassName } from '@/core/ui';
+import { buttonClassName, Card, EmptyState, ErrorState, Icon, Spinner } from '@/core/ui';
 
 import { ClientProfileTabs } from './ClientProfileTabs';
 import { ClientStatusActions } from './ClientStatusActions';
@@ -28,7 +28,8 @@ export function ClientDetailPage() {
   );
 
   const back = (
-    <Link to="/coach/clients" className={buttonClassName('ghost', 'self-start')}>
+    <Link to="/coach/clients" className={buttonClassName('ghost', '-ml-3 self-start pl-2')}>
+      <Icon name="chevronLeft" className="size-5" />
       {t('clients.detail.back')}
     </Link>
   );

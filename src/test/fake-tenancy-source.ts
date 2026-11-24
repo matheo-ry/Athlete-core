@@ -117,6 +117,8 @@ interface FakeTenancyOptions {
    * pantallas que no hablan de salud no ven la ventana del consentimiento (D-126).
    */
   initialHealthConsent?: HealthConsentState;
+  /** Ajustes iniciales de los negocios (D-076). */
+  initialSettings?: Record<string, Partial<TenantSettings>>;
 }
 
 export interface FakeTenancySource extends TenancySource {
@@ -142,6 +144,7 @@ export function createFakeTenancySource({
     grantedAt: '2026-11-01T10:00:00Z',
     textVersion: '2026-11-draft',
   },
+  initialSettings,
 }: FakeTenancyOptions = {}): FakeTenancySource {
   // Por usuario y negocio, como la tabla health_consents.
   const consents = new Map<string, HealthConsentState>();
@@ -153,7 +156,7 @@ export function createFakeTenancySource({
     nextConsentFailure = null;
     return failure;
   };
-  const settings = new Map<string, Partial<TenantSettings>>();
+  const settings = new Map<string, Partial<TenantSettings>>(Object.entries(initialSettings ?? {}));
   // Copias propias: unirse o regenerar no tocan las listas compartidas.
   const store = new Map(Object.entries(memberships).map(([email, list]) => [email, [...list]]));
   const codes = new Map<string, Tenant>([

@@ -56,7 +56,8 @@
     "changedExercises_other": "changed {{count}} exercises",
     "notes_one": "{{count}} note",
     "notes_other": "{{count}} notes",
-    "newBadge": "New"
+    "newBadge": "New",
+    "showAll": "Show all ({{count}})"
   },
   "sync": {
     "noAccess": "Couldn't save: you no longer have access to {{name}}.",
@@ -80,6 +81,9 @@
   "workout": {
     "title": "Today's workout",
     "totalSets": "{{done}}/{{total}} sets",
+    "miniAchievementsCount": "{{count}} mini-achievements",
+    "miniAchievementsCount_one": "1 mini-achievement",
+    "miniAchievementsCount_other": "{{count}} mini-achievements",
     "exercisesLabel": "Workout exercises",
     "setsDone": "{{done}} of {{total}} sets done",
     "finish": "Finish workout",
@@ -106,6 +110,7 @@
   },
   "set": {
     "label": "Set {{number}}",
+    "miniAchievement": "Mini-achievement",
     "weight": "Weight ({{unit}})",
     "extraLoad": "Added load ({{unit}})",
     "ballastTotal": "Added load {{ballast}} · Total {{total}}",
@@ -124,7 +129,21 @@
     "side": {
       "right": "Right",
       "left": "Left"
-    }
+    },
+    "surePrompt": "Are you sure? Last time was {{previous}}",
+    "sureYes": "Yes",
+    "sureCancel": "Cancel"
+  },
+  "exercise": {
+    "instructions": "Instructions",
+    "coachNote": "Coach's note",
+    "setup": "Set-up",
+    "setupPlaceholder": "Seat 2 · Grip line 3",
+    "setupHelp": "Shared across routines",
+    "dayNote": "Day note",
+    "dayNotePlaceholder": "Write a note for this exercise...",
+    "dayNoteLimit": "{{count}}/500",
+    "dayNoteNoConsent": "Health data consent is required to save day notes."
   },
   "finished": {
     "title": "Workout finished",
@@ -132,6 +151,7 @@
     "duration": "Duration",
     "sets": "Sets done",
     "exercises": "Exercises",
+    "miniAchievements": "Mini-achievements",
     "exercisesValue": "{{done}} of {{total}}",
     "done": "Back to home",
     "allDone": "All sets done. The workout will close by itself in a few seconds.",
@@ -211,5 +231,21 @@
     "minus": "Subtract {{seconds}} seconds",
     "notificationTitle": "Rest over",
     "notificationBody": "Time for your next set"
+  },
+  "nav": {
+    "clientHistory": "My workouts"
+  },
+  "history": {
+    "title": "My workouts",
+    "empty": "No workouts recorded yet",
+    "correct": "Edit",
+    "correctTitle": "Edit workout",
+    "pendingUpload": "Pending upload",
+    "save": "Save changes",
+    "cancel": "Cancel",
+    "dayNote": "Day note",
+    "weight": "Weight",
+    "reps": "Reps",
+    "intensity": "RIR / Intensity"
   }
 }

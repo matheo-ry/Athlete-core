@@ -11,7 +11,7 @@ import {
   ErrorState,
   segmentClassName,
   SEGMENTED_GROUP_CLASS,
-  Spinner,
+  SkeletonList,
 } from '@/core/ui';
 
 import { useExercises } from '../api/useExercises';
@@ -122,7 +122,7 @@ export function ExerciseListPage() {
         <ExerciseFilterBar filters={filters} onChange={setFilters} />
 
         <Card>
-          {exercises.isPending ? <Spinner /> : null}
+          {exercises.isPending ? <SkeletonList rows={6} /> : null}
           {exercises.isError ? <ErrorState onRetry={() => void exercises.refetch()} /> : null}
           {exercises.isSuccess && counts[tab] === 0 ? (
             <EmptyState

@@ -11,7 +11,7 @@ import {
   PageHeader,
   segmentClassName,
   SEGMENTED_GROUP_CLASS,
-  Spinner,
+  SkeletonList,
 } from '@/core/ui';
 
 import { visibleClients } from '../model/client-list';
@@ -70,7 +70,7 @@ export function ClientListPage() {
       />
 
       <Card className="p-2 md:p-2">
-        {members.isPending ? <Spinner /> : null}
+        {members.isPending ? <SkeletonList /> : null}
         {members.isError ? <ErrorState onRetry={() => void members.refetch()} /> : null}
         {members.isSuccess && !hasAnyInTab ? (
           <EmptyState

@@ -17,6 +17,7 @@ export { OfflineBanner } from './OfflineBanner';
 export { PageHeader } from './PageHeader';
 export { PasswordInput } from './PasswordInput';
 export { Pill } from './Pill';
+export { SkeletonCard, SkeletonList } from './Skeleton';
 export { Spinner } from './Spinner';
 export { Stat } from './Stat';
 export { StateOrbit } from './StateOrbit';

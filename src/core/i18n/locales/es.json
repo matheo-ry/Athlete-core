@@ -234,7 +234,9 @@
           "rir": "RIR (repeticiones en reserva)",
           "rpe": "RPE (esfuerzo de 1 a 10)"
         },
-        "intensityHint": "La escala que se te ofrece al escribir una rutina. Cambiarla no convierte lo que ya está escrito."
+        "intensityHint": "La escala que se te ofrece al escribir una rutina. Cambiarla no convierte lo que ya está escrito.",
+        "achievementsLabel": "Logros y motivación",
+        "achievementsHint": "Racha de semanas, niveles, minilogros y logros para tus clientes. Si lo apagas, no verán nada de esto."
       }
     },
     "clientProfile": {
@@ -291,6 +293,7 @@
       "accentCustomLabel": "Tu propio color de acento",
       "customHint": "Como #1E5BD8.",
       "pickerLabel": "O elígelo en la rueda de colores",
+      "moreColors": "Usar otro color",
       "colorInvalid": "Escribe un color como #1E5BD8.",
       "modeLabel": "Modo",
       "modeDark": "Oscuro",

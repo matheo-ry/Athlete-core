@@ -8,7 +8,8 @@
   "title": "Progreso",
   "tabs": {
     "exercises": "Ejercicios",
-    "health": "Peso y medidas"
+    "health": "Peso y medidas",
+    "achievements": "Logros y motivación"
   },
   "empty": {
     "title": "Aún no hay entrenos registrados",
@@ -100,5 +101,118 @@
     "sideRight": "D: ",
     "sideLeft": "I: ",
     "fileName": "entrenos"
+  },
+  "motivation": {
+    "streakTitle": "Racha semanal",
+    "streakWeeks_one": "1 semana completa",
+    "streakWeeks_other": "{{count}} semanas seguidas",
+    "streakWeeks": "{{count}} semanas seguidas",
+    "noStreak": "Completa los días de entreno de tu semana para encender la racha",
+    "weekProgress": "{{done}} de {{target}} días completados",
+    "viewAchievements": "Ver logros y nivel",
+    "levelTitle": "Nivel {{level}}: {{name}}",
+    "levelWorkouts": "{{count}} entrenos completados",
+    "levelProgress": "{{done}} / {{target}} entrenos para Nivel {{next}}",
+    "maxLevel": "¡Nivel máximo alcanzado!",
+    "levels": {
+      "novice": "Novato",
+      "consistent": "Constante",
+      "committed": "Comprometido",
+      "disciplined": "Disciplinado",
+      "strong": "Fuerte",
+      "unstoppable": "Imparable",
+      "legend": "Leyenda"
+    },
+    "achievementsTitle": "Logros",
+    "achievementsCount": "{{unlocked}} de {{total}} desbloqueados",
+    "locked": "Bloqueado",
+    "unlocked": "Desbloqueado",
+    "progressLabel": "{{current}} / {{target}}",
+    "items": {
+      "first_workout": {
+        "title": "Primer entreno",
+        "description": "Completa tu primer entreno"
+      },
+      "first_full_week": {
+        "title": "Primera semana completa",
+        "description": "Completa todos los días de entrenamiento de una semana"
+      },
+      "workouts_10": {
+        "title": "10 entrenos",
+        "description": "Alcanza los 10 entrenos completados"
+      },
+      "workouts_25": {
+        "title": "25 entrenos",
+        "description": "Alcanza los 25 entrenos completados"
+      },
+      "workouts_50": {
+        "title": "50 entrenos",
+        "description": "Alcanza los 50 entrenos completados"
+      },
+      "workouts_100": {
+        "title": "100 entrenos",
+        "description": "Alcanza los 100 entrenos completados"
+      },
+      "workouts_200": {
+        "title": "200 entrenos",
+        "description": "Alcanza los 200 entrenos completados"
+      },
+      "first_record": {
+        "title": "Primer récord",
+        "description": "Consigue tu primer récord personal en un ejercicio"
+      },
+      "records_10": {
+        "title": "10 récords",
+        "description": "Consigue 10 récords personales"
+      },
+      "records_50": {
+        "title": "50 récords",
+        "description": "Consigue 50 récords personales"
+      },
+      "streak_4_weeks": {
+        "title": "4 semanas seguidas",
+        "description": "Mantén tu racha durante 4 semanas completas consecutivas"
+      },
+      "streak_12_weeks": {
+        "title": "12 semanas seguidas",
+        "description": "Mantén tu racha durante 12 semanas completas consecutivas"
+      },
+      "streak_26_weeks": {
+        "title": "26 semanas seguidas",
+        "description": "Medio año de consistencia sin romper la racha"
+      },
+      "first_minilogro": {
+        "title": "Primer minilogro",
+        "description": "Mejora el peso o las repeticiones de una serie respecto a la vez anterior"
+      },
+      "minilogros_100": {
+        "title": "100 minilogros",
+        "description": "Consigue 100 mejoras de series frente a la vez anterior"
+      },
+      "first_body_weight": {
+        "title": "Primer peso corporal",
+        "description": "Apunta tu peso corporal por primera vez"
+      },
+      "workout_over_60_min": {
+        "title": "Sesión de más de 60 min",
+        "description": "Completa un entreno de más de 60 minutos de duración"
+      },
+      "perfect_month": {
+        "title": "Mes perfecto",
+        "description": "Un mes completo sin faltar ningún día prescrito"
+      }
+    },
+    "weekTracker": {
+      "mon": "L",
+      "tue": "M",
+      "wed": "X",
+      "thu": "J",
+      "fri": "V",
+      "sat": "S",
+      "sun": "D",
+      "done": "Día completado",
+      "pending": "Pendiente",
+      "today": "Hoy"
+    }
   }
 }

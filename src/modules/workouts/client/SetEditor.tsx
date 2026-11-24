@@ -2,6 +2,7 @@ import { useTranslation } from 'react-i18next';
 
 import { useProfile } from '@/core/auth';
 import { DEFAULT_WEIGHT_UNIT, cn } from '@/core/lib';
+import { useTenantSettings } from '@/core/tenancy';
 import { Icon } from '@/core/ui';
 
 import type {
@@ -11,6 +12,7 @@ import type {
   SetPatch,
   Side,
 } from '../model/active-workout';
+import { isMiniAchievement } from '../model/minilogros';
 import { SetSideFields, previousText } from './SetSideFields';
 
 /** Lo de cada lado de una serie: un solo valor sin lado, o derecha e izquierda. */
@@ -47,11 +49,15 @@ export function SetEditor({
   onUnmark,
 }: SetEditorProps) {
   const { t } = useTranslation();
+  const { achievementsEnabled } = useTenantSettings();
   const unit = useProfile().data?.weightUnit ?? DEFAULT_WEIGHT_UNIT;
   const number = sets[0]?.setNumber ?? 1;
   const isDone = sets.length > 0 && sets.every((set) => set.isDone);
   const hasSides = sets.some((set) => set.side !== 'none');
   const canCopy = sets.some((set) => (copySource[set.side] ?? null) !== null);
+  const hasMiniAchievement =
+    achievementsEnabled &&
+    sets.some((set) => set.isDone && isMiniAchievement(set, previous[set.side] ?? null));
   const grey = (side: Side) => {
     const values = previous[side] ?? null;
     return values === null ? null : (
@@ -96,6 +102,15 @@ export function SetEditor({
           {t('workouts.set.label', { number })}
         </button>
         <div className="flex min-w-0 items-center gap-2">
+          {hasMiniAchievement ? (
+            <span
+              data-testid="minilogro-badge"
+              className="inline-flex items-center gap-1 rounded-full bg-amber-500/15 px-2.5 py-0.5 text-xs font-semibold text-amber-500 animate-pulse"
+            >
+              <Icon name="sparkles" className="size-3.5" />
+              {t('workouts.set.miniAchievement')}
+            </span>
+          ) : null}
           {hasSides ? null : grey('none')}
           {canCopy ? (
             <button

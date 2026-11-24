@@ -11,13 +11,19 @@ export type IntensityScale = (typeof INTENSITY_SCALES)[number];
 
 export interface TenantSettings {
   intensityScale: IntensityScale;
+  achievementsEnabled: boolean;
 }
 
-export const DEFAULT_TENANT_SETTINGS: TenantSettings = { intensityScale: 'rir' };
+export const DEFAULT_TENANT_SETTINGS: TenantSettings = {
+  intensityScale: 'rir',
+  achievementsEnabled: true,
+};
 
 const settingsSchema = z.object({
   // Si falta o no vale, RIR: es el valor por defecto de D-076.
   intensityScale: z.enum(INTENSITY_SCALES).catch(DEFAULT_TENANT_SETTINGS.intensityScale),
+  // Por defecto, activados (D-130, D-141).
+  achievementsEnabled: z.boolean().catch(DEFAULT_TENANT_SETTINGS.achievementsEnabled),
 });
 
 /** Valida lo que guarda la base de datos. Lo que falta o no vale toma su valor por defecto. */

@@ -13,6 +13,9 @@ export type {
   WorkoutRecordsResult,
 } from './model/records';
 
+export { isMiniAchievement } from './model/minilogros';
+export type { SetPerformance } from './model/minilogros';
+
 // Peso y medidas del cliente: los lleva este módulo y `progress` los lee de aquí (D-127).
 export { useClientHealthData, clientHealthQueryKey } from './api/useClientWorkouts';
 export { fetchClientHealthData } from './api/workouts-coach-api';

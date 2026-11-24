@@ -8,7 +8,8 @@
   "title": "Progress",
   "tabs": {
     "exercises": "Exercises",
-    "health": "Weight & measurements"
+    "health": "Weight & measurements",
+    "achievements": "Achievements & motivation"
   },
   "empty": {
     "title": "No workouts recorded yet",
@@ -100,5 +101,118 @@
     "sideRight": "R: ",
     "sideLeft": "L: ",
     "fileName": "workouts"
+  },
+  "motivation": {
+    "streakTitle": "Weekly streak",
+    "streakWeeks_one": "1 full week",
+    "streakWeeks_other": "{{count}} consecutive weeks",
+    "streakWeeks": "{{count}} consecutive weeks",
+    "noStreak": "Complete your weekly workouts to ignite your streak",
+    "weekProgress": "{{done}} of {{target}} days completed",
+    "viewAchievements": "View achievements & levels",
+    "levelTitle": "Level {{level}}: {{name}}",
+    "levelWorkouts": "{{count}} completed workouts",
+    "levelProgress": "{{done}} / {{target}} workouts to Level {{next}}",
+    "maxLevel": "Max level reached!",
+    "levels": {
+      "novice": "Novice",
+      "consistent": "Consistent",
+      "committed": "Committed",
+      "disciplined": "Disciplined",
+      "strong": "Strong",
+      "unstoppable": "Unstoppable",
+      "legend": "Legend"
+    },
+    "achievementsTitle": "Achievements",
+    "achievementsCount": "{{unlocked}} of {{total}} unlocked",
+    "locked": "Locked",
+    "unlocked": "Unlocked",
+    "progressLabel": "{{current}} / {{target}}",
+    "items": {
+      "first_workout": {
+        "title": "First workout",
+        "description": "Complete your first workout"
+      },
+      "first_full_week": {
+        "title": "First full week",
+        "description": "Complete all scheduled training days in a single week"
+      },
+      "workouts_10": {
+        "title": "10 workouts",
+        "description": "Reach 10 completed workouts"
+      },
+      "workouts_25": {
+        "title": "25 workouts",
+        "description": "Reach 25 completed workouts"
+      },
+      "workouts_50": {
+        "title": "50 workouts",
+        "description": "Reach 50 completed workouts"
+      },
+      "workouts_100": {
+        "title": "100 workouts",
+        "description": "Reach 100 completed workouts"
+      },
+      "workouts_200": {
+        "title": "200 workouts",
+        "description": "Reach 200 completed workouts"
+      },
+      "first_record": {
+        "title": "First record",
+        "description": "Achieve your first personal record in an exercise"
+      },
+      "records_10": {
+        "title": "10 records",
+        "description": "Achieve 10 personal records"
+      },
+      "records_50": {
+        "title": "50 records",
+        "description": "Achieve 50 personal records"
+      },
+      "streak_4_weeks": {
+        "title": "4-week streak",
+        "description": "Maintain your streak for 4 consecutive full weeks"
+      },
+      "streak_12_weeks": {
+        "title": "12-week streak",
+        "description": "Maintain your streak for 12 consecutive full weeks"
+      },
+      "streak_26_weeks": {
+        "title": "26-week streak",
+        "description": "Half a year of consistency without breaking the streak"
+      },
+      "first_minilogro": {
+        "title": "First mini-achievement",
+        "description": "Improve weight or reps on a set compared to last time"
+      },
+      "minilogros_100": {
+        "title": "100 mini-achievements",
+        "description": "Achieve 100 set improvements compared to last time"
+      },
+      "first_body_weight": {
+        "title": "First body weight",
+        "description": "Log your body weight for the first time"
+      },
+      "workout_over_60_min": {
+        "title": "60+ min session",
+        "description": "Complete a workout lasting more than 60 minutes"
+      },
+      "perfect_month": {
+        "title": "Perfect month",
+        "description": "A full month without missing any scheduled training day"
+      }
+    },
+    "weekTracker": {
+      "mon": "M",
+      "tue": "T",
+      "wed": "W",
+      "thu": "T",
+      "fri": "F",
+      "sat": "S",
+      "sun": "S",
+      "done": "Day completed",
+      "pending": "Pending",
+      "today": "Today"
+    }
   }
 }

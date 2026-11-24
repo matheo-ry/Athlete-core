@@ -80,6 +80,9 @@
   "workout": {
     "title": "Entreno de hoy",
     "totalSets": "{{done}}/{{total}} series",
+    "miniAchievementsCount": "{{count}} minilogros",
+    "miniAchievementsCount_one": "1 minilogro",
+    "miniAchievementsCount_other": "{{count}} minilogros",
     "exercisesLabel": "Ejercicios del entreno",
     "setsDone": "{{done}} de {{total}} series hechas",
     "finish": "Terminar entreno",
@@ -106,6 +109,7 @@
   },
   "set": {
     "label": "Serie {{number}}",
+    "miniAchievement": "Minilogro",
     "weight": "Peso ({{unit}})",
     "extraLoad": "Lastre ({{unit}})",
     "ballastTotal": "Lastre {{ballast}} · Total {{total}}",
@@ -132,6 +136,7 @@
     "duration": "Duración",
     "sets": "Series hechas",
     "exercises": "Ejercicios",
+    "miniAchievements": "Minilogros",
     "exercisesValue": "{{done}} de {{total}}",
     "done": "Volver al inicio",
     "allDone": "Todas las series hechas. El entreno se cierra solo en unos segundos.",

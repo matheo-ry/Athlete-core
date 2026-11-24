@@ -80,6 +80,9 @@
   "workout": {
     "title": "Today's workout",
     "totalSets": "{{done}}/{{total}} sets",
+    "miniAchievementsCount": "{{count}} mini-achievements",
+    "miniAchievementsCount_one": "1 mini-achievement",
+    "miniAchievementsCount_other": "{{count}} mini-achievements",
     "exercisesLabel": "Workout exercises",
     "setsDone": "{{done}} of {{total}} sets done",
     "finish": "Finish workout",
@@ -106,6 +109,7 @@
   },
   "set": {
     "label": "Set {{number}}",
+    "miniAchievement": "Mini-achievement",
     "weight": "Weight ({{unit}})",
     "extraLoad": "Added load ({{unit}})",
     "ballastTotal": "Added load {{ballast}} · Total {{total}}",
@@ -132,6 +136,7 @@
     "duration": "Duration",
     "sets": "Sets done",
     "exercises": "Exercises",
+    "miniAchievements": "Mini-achievements",
     "exercisesValue": "{{done}} of {{total}}",
     "done": "Back to home",
     "allDone": "All sets done. The workout will close by itself in a few seconds.",

@@ -4,12 +4,12 @@ import { useTranslation } from 'react-i18next';
 import { logger } from '@/core/lib';
 import { INTENSITY_SCALES, useSaveTenantSettings, useTenantSettings } from '@/core/tenancy';
 import type { IntensityScale } from '@/core/tenancy';
-import { Card, segmentClassName, SEGMENTED_GROUP_CLASS } from '@/core/ui';
+import { Card, Checkbox, segmentClassName, SEGMENTED_GROUP_CLASS } from '@/core/ui';
 
 /**
  * "Entrenamiento", en los Ajustes del coach, solo para el dueño: con qué
- * escala de intensidad trabaja, RIR o RPE (D-076). Se guarda al elegir.
- * Cambiarla no convierte lo ya escrito en las rutinas.
+ * escala de intensidad trabaja, RIR o RPE (D-076), y el interruptor de
+ * logros y motivación (D-130, D-141). Se guarda al elegir.
  */
 export function TrainingSection() {
   const { t } = useTranslation();
@@ -34,8 +34,25 @@ export function TrainingSection() {
       });
   };
 
+  const toggleAchievements = (enabled: boolean) => {
+    setFailure(null);
+    save
+      .mutateAsync({ achievementsEnabled: enabled })
+      .then((result) => {
+        if (result !== 'ok') {
+          setFailure(t(result === 'offline' ? 'core.errors.offline' : 'core.errors.unexpected'));
+        }
+      })
+      .catch((error: unknown) => {
+        logger.error('Could not save tenant settings', {
+          message: error instanceof Error ? error.message : 'unknown',
+        });
+        setFailure(t('core.errors.unexpected'));
+      });
+  };
+
   return (
-    <Card className="flex flex-col gap-3">
+    <Card className="flex flex-col gap-5">
       <h2 className="text-lg font-semibold">{t('app.coachSettings.training.title')}</h2>
       <div
         role="group"
@@ -61,6 +78,19 @@ export function TrainingSection() {
         </div>
         <p className="text-muted text-sm">{t('app.coachSettings.training.intensityHint')}</p>
       </div>
+
+      <div className="flex flex-col gap-1.5 pt-2 border-t border-border">
+        <Checkbox
+          label={t('app.coachSettings.training.achievementsLabel')}
+          checked={settings.achievementsEnabled}
+          disabled={save.isPending}
+          onChange={(e) => toggleAchievements(e.target.checked)}
+        />
+        <p className="text-muted text-sm pl-9">
+          {t('app.coachSettings.training.achievementsHint')}
+        </p>
+      </div>
+
       {failure !== null ? (
         <p role="alert" className="text-danger text-sm font-medium">
           {failure}

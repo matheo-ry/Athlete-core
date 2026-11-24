@@ -124,7 +124,21 @@
     "side": {
       "right": "Right",
       "left": "Left"
-    }
+    },
+    "surePrompt": "Are you sure? Last time was {{previous}}",
+    "sureYes": "Yes",
+    "sureCancel": "Cancel"
+  },
+  "exercise": {
+    "instructions": "Instructions",
+    "coachNote": "Coach's note",
+    "setup": "Set-up",
+    "setupPlaceholder": "Seat 2 · Grip line 3",
+    "setupHelp": "Shared across routines",
+    "dayNote": "Day note",
+    "dayNotePlaceholder": "Write a note for this exercise...",
+    "dayNoteLimit": "{{count}}/500",
+    "dayNoteNoConsent": "Health data consent is required to save day notes."
   },
   "finished": {
     "title": "Workout finished",

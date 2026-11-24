@@ -124,7 +124,21 @@
     "side": {
       "right": "Derecha",
       "left": "Izquierda"
-    }
+    },
+    "surePrompt": "¿Seguro? La vez anterior fueron {{previous}}",
+    "sureYes": "Sí",
+    "sureCancel": "Cancelar"
+  },
+  "exercise": {
+    "instructions": "Instrucciones",
+    "coachNote": "Nota del coach",
+    "setup": "Set-up",
+    "setupPlaceholder": "Asiento 2 · Agarre línea 3",
+    "setupHelp": "Compartido entre rutinas",
+    "dayNote": "Nota del día",
+    "dayNotePlaceholder": "Escribe una nota para este ejercicio...",
+    "dayNoteLimit": "{{count}}/500",
+    "dayNoteNoConsent": "Para guardar notas del día hace falta tu consentimiento de datos de salud."
   },
   "finished": {
     "title": "Entreno terminado",

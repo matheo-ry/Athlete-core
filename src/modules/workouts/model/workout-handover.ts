@@ -22,6 +22,7 @@ export interface RemoteWorkout {
   lastChangedAt: string;
   openDeviceId: string | null;
   deviceSince: string | null;
+  note?: string | null;
   exercises: RemoteExercise[];
 }
 
@@ -164,6 +165,10 @@ export function takeOver(input: TakeOverInput): ActiveWorkout {
     closeReason: null,
     deviceSince: new Date(Math.max(Date.parse(now), after)).toISOString(),
     lastExercise: latest?.position ?? 1,
+    note:
+      local !== null && Date.parse(local.lastChangedAt) > Date.parse(remote.lastChangedAt)
+        ? local.note
+        : (remote.note ?? null),
     exercises,
   };
 }

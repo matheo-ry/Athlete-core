@@ -38,6 +38,7 @@
     "viewDetails": "View details",
     "hideDetails": "Hide details",
     "dayNote": "Day note: {{note}}",
+    "workoutNote": "Workout note: {{note}}",
     "coachNote": "Coach note: {{note}}",
     "setup": "Set-up: {{setup}}",
     "skipped": "Skipped",
@@ -106,7 +107,9 @@
     "skip": "Skip exercise",
     "unskip": "Undo",
     "skippedNote": "You skipped this exercise: it does not count in today’s workout.",
-    "skippedTag": "Skipped"
+    "skippedTag": "Skipped",
+    "workoutNote": "Workout note",
+    "workoutNotePlaceholder": "How did today's workout go? (optional)"
   },
   "set": {
     "label": "Set {{number}}",
@@ -155,7 +158,14 @@
     "exercisesValue": "{{done}} of {{total}}",
     "done": "Back to home",
     "allDone": "All sets done. The workout will close by itself in a few seconds.",
-    "seeSummary": "See summary"
+    "seeSummary": "See summary",
+    "noteTitle": "Workout note",
+    "notePlaceholder": "How did you feel today? Energy, soreness, thoughts...",
+    "noteSave": "Save note",
+    "noteSkip": "Skip",
+    "noteSaved": "Note saved",
+    "noteEdit": "Edit",
+    "noteNoConsent": "Health data consent is required to save the workout note."
   },
   "discard": {
     "button": "Discard workout",
@@ -244,6 +254,7 @@
     "save": "Save changes",
     "cancel": "Cancel",
     "dayNote": "Day note",
+    "workoutNote": "Workout note",
     "weight": "Weight",
     "reps": "Reps",
     "intensity": "RIR / Intensity"

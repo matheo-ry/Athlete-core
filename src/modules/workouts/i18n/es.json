@@ -38,6 +38,7 @@
     "viewDetails": "Ver detalles",
     "hideDetails": "Ocultar detalles",
     "dayNote": "Nota del día: {{note}}",
+    "workoutNote": "Nota del entreno: {{note}}",
     "coachNote": "Nota del coach: {{note}}",
     "setup": "Set-up: {{setup}}",
     "skipped": "Saltado",
@@ -106,7 +107,9 @@
     "skip": "Saltar ejercicio",
     "unskip": "Deshacer",
     "skippedNote": "Has saltado este ejercicio: no cuenta en el entreno de hoy.",
-    "skippedTag": "Saltado"
+    "skippedTag": "Saltado",
+    "workoutNote": "Nota del entreno",
+    "workoutNotePlaceholder": "¿Cómo fue el entreno de hoy? (opcional)"
   },
   "set": {
     "label": "Serie {{number}}",
@@ -155,7 +158,14 @@
     "exercisesValue": "{{done}} de {{total}}",
     "done": "Volver al inicio",
     "allDone": "Todas las series hechas. El entreno se cierra solo en unos segundos.",
-    "seeSummary": "Ver el resumen"
+    "seeSummary": "Ver el resumen",
+    "noteTitle": "Nota del entreno",
+    "notePlaceholder": "¿Cómo te sentiste hoy? Molestias, energía, sensaciones...",
+    "noteSave": "Guardar nota",
+    "noteSkip": "Saltar",
+    "noteSaved": "Nota guardada",
+    "noteEdit": "Editar",
+    "noteNoConsent": "Para guardar la nota del entreno hace falta tu consentimiento de datos de salud."
   },
   "discard": {
     "button": "Descartar entreno",
@@ -244,6 +254,7 @@
     "save": "Guardar cambios",
     "cancel": "Cancelar",
     "dayNote": "Nota del día",
+    "workoutNote": "Nota del entreno",
     "weight": "Peso",
     "reps": "Reps",
     "intensity": "RIR / Intensidad"

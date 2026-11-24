@@ -72,6 +72,8 @@ vi.mock('@/core/tenancy', () => ({
     tenant: { id: 'tenant-1', name: 'Iron Lab' },
     role: 'client',
   }),
+  useHealthConsent: () => ({ isGranted: true }),
+  useHealthConsentPrompt: () => ({ ensure: vi.fn().mockResolvedValue(true) }),
 }));
 
 const mockYesterdayWorkout: ClientWorkoutRecord = {
@@ -88,6 +90,7 @@ const mockYesterdayWorkout: ClientWorkoutRecord = {
   edited_at: null,
   close_reason: 'completed',
   last_changed_at: '2026-11-23T11:00:00.000Z',
+  note: null,
   programs: { id: 'prog-current', name: 'Fuerza Base' },
   program_days: { id: 'day-1', name: 'Día 1 - Torso' },
   workout_exercises: [
@@ -138,6 +141,7 @@ const mockOldWorkout: ClientWorkoutRecord = {
   edited_at: '2026-10-11T09:00:00.000Z',
   close_reason: 'completed',
   last_changed_at: '2026-10-10T11:00:00.000Z',
+  note: null,
   programs: { id: 'prog-previous', name: 'Hipertrofia I' },
   program_days: { id: 'day-old', name: 'Día 2 - Pierna' },
   workout_exercises: [

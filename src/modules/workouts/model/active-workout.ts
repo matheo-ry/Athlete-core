@@ -78,6 +78,8 @@ export const activeWorkoutSchema = z.object({
   deviceSince: z.string().nullable().default(null),
   /** El último ejercicio que se tocó (D-119). */
   lastExercise: z.number().int().min(1),
+  /** Nota final del entreno entero; dato de salud (D-ideas-10, D-126). */
+  note: z.string().nullable().default(null),
   exercises: z.array(activeExerciseSchema),
 });
 
@@ -160,6 +162,7 @@ export function startWorkout(input: StartInput): ActiveWorkout {
     closeReason: null,
     deviceSince: null,
     lastExercise: 1,
+    note: null,
     exercises: day.exercises.map((item, index) => {
       const info = input.exerciseInfo(item.exerciseId);
       return {
@@ -247,6 +250,25 @@ export function setDayNote(
 }
 
 /**
+ * Nota final del entreno entero (D-ideas-10).
+ * Hasta 500 caracteres; vacío se guarda como null.
+ */
+export function setWorkoutNote(
+  workout: ActiveWorkout,
+  note: string | null,
+  now: string,
+): ActiveWorkout {
+  const trimmed = note === null ? null : note.trim();
+  const value = trimmed === '' || trimmed === null ? null : trimmed.slice(0, 500);
+  return {
+    ...workout,
+    note: value,
+    lastChangedAt:
+      Date.parse(now) > Date.parse(workout.lastChangedAt) ? now : workout.lastChangedAt,
+  };
+}
+
+/**
  * "¿Seguro?": avisa si el peso cambia más de un 50 % respecto a la vez anterior (D-120).
  * Compara |actual - anterior| / anterior > 0.5. Si no hay anterior o es <= 0, no aplica.
  */
@@ -328,6 +350,7 @@ export function toSyncPayload(
     close_reason: workout.closedAt === null ? null : (workout.closeReason ?? 'manual'),
     device_id: deviceId,
     device_since: workout.deviceSince ?? workout.startedAt,
+    note: workout.note,
     exercises: workout.exercises.map((exercise) => ({
       id: exercise.id,
       position: exercise.position,

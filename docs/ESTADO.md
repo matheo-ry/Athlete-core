@@ -1,18 +1,20 @@
 # ESTADO DEL PROYECTO
 
-**Última actualización:** 2026-11-18
-**Fase actual:** 3 — Entreno y progreso, en construcción (diseño en D-115 a D-137). La Fase 2 terminó y se fusionó entera en `main`.
+**Última actualización:** 2026-11-24
+**Fase actual:** 3 — Entreno y progreso, en construcción (diseño en D-115 a D-137). La Fase 2 terminó y se fusionó entera en `main`. Lote 3 casi cerrado: queda el 3.10b (3.10, 3.11 y 3.17 fusionados el 2026-11-24).
 
 Desde D-153 (2026-11-18) los PR normales NO tocan este archivo: cada uno añade su archivo en `docs/cambios/`, y un solo PR de Claude lo resume aquí y en `CONTEXTO.md` al cerrar cada lote. Una tarea está hecha si su archivo está en `main`. Lo anterior al 2026-11-18 está completo aquí.
 
 ## En curso
 
-- Nada de Claude. El **PR 3.6** (subida, cierre y resumen) está fusionado en tres partes: 3.6a (#84, D-149), 3.6b (#85, D-151) y 3.6c (#86, D-152).
+- Nada en curso.
 
 ## Siguiente
 
-1. **PR 3.7 — Cronómetro de descanso** (Claude, `docs/PROMPTS.md` §7). Claude y Gemini trabajan en paralelo según §7 (D-142, D-144) y las reglas de `docs/GUIA-GIT.md` §15.
-2. El propietario dio por buenas, por ahora, la lista de `docs/referencia/biblioteca-ejercicios.md` y las rutinas de ejemplo. Se pueden retocar más adelante.
+1. **Diseño de la Fase 4 — Pilotos** (sección "Fase 4" más abajo). Antes, se cierra el lote 3 con **PR 3.10b — Nota final del entreno** (D-ideas-10, Gemini, con migración).
+2. Después del lote 3: **PR 3.19 — Series de calentamiento** (D-ideas-2, Gemini, con migración; sustituye en parte a D-119).
+3. El propietario dio por buenas, por ahora, la lista de `docs/referencia/biblioteca-ejercicios.md` y las rutinas de ejemplo. Se pueden retocar más adelante.
+4. Deuda abierta del rediseño: claves i18n sin uso `app.clientHome.coachLabel` y `app.coachHome.businessLabel` (`docs/cambios/ux-5-ajustes.md`). Pasar la batería e2e completa tras UX 5 (no se hizo entera).
 
 ## Fases
 
@@ -147,18 +149,21 @@ El diseño está en DECISIONES D-115 a D-136, y el detalle de cada PR, en `docs/
   - [x] 3.6a — cierre solo, "Terminar", "Descartar", resumen final y "Pendiente de subir"
   - [x] 3.6b — recordatorio de las 6 horas y cierre a las 12 horas
   - [x] 3.6c — dos móviles
-- [ ] PR 3.7 — Cronómetro de descanso
+- [x] PR 3.7 — Cronómetro de descanso (#90, D-3.7-1 a 4)
 
 **Lote 3 — Completar el entreno**
 
-- [ ] PR 3.8 — Unilaterales, grupos, cambiar y saltar
-- [ ] PR 3.9 — Consentimiento, peso corporal y medidas
-- [ ] PR 3.10 — Notas del día, set-up y "¿Seguro?"
-- [ ] PR 3.11 — Historial del cliente y corregir
+- [x] PR 3.8 — Unilaterales, grupos, cambiar y saltar (#101, D-3.8-1 a 5)
+- [x] PR 3.9 — Consentimiento, peso corporal y medidas (partido en dos, D-3.9a-1 y D-3.9b-1)
+  - [x] 3.9a — consentimiento de datos de salud (#102)
+  - [x] 3.9b — peso corporal, medidas y lastre con total (#103)
+- [x] PR 3.10 — Notas del día, set-up y "¿Seguro?" (#105, D-3.10-1 a 3)
+  - [ ] 3.10b — nota final del entreno (D-ideas-10, Gemini)
+- [x] PR 3.11 — Historial del cliente y corregir (#106, D-3.11-1 a 3)
 
 **Lote 4 — El coach**
 
-- [ ] PR 3.12 — El día saltado
+- [x] PR 3.12 — El día saltado (#91, D-3.12-1 a 4)
 - [x] PR 3.13 — Pestaña "Entrenos" en la ficha (Gemini)
 - [x] PR 3.14 — Actividad y avisos del coach (Gemini)
 
@@ -166,7 +171,8 @@ El diseño está en DECISIONES D-115 a D-136, y el detalle de cada PR, en `docs/
 
 - [x] PR 3.15 — Módulo `progress`: historial, RM y récords (D-129)
 - [x] PR 3.16 — Gráficas (Gemini), con los arreglos de su revisión (D-147)
-- [ ] PR 3.17 — Minilogros, racha, niveles y logros
+- [x] PR 3.17 — Minilogros, racha, niveles y logros (#107, D-3.17-1 a 3)
+- [ ] PR 3.19 — Series de calentamiento (D-ideas-2, después del lote 3; toca la misma pantalla que 3.8 y 3.10)
 
 - [x] PR 3.18 — Descargar en Excel (Gemini, D-131, D-135, D-150)
 
@@ -184,11 +190,14 @@ El diseño está en DECISIONES D-115 a D-136, y el detalle de cada PR, en `docs/
 - [ ] Textos legales definitivos: privacidad, términos, condiciones para coaches y reembolsos. Hacen falta antes del primer usuario real (D-060)
 - [ ] Cuentas de desarrollador de Apple y de Google (comprobar los requisitos de prueba previa de Google Play y empezar pronto)
 - [ ] 3–5 coaches piloto usando la app
+- [ ] Nutrición e IA, después de los pilotos (D-ideas-1: Gemini Flash Lite por API de pago, con la clave solo en una función de Supabase; D-ideas-6 y D-ideas-8)
 
 ### Fase 5 — Planes y pagos
 
 - [ ] Suscripción del coach y límites por plan
 - [ ] Cobros del coach a sus clientes
+- [ ] Pruebas gratuitas del coach: código de prueba de 7 a 10 días que no gasta plazas, con topes de IA más bajos y borrado de datos a los 7 días para quien no contrata (D-ideas-5 y D-ideas-9; sustituye en parte a D-134)
+- [ ] Plan de gimnasio (D-ideas-15) y su saldo a favor para el gimnasio (D-ideas-18): después de la Fase 5, según su propio diseño
 
 ### Fase 6 — Crecimiento
 
@@ -280,6 +289,14 @@ Cosas que alguien ha visto y que no tocaban en su tarea. No se hacen sin convert
 ## Registro de cambios
 
 Lo más nuevo, arriba. Desde D-153 los cambios nuevos se registran en `docs/cambios/`, no aquí.
+
+- 2026-11-24 — Rediseño UX 5 (#108, `docs/cambios/ux-5-ajustes.md`): 13 mejoras de la revisión visual del propietario (D-ux5-1 y D-ux5-2). Logo de la plataforma provisional.
+- 2026-11-24 — PR 3.17 (#107): minilogros, racha, niveles y logros, calculados sin tablas nuevas (D-3.17-1 a 3). PR 3.11 (#106): historial del cliente y corregir un entreno cerrado (7 días) (D-3.11-1 a 3). PR 3.10 (#105): notas del día, set-up persistente y "¿Seguro?" (D-3.10-1 a 3).
+
+- 2026-11-24 — Cierre del lote 3 (solo documentación, `docs/cambios/docs-resumen-lote-3.md`): se resumen 3.7 a 3.9b y el rediseño UX 1 a 4 aquí y en CONTEXTO; se marcan lo fusionado en PROMPTS §7 y se añaden 3.10b y 3.19 al plan.
+- 2026-11-24 — PR 3.9b (#103): peso corporal y medidas en `/client/body`, lastre con total en las series de peso corporal (D-3.9b-1 a 7). PR 3.9a (#102): consentimiento de datos de salud (D-3.9a-1 a 4). PR 3.8 (#101): unilaterales, superseries, cambiar y saltar ejercicio (D-3.8-1 a 5). PR 3.7 (#90): cronómetro de descanso (D-3.7-1 a 4).
+- 2026-11-22 a 23 — Rediseño UX 1 a 4 (#93 a #96, D-ux1-1 a D-ux4-1): sistema visual cálido, tipografía propia, navegación nueva y las pantallas de cliente, coach y acceso. El arreglo del e2e de bloques (#97) hace estable `program-blocks.spec.ts`.
+- 2026-11-20 — Solo documentación (#92, D-ideas-1 a D-ideas-19, `docs/cambios/ideas-gemini-decisiones.md`): nutrición e IA después de los pilotos, pruebas gratuitas del coach en la Fase 5, planes de gimnasio y series de calentamiento (PR 3.19, pendiente).
 
 - 2026-11-18 — Un archivo por tarea en `docs/cambios/` (D-153, solo documentación): los PR en paralelo ya no editan CONTEXTO, ESTADO ni DECISIONES. Se actualizan AGENTS.md, GUIA-GIT, PROMPTS §0, la plantilla de PR y `docs/cambios/README.md`.
 - 2026-11-18 — PR 3.6c: dos móviles. En otro dispositivo sale "Este entreno está abierto en otro dispositivo" con "Seguir aquí", que une lo apuntado en los dos, y el móvil anterior deja de poder apuntar hasta recuperarlo (D-152).

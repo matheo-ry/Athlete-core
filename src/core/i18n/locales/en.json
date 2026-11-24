@@ -234,7 +234,9 @@
           "rir": "RIR (reps in reserve)",
           "rpe": "RPE (effort from 1 to 10)"
         },
-        "intensityHint": "The scale you are offered when you write a program. Changing it does not convert what is already written."
+        "intensityHint": "The scale you are offered when you write a program. Changing it does not convert what is already written.",
+        "achievementsLabel": "Achievements and motivation",
+        "achievementsHint": "Weekly streaks, levels, mini-wins, and achievements for your clients. If turned off, they will not see any of this."
       }
     },
     "clientProfile": {

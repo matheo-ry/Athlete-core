@@ -1991,20 +1991,22 @@ El diseño está decidido en `docs/DECISIONES.md` (D-115 a D-136). Son **18 PR e
 | | 3.3 | Base de datos: datos de salud, set-up y ajustes del cliente | `db/salud-y-ajustes` | Claude | Sí | `supabase/` · hecho |
 | | 3.3c | Entrenos inventados en el seed | `db/seed-entrenos` | Claude | Sí | `supabase/` (seed) · hecho |
 | | 3.4 | Guardado en el móvil | `feat/guardado-en-el-movil` | Claude | Sí | `src/core/native`, `src/core/modules`, `src/app`, `workouts` · hecho |
-| 2. Apuntar | 3.5 | Apuntar un entreno | `feat/modulo-workouts` | Claude | Sí (e2e) | `workouts`, `programs` (tarjeta "Hoy toca"), `e2e/` |
-| | 3.6 | Subida, cierre y resumen | `feat/cerrar-entreno` | Claude | Sí (e2e) | `workouts`, `src/core/native` |
-| | 3.7 | Cronómetro de descanso | `feat/cronometro` | Claude | No | `workouts`, `src/core/native` |
-| 3. Completar | 3.8 | Unilaterales, grupos, cambiar y saltar | `feat/entreno-completo` | Claude | No | `workouts` |
-| | 3.9 | Consentimiento, peso corporal y medidas | `feat/peso-y-medidas` | Claude | Sí | `src/core/tenancy`, `src/app/client`, perfil y donde se apunten peso y medidas |
+| 2. Apuntar | 3.5 | Apuntar un entreno | `feat/modulo-workouts` | Claude | Sí (e2e) | `workouts`, `programs` (tarjeta "Hoy toca"), `e2e/` · hecho |
+| | 3.6 | Subida, cierre y resumen | `feat/cerrar-entreno` | Claude | Sí (e2e) | `workouts`, `src/core/native` · hecho |
+| | 3.7 | Cronómetro de descanso | `feat/cronometro` | Claude | No | `workouts`, `src/core/native` · hecho (#90) |
+| 3. Completar | 3.8 | Unilaterales, grupos, cambiar y saltar | `feat/entreno-completo` | Claude | No | `workouts` · hecho (#101) |
+| | 3.9 | Consentimiento, peso corporal y medidas | `feat/peso-y-medidas` | Claude | Sí | `src/core/tenancy`, `src/app/client`, perfil y donde se apunten peso y medidas · hecho (3.9a #102, 3.9b #103) |
 | | 3.10 | Notas del día, set-up y "¿Seguro?" | `feat/notas-y-setup` | Gemini | No | `workouts` |
+| | 3.10b | Nota final del entreno (D-ideas-10) | `feat/nota-final` | Gemini | Sí (migración) | `workouts`, `supabase/` |
 | | 3.11 | Historial del cliente y corregir | `feat/historial-de-entrenos` | Gemini | No | `workouts` |
-| 4. El coach | 3.12 | El día saltado | `feat/dia-saltado` | Gemini | Sí | `programs`, quizá `supabase/` |
+| 4. El coach | 3.12 | El día saltado | `feat/dia-saltado` | Gemini | Sí | `programs`, quizá `supabase/` · hecho (#91) |
 | | 3.13 | Pestaña "Entrenos" en la ficha | `feat/entrenos-en-la-ficha` | Gemini | No | `workouts` · hecho |
 | | 3.14 | Actividad y avisos del coach | `feat/actividad-del-coach` | Gemini | No | `workouts`, `programs` · hecho |
 | 5. Progreso | 3.15 | Módulo `progress`: historial, RM y récords | `feat/modulo-progress` | Gemini | Sí | `progress`, `supabase/` (flag) · hecho |
-| | 3.16 | Gráficas | `feat/graficas` | Gemini | No | `progress`, quizá `src/core/ui` |
+| | 3.16 | Gráficas | `feat/graficas` | Gemini | No | `progress`, quizá `src/core/ui` · hecho |
 | | 3.17 | Minilogros, racha, niveles y logros | `feat/logros` | Gemini | Sí | `workouts` (resumen), `progress`, `supabase/` si guarda logros |
-| | 3.18 | Descargar en Excel | `feat/excel` | Gemini | No | `progress` |
+| | 3.18 | Descargar en Excel | `feat/excel` | Gemini | No | `progress` · hecho |
+| | 3.19 | Series de calentamiento (D-ideas-2) | `feat/calentamiento` | Gemini | Sí (migración) | `workouts`, `progress`, `supabase/` · después del lote 3 |
 
 "Base local": si el PR necesita `db:reset`, `db:test` o los tests e2e (además de `npm run check`). Los nombres sin ruta son módulos de `src/modules/`. Es lo previsto: si al empezar el chat ve que toca otra carpeta o necesita la base, lo dice antes de seguir (GUIA-GIT §15).
 

@@ -1,105 +1,82 @@
 # CONTEXTO — léelo al empezar cada chat
 
 > Resumen de una página para que cualquier chat nuevo (Claude o Gemini) sepa en qué punto está el proyecto sin depender de conversaciones anteriores.
-> Los PR normales NO lo tocan (D-153): lo actualiza un solo PR de Claude al cerrar cada lote, resumiendo `docs/cambios/`. Máximo unas 80 líneas: si crece, se resume. El detalle completo está en `docs/`.
+> Los PR normales NO lo tocan (D-153): lo actualiza un solo PR de Claude al cerrar cada lote, resumiendo `docs/cambios/`. Máximo unas 80 líneas. El detalle completo está en `docs/`.
 
 ## La app
 
 - **ATHLETE CORE**: app para **coaches de gimnasio (foco en fuerza)** y sus clientes.
 - **Una sola app** para web, iOS y Android (los entrenos se registran **solo en la app del móvil**; la web sirve para todo lo demás, D-116), con dos perfiles:
-  - **Coach**: crea rutinas, asigna, sigue el progreso de sus clientes y personaliza su marca.
+  - **Coach**: crea rutinas, asigna, sigue a sus clientes y personaliza su marca.
   - **Cliente**: entra con el código de su coach, ve la marca de su coach y registra sus entrenos.
 - Cada coach es un **tenant**: sus datos están aislados de los demás en la propia base de datos.
 - Idiomas: inglés y español. Mercados: España para validar; EE. UU., Reino Unido, Canadá, Australia y Europa para vender.
 
 ## Cómo está montada
 
-- **Tecnología:** React + Vite + TypeScript, Tailwind, TanStack Query, Zod, i18next, Supabase (Postgres con RLS), Capacitor para móvil.
-- **Carpetas:** `src/core/` (cimientos, zona protegida), `src/modules/<función>/` (una carpeta por función, cada una con `coach/`, `client/`, `shared/`, `api/`, `model/` e `i18n/`), `src/app/` (rutas y carcasas de coach y cliente).
+- **Tecnología:** React + Vite + TypeScript, Tailwind, TanStack Query, Zod, i18next, Supabase (Postgres con RLS), Capacitor para móvil. Fuentes propias (Instrument Sans y Geist Mono) empaquetadas con la app.
+- **Carpetas:** `src/core/` (cimientos, zona protegida), `src/modules/<función>/` (una carpeta por función), `src/app/` (rutas y carcasas de coach y cliente).
 - **Seguridad:** toda tabla de negocio lleva `tenant_id` y RLS. Lo delicado (crear negocio, unirse con código) va por funciones de la base de datos.
-- **Git:** una tarea = una rama = un Pull Request. `main` protegida. Commits en formato Conventional Commits, en español.
+- **Git:** una tarea = una rama = un Pull Request. `main` sin protección en GitHub. Commits en Conventional Commits, en español.
 
 ## Dónde estamos
 
-- **Fase actual:** 3 — Entreno y progreso, en construcción (diseño en D-115 a D-137). Las Fases 1 y 2 están terminadas y fusionadas en `main`.
-- **Sistema de documentación (D-153, 2026-11-18):** cada PR añade un archivo en `docs/cambios/` y no toca `CONTEXTO.md`, `docs/ESTADO.md` ni `docs/DECISIONES.md` (histórico hasta D-153). Una tarea está hecha si su archivo está en `main`. Lo posterior a esta fecha está en `docs/cambios/`; este resumen se pone al día al cerrar cada lote.
-- **Última tarea terminada (hasta 2026-11-18):** PR 3.6c — dos móviles, con "Seguir aquí" (D-152). Antes, PR 3.6b — recordatorio de las 6 horas y cierre a las 12 horas (D-151). Antes, PR 3.18 — descargar los entrenos en Excel (Gemini, D-131, D-135, D-150). Antes, PR 3.6a — cierre solo, "Terminar", "Descartar", resumen final y "Pendiente de subir" (D-149), con el arreglo de lo apuntado sin conexión, que no se guardaba. Antes, los agentes fusionan solos salvo lo crítico (D-148, solo documentación; se escribió como D-147, número que ya era del #80). Antes, arreglo del e2e `workout-log.spec.ts`, rojo en `main` desde el #79 (el test esperaba lo prescrito y, desde el 3.5b, el primer + pone lo gris de la vez anterior). Antes, arreglos de la revisión del PR 3.16 (D-147): accesibilidad y colores de la gráfica, zonas táctiles y lectura del peso y las medidas desde `workouts`. Antes, PR 3.5 — apuntar un entreno, fusionado en dos partes: 3.5a (#77) y 3.5b (#79), D-146. Antes, PR 3.16 — gráficas del progreso (Gemini, D-146). Antes, PR 3.4b (#73, D-143) y reglas de chats en paralelo (D-144). En la Fase 3 no se piden pruebas manuales PR a PR: al cerrar la fase se hace una prueba completa (PROMPTS §0).
-- **Siguiente tarea:** **PR 3.7 — Cronómetro de descanso** (`docs/PROMPTS.md` §7), en `workouts` y `src/core/native`. Trabajan Claude y Gemini a la vez (D-142): quién hace cada PR, en la columna "Quién" de §7, con qué carpetas toca y si usa la base local. Gemini decide en sus PR y lo deja escrito como D-xxx "(Gemini)" (D-144). Chats en paralelo: reglas de `docs/GUIA-GIT.md` §15. En staging están aplicadas y probadas las migraciones 1 a 21.
-
+- **Fase actual:** 3 — Entreno y progreso, en construcción (diseño en D-115 a D-137). Las Fases 1 y 2 están terminadas.
+- **Cierre del lote 3 (2026-11-24):** fusionados 3.7 (#90), 3.8 (#101), 3.9a (#102) y 3.9b (#103). Con ellos, un día entero de la rutina real se apunta con unilaterales, superseries, cambiar o saltar un ejercicio, cronómetro, peso corporal y medidas.
+- **Lote 4 (el coach):** 3.12 fusionado (#91, D-3.12-1 a 4). 3.13 y 3.14 ya estaban.
+- **Rediseño UX 1 a 4 (D-ux1-3):** fusionado en #93, #94, #95 y #96. Sistema visual cálido y tipografía propia; cliente, coach y pantallas de acceso ya lo usan.
+- **Última tarea terminada:** PR 3.18 (Excel, 2026-11-17). Antes, 3.16 (gráficas) y 3.15 (historial, RM y récords).
+- **Siguiente tarea:** **PR 3.10 — Notas del día, set-up y "¿Seguro?"** (Gemini), luego **PR 3.11 — Historial del cliente y corregir** (Gemini) y **PR 3.17 — Minilogros, racha, niveles y logros** (Gemini, tras 3.16 y 3.18, ya en `main`). Las tres tocan `workouts` salvo la 3.17 que también toca `progress`. Qué carpetas toca cada uno y si usa la base local: `docs/PROMPTS.md` §7.
+- **Decisiones pendientes de la Fase 3 a tener en cuenta:** D-ideas-2 (PR 3.19, series de calentamiento, después del lote 3) y D-ideas-10 (PR 3.10b, nota final del entreno, después del 3.10). Ambos aparecen en PROMPTS §7.
 
 ## Cómo será la Fase 3 (diseñada, D-115 a D-136)
 
-- **Entrenar, solo en la app del móvil** (la de Android existe desde el PR 3.1a; iOS, en la Fase 4). Las pantallas de entreno preguntan a `canLogWorkouts()` de `core/native`; en el navegador se activa en desarrollo y tests con `VITE_ALLOW_WEB_WORKOUTS=true`. Todo se guarda en el teléfono al instante y se sube solo: sin cobertura no se pierde nada (D-118).
-- **Apuntar:** un ejercicio por pantalla; peso, repeticiones y RIR o RPE con − y + o teclado; la serie se ilumina sin botón de "hecha"; en gris, la vez anterior del mismo día de la rutina, y "Igual" la copia. Unilaterales por lado, superseries, cambiar o saltar un ejercicio, notas del día y set-up de la máquina.
-- **Cerrar** (PR 3.6a, D-149): con todo hecho se cierra solo (al ir al resumen o a los 20 s sin cambios); "Terminar", "Descartar" (por la cola) y el resumen final en `/client/workout?finished=<id>`. Lo que va al teléfono usa `networkMode: 'always'`: si no, sin red se queda en pausa. A las 6 horas, recordatorio local; a las 12, se cierra solo (PR 3.6b, D-151). Un entreno vive en un móvil: en otro sale "Seguir aquí", que une lo apuntado en los dos (PR 3.6c, D-152).
-- **Cronómetro** fijo para toda la app, con alarma con la pantalla apagada. Tres reglas del día saltado, que elige el coach.
-- **Datos de salud:** un consentimiento por espacio para el peso, las medidas y las notas (D-126).
-- **El coach** ve la actividad, los entrenos y los avisos de cada cliente. **Progreso:** historial "45×8(1)", RM estimado, récords, gráficas, logros y Excel.
-- **Cómo se trabaja:** 18 PR en 5 lotes, igual que la Fase 2.
-
-## Cómo funciona la Fase 1 (hecha)
-
-- **Primero el código, después la cuenta:** la primera pantalla (`/start`) pide el código del coach; debajo, "Ya tengo cuenta" y "Soy coach" (D-037).
-- **Cuentas:** nombre, email y contraseña. El email se confirma con un código de 6 dígitos; con ese mismo sistema se entra sin contraseña y se recupera la contraseña. Los emails no llevan enlaces (D-038 a D-044).
-- **Dar de baja:** el coach quita el acceso a un cliente y puede reactivarlo; nunca borra su cuenta (D-055).
-- **Espacios:** una cuenta puede ser coach y cliente a la vez, y cliente de varios coaches (D-048 y D-056). Con varios, se entra en el último usado en el dispositivo o se elige en el selector (D-066).
+- **Entrenar, solo en la app del móvil** (Android desde el PR 3.1a; iOS, en la Fase 4). Todo se guarda en el teléfono al instante y se sube solo (D-118).
+- **Apuntar:** un ejercicio por pantalla; peso, repeticiones y RIR o RPE; la vez anterior en gris y "Igual". Unilaterales, superseries, cambiar o saltar un ejercicio (3.8).
+- **Cerrar:** cierre solo, "Terminar", "Descartar", resumen final; recordatorio a las 6 horas y cierre a las 12; "Seguir aquí" entre dos móviles (3.6a-c, D-149 a D-152).
+- **Cronómetro** fijo para toda la app, con alarma con la pantalla apagada (3.7, D-3.7-1 a 4).
+- **Datos de salud:** un consentimiento por espacio para el peso, las medidas y las notas (D-126). Peso y medidas en `/client/body` (3.9a/3.9b).
+- **Día saltado:** tres reglas que elige el coach (3.12).
+- **El coach** ve la actividad, los entrenos y los avisos de cada cliente. **Progreso:** historial, RM estimado, récords, gráficas y Excel.
 
 ## Qué existe ya
 
-- **La app arranca** (`npm run db:start`, `npm run dev`; ver `README.md`) con los usuarios inventados del seed. Hace falta `.env.local` (ver `.env.example`). Inglés y español.
-- **`core/`:** variables de entorno validadas, i18n, componentes base, marca → variables de tema (con corrección de contraste), unidades kg/lb, fechas, logger, `defineModule`, sesión, tenancy y flags reales, y el cliente de Supabase.
-- **Cuentas** (PR 1.2, 1.3, 1.6 y 1.7): registro con el email confirmado por un código de 6 dígitos, entrar con contraseña o con un código, recuperar la contraseña, sesión guardada en el dispositivo y cierre a los 30 días sin uso. Los 4 emails van en dos idiomas (`supabase/templates/`; en local se ven en `http://127.0.0.1:54324`).
-- **Unirse con código** (PR 1.8 y 1.9): `/start`, `/join?code=…` con la vista previa del coach y "Unirme"; el código se recuerda mientras se crea la cuenta y el alta se hace sola al terminar. Con tope de intentos.
-- **Módulo `clients`** (PR 1.10 y 1.11): el primero del producto. Lista de clientes con las plazas del plan, el código de invitación y la ficha con dar de baja y reactivar.
-- **Crear negocio** (PR 1.12): desde "¿Eres coach?" o la bienvenida, con primeros pasos en el inicio del coach.
-- **Perfil y cuenta** (PR 1.13): "Perfil" del cliente y "Ajustes" del coach con nombre, idioma (guardado en la cuenta), kilos o libras, cambiar la contraseña, textos legales y cerrar sesión.
-- **Espacios** (PR 1.14): selector `/select` para quien tiene varios y "Mis espacios" en el perfil y en los ajustes (cambiar, añadir un coach con código, crear el negocio).
-- **Marca** (PR 1.15 y 1.16): el dueño cambia en Ajustes el nombre, el logo, los colores (paleta de 12 o uno propio) y el modo, con vista previa. Se guarda con `update_brand`, que valida cada dato (D-067); el logo va en Storage, en la carpeta del negocio, y solo su dueño puede tocarlo.
-- **Ejercicios, solo en la base de datos** (PR 2.1): `exercise_library` (catálogo de la plataforma) y `exercises` (los de cada negocio; el coach lee, crea y edita, nadie borra, tope de 1.000 sin archivar). Cada negocio nuevo recibe la copia del catálogo. Valores de las listas, en D-089.
-- **Los 120 ejercicios de la plataforma** (PR 2.2): cargados en el catálogo desde `docs/referencia/biblioteca-ejercicios.md`, sin instrucciones ni vídeos. Iron Lab y Norte Strength tienen ya sus 120. Para repartir ampliaciones futuras, `copy_exercise_library_to_all_tenants()` (D-090).
-- **Módulo `exercises`** (PR 2.3): "Ejercicios" en el menú del coach. Lista por orden alfabético (los del catálogo, en el idioma de la app), pestañas "Activos" y "Archivados" con su número, buscador sin tildes y filtros de grupo, material y origen, todo en la app (D-091). Crear y editar (PR 2.4a): "Nuevo ejercicio", pulsar una fila o "Crear «lo escrito»" desde el buscador; panel en escritorio, pantalla entera en el móvil (D-092). Archivar, recuperar, duplicar y "Restaurar original" (PR 2.4b) en el panel del ejercicio; nunca se borra (D-093).
-- **Módulo `programs`** (PR 2.7): "Rutinas" en el menú del coach. Lista de plantillas con "Semanal" o "Ciclo de N días" y sus días de entreno, pestañas "Activas" y "Archivadas", buscador, "Nueva plantilla" (nombre y días del ciclo), renombrar, archivar y recuperar (D-097). El documento de una rutina (esquema Zod del editor) está en `model/program-document.ts`. El editor (PR 2.8a, `/coach/programs/<id>`): los días del ciclo del primer bloque, de entreno o de descanso, con nombre, subtítulo y lugar, y "Guardar cambios" de una vez (D-098). Con cambios sin guardar, avisa al salir y los guarda en el dispositivo para "Recuperar" al volver; se borran al cerrar sesión (PR 2.8b, D-099). Cada día de entreno tiene sus ejercicios en orden: añadir con el buscador de "Ejercicios" sin salir, crear uno nuevo, subir, bajar y quitar (PR 2.9a, D-100); sustituir por otro que se mide igual, nota para el cliente y etiqueta "Archivado" (PR 2.9b, D-101). En cada ejercicio se escribe lo prescrito: series, repeticiones, intensidad y descanso, con el resumen "3 × 8-12 · RIR 1 · 2:00" (PR 2.10a, D-102), y la carga en kg o lb. El dueño elige en Ajustes → "Entrenamiento" si trabaja con RIR o con RPE (PR 2.10b, D-103). Se puede duplicar un ejercicio, un día o una plantilla entera, y copiar y pegar entre rutinas (PR 2.11, D-104).
-- **Rutinas en la base de datos** (PR 2.5a y 2.5b): `programs` (sin cliente = plantilla), `program_blocks`, `program_days`, `program_day_exercises` y `program_sets`. Desde la app solo se leen: el coach, las de su negocio; el cliente, las suyas y los ejercicios que llevan. Se escriben con funciones: `save_program` guarda una rutina entera o nada (PR 2.6, D-096) y `set_program_archived` archiva y recupera plantillas. El seed trae tres plantillas: "Casa + Gym" y "Pecho / Espalda y Brazo / Pierna" en Iron Lab, y "Fuerza básica" en Norte Strength.
-- **Entrenos en la base de datos** (PR 3.2a): `workouts`, `workout_exercises` (con su copia de lo prescrito) y `workout_sets` (una fila por serie y lado). Desde la app solo se leen; el móvil sube un entreno entero con `sync_workout` (gana el cambio más reciente, no duplica, "Editado" y 7 días para corregir) y lo descarta con `discard_workout` (D-138). Flag `workouts`.
-- **El día saltado en la base de datos** (PR 3.2b): `program_missed_day_rules` (la regla de cada rutina de cliente, con el día desde el que vale; la cambia el coach con `set_missed_day_rule`) y `program_missed_days` (los días que faltó; los apunta la app del cliente con `record_missed_days`). Del lado de las rutinas, solo con calendario (D-139).
-- **Datos de salud en la base de datos** (PR 3.3a): `health_consents` (uno por espacio; `grant_health_consent` y `withdraw_health_consent`, que borra peso, medidas y notas del día), `body_weights` y `body_measurements`. Sin consentimiento no se escriben, ni las notas del día (D-140).
-- **Set-up y ajustes en la base de datos** (PR 3.3b): `client_exercise_setups` (uno por cliente y ejercicio), los ajustes de entreno del cliente en `profiles` (descanso, arrancar solo, sonido, vibración, "Igual") y el interruptor `achievementsEnabled` de `tenants.settings` (D-141).
-- **Base de datos local** (Supabase en Docker): 21 migraciones en `supabase/migrations/` (tablas, funciones de negocio, permisos, RLS, el espacio de logos, los ejercicios, las rutinas y los flags de cada módulo); 524 tests pgTAP (`npm run db:test`); 2 coaches y 6 clientes inventados (`supabase/seed.sql`, contraseña `password123`), con entrenos de varias semanas, días faltados, récords, peso y medidas para Ana, Bruno y Diego (PR 3.3c); tipos generados en `core/supabase/database.types.ts`.
-- **Tests:** 835 unitarios (`npm run check`) y 98 de extremo a extremo contra Supabase local (`npm run test:e2e`, también en el CI).
-- **Staging** (PR 1.17): proyecto `athlete-core-staging` de Supabase (Fráncfort, plan gratuito) con las mismas tablas y datos inventados que en local. Los emails salen de verdad, por Resend, desde `no-reply@athlete-core.com`. Se prueba con `npm run dev:staging` (hace falta `.env.staging.local`; guía en `supabase/README.md`). Todavía no hay web publicada.
-- **App de Android** (PR 3.1a): proyecto `android/` con Capacitor. `npm run android:build` genera `build/athlete-core-staging.apk`, que apunta a staging; guía para el propietario en `android/README.md` (D-137). `core/native` resuelve el botón "atrás", la barra de estado y las zonas seguras (`--safe-top`, `--safe-bottom` en `src/index.css`).
-- **Guardado en el móvil** (PR 3.4a, D-143): `core/native` tiene el almacén del teléfono (`getDeviceStore`, validado con Zod al leer), `onAppResume` y la cola de subida (`getUploadQueue`: una por usuario, en orden, sin duplicar, con reintentos y rechazos). En la app instalada, lo ya cargado se guarda en el teléfono y la app abre sin red, también con el token caducado. Cerrar sesión con entrenos sin subir pregunta antes. El módulo `workouts` (PR 3.4b, sin pantallas) guarda en el teléfono la rutina vigente y la vez anterior de cada ejercicio (`readOfflineSnapshot`, `previousFor`) y sube la cola con `sync_workout`, avisando si el coach dio de baja al cliente.
-- **Módulo `_template`** para copiar (`npm run new:module <nombre>`). Solo se registra en desarrollo.
-- **Reglas que se comprueban solas:** ESLint con las fronteras de ARQUITECTURA §6, hooks de Git (formato, mensaje de commit, no subir `main`), CI con `npm run check`, la base de datos y los tests de flujos completos (desde el PR 3.1b), y tests que vigilan las fronteras, los textos en dos idiomas y la forma fija de los módulos.
+- **Cuentas y espacios (Fase 1, hecha):** registro con código de 6 dígitos, entrar con contraseña o código, recuperar contraseña, dar de baja y reactivar clientes, varios espacios por cuenta, marca del coach (nombre, logo, colores, modo) y unirse con código.
+- **Ejercicios y rutinas (Fase 2, hecha):** 120 ejercicios de la plataforma, módulos `exercises` y `programs` con editor, bloques, superseries, sustituir y copiar. Guardado con `save_program`.
+- **Entrenos y datos de salud en la base de datos:** `workouts`, `workout_exercises`, `workout_sets` con `sync_workout` y `discard_workout`; `body_weights`, `body_measurements`, `health_consents`, `program_missed_days` y `client_exercise_setups` (D-138 a D-141).
+- **Base de datos local:** 21 migraciones; 524 tests pgTAP (`npm run db:test`); 2 coaches y 6 clientes inventados (`supabase/seed.sql`, contraseña `password123`).
+- **Tests:** unitarios (`npm run check`) y e2e contra Supabase local (`npm run test:e2e`, también en el CI). El CI corre además "Tests de flujos completos".
+- **Staging:** proyecto `athlete-core-staging` de Supabase con los mismos datos inventados. Emails por Resend. Se prueba con `npm run dev:staging`.
+- **Guardado en el móvil:** almacén, cola de subida y `workouts` sin conexión (3.4a y 3.4b, D-143).
+- **Reglas que se comprueban solas:** ESLint con fronteras, hooks de Git, CI con `npm run check`, base de datos y flujos completos; tests que vigilan fronteras, textos en dos idiomas y la forma de los módulos.
 
 ## Qué falta (lo próximo)
 
-- La Fase 3, en 18 PR (`docs/PROMPTS.md` §7). Publicar la web (P-03) sigue pendiente.
+- Lote 3 a 5 de la Fase 3: PR 3.10, 3.11, 3.17 y, después, 3.10b y 3.19 (`docs/PROMPTS.md` §7).
+- Nutrición e IA, después de la Fase 4 (D-ideas-1, Gemini Flash Lite por API de pago). Pruebas gratuitas del coach en la Fase 5 (D-ideas-5).
+- Publicar la web (P-03) sigue pendiente. Textos legales definitivos antes del primer usuario real (D-060).
 - Las guardas por sesión y por rol son comodidad, no seguridad: los datos los protege el RLS.
 
 ## Últimos cambios
 
-Los 5 más recientes, el más nuevo arriba. El historial completo está en `docs/ESTADO.md`.
+Los 5 más recientes, el más nuevo arriba. El historial completo está en `docs/ESTADO.md` y en `docs/cambios/`.
 
-- 2026-11-18 — PR 3.6c: dos móviles. "Este entreno está abierto en otro dispositivo" con "Seguir aquí", que une lo apuntado en los dos (D-152).
-- 2026-11-18 — PR 3.6b: recordatorio a las 6 horas y cierre solo a las 12 con "Guardamos tu entreno del lunes" (D-151). Arreglo: cerrar sin series hechas dejaba el entreno abierto en la nube.
-- 2026-11-17 — PR 3.18: descargar entrenos en Excel (.xlsx) con write-excel-file (D-131, D-135, D-150). Hoja "Día a día", una hoja por rutina y "Peso corporal" si hay consentimiento (D-126).
-- 2026-11-17 — PR 3.6a: cierre solo con todas las series hechas, "Terminar" con el resumen final, "Descartar" con confirmación y "Pendiente de subir" (D-149). Arreglo: lo apuntado sin conexión no se guardaba (TanStack Query lo dejaba en pausa). Test e2e `workout-close.spec.ts`.
-- 2026-11-17 — Solo documentación: los agentes fusionan sin esperar al propietario, salvo lo crítico, que pide su OK escrito en el prompt (D-148, sustituye a D-068; era D-147, número ya usado por el #80). Chat revisor de Claude y final de los prompts de Gemini en PROMPTS §0.
+- 2026-11-24 — Cierre del lote 3 (solo documentación, `docs/cambios/docs-resumen-lote-3.md`): se resumen 3.7 a 3.9b y el rediseño UX 1 a 4 en CONTEXTO y ESTADO, y se marcan lo fusionado en PROMPTS §7.
+- 2026-11-24 — PR 3.9b (#103): peso corporal, medidas y lastre con total (D-3.9b-1 a 7).
+- 2026-11-23 — PR 3.8 (#101): unilaterales, superseries, cambiar y saltar ejercicio (D-3.8-1 a 5). PR 3.9a (#102): consentimiento de datos de salud (D-3.9a-1 a 4).
+- 2026-11-22 a 23 — Rediseño UX 1 a 4 (#93 a #96, D-ux1-1 a D-ux4-1) y arreglo del e2e de bloques (#97).
 
 ## A tener en cuenta ahora
 
 - El proyecto vive en `C:\dev\athlete-core`, **fuera de OneDrive** (sincronizar `node_modules` da errores).
 - Se usa **TypeScript 6**, no 7: el lint de TypeScript aún no admite la 7 (DECISIONES D-022).
 - `main` no está protegida en GitHub: hace falta GitHub Pro (GUIA-GIT §12).
-- Los agentes fusionan solos (D-148): Claude sus PR con el CI en verde; Gemini los suyos con el comentario "VISTO BUENO DE CLAUDE". El propietario solo da su OK, escrito en el prompt, para lo crítico (producción, borrar datos, relajar RLS o permisos, pagos, secretos, historial, reglas de oro).
-- Supabase en plan gratuito (D-063): la sesión de 30 días la controla la propia app, y no hay copias de seguridad recuperables. Resend gratuito: 100 emails al día.
-- **Si staging deja de responder** (la app contra staging no carga o no llegan emails), lo más probable es que Supabase lo haya pausado por pasar una semana sin uso: es normal en el plan gratuito. Se reanuda en el panel de Supabase con **Restore project**, tarda un par de minutos y no se pierde nada (`supabase/README.md`, paso 6).
-- El proyecto de staging de Supabase está conectado al repositorio de GitHub (comprobación "Supabase Preview", siempre omitida). No hace nada; se quita en el panel, Settings → Integrations.
-- El dominio es `athlete-core.com`, en Cloudflare. Antes del primer usuario real hacen falta los textos legales definitivos (D-060) y revisar el plan de Supabase (D-063).
+- Los agentes fusionan solos (D-148): Claude sus PR con el CI en verde; Gemini los suyos con el comentario "VISTO BUENO DE CLAUDE". Lo crítico (producción, borrar datos, relajar RLS o permisos, pagos, secretos, historial, reglas de oro) necesita el OK del propietario escrito en el prompt.
+- Supabase en plan gratuito (D-063): sin copias de seguridad recuperables. Resend gratuito: 100 emails al día.
+- **Si staging deja de responder**, lo más probable es que Supabase lo haya pausado por una semana sin uso. Se reanuda en el panel con **Restore project** (`supabase/README.md`, paso 6).
+- Con varios worktrees, los contenedores de Supabase guardan la carpeta que los creó; si se borra, ver `docs/cambios/3.9a-consentimiento-salud.md`.
 - El identificador de la app móvil (`app.athletecore.mobile`) es provisional: hay que fijarlo antes de publicar en las tiendas.
-- Para probar en el móvil del propietario, el agente genera el APK con `npm run android:build` (hace falta Android Studio instalado y `.env.staging.local`). En este ordenador no hay emulador.
-- Las ideas de `docs/referencia/ideas-de-negocio.md` (precios, planes, Modo Alumni…) **no son decisiones**: lo decidido está en D-132 a D-134.
+- Las ideas de `docs/referencia/ideas-de-negocio.md` **no son decisiones**: lo decidido está en D-132 a D-134 y en `docs/cambios/ideas-gemini-decisiones.md`.
 
 ## Para saber más
 
@@ -109,5 +86,5 @@ Los 5 más recientes, el más nuevo arriba. El historial completo está en `docs
 | Saber dónde va cada cosa | `docs/ARQUITECTURA.md` |
 | Hacer un cambio con Git | `docs/GUIA-GIT.md` |
 | El estado detallado y las fases | `docs/ESTADO.md` |
-| El porqué de una decisión | `docs/DECISIONES.md` |
+| El porqué de una decisión | `docs/DECISIONES.md` (hasta D-153) y `docs/cambios/` (desde D-153) |
 | Una plantilla de prompt | `docs/PROMPTS.md` |

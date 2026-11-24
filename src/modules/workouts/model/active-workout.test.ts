@@ -14,8 +14,10 @@ import {
   previousSet,
   unmarkSet,
   finishWorkout,
+  isWeightJump,
   prescribedReference,
   setCounts,
+  setDayNote,
   startWorkout,
   stepValue,
   toSyncPayload,
@@ -356,5 +358,59 @@ describe('"Igual" según el ajuste del Perfil (D-120)', () => {
       throw new Error('missing exercise');
     }
     expect(copySource('previous_then_today', exercise, 2, lastTime)).toBeNull();
+  });
+});
+
+describe('setDayNote (D-122)', () => {
+  it('guarda la nota del día en el ejercicio indicado y actualiza la fecha de cambio', () => {
+    const initial = workout();
+    const updated = setDayNote(initial, 1, 'Dolor de hombro', '2026-11-20T10:00:00.000Z');
+    expect(updated.exercises[0]?.dayNote).toBe('Dolor de hombro');
+    expect(updated.lastChangedAt).toBe('2026-11-20T10:00:00.000Z');
+    expect(updated.lastExercise).toBe(1);
+  });
+
+  it('recorta espacios y limita a 500 caracteres', () => {
+    const initial = workout();
+    const longText = 'a'.repeat(600);
+    const updated = setDayNote(initial, 1, `  ${longText}  `, '2026-11-20T10:00:00.000Z');
+    expect(updated.exercises[0]?.dayNote).toHaveLength(500);
+  });
+
+  it('un texto vacío o null se guarda como null', () => {
+    const initial = setDayNote(workout(), 1, 'Nota previa', '2026-11-20T10:00:00.000Z');
+    const cleared = setDayNote(initial, 1, '   ', '2026-11-20T10:05:00.000Z');
+    expect(cleared.exercises[0]?.dayNote).toBeNull();
+  });
+
+  it('se serializa en toSyncPayload como day_note', () => {
+    const updated = setDayNote(workout(), 1, 'Molestia leve', '2026-11-20T10:00:00.000Z');
+    const payload = toSyncPayload(updated);
+    const exercises = payload.exercises as Array<Record<string, unknown>>;
+    expect(exercises[0]?.day_note).toBe('Molestia leve');
+  });
+});
+
+describe('isWeightJump (D-120)', () => {
+  it('detecta saltos mayores al 50 % respecto a la vez anterior', () => {
+    // 35 kg -> 5.9 kg es una caída del 83.1 % (> 50 %)
+    expect(isWeightJump(5.9, 35)).toBe(true);
+    // 35 kg -> 60 kg es una subida del 71.4 % (> 50 %)
+    expect(isWeightJump(60, 35)).toBe(true);
+  });
+
+  it('no avisa si el cambio es menor o igual al 50 %', () => {
+    // 35 kg -> 37.5 kg es 7.1 % (<= 50 %)
+    expect(isWeightJump(37.5, 35)).toBe(false);
+    // 35 kg -> 52.5 kg es exactamente 50 %
+    expect(isWeightJump(52.5, 35)).toBe(false);
+    // 35 kg -> 17.5 kg es exactamente 50 %
+    expect(isWeightJump(17.5, 35)).toBe(false);
+  });
+
+  it('si no hay valor previo o es cero, no salta aviso', () => {
+    expect(isWeightJump(50, null)).toBe(false);
+    expect(isWeightJump(50, 0)).toBe(false);
+    expect(isWeightJump(50, -5)).toBe(false);
   });
 });

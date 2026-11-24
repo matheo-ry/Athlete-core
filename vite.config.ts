@@ -35,6 +35,7 @@ export default defineConfig({
     },
   },
   test: {
+    maxWorkers: '50%',
     // Dos grupos de tests unitarios. Los de flujos completos (e2e/) los ejecuta
     // Playwright, no Vitest.
     projects: [

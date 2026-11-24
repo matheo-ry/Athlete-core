@@ -1,7 +1,7 @@
 # ESTADO DEL PROYECTO
 
 **Última actualización:** 2026-11-24
-**Fase actual:** 3 — Entreno y progreso, en construcción (diseño en D-115 a D-137). La Fase 2 terminó y se fusionó entera en `main`. Cierre del lote 3 el 2026-11-24.
+**Fase actual:** 3 — Entreno y progreso, en construcción (diseño en D-115 a D-137). La Fase 2 terminó y se fusionó entera en `main`. Lote 3 casi cerrado: queda el 3.10b (3.10, 3.11 y 3.17 fusionados el 2026-11-24).
 
 Desde D-153 (2026-11-18) los PR normales NO tocan este archivo: cada uno añade su archivo en `docs/cambios/`, y un solo PR de Claude lo resume aquí y en `CONTEXTO.md` al cerrar cada lote. Una tarea está hecha si su archivo está en `main`. Lo anterior al 2026-11-18 está completo aquí.
 
@@ -11,9 +11,10 @@ Desde D-153 (2026-11-18) los PR normales NO tocan este archivo: cada uno añade 
 
 ## Siguiente
 
-1. **PR 3.10 — Notas del día, set-up y "¿Seguro?"** (Gemini, `docs/PROMPTS.md` §7), después **PR 3.11 — Historial del cliente y corregir** (Gemini) y **PR 3.17 — Minilogros, racha, niveles y logros** (Gemini). Reparto y carpetas en §7 (D-142, D-144).
-2. Después del 3.10: **PR 3.10b — Nota final del entreno** (D-ideas-10). Después del lote 3: **PR 3.19 — Series de calentamiento** (D-ideas-2, sustituye en parte a D-119).
+1. **Diseño de la Fase 4 — Pilotos** (sección "Fase 4" más abajo). Antes, se cierra el lote 3 con **PR 3.10b — Nota final del entreno** (D-ideas-10, Gemini, con migración).
+2. Después del lote 3: **PR 3.19 — Series de calentamiento** (D-ideas-2, Gemini, con migración; sustituye en parte a D-119).
 3. El propietario dio por buenas, por ahora, la lista de `docs/referencia/biblioteca-ejercicios.md` y las rutinas de ejemplo. Se pueden retocar más adelante.
+4. Deuda abierta del rediseño: claves i18n sin uso `app.clientHome.coachLabel` y `app.coachHome.businessLabel` (`docs/cambios/ux-5-ajustes.md`). Pasar la batería e2e completa tras UX 5 (no se hizo entera).
 
 ## Fases
 
@@ -156,9 +157,9 @@ El diseño está en DECISIONES D-115 a D-136, y el detalle de cada PR, en `docs/
 - [x] PR 3.9 — Consentimiento, peso corporal y medidas (partido en dos, D-3.9a-1 y D-3.9b-1)
   - [x] 3.9a — consentimiento de datos de salud (#102)
   - [x] 3.9b — peso corporal, medidas y lastre con total (#103)
-- [ ] PR 3.10 — Notas del día, set-up y "¿Seguro?"
-  - [ ] 3.10b — nota final del entreno (D-ideas-10, después del 3.10)
-- [ ] PR 3.11 — Historial del cliente y corregir
+- [x] PR 3.10 — Notas del día, set-up y "¿Seguro?" (#105, D-3.10-1 a 3)
+  - [ ] 3.10b — nota final del entreno (D-ideas-10, Gemini)
+- [x] PR 3.11 — Historial del cliente y corregir (#106, D-3.11-1 a 3)
 
 **Lote 4 — El coach**
 
@@ -170,7 +171,7 @@ El diseño está en DECISIONES D-115 a D-136, y el detalle de cada PR, en `docs/
 
 - [x] PR 3.15 — Módulo `progress`: historial, RM y récords (D-129)
 - [x] PR 3.16 — Gráficas (Gemini), con los arreglos de su revisión (D-147)
-- [ ] PR 3.17 — Minilogros, racha, niveles y logros
+- [x] PR 3.17 — Minilogros, racha, niveles y logros (#107, D-3.17-1 a 3)
 - [ ] PR 3.19 — Series de calentamiento (D-ideas-2, después del lote 3; toca la misma pantalla que 3.8 y 3.10)
 
 - [x] PR 3.18 — Descargar en Excel (Gemini, D-131, D-135, D-150)
@@ -288,6 +289,9 @@ Cosas que alguien ha visto y que no tocaban en su tarea. No se hacen sin convert
 ## Registro de cambios
 
 Lo más nuevo, arriba. Desde D-153 los cambios nuevos se registran en `docs/cambios/`, no aquí.
+
+- 2026-11-24 — Rediseño UX 5 (#108, `docs/cambios/ux-5-ajustes.md`): 13 mejoras de la revisión visual del propietario (D-ux5-1 y D-ux5-2). Logo de la plataforma provisional.
+- 2026-11-24 — PR 3.17 (#107): minilogros, racha, niveles y logros, calculados sin tablas nuevas (D-3.17-1 a 3). PR 3.11 (#106): historial del cliente y corregir un entreno cerrado (7 días) (D-3.11-1 a 3). PR 3.10 (#105): notas del día, set-up persistente y "¿Seguro?" (D-3.10-1 a 3).
 
 - 2026-11-24 — Cierre del lote 3 (solo documentación, `docs/cambios/docs-resumen-lote-3.md`): se resumen 3.7 a 3.9b y el rediseño UX 1 a 4 aquí y en CONTEXTO; se marcan lo fusionado en PROMPTS §7 y se añaden 3.10b y 3.19 al plan.
 - 2026-11-24 — PR 3.9b (#103): peso corporal y medidas en `/client/body`, lastre con total en las series de peso corporal (D-3.9b-1 a 7). PR 3.9a (#102): consentimiento de datos de salud (D-3.9a-1 a 4). PR 3.8 (#101): unilaterales, superseries, cambiar y saltar ejercicio (D-3.8-1 a 5). PR 3.7 (#90): cronómetro de descanso (D-3.7-1 a 4).

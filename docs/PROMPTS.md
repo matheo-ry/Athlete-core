@@ -1996,15 +1996,15 @@ El diseño está decidido en `docs/DECISIONES.md` (D-115 a D-136). Son **18 PR e
 | | 3.7 | Cronómetro de descanso | `feat/cronometro` | Claude | No | `workouts`, `src/core/native` · hecho (#90) |
 | 3. Completar | 3.8 | Unilaterales, grupos, cambiar y saltar | `feat/entreno-completo` | Claude | No | `workouts` · hecho (#101) |
 | | 3.9 | Consentimiento, peso corporal y medidas | `feat/peso-y-medidas` | Claude | Sí | `src/core/tenancy`, `src/app/client`, perfil y donde se apunten peso y medidas · hecho (3.9a #102, 3.9b #103) |
-| | 3.10 | Notas del día, set-up y "¿Seguro?" | `feat/notas-y-setup` | Gemini | No | `workouts` |
+| | 3.10 | Notas del día, set-up y "¿Seguro?" | `feat/notas-y-setup` | Gemini | No | `workouts` · hecho (#105) |
 | | 3.10b | Nota final del entreno (D-ideas-10) | `feat/nota-final` | Gemini | Sí (migración) | `workouts`, `supabase/` |
-| | 3.11 | Historial del cliente y corregir | `feat/historial-de-entrenos` | Gemini | No | `workouts` |
+| | 3.11 | Historial del cliente y corregir | `feat/historial-de-entrenos` | Gemini | No | `workouts` · hecho (#106) |
 | 4. El coach | 3.12 | El día saltado | `feat/dia-saltado` | Gemini | Sí | `programs`, quizá `supabase/` · hecho (#91) |
 | | 3.13 | Pestaña "Entrenos" en la ficha | `feat/entrenos-en-la-ficha` | Gemini | No | `workouts` · hecho |
 | | 3.14 | Actividad y avisos del coach | `feat/actividad-del-coach` | Gemini | No | `workouts`, `programs` · hecho |
 | 5. Progreso | 3.15 | Módulo `progress`: historial, RM y récords | `feat/modulo-progress` | Gemini | Sí | `progress`, `supabase/` (flag) · hecho |
 | | 3.16 | Gráficas | `feat/graficas` | Gemini | No | `progress`, quizá `src/core/ui` · hecho |
-| | 3.17 | Minilogros, racha, niveles y logros | `feat/logros` | Gemini | Sí | `workouts` (resumen), `progress`, `supabase/` si guarda logros |
+| | 3.17 | Minilogros, racha, niveles y logros | `feat/logros` | Gemini | Sí | `workouts` (resumen), `progress`, `supabase/` si guarda logros · hecho (#107) |
 | | 3.18 | Descargar en Excel | `feat/excel` | Gemini | No | `progress` · hecho |
 | | 3.19 | Series de calentamiento (D-ideas-2) | `feat/calentamiento` | Gemini | Sí (migración) | `workouts`, `progress`, `supabase/` · después del lote 3 |
 

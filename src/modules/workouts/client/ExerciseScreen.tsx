@@ -1,10 +1,10 @@
-import { useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, useNavigate } from 'react-router';
 
 import { cn } from '@/core/lib';
 import { Icon, buttonClassName } from '@/core/ui';
-import { useExerciseOptions } from '@/modules/exercises';
+import { ExercisePicker, useExerciseOptions } from '@/modules/exercises';
 
 import { useSaveActiveWorkout } from '../api/useActiveWorkout';
 import { useRestControls } from '../api/useRestControls';
@@ -13,23 +13,45 @@ import {
   MAX_SETS,
   addSet,
   changeSet,
-  copyPrevious,
+  copySides,
   copySource,
   previousSet,
   setCounts,
+  setNumbers,
+  sidesOf,
   unmarkSet,
 } from '../model/active-workout';
-import type { ActiveWorkout } from '../model/active-workout';
+import type { ActiveWorkout, PreviousSetValues, Side } from '../model/active-workout';
+import { canSkip, replaceExercise, skipExercise, unskipExercise } from '../model/exercise-actions';
+import {
+  ADVANCE_AFTER_COPY_MS,
+  ADVANCE_DELAY_MS,
+  advanceTarget,
+  completesRound,
+  groupLabel,
+} from '../model/superset-rounds';
+import { ExerciseActions, SkippedNotice } from './ExerciseActions';
 import { SetEditor } from './SetEditor';
+import type { BySide } from './SetEditor';
 
 /** Lo que hay que deslizar, en píxeles, para pasar de ejercicio. */
 const SWIPE = 60;
+
+/** Pasar solo al siguiente del grupo, cuando pasen `delay` ms sin tocar nada. */
+interface PendingAdvance {
+  from: number;
+  to: number;
+  delay: number;
+  /** Cada cambio lo renueva: la cuenta vuelve a empezar. */
+  version: number;
+}
 
 /**
  * Un ejercicio por pantalla (D-120): su nombre, "Ejercicio 3 de 7" con la
  * barra de ejercicios (hechos, el actual y los que faltan), deslizar al
  * siguiente o al anterior, y sus series. Cada cambio se guarda en el móvil al
- * instante y va a la cola de subida (D-118).
+ * instante y va a la cola de subida (D-118). En una superserie o un circuito,
+ * al acabar la serie pasa al siguiente del grupo (D-121).
  */
 export function ExerciseScreen({
   workout,
@@ -44,9 +66,25 @@ export function ExerciseScreen({
   const save = useSaveActiveWorkout();
   const rest = useRestControls();
   const touchStart = useRef<number | null>(null);
+  const [picking, setPicking] = useState(false);
+  const [advance, setAdvance] = useState<PendingAdvance | null>(null);
   const exercise = workout.exercises[position - 1];
   const previous = usePreviousPerformance(exercise?.exerciseId ?? '', workout.dayNumber);
   const now = () => new Date().toISOString();
+
+  useEffect(() => {
+    if (advance === null || advance.from !== position) {
+      return undefined;
+    }
+    const timer = setTimeout(() => {
+      setAdvance(null);
+      void navigate(`?exercise=${String(advance.to)}`, { replace: true });
+    }, advance.delay);
+    return () => {
+      clearTimeout(timer);
+    };
+  }, [advance, position, navigate]);
+
   if (exercise === undefined) {
     return null;
   }
@@ -56,6 +94,54 @@ export function ExerciseScreen({
       void navigate(`?exercise=${String(to)}`, { replace: true });
     }
   };
+  const nameOf = (id: string) => options.byId.get(id)?.name ?? '…';
+  const group = groupLabel(workout, position);
+
+  /** Guarda el cambio, arranca el descanso si acaba la ronda y decide a dónde seguir. */
+  const apply = (next: ActiveWorkout, setNumber: number, delay: number) => {
+    save.mutate(next);
+    rest.afterSet({
+      workoutId: workout.id,
+      coachSeconds: exercise.restSeconds,
+      roundCompleted: completesRound(workout, next, position, setNumber),
+    });
+    const to = advanceTarget(workout, next, position, setNumber);
+    setAdvance((current) =>
+      to !== null
+        ? { from: position, to, delay, version: (current?.version ?? 0) + 1 }
+        : current !== null && current.from === position
+          ? { ...current, version: current.version + 1 }
+          : current,
+    );
+  };
+
+  if (picking) {
+    return (
+      <ExercisePicker
+        title={t('workouts.workout.replaceTitle', { name: nameOf(exercise.exerciseId) })}
+        measurement={exercise.measurement}
+        onCancel={() => {
+          setPicking(false);
+        }}
+        onPick={(picked) => {
+          save.mutate(
+            replaceExercise(
+              workout,
+              position,
+              {
+                exerciseId: picked.id,
+                measurement: picked.measurement,
+                isUnilateral: picked.isUnilateral,
+              },
+              now(),
+              () => crypto.randomUUID(),
+            ),
+          );
+          setPicking(false);
+        }}
+      />
+    );
+  }
 
   return (
     <div
@@ -86,7 +172,7 @@ export function ExerciseScreen({
         {workout.exercises.map((item) => {
           const counts = setCounts([item]);
           const isCurrent = item.position === position;
-          const isDone = counts.total > 0 && counts.done >= counts.total;
+          const isDone = item.isSkipped || (counts.total > 0 && counts.done >= counts.total);
           return (
             <Link
               key={item.id}
@@ -111,63 +197,94 @@ export function ExerciseScreen({
         })}
       </nav>
       <header className="flex flex-col gap-3">
-        <h1 className="text-3xl leading-[1.08] font-semibold">
-          {options.byId.get(exercise.exerciseId)?.name ?? '…'}
-        </h1>
+        {group === null ? null : (
+          <p className="eyebrow text-primary-readable" data-testid="group-label">
+            {t(`workouts.workout.group.${group.kind}`, {
+              position: group.position,
+              size: group.size,
+            })}
+          </p>
+        )}
+        <h1 className="text-3xl leading-[1.08] font-semibold">{nameOf(exercise.exerciseId)}</h1>
+        {exercise.replacesExerciseId === null ? null : (
+          <p className="text-muted text-sm">
+            {t('workouts.workout.replaces', { name: nameOf(exercise.replacesExerciseId) })}
+          </p>
+        )}
         {exercise.coachNote === null ? null : (
           <p className="border-accent text-muted border-l-2 pl-3 text-sm leading-6">
             {exercise.coachNote}
           </p>
         )}
       </header>
-      <ol className="flex flex-col gap-3">
-        {exercise.sets.map((set) => {
-          const before = previousSet(previous, set.setNumber);
-          const source = copySource(rest.sameButton, exercise, set.setNumber, before);
-          // Solo el primer cambio de una serie (o "Igual") arranca el descanso (D-123).
-          const startRest = () => {
-            rest.afterSet({
-              workoutId: workout.id,
-              coachSeconds: exercise.restSeconds,
-              wasDone: set.isDone,
-            });
-          };
-          return (
-            <SetEditor
-              key={set.id}
-              exercise={exercise}
-              set={set}
-              previous={before}
-              copySource={source}
-              onCopy={() => {
-                if (source !== null) {
-                  save.mutate(copyPrevious(workout, position, set.setNumber, source, now()));
-                  startRest();
-                }
-              }}
-              onUnmark={() => {
-                save.mutate(unmarkSet(workout, position, set.setNumber, now()));
-              }}
-              onChange={(patch) => {
-                save.mutate(
-                  changeSet(workout, position, set.setNumber, patch, new Date().toISOString()),
-                );
-                startRest();
-              }}
-            />
-          );
-        })}
-      </ol>
-      {exercise.sets.length >= MAX_SETS ? null : (
-        <button
-          type="button"
-          className="focus-ring border-border-strong text-muted hover:text-foreground hover:bg-foreground/5 min-h-14 w-full rounded-3xl border border-dashed text-sm font-semibold transition-colors"
-          onClick={() => {
-            save.mutate(addSet(workout, position, now(), () => crypto.randomUUID()));
+      {exercise.isSkipped ? (
+        <SkippedNotice
+          onUndo={() => {
+            save.mutate(unskipExercise(workout, position, now()));
           }}
-        >
-          {t('workouts.set.add')}
-        </button>
+        />
+      ) : (
+        <>
+          <ol className="flex flex-col gap-3">
+            {setNumbers(exercise).map((number) => {
+              const sets = exercise.sets.filter((set) => set.setNumber === number);
+              const sides = sidesOf(exercise.isUnilateral);
+              const before: BySide<PreviousSetValues> = {};
+              const source: BySide<PreviousSetValues> = {};
+              for (const side of sides) {
+                before[side] = previousSet(previous, number, side);
+                source[side] = copySource(rest.sameButton, exercise, number, before[side], side);
+              }
+              return (
+                <SetEditor
+                  key={number}
+                  exercise={exercise}
+                  sets={sets}
+                  previous={before}
+                  copySource={source}
+                  onCopy={() => {
+                    apply(
+                      copySides(workout, position, number, source, now()),
+                      number,
+                      ADVANCE_AFTER_COPY_MS,
+                    );
+                  }}
+                  onUnmark={() => {
+                    setAdvance(null);
+                    save.mutate(unmarkSet(workout, position, number, now()));
+                  }}
+                  onChange={(side: Side, patch) => {
+                    apply(
+                      changeSet(workout, position, number, patch, now(), side),
+                      number,
+                      ADVANCE_DELAY_MS,
+                    );
+                  }}
+                />
+              );
+            })}
+          </ol>
+          {setNumbers(exercise).length >= MAX_SETS ? null : (
+            <button
+              type="button"
+              className="focus-ring border-border-strong text-muted hover:text-foreground hover:bg-foreground/5 min-h-14 w-full rounded-3xl border border-dashed text-sm font-semibold transition-colors"
+              onClick={() => {
+                save.mutate(addSet(workout, position, now(), () => crypto.randomUUID()));
+              }}
+            >
+              {t('workouts.set.add')}
+            </button>
+          )}
+          <ExerciseActions
+            canSkip={canSkip(exercise)}
+            onReplace={() => {
+              setPicking(true);
+            }}
+            onSkip={() => {
+              save.mutate(skipExercise(workout, position, now()));
+            }}
+          />
+        </>
       )}
       <div className="grid grid-cols-2 gap-3">
         <button

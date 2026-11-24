@@ -8,6 +8,7 @@ import {
   addSet,
   changeSet,
   copyPrevious,
+  copySides,
   copySource,
   exerciseToResume,
   previousSet,
@@ -87,9 +88,98 @@ function workout() {
 describe('startWorkout', () => {
   it('crea las series prescritas, vacías y sin hacer', () => {
     const started = workout();
-    expect(started.exercises.map((item) => item.sets.length)).toEqual([3, 1, 1]);
+    // El unilateral lleva derecha e izquierda en cada serie (D-121).
+    expect(started.exercises.map((item) => item.sets.length)).toEqual([3, 1, 2]);
+    expect(started.exercises[2]?.sets.map((item) => item.side)).toEqual(['right', 'left']);
     expect(setCounts(started.exercises)).toEqual({ done: 0, total: 5 });
     expect(started.closedAt).toBeNull();
+  });
+});
+
+const previousValues = {
+  weightKg: 30,
+  reps: 8,
+  durationSeconds: null,
+  distanceMeters: null,
+  intensityType: null,
+  intensityValue: null,
+};
+
+describe('unilaterales (D-121)', () => {
+  const NOW = '2026-11-16T08:10:00.000Z';
+
+  it('cada lado se apunta por separado y la serie cuenta cuando están los dos', () => {
+    const right = changeSet(workout(), 3, 1, { weightKg: 30, reps: 9 }, NOW, 'right');
+    expect(right.exercises[2]?.sets.map((item) => item.isDone)).toEqual([true, false]);
+    expect(setCounts(right.exercises).done).toBe(0);
+    const both = changeSet(right, 3, 1, { weightKg: 30, reps: 8 }, NOW, 'left');
+    expect(setCounts(both.exercises).done).toBe(1);
+    expect(both.exercises[2]?.sets.map((item) => item.reps)).toEqual([9, 8]);
+  });
+
+  it('sube cada lado con su fila y su lado', () => {
+    const right = changeSet(workout(), 3, 1, { weightKg: 30, reps: 9 }, NOW, 'right');
+    const left = changeSet(right, 3, 1, { weightKg: 30, reps: 8 }, NOW, 'left');
+    const exercises = toSyncPayload(left).exercises as {
+      sets: { side: string; reps: number }[];
+    }[];
+    expect(exercises[2]?.sets.map((item) => [item.side, item.reps])).toEqual([
+      ['right', 9],
+      ['left', 8],
+    ]);
+  });
+
+  it('"Igual" copia los dos lados', () => {
+    const copied = copySides(
+      workout(),
+      3,
+      1,
+      {
+        right: { ...previousValues, reps: 9 },
+        left: { ...previousValues, reps: 8 },
+      },
+      NOW,
+    );
+    expect(copied.exercises[2]?.sets.map((item) => [item.side, item.reps, item.isDone])).toEqual([
+      ['right', 9, true],
+      ['left', 8, true],
+    ]);
+  });
+
+  it('desmarcar apaga los dos lados y "+ Serie" añade una por lado', () => {
+    const copied = copySides(workout(), 3, 1, { right: previousValues, left: previousValues }, NOW);
+    expect(setCounts(unmarkSet(copied, 3, 1, NOW).exercises).done).toBe(0);
+    const more = addSet(workout(), 3, NOW, () => crypto.randomUUID());
+    expect(more.exercises[2]?.sets.map((item) => [item.setNumber, item.side])).toEqual([
+      [1, 'right'],
+      [1, 'left'],
+      [2, 'right'],
+      [2, 'left'],
+    ]);
+  });
+
+  it('"previousSet" busca el lado pedido', () => {
+    const previous = {
+      sets: [
+        { setNumber: 1, side: 'right', ...previousValues, reps: 9 },
+        { setNumber: 1, side: 'left', ...previousValues, reps: 8 },
+      ],
+    };
+    expect(previousSet(previous, 1, 'left')?.reps).toBe(8);
+    expect(previousSet(previous, 1)).toBeNull();
+  });
+
+  it('lo guardado antes del PR 3.8 se lee sin lado', () => {
+    const parsed = activeWorkoutSchema.parse(
+      JSON.parse(
+        JSON.stringify(workout(), (key, value: unknown) =>
+          key === 'side' || key === 'isSkipped' || key === 'replacesExerciseId' ? undefined : value,
+        ),
+      ),
+    );
+    expect(parsed.exercises[0]?.sets[0]?.side).toBe('none');
+    expect(parsed.exercises[0]?.isSkipped).toBe(false);
+    expect(parsed.exercises[0]?.replacesExerciseId).toBeNull();
   });
 });
 

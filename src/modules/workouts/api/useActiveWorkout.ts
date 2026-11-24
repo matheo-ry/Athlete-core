@@ -7,6 +7,7 @@ import { useTenancy } from '@/core/tenancy';
 
 import { activeWorkoutSchema, setCounts, toSyncPayload } from '../model/active-workout';
 import type { ActiveWorkout } from '../model/active-workout';
+import { withSides } from '../model/exercise-actions';
 import { discardPayload } from './sync-workout-api';
 
 // El entreno abierto vive en el almacén del teléfono, uno por usuario y
@@ -66,10 +67,17 @@ export function useActiveWorkout() {
   const scope = useScope();
   return useQuery({
     queryKey: activeQueryKey(scope?.userId ?? '', scope?.tenantId ?? ''),
-    queryFn: () =>
-      scope === null
-        ? null
-        : getDeviceStore().read(activeKey(scope.userId, scope.tenantId), activeWorkoutSchema),
+    queryFn: async () => {
+      if (scope === null) {
+        return null;
+      }
+      const stored = await getDeviceStore().read(
+        activeKey(scope.userId, scope.tenantId),
+        activeWorkoutSchema,
+      );
+      // Un unilateral guardado antes del PR 3.8 no traía lados (D-121).
+      return stored === null ? null : withSides(stored, () => crypto.randomUUID());
+    },
     enabled: scope !== null,
     networkMode: DEVICE_ONLY,
     // Lo guardado en el teléfono no cambia por su cuenta: solo lo cambia esta pantalla.

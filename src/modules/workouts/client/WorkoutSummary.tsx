@@ -9,6 +9,7 @@ import { useExerciseOptions } from '@/modules/exercises';
 import { useDiscardActiveWorkout } from '../api/useActiveWorkout';
 import { setCounts } from '../model/active-workout';
 import type { ActiveWorkout } from '../model/active-workout';
+import { groupLabel } from '../model/superset-rounds';
 import { SetsRing } from './SetsRing';
 import { useCloseWorkout } from './useCloseWorkout';
 
@@ -38,6 +39,8 @@ export function WorkoutSummary({ workout }: { workout: ActiveWorkout }) {
       <ol aria-label={t('workouts.workout.exercisesLabel')} className="flex flex-col gap-2">
         {workout.exercises.map((exercise) => {
           const counts = setCounts([exercise]);
+          const group = groupLabel(workout, exercise.position);
+          const nameOf = (id: string) => options.byId.get(id)?.name ?? '…';
           return (
             <li key={exercise.id}>
               <Link
@@ -45,8 +48,27 @@ export function WorkoutSummary({ workout }: { workout: ActiveWorkout }) {
                 className="surface focus-ring group flex min-h-16 items-center gap-3 rounded-2xl px-3 py-2 transition-transform active:scale-[0.99]"
               >
                 <SetsRing done={counts.done} total={counts.total} />
-                <span className="min-w-0 flex-1 font-medium">
-                  {options.byId.get(exercise.exerciseId)?.name ?? '…'}
+                <span className="flex min-w-0 flex-1 flex-col">
+                  {group === null ? null : (
+                    <span className="eyebrow text-primary-readable">
+                      {t(`workouts.workout.group.${group.kind}`, {
+                        position: group.position,
+                        size: group.size,
+                      })}
+                    </span>
+                  )}
+                  {/* El título es el de la rutina; lo que se hizo en su lugar, debajo (D-122). */}
+                  <span className="font-medium">
+                    {nameOf(exercise.replacesExerciseId ?? exercise.exerciseId)}
+                  </span>
+                  {exercise.replacesExerciseId === null ? null : (
+                    <span className="text-muted text-sm">
+                      {t('workouts.workout.replacedBy', { name: nameOf(exercise.exerciseId) })}
+                    </span>
+                  )}
+                  {exercise.isSkipped ? (
+                    <span className="text-muted text-sm">{t('workouts.workout.skippedTag')}</span>
+                  ) : null}
                 </span>
                 <Icon
                   name="chevronRight"

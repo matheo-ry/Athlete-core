@@ -1,4 +1,4 @@
-import { emptySet } from './active-workout';
+import { emptySet, sidesOf } from './active-workout';
 import type { ActiveExercise, ActiveSet, ActiveWorkout, ExerciseInfo } from './active-workout';
 import { isTimedOut } from './workout-timers';
 
@@ -70,9 +70,13 @@ function newest(a: string, b: string): string {
   return Date.parse(a) >= Date.parse(b) ? a : b;
 }
 
-/** Cada serie, con su último cambio (D-124). Las que nadie tocó quedan vacías. */
+/**
+ * Cada serie, con su último cambio (D-124), por número y lado (D-121). Las que
+ * nadie tocó quedan vacías.
+ */
 function mergeSets(
   prescribedCount: number,
+  isUnilateral: boolean,
   remote: readonly RemoteSet[],
   local: readonly ActiveSet[],
   newId: () => string,
@@ -84,17 +88,19 @@ function mergeSets(
   ]);
   return [...numbers]
     .sort((a, b) => a - b)
-    .map((setNumber) => {
-      const there = remote.find((set) => set.setNumber === setNumber);
-      const here = local.find((set) => set.setNumber === setNumber);
-      if (there === undefined) {
-        return here ?? emptySet(newId(), setNumber, setNumber > prescribedCount);
-      }
-      const hereAt = here?.recordedAt ?? null;
-      return here !== undefined && hereAt !== null && newest(hereAt, there.recordedAt) === hereAt
-        ? here
-        : there;
-    });
+    .flatMap((setNumber) =>
+      sidesOf(isUnilateral).map((side) => {
+        const there = remote.find((set) => set.setNumber === setNumber && set.side === side);
+        const here = local.find((set) => set.setNumber === setNumber && set.side === side);
+        if (there === undefined) {
+          return here ?? emptySet(newId(), setNumber, setNumber > prescribedCount, side);
+        }
+        const hereAt = here?.recordedAt ?? null;
+        return here !== undefined && hereAt !== null && newest(hereAt, there.recordedAt) === hereAt
+          ? here
+          : there;
+      }),
+    );
 }
 
 export interface TakeOverInput {
@@ -116,11 +122,27 @@ export function takeOver(input: TakeOverInput): ActiveWorkout {
     .map((exercise): ActiveExercise => {
       const here = local?.exercises.find((item) => item.id === exercise.id);
       const { sets, ...rest } = exercise;
+      // Saltar y cambiar de ejercicio los decide el cambio más nuevo, como las series.
+      const newer =
+        here !== undefined && Date.parse(here.changedAt) > Date.parse(exercise.changedAt);
+      const chosen = newer ? here : exercise;
+      const info = input.exerciseInfo(chosen.exerciseId);
+      const swapped = here !== undefined && here.exerciseId !== exercise.exerciseId;
       return {
         ...rest,
-        ...input.exerciseInfo(exercise.exerciseId),
+        ...info,
+        exerciseId: chosen.exerciseId,
+        isSkipped: chosen.isSkipped,
+        replacesExerciseId: chosen.replacesExerciseId,
         changedAt: newest(exercise.changedAt, here?.changedAt ?? exercise.changedAt),
-        sets: mergeSets(exercise.prescribedSets.length, sets, here?.sets ?? [], newId),
+        // Con otro ejercicio, las series de uno y otro no se mezclan: valen las del elegido.
+        sets: mergeSets(
+          exercise.prescribedSets.length,
+          info.isUnilateral,
+          swapped && newer ? [] : sets,
+          swapped && !newer ? [] : (here?.sets ?? []),
+          newId,
+        ),
       };
     });
   const latest = exercises.reduce<ActiveExercise | undefined>(

@@ -90,7 +90,19 @@
     "next": "Siguiente",
     "loadError": "No se pudo abrir el entreno",
     "noWorkout": "No hay ningún entreno abierto",
-    "toProgram": "Ir a mi rutina"
+    "toProgram": "Ir a mi rutina",
+    "group": {
+      "superset": "Superserie · {{position}} de {{size}}",
+      "circuit": "Circuito · {{position}} de {{size}}"
+    },
+    "replace": "Cambiar ejercicio",
+    "replaceTitle": "Cambiar «{{name}}» por…",
+    "replaces": "En lugar de {{name}}",
+    "replacedBy": "Cambiado por {{name}}",
+    "skip": "Saltar ejercicio",
+    "unskip": "Deshacer",
+    "skippedNote": "Has saltado este ejercicio: no cuenta en el entreno de hoy.",
+    "skippedTag": "Saltado"
   },
   "set": {
     "label": "Serie {{number}}",
@@ -107,7 +119,11 @@
     "increase": "Subir {{field}}",
     "same": "Igual",
     "add": "+ Serie",
-    "unmark": "Desmarcar la serie {{number}}"
+    "unmark": "Desmarcar la serie {{number}}",
+    "side": {
+      "right": "Derecha",
+      "left": "Izquierda"
+    }
   },
   "finished": {
     "title": "Entreno terminado",

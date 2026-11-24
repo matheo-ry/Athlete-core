@@ -10,12 +10,13 @@ import { setCounts } from './active-workout';
  */
 export const COMPLETE_GRACE_MS = 20_000;
 
-/** Todas las series de todos los ejercicios hechas (saltar llega en el PR 3.8). */
+/**
+ * Todas las series hechas, salvo las de los ejercicios saltados (D-122). Si
+ * se saltó todo, no hay nada que cerrar solo: el entreno sigue abierto.
+ */
 export function isComplete(workout: ActiveWorkout): boolean {
-  return (
-    workout.exercises.length > 0 &&
-    workout.exercises.every((exercise) => exercise.sets.every((set) => set.isDone))
-  );
+  const toDo = workout.exercises.filter((exercise) => !exercise.isSkipped);
+  return toDo.length > 0 && toDo.every((exercise) => exercise.sets.every((set) => set.isDone));
 }
 
 /**
@@ -47,11 +48,12 @@ export interface FinishedSummary {
 /** El resumen final (D-119); récords y minilogros llegan en los PR 3.15 y 3.17. */
 export function finishedSummary(workout: ActiveWorkout): FinishedSummary {
   const elapsed = Date.parse(workout.lastChangedAt) - Date.parse(workout.startedAt);
+  const planned = workout.exercises.filter((exercise) => !exercise.isSkipped);
   return {
     minutes: Number.isFinite(elapsed) ? Math.max(0, Math.round(elapsed / 60_000)) : 0,
     setsDone: setCounts(workout.exercises).done,
-    exercisesDone: workout.exercises.filter((exercise) => exercise.sets.some((set) => set.isDone))
-      .length,
-    exercisesTotal: workout.exercises.length,
+    exercisesDone: planned.filter((exercise) => exercise.sets.some((set) => set.isDone)).length,
+    // Los saltados no cuentan: "5 de 6" no debe parecer un entreno a medias.
+    exercisesTotal: planned.length,
   };
 }

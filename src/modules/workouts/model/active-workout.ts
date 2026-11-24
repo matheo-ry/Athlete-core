@@ -47,6 +47,8 @@ const activeExerciseSchema = z.object({
   supersetGroup: z.number().int().nullable(),
   restSeconds: z.number().int().nullable(),
   coachNote: z.string().nullable(),
+  /** Nota del día que apunta el cliente al entrenar (D-122). */
+  dayNote: z.string().nullable().default(null),
   /** Lo prescrito, tal cual, para que el historial no cambie si el coach edita la rutina. */
   prescribedSets: z.array(jsonSchema),
   /** "Saltar ejercicio" (D-122): no cuenta para cerrar el entreno. */
@@ -169,6 +171,7 @@ export function startWorkout(input: StartInput): ActiveWorkout {
         supersetGroup: item.supersetGroup,
         restSeconds: item.restSeconds,
         coachNote: item.note,
+        dayNote: null,
         prescribedSets: item.sets,
         isSkipped: false,
         replacesExerciseId: null,
@@ -223,6 +226,35 @@ export function changeSet(
         : set,
     ),
   }));
+}
+
+/**
+ * Nota del día en cada ejercicio del entreno (D-122).
+ * Hasta 500 caracteres; vacío se guarda como null.
+ */
+export function setDayNote(
+  workout: ActiveWorkout,
+  position: number,
+  note: string | null,
+  now: string,
+): ActiveWorkout {
+  const trimmed = note === null ? null : note.trim();
+  const value = trimmed === '' || trimmed === null ? null : trimmed.slice(0, 500);
+  return withExercise(workout, position, now, (exercise) => ({
+    ...exercise,
+    dayNote: value,
+  }));
+}
+
+/**
+ * "¿Seguro?": avisa si el peso cambia más de un 50 % respecto a la vez anterior (D-120).
+ * Compara |actual - anterior| / anterior > 0.5. Si no hay anterior o es <= 0, no aplica.
+ */
+export function isWeightJump(currentKg: number, previousKg: number | null): boolean {
+  if (previousKg === null || previousKg <= 0) {
+    return false;
+  }
+  return Math.abs(currentKg - previousKg) / previousKg > 0.5;
 }
 
 /**
@@ -305,6 +337,7 @@ export function toSyncPayload(
       prescribed_sets: exercise.prescribedSets,
       prescribed_rest_seconds: exercise.restSeconds,
       coach_note: exercise.coachNote,
+      day_note: exercise.dayNote,
       is_skipped: exercise.isSkipped,
       replaces_exercise_id: exercise.replacesExerciseId,
       changed_at: exercise.changedAt,

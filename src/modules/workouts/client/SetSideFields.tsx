@@ -1,10 +1,12 @@
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useProfile } from '@/core/auth';
 import { DEFAULT_WEIGHT_UNIT, cn, fromKg, toKg } from '@/core/lib';
 import { useTenantSettings } from '@/core/tenancy';
+import { Button } from '@/core/ui';
 
-import { STEPS, prescribedReference } from '../model/active-workout';
+import { STEPS, isWeightJump, prescribedReference } from '../model/active-workout';
 import type {
   ActiveExercise,
   ActiveSet,
@@ -60,12 +62,36 @@ export function SetSideFields({ exercise, set, previous, onChange }: SetSideFiel
   const { t } = useTranslation();
   const unit = useProfile().data?.weightUnit ?? DEFAULT_WEIGHT_UNIT;
   const { intensityScale } = useTenantSettings();
+  const [pendingWeight, setPendingWeight] = useState<{
+    targetKg: number;
+    displayValue: number;
+  } | null>(null);
+
   // En gris, la vez anterior; si nunca lo hizo, lo prescrito (D-120).
   const reference: Reference | null = previous ?? prescribedReference(exercise, set.setNumber);
   const byWeight =
     exercise.measurement === 'weight_reps' || exercise.measurement === 'bodyweight_reps';
   const atFailure = set.intensityType === 'failure';
   const referenceKg = reference?.weightKg ?? null;
+  const previousKg = previous?.weightKg ?? null;
+
+  const handleWeightChange = (value: number) => {
+    const targetKg = toKg(value, unit);
+    const baselineKg = set.weightKg ?? previousKg;
+    if (isWeightJump(targetKg, baselineKg)) {
+      setPendingWeight({ targetKg, displayValue: value });
+    } else {
+      setPendingWeight(null);
+      onChange({ weightKg: targetKg });
+    }
+  };
+
+  const displayedWeight =
+    pendingWeight !== null
+      ? pendingWeight.displayValue
+      : set.weightKg === null
+        ? null
+        : round(fromKg(set.weightKg, unit));
 
   return (
     <div className="grid grid-cols-2 gap-2">
@@ -78,14 +104,12 @@ export function SetSideFields({ exercise, set, previous, onChange }: SetSideFiel
                 : 'workouts.set.weight',
               { unit },
             )}
-            value={set.weightKg === null ? null : round(fromKg(set.weightKg, unit))}
+            value={displayedWeight}
             placeholder={referenceKg === null ? null : round(fromKg(referenceKg, unit))}
             step={STEPS[unit]}
             max={unit === 'lb' ? 2200 : 1000}
             decimals
-            onChange={(value) => {
-              onChange({ weightKg: toKg(value, unit) });
-            }}
+            onChange={handleWeightChange}
           />
           <StepperField
             label={t('workouts.set.reps')}
@@ -98,6 +122,39 @@ export function SetSideFields({ exercise, set, previous, onChange }: SetSideFiel
               onChange({ reps: value });
             }}
           />
+          {pendingWeight !== null && previousKg !== null && (
+            <div
+              role="alert"
+              className="col-span-2 flex flex-col gap-2 rounded-2xl border border-warning/40 bg-warning-soft p-3 text-sm animate-rise"
+            >
+              <p className="font-medium text-foreground">
+                {t('workouts.set.surePrompt', {
+                  previous: `${round(fromKg(previousKg, unit))} ${unit}`,
+                })}
+              </p>
+              <div className="flex gap-2">
+                <Button
+                  size="md"
+                  variant="secondary"
+                  onClick={() => {
+                    onChange({ weightKg: pendingWeight.targetKg });
+                    setPendingWeight(null);
+                  }}
+                >
+                  {t('workouts.set.sureYes')}
+                </Button>
+                <Button
+                  size="md"
+                  variant="ghost"
+                  onClick={() => {
+                    setPendingWeight(null);
+                  }}
+                >
+                  {t('workouts.set.sureCancel')}
+                </Button>
+              </div>
+            </div>
+          )}
         </>
       ) : exercise.measurement === 'time' ? (
         <StepperField

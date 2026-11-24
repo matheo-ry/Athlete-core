@@ -164,7 +164,9 @@ export function calculateLevel(totalWorkouts: number): LevelInfo {
 /** Comprueba si un entreno cuenta como completado. */
 function isWorkoutDone(w: RawWorkout): boolean {
   if (w.closed_at !== null) return true;
-  return w.workout_exercises.some((e) => !e.is_skipped && e.workout_sets.some((s) => s.is_done));
+  return w.workout_exercises.some(
+    (e) => !e.is_skipped && e.workout_sets.some((s) => s.is_done && !s.is_warmup),
+  );
 }
 
 /**
@@ -345,7 +347,7 @@ export function calculateRecordsAndMinilogros(workouts: readonly RawWorkout[]): 
       }
 
       for (const set of wex.workout_sets) {
-        if (!set.is_done) continue;
+        if (!set.is_done || set.is_warmup) continue;
 
         // Comprobación de récord personal
         const currentRecords = computeExerciseRecords(history);

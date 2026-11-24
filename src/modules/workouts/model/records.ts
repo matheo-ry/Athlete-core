@@ -13,6 +13,7 @@ export interface ExerciseRecords {
 
 export interface SetWithRecordInput extends RmCalculationInput {
   isDone?: boolean | null;
+  isWarmup?: boolean | null;
 }
 
 /**
@@ -23,7 +24,7 @@ export function computeExerciseRecords(sets: readonly SetWithRecordInput[]): Exe
   let maxRm: number | null = null;
 
   for (const set of sets) {
-    if (set.isDone === false) {
+    if (set.isDone === false || set.isWarmup === true) {
       continue;
     }
 
@@ -58,7 +59,7 @@ export function checkSetRecord(
   set: SetWithRecordInput,
   previousRecords: ExerciseRecords,
 ): SetRecordCheck {
-  if (set.isDone === false) {
+  if (set.isDone === false || set.isWarmup === true) {
     return {
       isMaxWeightRecord: false,
       isMaxRmRecord: false,

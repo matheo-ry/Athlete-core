@@ -100,7 +100,7 @@ export async function fetchClientHistoryWorkouts(
         prescribed_sets, prescribed_rest_seconds, coach_note, day_note, is_skipped, changed_at,
         workout_sets (
           id, workout_exercise_id, set_number, side, weight_kg, reps, duration_seconds,
-          distance_meters, intensity_type, intensity_value, is_done, is_extra, recorded_at
+          distance_meters, intensity_type, intensity_value, is_done, is_extra, is_warmup, recorded_at
         )
       )
     `,

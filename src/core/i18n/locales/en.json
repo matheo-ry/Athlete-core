@@ -337,6 +337,7 @@
       "autostart": "Start the rest timer automatically",
       "sound": "Sound when rest ends",
       "vibration": "Vibration when rest ends",
+      "warmupSets": "Warm-up sets",
       "sameLabel": "What “Same” copies",
       "samePrevious": "Last time's set",
       "sameToday": "Previous set of today"

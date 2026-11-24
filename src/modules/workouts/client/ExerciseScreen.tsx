@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, useNavigate } from 'react-router';
 
+import { useProfile } from '@/core/auth';
 import { cn } from '@/core/lib';
 import { useHealthConsent, useHealthConsentPrompt } from '@/core/tenancy';
 import { Icon, buttonClassName } from '@/core/ui';
@@ -14,10 +15,13 @@ import { usePreviousPerformance } from '../api/usePreviousPerformance';
 import {
   MAX_SETS,
   addSet,
+  addWarmupSet,
   changeSet,
+  changeWarmupSet,
   copySides,
   copySource,
   previousSet,
+  removeWarmupSet,
   setCounts,
   setDayNote,
   setNumbers,
@@ -36,6 +40,7 @@ import {
 import { ExerciseActions, SkippedNotice } from './ExerciseActions';
 import { SetEditor } from './SetEditor';
 import type { BySide } from './SetEditor';
+import { WarmupSection } from './WarmupSection';
 
 /** Lo que hay que deslizar, en píxeles, para pasar de ejercicio. */
 const SWIPE = 60;
@@ -76,6 +81,7 @@ export function ExerciseScreen({
   const { ensure } = useHealthConsentPrompt();
   const { isGranted } = useHealthConsent();
   const { setups, saveSetup } = useExerciseSetups();
+  const warmupSetsEnabled = useProfile().data?.warmupSetsEnabled ?? false;
 
   const instructions = options.byId.get(exercise?.exerciseId ?? '')?.instructions ?? null;
   const currentSetup = setups[exercise?.exerciseId ?? ''] ?? '';
@@ -293,9 +299,39 @@ export function ExerciseScreen({
         />
       ) : (
         <>
+          <WarmupSection
+            exercise={exercise}
+            previous={previous}
+            enabled={warmupSetsEnabled}
+            onAdd={() => {
+              save.mutate(addWarmupSet(workout, position, now(), () => crypto.randomUUID()));
+            }}
+            onChange={(setNumber, patch) => {
+              save.mutate(changeWarmupSet(workout, position, setNumber, patch, now()));
+            }}
+            onCopy={(setNumber, prev) => {
+              save.mutate(
+                changeWarmupSet(
+                  workout,
+                  position,
+                  setNumber,
+                  {
+                    weightKg: prev.weightKg,
+                    reps: prev.reps,
+                    durationSeconds: prev.durationSeconds,
+                    distanceMeters: prev.distanceMeters,
+                  },
+                  now(),
+                ),
+              );
+            }}
+            onRemove={(setNumber) => {
+              save.mutate(removeWarmupSet(workout, position, setNumber, now()));
+            }}
+          />
           <ol className="flex flex-col gap-3">
             {setNumbers(exercise).map((number) => {
-              const sets = exercise.sets.filter((set) => set.setNumber === number);
+              const sets = exercise.sets.filter((set) => !set.isWarmup && set.setNumber === number);
               const sides = sidesOf(exercise.isUnilateral);
               const before: BySide<PreviousSetValues> = {};
               const source: BySide<PreviousSetValues> = {};

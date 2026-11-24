@@ -398,4 +398,77 @@ describe('groupWorkoutsByProgram (Criterio 1)', () => {
     expect(g1.programName).toBe('Rutina Antigua');
     expect(g1.isCurrent).toBe(false);
   });
+
+  it('excluye las series de calentamiento del historial textual y de los récords (D-ideas-2)', () => {
+    const workouts: RawWorkout[] = [
+      {
+        id: 'w-warmup',
+        performed_on: '2026-11-24',
+        started_at: '2026-11-24T10:00:00Z',
+        closed_at: '2026-11-24T11:00:00Z',
+        day_number: 1,
+        program_id: 'prog-curr',
+        programs: { id: 'prog-curr', name: 'Fuerza' },
+        workout_exercises: [
+          {
+            id: 'we-1',
+            exercise_id: 'ex-bench',
+            replaces_exercise_id: null,
+            day_note: null,
+            is_skipped: false,
+            position: 1,
+            workout_sets: [
+              {
+                id: 's-w1',
+                set_number: 1,
+                side: 'none',
+                weight_kg: 150,
+                reps: 10,
+                duration_seconds: null,
+                distance_meters: null,
+                intensity_type: null,
+                intensity_value: null,
+                is_warmup: true,
+                is_done: true,
+                recorded_at: '2026-11-24T10:02:00Z',
+              },
+              {
+                id: 's-1',
+                set_number: 1,
+                side: 'none',
+                weight_kg: 80,
+                reps: 8,
+                duration_seconds: null,
+                distance_meters: null,
+                intensity_type: 'rir',
+                intensity_value: 2,
+                is_warmup: false,
+                is_done: true,
+                recorded_at: '2026-11-24T10:05:00Z',
+              },
+            ],
+          },
+        ],
+      },
+    ];
+
+    const exMap = new Map([
+      [
+        'ex-bench',
+        { id: 'ex-bench', name: 'Press banca', measurement: 'weight_reps', isUnilateral: false },
+      ],
+    ]);
+
+    const groups = groupWorkoutsByProgram(
+      workouts,
+      exMap,
+      'prog-curr',
+      'es',
+      'kg',
+      (n) => `DIA ${n}`,
+    );
+    const ex = groups[0]?.exercises[0];
+    expect(ex?.history[0]?.fullText).toBe('DIA 1: 80×8(2)');
+    expect(ex?.records.maxWeightKg).toBe(80);
+  });
 });

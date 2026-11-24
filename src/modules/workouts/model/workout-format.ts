@@ -48,12 +48,26 @@ export function formatSetExcel(set: WorkoutSetRecord): string {
  * Ej: "45×8(1) / 45×7(1)" o para unilaterales "D: 30×9(1) / I: 30×8(1)".
  */
 export function formatExerciseSetsExcel(sets: readonly WorkoutSetRecord[]): string {
-  const doneSets = sets.filter((s) => s.is_done);
+  const doneSets = sets.filter((s) => s.is_done && !s.is_warmup);
   if (doneSets.length === 0) {
     return '—';
   }
 
   return doneSets.map(formatSetExcel).join(' / ');
+}
+
+/**
+ * Formatea las series de calentamiento hechas para la vista del coach (D-ideas-2):
+ * Ej: "C1 20×10 / C2 40×6".
+ */
+export function formatWarmupSets(sets: readonly WorkoutSetRecord[], prefix = 'C'): string | null {
+  const warmups = sets
+    .filter((s) => s.is_done && s.is_warmup)
+    .sort((a, b) => a.set_number - b.set_number);
+  if (warmups.length === 0) {
+    return null;
+  }
+  return warmups.map((s) => `${prefix}${s.set_number} ${formatSetExcel(s)}`).join(' / ');
 }
 
 /**
@@ -97,8 +111,8 @@ export function compareExercisePerformance(
     return null;
   }
 
-  const currentDone = currentSets.filter((s) => s.is_done);
-  const previousDone = previousSets.filter((s) => s.is_done);
+  const currentDone = currentSets.filter((s) => s.is_done && !s.is_warmup);
+  const previousDone = previousSets.filter((s) => s.is_done && !s.is_warmup);
 
   if (currentDone.length === 0 || previousDone.length === 0) {
     return null;
@@ -174,7 +188,7 @@ export function findPreviousExerciseSets(
       const match = w.workout_exercises.find(
         (we) => we.exercise_id === exerciseId && !we.is_skipped,
       );
-      if (match && match.workout_sets.some((s) => s.is_done)) {
+      if (match && match.workout_sets.some((s) => s.is_done && !s.is_warmup)) {
         return match.workout_sets;
       }
     }
@@ -183,7 +197,7 @@ export function findPreviousExerciseSets(
   // 2. Cualquier día anterior
   for (const w of olderWorkouts) {
     const match = w.workout_exercises.find((we) => we.exercise_id === exerciseId && !we.is_skipped);
-    if (match && match.workout_sets.some((s) => s.is_done)) {
+    if (match && match.workout_sets.some((s) => s.is_done && !s.is_warmup)) {
       return match.workout_sets;
     }
   }

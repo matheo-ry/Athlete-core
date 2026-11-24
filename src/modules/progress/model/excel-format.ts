@@ -131,7 +131,7 @@ export function formatWorkoutExerciseSets(
   }
 
   const doneSets = ex.workout_sets
-    .filter((s) => s.is_done)
+    .filter((s) => s.is_done && !s.is_warmup)
     .sort((a, b) => a.set_number - b.set_number);
 
   if (doneSets.length === 0) {

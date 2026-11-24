@@ -127,6 +127,7 @@ export function buildCorrectionSyncPayload(
               intensity_value: set.intensity_value,
               is_done: set.is_done,
               is_extra: set.is_extra,
+              is_warmup: set.is_warmup ?? false,
               recorded_at: now,
             })),
     })),

@@ -298,6 +298,9 @@ export function createSupabaseAuthService(): AuthService {
           ...(patch.restSound === undefined ? {} : { rest_sound: patch.restSound }),
           ...(patch.restVibration === undefined ? {} : { rest_vibration: patch.restVibration }),
           ...(patch.sameButton === undefined ? {} : { same_button: patch.sameButton }),
+          ...(patch.warmupSetsEnabled === undefined
+            ? {}
+            : { warmup_sets_enabled: patch.warmupSetsEnabled }),
         })
         .eq('user_id', userData.user.id);
       if (error !== null) {

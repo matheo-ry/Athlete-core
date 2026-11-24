@@ -103,6 +103,13 @@ function Settings({
           onChange({ restVibration });
         }}
       />
+      <Toggle
+        label={t('app.training.warmupSets')}
+        value={profile.warmupSetsEnabled}
+        onChange={(warmupSetsEnabled) => {
+          onChange({ warmupSetsEnabled });
+        }}
+      />
       <div role="group" aria-label={t('app.training.sameLabel')} className="flex flex-col gap-1.5">
         <span className="text-sm font-medium">{t('app.training.sameLabel')}</span>
         <div className="bg-foreground/6 grid gap-1 rounded-2xl p-1">

@@ -337,6 +337,7 @@
       "autostart": "Arrancar el descanso solo",
       "sound": "Sonido al acabar el descanso",
       "vibration": "Vibración al acabar el descanso",
+      "warmupSets": "Series de calentamiento",
       "sameLabel": "Qué copia «Igual»",
       "samePrevious": "La serie de la vez anterior",
       "sameToday": "La serie anterior de hoy"

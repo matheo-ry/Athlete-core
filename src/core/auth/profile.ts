@@ -15,6 +15,7 @@ export interface UserProfile {
   restSound: boolean;
   restVibration: boolean;
   sameButton: SameButtonMode;
+  warmupSetsEnabled: boolean;
 }
 
 /** Qué copia "Igual" (D-120): la vez anterior, o en las series 2+ la serie anterior de hoy. */
@@ -28,11 +29,12 @@ export const DEFAULT_TRAINING_SETTINGS = {
   restSound: true,
   restVibration: true,
   sameButton: 'previous',
+  warmupSetsEnabled: false,
 } as const satisfies Partial<UserProfile>;
 
 /** Las columnas de `profiles` que lee el perfil. */
 export const PROFILE_COLUMNS =
-  'display_name, locale, weight_unit, default_rest_seconds, rest_autostart, rest_sound, rest_vibration, same_button';
+  'display_name, locale, weight_unit, default_rest_seconds, rest_autostart, rest_sound, rest_vibration, same_button, warmup_sets_enabled';
 
 export type ProfilePatch = Partial<UserProfile>;
 
@@ -45,6 +47,7 @@ const profileRowSchema = z.object({
   rest_sound: z.boolean(),
   rest_vibration: z.boolean(),
   same_button: z.enum(SAME_BUTTON_MODES),
+  warmup_sets_enabled: z.boolean().default(false),
 });
 
 /** La fila de `profiles`, validada (es un dato de fuera, AGENTS.md §4). */
@@ -59,5 +62,6 @@ export function parseProfile(row: unknown): UserProfile {
     restSound: parsed.rest_sound,
     restVibration: parsed.rest_vibration,
     sameButton: parsed.same_button,
+    warmupSetsEnabled: parsed.warmup_sets_enabled,
   };
 }

@@ -475,6 +475,7 @@ export type Database = {
           terms_accepted_at: string | null;
           terms_version: string | null;
           user_id: string;
+          warmup_sets_enabled: boolean;
           weight_unit: string;
         };
         ComputedFields: never;
@@ -490,6 +491,7 @@ export type Database = {
           terms_accepted_at?: string | null;
           terms_version?: string | null;
           user_id: string;
+          warmup_sets_enabled?: boolean;
           weight_unit?: string;
         };
         Update: {
@@ -504,6 +506,7 @@ export type Database = {
           terms_accepted_at?: string | null;
           terms_version?: string | null;
           user_id?: string;
+          warmup_sets_enabled?: boolean;
           weight_unit?: string;
         };
         Relationships: [];
@@ -1241,6 +1244,7 @@ export type Database = {
           intensity_value: number | null;
           is_done: boolean;
           is_extra: boolean;
+          is_warmup: boolean;
           recorded_at: string;
           reps: number | null;
           set_number: number;
@@ -1259,6 +1263,7 @@ export type Database = {
           intensity_value?: number | null;
           is_done?: boolean;
           is_extra?: boolean;
+          is_warmup?: boolean;
           recorded_at: string;
           reps?: number | null;
           set_number: number;
@@ -1276,6 +1281,7 @@ export type Database = {
           intensity_value?: number | null;
           is_done?: boolean;
           is_extra?: boolean;
+          is_warmup?: boolean;
           recorded_at?: string;
           reps?: number | null;
           set_number?: number;

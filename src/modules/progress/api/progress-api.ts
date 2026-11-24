@@ -9,7 +9,7 @@ const WORKOUT_COLUMNS =
   'programs(id, name), ' +
   'workout_exercises(' +
   'id, exercise_id, replaces_exercise_id, day_note, is_skipped, position, ' +
-  'workout_sets(id, set_number, side, weight_kg, reps, duration_seconds, distance_meters, intensity_type, intensity_value, is_done, recorded_at)' +
+  'workout_sets(id, set_number, side, weight_kg, reps, duration_seconds, distance_meters, intensity_type, intensity_value, is_warmup, is_done, recorded_at)' +
   ')';
 
 /**

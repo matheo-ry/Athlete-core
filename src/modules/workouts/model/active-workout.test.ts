@@ -4,14 +4,19 @@ import type { ProgramBlock, ProgramDay } from '@/modules/programs';
 
 import {
   MAX_SETS,
+  MAX_WARMUP_SETS,
   activeWorkoutSchema,
   addSet,
+  addWarmupSet,
   changeSet,
+  changeWarmupSet,
   copyPrevious,
   copySides,
   copySource,
   exerciseToResume,
   previousSet,
+  previousWarmupSet,
+  removeWarmupSet,
   unmarkSet,
   finishWorkout,
   isWeightJump,
@@ -22,6 +27,7 @@ import {
   startWorkout,
   stepValue,
   toSyncPayload,
+  warmupSets,
 } from './active-workout';
 
 const prescribed = {
@@ -435,5 +441,93 @@ describe('isWeightJump (D-120)', () => {
     expect(isWeightJump(50, null)).toBe(false);
     expect(isWeightJump(50, 0)).toBe(false);
     expect(isWeightJump(50, -5)).toBe(false);
+  });
+});
+
+describe('series de calentamiento (PR 3.19, D-ideas-2)', () => {
+  it('añade hasta un máximo de 5 series de calentamiento con side=none incluso en unilaterales', () => {
+    let current = workout();
+    let seq = 1;
+    for (let i = 0; i < 7; i += 1) {
+      current = addWarmupSet(current, 3, '2026-11-25T10:00:00.000Z', () => `w-${seq++}`);
+    }
+    const warmups = warmupSets(current.exercises[2]!);
+    expect(warmups).toHaveLength(MAX_WARMUP_SETS);
+    expect(warmups.map((s) => [s.setNumber, s.side, s.isWarmup])).toEqual([
+      [1, 'none', true],
+      [2, 'none', true],
+      [3, 'none', true],
+      [4, 'none', true],
+      [5, 'none', true],
+    ]);
+  });
+
+  it('no cuentan en setCounts, se serializan con is_warmup=true y conviven con las efectivas', () => {
+    let current = addWarmupSet(workout(), 1, '2026-11-25T10:00:00.000Z', () => 'w-1');
+    current = changeWarmupSet(
+      current,
+      1,
+      1,
+      { weightKg: 20, reps: 12 },
+      '2026-11-25T10:01:00.000Z',
+    );
+    // Solo con calentamiento, las series efectivas hechas siguen en 0
+    expect(setCounts(current.exercises).done).toBe(0);
+
+    const payload = toSyncPayload(current);
+    const exercises = payload.exercises as Array<{ sets: Array<Record<string, unknown>> }>;
+    expect(exercises[0]?.sets[0]).toMatchObject({
+      set_number: 1,
+      side: 'none',
+      weight_kg: 20,
+      reps: 12,
+      is_warmup: true,
+      is_extra: false,
+      intensity_type: null,
+      intensity_value: null,
+    });
+  });
+
+  it('quita calentamientos no tocados y renumera, o desmarca los ya tocados', () => {
+    let current = addWarmupSet(workout(), 1, '2026-11-25T10:00:00.000Z', () => 'w-1');
+    current = addWarmupSet(current, 1, '2026-11-25T10:00:00.000Z', () => 'w-2');
+    current = removeWarmupSet(current, 1, 1, '2026-11-25T10:01:00.000Z');
+    expect(warmupSets(current.exercises[0]!)).toHaveLength(1);
+    expect(warmupSets(current.exercises[0]!)[0]?.setNumber).toBe(1);
+
+    current = changeWarmupSet(current, 1, 1, { weightKg: 30, reps: 8 }, '2026-11-25T10:02:00.000Z');
+    current = removeWarmupSet(current, 1, 1, '2026-11-25T10:03:00.000Z');
+    expect(warmupSets(current.exercises[0]!)[0]?.isDone).toBe(false);
+  });
+
+  it('previousSet ignora calentamientos y previousWarmupSet los recupera por número', () => {
+    const prev = {
+      sets: [
+        {
+          setNumber: 1,
+          side: 'none',
+          isWarmup: true,
+          weightKg: 20,
+          reps: 10,
+          durationSeconds: null,
+          distanceMeters: null,
+          intensityType: null,
+          intensityValue: null,
+        },
+        {
+          setNumber: 1,
+          side: 'none',
+          isWarmup: false,
+          weightKg: 60,
+          reps: 8,
+          durationSeconds: null,
+          distanceMeters: null,
+          intensityType: 'rir' as const,
+          intensityValue: 2,
+        },
+      ],
+    };
+    expect(previousSet(prev, 1, 'none')?.weightKg).toBe(60);
+    expect(previousWarmupSet(prev, 1)?.weightKg).toBe(20);
   });
 });

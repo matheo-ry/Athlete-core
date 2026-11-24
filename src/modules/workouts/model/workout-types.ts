@@ -11,12 +11,25 @@ export const workoutSetSchema = z.object({
   distance_meters: z.number().int().nullable(),
   intensity_type: z.string().nullable(),
   intensity_value: z.number().nullable(),
+  is_warmup: z.boolean().optional(),
   is_done: z.boolean(),
   is_extra: z.boolean(),
   recorded_at: z.string(),
 });
 
 export type WorkoutSetRecord = z.infer<typeof workoutSetSchema>;
+
+/** Filtra las series efectivas (excluye las de calentamiento, D-ideas-2). */
+export function effectiveWorkoutSets<T extends { is_warmup?: boolean }>(sets: readonly T[]): T[] {
+  return sets.filter((set) => !set.is_warmup);
+}
+
+/** Filtra las series de calentamiento ordenadas por número de serie (D-ideas-2). */
+export function warmupWorkoutSets<T extends { is_warmup?: boolean; set_number: number }>(
+  sets: readonly T[],
+): T[] {
+  return sets.filter((set) => Boolean(set.is_warmup)).sort((a, b) => a.set_number - b.set_number);
+}
 
 export const workoutExerciseSchema = z.object({
   id: z.string().uuid(),

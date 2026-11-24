@@ -43,5 +43,14 @@ export const progressModule = defineModule({
         })),
     },
   ],
-  homeCards: { coach: [], client: [] },
+  homeCards: {
+    coach: [],
+    client: [
+      {
+        key: 'progress-streak',
+        order: 15,
+        lazy: () => import('./client/StreakCard').then((card) => ({ Component: card.StreakCard })),
+      },
+    ],
+  },
 });

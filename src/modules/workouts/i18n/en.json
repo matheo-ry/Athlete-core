@@ -81,6 +81,9 @@
   "workout": {
     "title": "Today's workout",
     "totalSets": "{{done}}/{{total}} sets",
+    "miniAchievementsCount": "{{count}} mini-achievements",
+    "miniAchievementsCount_one": "1 mini-achievement",
+    "miniAchievementsCount_other": "{{count}} mini-achievements",
     "exercisesLabel": "Workout exercises",
     "setsDone": "{{done}} of {{total}} sets done",
     "finish": "Finish workout",
@@ -91,12 +94,26 @@
     "next": "Next",
     "loadError": "Could not open the workout",
     "noWorkout": "No open workout",
-    "toProgram": "Go to my program"
+    "toProgram": "Go to my program",
+    "group": {
+      "superset": "Superset · {{position}} of {{size}}",
+      "circuit": "Circuit · {{position}} of {{size}}"
+    },
+    "replace": "Change exercise",
+    "replaceTitle": "Change “{{name}}” for…",
+    "replaces": "Instead of {{name}}",
+    "replacedBy": "Replaced by {{name}}",
+    "skip": "Skip exercise",
+    "unskip": "Undo",
+    "skippedNote": "You skipped this exercise: it does not count in today’s workout.",
+    "skippedTag": "Skipped"
   },
   "set": {
     "label": "Set {{number}}",
+    "miniAchievement": "Mini-achievement",
     "weight": "Weight ({{unit}})",
     "extraLoad": "Added load ({{unit}})",
+    "ballastTotal": "Added load {{ballast}} · Total {{total}}",
     "reps": "Reps",
     "seconds": "Seconds",
     "meters": "Meters",
@@ -108,7 +125,25 @@
     "increase": "Increase {{field}}",
     "same": "Same",
     "add": "+ Set",
-    "unmark": "Unmark set {{number}}"
+    "unmark": "Unmark set {{number}}",
+    "side": {
+      "right": "Right",
+      "left": "Left"
+    },
+    "surePrompt": "Are you sure? Last time was {{previous}}",
+    "sureYes": "Yes",
+    "sureCancel": "Cancel"
+  },
+  "exercise": {
+    "instructions": "Instructions",
+    "coachNote": "Coach's note",
+    "setup": "Set-up",
+    "setupPlaceholder": "Seat 2 · Grip line 3",
+    "setupHelp": "Shared across routines",
+    "dayNote": "Day note",
+    "dayNotePlaceholder": "Write a note for this exercise...",
+    "dayNoteLimit": "{{count}}/500",
+    "dayNoteNoConsent": "Health data consent is required to save day notes."
   },
   "finished": {
     "title": "Workout finished",
@@ -116,6 +151,7 @@
     "duration": "Duration",
     "sets": "Sets done",
     "exercises": "Exercises",
+    "miniAchievements": "Mini-achievements",
     "exercisesValue": "{{done}} of {{total}}",
     "done": "Back to home",
     "allDone": "All sets done. The workout will close by itself in a few seconds.",
@@ -139,6 +175,51 @@
     "continueHere": "Continue here",
     "error": "Couldn't continue here. Please try again."
   },
+  "body": {
+    "title": "Body",
+    "eyebrow": "Weight and measurements",
+    "tabsLabel": "What to log",
+    "tabWeight": "Weight",
+    "tabMeasurements": "Measurements",
+    "date": "Date",
+    "save": "Save",
+    "saving": "Saving…",
+    "history": "History",
+    "delete": "Delete",
+    "deleteLabel": "Delete the entry from {{date}}",
+    "deleteAsk": "Delete?",
+    "deleteYes": "Yes, delete",
+    "deleteNo": "No",
+    "deleted": "Deleted.",
+    "weight": {
+      "field": "Weight ({{unit}})",
+      "last": "{{weight}} · logged on {{date}}",
+      "none": "You haven't logged your weight yet.",
+      "add": "Log weight",
+      "update": "Update",
+      "saved": "Weight logged.",
+      "historyEmpty": "No weights logged yet.",
+      "invalid": "Enter your weight, for example 82.5.",
+      "range": "Weight has to be between {{min}} and {{max}} {{unit}}."
+    },
+    "measure": {
+      "which": "Measurement",
+      "field": "Value ({{unit}})",
+      "saved": "Measurement logged.",
+      "none": "You haven't logged any measurement yet.",
+      "invalid": "Enter the measurement, for example 82.5.",
+      "range": "The measurement has to be above 0 and at most {{max}} {{unit}}."
+    },
+    "card": {
+      "title": "Body weight",
+      "measurements": "Measurements"
+    },
+    "errors": {
+      "dateInvalid": "Pick a valid day.",
+      "dateFuture": "You can't log a day that hasn't come yet.",
+      "noConsent": "Without your health data permission this can't be saved."
+    }
+  },
   "rest": {
     "label": "Rest timer",
     "pause": "Pause",
@@ -150,5 +231,21 @@
     "minus": "Subtract {{seconds}} seconds",
     "notificationTitle": "Rest over",
     "notificationBody": "Time for your next set"
+  },
+  "nav": {
+    "clientHistory": "My workouts"
+  },
+  "history": {
+    "title": "My workouts",
+    "empty": "No workouts recorded yet",
+    "correct": "Edit",
+    "correctTitle": "Edit workout",
+    "pendingUpload": "Pending upload",
+    "save": "Save changes",
+    "cancel": "Cancel",
+    "dayNote": "Day note",
+    "weight": "Weight",
+    "reps": "Reps",
+    "intensity": "RIR / Intensity"
   }
 }

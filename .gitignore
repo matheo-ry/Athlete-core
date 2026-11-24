@@ -48,4 +48,5 @@ ios/DerivedData/
 Thumbs.db
 *.log
 .idea/
+.claude/
 *.swp

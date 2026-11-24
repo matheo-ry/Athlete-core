@@ -8,13 +8,16 @@ import {
   addSet,
   changeSet,
   copyPrevious,
+  copySides,
   copySource,
   exerciseToResume,
   previousSet,
   unmarkSet,
   finishWorkout,
+  isWeightJump,
   prescribedReference,
   setCounts,
+  setDayNote,
   startWorkout,
   stepValue,
   toSyncPayload,
@@ -87,9 +90,98 @@ function workout() {
 describe('startWorkout', () => {
   it('crea las series prescritas, vacías y sin hacer', () => {
     const started = workout();
-    expect(started.exercises.map((item) => item.sets.length)).toEqual([3, 1, 1]);
+    // El unilateral lleva derecha e izquierda en cada serie (D-121).
+    expect(started.exercises.map((item) => item.sets.length)).toEqual([3, 1, 2]);
+    expect(started.exercises[2]?.sets.map((item) => item.side)).toEqual(['right', 'left']);
     expect(setCounts(started.exercises)).toEqual({ done: 0, total: 5 });
     expect(started.closedAt).toBeNull();
+  });
+});
+
+const previousValues = {
+  weightKg: 30,
+  reps: 8,
+  durationSeconds: null,
+  distanceMeters: null,
+  intensityType: null,
+  intensityValue: null,
+};
+
+describe('unilaterales (D-121)', () => {
+  const NOW = '2026-11-16T08:10:00.000Z';
+
+  it('cada lado se apunta por separado y la serie cuenta cuando están los dos', () => {
+    const right = changeSet(workout(), 3, 1, { weightKg: 30, reps: 9 }, NOW, 'right');
+    expect(right.exercises[2]?.sets.map((item) => item.isDone)).toEqual([true, false]);
+    expect(setCounts(right.exercises).done).toBe(0);
+    const both = changeSet(right, 3, 1, { weightKg: 30, reps: 8 }, NOW, 'left');
+    expect(setCounts(both.exercises).done).toBe(1);
+    expect(both.exercises[2]?.sets.map((item) => item.reps)).toEqual([9, 8]);
+  });
+
+  it('sube cada lado con su fila y su lado', () => {
+    const right = changeSet(workout(), 3, 1, { weightKg: 30, reps: 9 }, NOW, 'right');
+    const left = changeSet(right, 3, 1, { weightKg: 30, reps: 8 }, NOW, 'left');
+    const exercises = toSyncPayload(left).exercises as {
+      sets: { side: string; reps: number }[];
+    }[];
+    expect(exercises[2]?.sets.map((item) => [item.side, item.reps])).toEqual([
+      ['right', 9],
+      ['left', 8],
+    ]);
+  });
+
+  it('"Igual" copia los dos lados', () => {
+    const copied = copySides(
+      workout(),
+      3,
+      1,
+      {
+        right: { ...previousValues, reps: 9 },
+        left: { ...previousValues, reps: 8 },
+      },
+      NOW,
+    );
+    expect(copied.exercises[2]?.sets.map((item) => [item.side, item.reps, item.isDone])).toEqual([
+      ['right', 9, true],
+      ['left', 8, true],
+    ]);
+  });
+
+  it('desmarcar apaga los dos lados y "+ Serie" añade una por lado', () => {
+    const copied = copySides(workout(), 3, 1, { right: previousValues, left: previousValues }, NOW);
+    expect(setCounts(unmarkSet(copied, 3, 1, NOW).exercises).done).toBe(0);
+    const more = addSet(workout(), 3, NOW, () => crypto.randomUUID());
+    expect(more.exercises[2]?.sets.map((item) => [item.setNumber, item.side])).toEqual([
+      [1, 'right'],
+      [1, 'left'],
+      [2, 'right'],
+      [2, 'left'],
+    ]);
+  });
+
+  it('"previousSet" busca el lado pedido', () => {
+    const previous = {
+      sets: [
+        { setNumber: 1, side: 'right', ...previousValues, reps: 9 },
+        { setNumber: 1, side: 'left', ...previousValues, reps: 8 },
+      ],
+    };
+    expect(previousSet(previous, 1, 'left')?.reps).toBe(8);
+    expect(previousSet(previous, 1)).toBeNull();
+  });
+
+  it('lo guardado antes del PR 3.8 se lee sin lado', () => {
+    const parsed = activeWorkoutSchema.parse(
+      JSON.parse(
+        JSON.stringify(workout(), (key, value: unknown) =>
+          key === 'side' || key === 'isSkipped' || key === 'replacesExerciseId' ? undefined : value,
+        ),
+      ),
+    );
+    expect(parsed.exercises[0]?.sets[0]?.side).toBe('none');
+    expect(parsed.exercises[0]?.isSkipped).toBe(false);
+    expect(parsed.exercises[0]?.replacesExerciseId).toBeNull();
   });
 });
 
@@ -266,5 +358,59 @@ describe('"Igual" según el ajuste del Perfil (D-120)', () => {
       throw new Error('missing exercise');
     }
     expect(copySource('previous_then_today', exercise, 2, lastTime)).toBeNull();
+  });
+});
+
+describe('setDayNote (D-122)', () => {
+  it('guarda la nota del día en el ejercicio indicado y actualiza la fecha de cambio', () => {
+    const initial = workout();
+    const updated = setDayNote(initial, 1, 'Dolor de hombro', '2026-11-20T10:00:00.000Z');
+    expect(updated.exercises[0]?.dayNote).toBe('Dolor de hombro');
+    expect(updated.lastChangedAt).toBe('2026-11-20T10:00:00.000Z');
+    expect(updated.lastExercise).toBe(1);
+  });
+
+  it('recorta espacios y limita a 500 caracteres', () => {
+    const initial = workout();
+    const longText = 'a'.repeat(600);
+    const updated = setDayNote(initial, 1, `  ${longText}  `, '2026-11-20T10:00:00.000Z');
+    expect(updated.exercises[0]?.dayNote).toHaveLength(500);
+  });
+
+  it('un texto vacío o null se guarda como null', () => {
+    const initial = setDayNote(workout(), 1, 'Nota previa', '2026-11-20T10:00:00.000Z');
+    const cleared = setDayNote(initial, 1, '   ', '2026-11-20T10:05:00.000Z');
+    expect(cleared.exercises[0]?.dayNote).toBeNull();
+  });
+
+  it('se serializa en toSyncPayload como day_note', () => {
+    const updated = setDayNote(workout(), 1, 'Molestia leve', '2026-11-20T10:00:00.000Z');
+    const payload = toSyncPayload(updated);
+    const exercises = payload.exercises as Array<Record<string, unknown>>;
+    expect(exercises[0]?.day_note).toBe('Molestia leve');
+  });
+});
+
+describe('isWeightJump (D-120)', () => {
+  it('detecta saltos mayores al 50 % respecto a la vez anterior', () => {
+    // 35 kg -> 5.9 kg es una caída del 83.1 % (> 50 %)
+    expect(isWeightJump(5.9, 35)).toBe(true);
+    // 35 kg -> 60 kg es una subida del 71.4 % (> 50 %)
+    expect(isWeightJump(60, 35)).toBe(true);
+  });
+
+  it('no avisa si el cambio es menor o igual al 50 %', () => {
+    // 35 kg -> 37.5 kg es 7.1 % (<= 50 %)
+    expect(isWeightJump(37.5, 35)).toBe(false);
+    // 35 kg -> 52.5 kg es exactamente 50 %
+    expect(isWeightJump(52.5, 35)).toBe(false);
+    // 35 kg -> 17.5 kg es exactamente 50 %
+    expect(isWeightJump(17.5, 35)).toBe(false);
+  });
+
+  it('si no hay valor previo o es cero, no salta aviso', () => {
+    expect(isWeightJump(50, null)).toBe(false);
+    expect(isWeightJump(50, 0)).toBe(false);
+    expect(isWeightJump(50, -5)).toBe(false);
   });
 });

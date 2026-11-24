@@ -1,4 +1,18 @@
 export { createSupabaseTenancySource } from './api/supabase-tenancy-source';
+export {
+  HEALTH_CONSENT_TEXT_VERSION,
+  isHealthConsentGranted,
+  parseHealthConsent,
+  shouldPromptOnEntry,
+} from './health-consent';
+export type { HealthConsentChange, HealthConsentState } from './health-consent';
+export type {
+  HealthConsentDialogState,
+  HealthConsentPromptValue,
+} from './health-consent-prompt-context';
+export { HealthConsentPromptProvider } from './HealthConsentPromptProvider';
+export { healthConsentQueryKey, healthDataQueryKey, useHealthConsent } from './useHealthConsent';
+export { useHealthConsentPrompt } from './useHealthConsentPrompt';
 export { parseInvitePreview, parseJoinResult } from './invite';
 export type { InvitePreview, JoinResult } from './invite';
 export {

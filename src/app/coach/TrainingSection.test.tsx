@@ -20,4 +20,16 @@ describe('Ajustes del coach: "Entrenamiento" (PR 2.10b, D-076)', () => {
       'false',
     );
   });
+
+  it('el dueño activa o desactiva logros y motivación; por defecto, activados (D-130, D-141)', async () => {
+    const { user } = await renderAppAs('coach@example.test', '/coach/settings');
+
+    const checkbox = await screen.findByRole('checkbox', {
+      name: /Achievements and motivation|Logros y motivación/i,
+    });
+    expect(checkbox).toBeChecked();
+
+    await user.click(checkbox);
+    expect(checkbox).not.toBeChecked();
+  });
 });

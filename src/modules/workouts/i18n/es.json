@@ -81,6 +81,9 @@
   "workout": {
     "title": "Entreno de hoy",
     "totalSets": "{{done}}/{{total}} series",
+    "miniAchievementsCount": "{{count}} minilogros",
+    "miniAchievementsCount_one": "1 minilogro",
+    "miniAchievementsCount_other": "{{count}} minilogros",
     "exercisesLabel": "Ejercicios del entreno",
     "setsDone": "{{done}} de {{total}} series hechas",
     "finish": "Terminar entreno",
@@ -91,12 +94,26 @@
     "next": "Siguiente",
     "loadError": "No se pudo abrir el entreno",
     "noWorkout": "No hay ningún entreno abierto",
-    "toProgram": "Ir a mi rutina"
+    "toProgram": "Ir a mi rutina",
+    "group": {
+      "superset": "Superserie · {{position}} de {{size}}",
+      "circuit": "Circuito · {{position}} de {{size}}"
+    },
+    "replace": "Cambiar ejercicio",
+    "replaceTitle": "Cambiar «{{name}}» por…",
+    "replaces": "En lugar de {{name}}",
+    "replacedBy": "Cambiado por {{name}}",
+    "skip": "Saltar ejercicio",
+    "unskip": "Deshacer",
+    "skippedNote": "Has saltado este ejercicio: no cuenta en el entreno de hoy.",
+    "skippedTag": "Saltado"
   },
   "set": {
     "label": "Serie {{number}}",
+    "miniAchievement": "Minilogro",
     "weight": "Peso ({{unit}})",
     "extraLoad": "Lastre ({{unit}})",
+    "ballastTotal": "Lastre {{ballast}} · Total {{total}}",
     "reps": "Repeticiones",
     "seconds": "Segundos",
     "meters": "Metros",
@@ -108,7 +125,25 @@
     "increase": "Subir {{field}}",
     "same": "Igual",
     "add": "+ Serie",
-    "unmark": "Desmarcar la serie {{number}}"
+    "unmark": "Desmarcar la serie {{number}}",
+    "side": {
+      "right": "Derecha",
+      "left": "Izquierda"
+    },
+    "surePrompt": "¿Seguro? La vez anterior fueron {{previous}}",
+    "sureYes": "Sí",
+    "sureCancel": "Cancelar"
+  },
+  "exercise": {
+    "instructions": "Instrucciones",
+    "coachNote": "Nota del coach",
+    "setup": "Set-up",
+    "setupPlaceholder": "Asiento 2 · Agarre línea 3",
+    "setupHelp": "Compartido entre rutinas",
+    "dayNote": "Nota del día",
+    "dayNotePlaceholder": "Escribe una nota para este ejercicio...",
+    "dayNoteLimit": "{{count}}/500",
+    "dayNoteNoConsent": "Para guardar notas del día hace falta tu consentimiento de datos de salud."
   },
   "finished": {
     "title": "Entreno terminado",
@@ -116,6 +151,7 @@
     "duration": "Duración",
     "sets": "Series hechas",
     "exercises": "Ejercicios",
+    "miniAchievements": "Minilogros",
     "exercisesValue": "{{done}} de {{total}}",
     "done": "Volver al inicio",
     "allDone": "Todas las series hechas. El entreno se cierra solo en unos segundos.",
@@ -139,6 +175,51 @@
     "continueHere": "Seguir aquí",
     "error": "No se pudo seguir aquí. Inténtalo otra vez."
   },
+  "body": {
+    "title": "Cuerpo",
+    "eyebrow": "Peso y medidas",
+    "tabsLabel": "Qué apuntar",
+    "tabWeight": "Peso",
+    "tabMeasurements": "Medidas",
+    "date": "Fecha",
+    "save": "Guardar",
+    "saving": "Guardando…",
+    "history": "Historial",
+    "delete": "Borrar",
+    "deleteLabel": "Borrar lo apuntado el {{date}}",
+    "deleteAsk": "¿Borrar?",
+    "deleteYes": "Sí, borrar",
+    "deleteNo": "No",
+    "deleted": "Borrado.",
+    "weight": {
+      "field": "Peso ({{unit}})",
+      "last": "{{weight}} · apuntado el {{date}}",
+      "none": "Aún no has apuntado tu peso.",
+      "add": "Apuntar peso",
+      "update": "Actualizar",
+      "saved": "Peso apuntado.",
+      "historyEmpty": "Todavía no hay pesos apuntados.",
+      "invalid": "Escribe tu peso, por ejemplo 82,5.",
+      "range": "El peso tiene que estar entre {{min}} y {{max}} {{unit}}."
+    },
+    "measure": {
+      "which": "Medida",
+      "field": "Valor ({{unit}})",
+      "saved": "Medida apuntada.",
+      "none": "Aún no has apuntado ninguna medida.",
+      "invalid": "Escribe la medida, por ejemplo 82,5.",
+      "range": "La medida tiene que ser mayor que 0 y como mucho {{max}} {{unit}}."
+    },
+    "card": {
+      "title": "Peso corporal",
+      "measurements": "Medidas"
+    },
+    "errors": {
+      "dateInvalid": "Elige un día válido.",
+      "dateFuture": "No puedes apuntar un día que aún no ha llegado.",
+      "noConsent": "Sin tu permiso de datos de salud no se puede guardar."
+    }
+  },
   "rest": {
     "label": "Cronómetro de descanso",
     "pause": "Pausar",
@@ -150,5 +231,21 @@
     "minus": "Restar {{seconds}} segundos",
     "notificationTitle": "Descanso terminado",
     "notificationBody": "Toca la siguiente serie"
+  },
+  "nav": {
+    "clientHistory": "Mis entrenos"
+  },
+  "history": {
+    "title": "Mis entrenos",
+    "empty": "Aún no has registrado ningún entreno",
+    "correct": "Corregir",
+    "correctTitle": "Corregir entreno",
+    "pendingUpload": "Pendiente de subir",
+    "save": "Guardar cambios",
+    "cancel": "Cancelar",
+    "dayNote": "Nota del día",
+    "weight": "Peso",
+    "reps": "Reps",
+    "intensity": "RIR / Intensidad"
   }
 }

@@ -7,6 +7,24 @@ import type { Page } from '@playwright/test';
 export const SEED_PASSWORD = 'password123';
 
 /**
+ * Un cliente sin el permiso de datos de salud ve la ventana del consentimiento
+ * al entrar (D-126) y tapa lo que hay debajo. Los tests que no hablan de ella
+ * la cierran con "Not now", igual que haría un usuario con prisa, en cuanto
+ * sale y antes de cada clic.
+ */
+async function dismissHealthConsentPrompt(page: Page): Promise<void> {
+  await page.addLocatorHandler(
+    page.getByRole('dialog', { name: /^(Your health data|Tus datos de salud)$/ }),
+    (dialog) => dialog.getByRole('button', { name: /^(Not now|Ahora no)$/ }).click(),
+  );
+}
+
+interface SignInOptions {
+  /** `true` si el test quiere ver la ventana del consentimiento (por defecto se cierra sola). */
+  showHealthConsentPrompt?: boolean;
+}
+
+/**
  * Entra desde la pantalla de /login (por defecto, con la contraseña del seed) y
  * espera a estar dentro: si después el test recarga la página, la sesión ya
  * está guardada.
@@ -16,7 +34,11 @@ export async function signIn(
   email: string,
   path = '/login',
   password = SEED_PASSWORD,
+  options: SignInOptions = {},
 ): Promise<void> {
+  if (options.showHealthConsentPrompt !== true) {
+    await dismissHealthConsentPrompt(page);
+  }
   await page.goto(path);
   await expect(page.getByRole('heading', { name: 'Sign in' })).toBeVisible();
   await page.getByLabel('Email').fill(email);

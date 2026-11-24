@@ -2,6 +2,7 @@ import { z } from 'zod';
 
 import type { BrandMode } from '../branding/brand-schema';
 import { parseBrand } from '../branding/parse-brand';
+import type { HealthConsentChange, HealthConsentState } from './health-consent';
 import type { InvitePreview, JoinResult } from './invite';
 import type { PlanLimit, TenantMember } from './members';
 import { ROLES, profileForRole } from './tenancy-types';
@@ -63,6 +64,12 @@ export interface TenancySource {
   removeLogo(tenantId: string): Promise<'ok' | 'not_allowed' | 'offline' | 'error'>;
   /** Borrar el archivo de un logo que ya no se usa. Si falla, solo se registra. */
   deleteLogoFile(path: string): Promise<void>;
+  /** El consentimiento de datos de salud del usuario en un negocio (D-126). Un fallo se propaga. */
+  getHealthConsent(tenantId: string, userId: string): Promise<HealthConsentState>;
+  /** Dar el consentimiento (D-140). Solo el propio cliente. */
+  grantHealthConsent(tenantId: string): Promise<HealthConsentChange>;
+  /** Retirarlo; borra peso, medidas y notas de ese negocio (D-140). Solo el propio cliente. */
+  withdrawHealthConsent(tenantId: string): Promise<HealthConsentChange>;
 }
 
 export type SaveLogoResult =

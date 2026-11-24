@@ -4,6 +4,7 @@ import type { ProgramBlock, ProgramDay } from '@/modules/programs';
 
 import { changeSet, finishWorkout, startWorkout } from './active-workout';
 import type { ActiveWorkout } from './active-workout';
+import { skipExercise } from './exercise-actions';
 import { COMPLETE_GRACE_MS, autoCloseDelay, finishedSummary, isComplete } from './close-workout';
 
 const set = {
@@ -71,6 +72,28 @@ describe('isComplete', () => {
     expect(isComplete(workout())).toBe(false);
     expect(isComplete(changeSet(workout(), 1, 1, { reps: 8 }, START))).toBe(false);
     expect(isComplete(allDone('2026-11-16T08:45:00.000Z'))).toBe(true);
+  });
+});
+
+describe('ejercicios saltados (D-122)', () => {
+  const skipSecond = (at: string) => skipExercise(workout(), 2, at);
+
+  it('se cierra solo apuntando todo lo demás (criterio 4)', () => {
+    let current = skipSecond(START);
+    expect(isComplete(current)).toBe(false);
+    current = changeSet(current, 1, 1, { reps: 8 }, '2026-11-16T08:10:00.000Z');
+    current = changeSet(current, 1, 2, { reps: 8 }, '2026-11-16T08:20:00.000Z');
+    expect(isComplete(current)).toBe(true);
+    expect(autoCloseDelay(current, Date.parse('2026-11-16T08:20:00.000Z'), true)).toBe(0);
+  });
+
+  it('el resumen no cuenta los saltados', () => {
+    const current = changeSet(skipSecond(START), 1, 1, { reps: 8 }, '2026-11-16T08:10:00.000Z');
+    expect(finishedSummary(finishWorkout(current, '2026-11-16T08:30:00.000Z'))).toMatchObject({
+      setsDone: 1,
+      exercisesDone: 1,
+      exercisesTotal: 1,
+    });
   });
 });
 

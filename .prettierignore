@@ -4,6 +4,7 @@ coverage/
 playwright-report/
 test-results/
 package-lock.json
+.claude/
 
 # Documentación: se escribe a mano y varios archivos son zona protegida
 # (AGENTS.md, docs/). Prettier no debe reescribirlos.

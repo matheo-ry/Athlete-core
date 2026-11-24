@@ -2,19 +2,24 @@ import type { CSSProperties } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router';
 
+import { cn } from '@/core/lib';
+import { useTenantSettings } from '@/core/tenancy';
 import { Icon, StateOrbit, buttonClassName } from '@/core/ui';
 
+import { useWorkoutMiniAchievements } from '../api/useWorkoutMiniAchievements';
 import type { ActiveWorkout } from '../model/active-workout';
 import { finishedSummary } from '../model/close-workout';
 import { formatDuration } from '../model/workout-format';
 
 /**
  * El resumen final de un entreno recién cerrado (D-119): duración, series
- * hechas y ejercicios, en tres cifras grandes. Es el momento de celebrarlo.
+ * hechas y ejercicios, en tres o cuatro cifras grandes. Es el momento de celebrarlo.
  * Los récords y los minilogros llegan en los PR 3.15 y 3.17.
  */
 export function FinishedScreen({ workout }: { workout: ActiveWorkout }) {
   const { t } = useTranslation();
+  const { achievementsEnabled } = useTenantSettings();
+  const miniAchievementsCount = useWorkoutMiniAchievements(workout);
   const summary = finishedSummary(workout);
   const isCompleted = workout.closeReason === 'completed';
   const rows = [
@@ -29,6 +34,13 @@ export function FinishedScreen({ workout }: { workout: ActiveWorkout }) {
     },
   ];
 
+  if (achievementsEnabled && miniAchievementsCount > 0) {
+    rows.push({
+      label: t('workouts.finished.miniAchievements'),
+      value: String(miniAchievementsCount),
+    });
+  }
+
   return (
     <div className="flex flex-col items-center gap-6 pt-4 text-center">
       <StateOrbit>
@@ -37,7 +49,12 @@ export function FinishedScreen({ workout }: { workout: ActiveWorkout }) {
       <h1 className="text-3xl leading-[1.08] font-semibold">
         {isCompleted ? t('workouts.finished.titleCompleted') : t('workouts.finished.title')}
       </h1>
-      <dl className="grid w-full grid-cols-3 gap-2">
+      <dl
+        className={cn(
+          'grid w-full gap-2',
+          rows.length === 4 ? 'grid-cols-2 sm:grid-cols-4' : 'grid-cols-3',
+        )}
+      >
         {rows.map((row, index) => (
           <div
             key={row.label}

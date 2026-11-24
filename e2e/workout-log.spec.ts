@@ -55,6 +55,20 @@ test('Ana inicia el lunes, apunta la serie 1 y la sigue viendo al recargar', asy
   const previousLoad = /^([\d.]+) × /.exec((await previous.textContent()) ?? '')?.[1] ?? '0';
   await first.getByRole('button', { name: 'Increase Added load (kg)' }).click();
   await expect(first.getByRole('textbox', { name: 'Added load (kg)' })).toHaveValue(previousLoad);
+
+  // PR 3.9b (D-127), criterio 2: Ana dio el consentimiento y tiene peso apuntado,
+  // así que el ejercicio de peso corporal enseña el lastre y el total.
+  const ana = await signInApi('ana@example.com', SEED_PASSWORD);
+  const [latest] = (await select(
+    ana,
+    'body_weights?select=weight_kg&order=measured_on.desc&limit=1',
+  )) as { weight_kg: number }[];
+  const total = new Intl.NumberFormat('en', { maximumFractionDigits: 1 }).format(
+    Math.round(((latest?.weight_kg ?? 0) + Number(previousLoad)) * 100) / 100,
+  );
+  await expect(first.getByTestId('ballast-total')).toHaveText(
+    `Added load ${previousLoad} · Total ${total} kg`,
+  );
   await first.getByRole('textbox', { name: 'Reps' }).fill('12');
   await first.getByRole('textbox', { name: 'Reps' }).press('Enter');
   await expect(first).toHaveAttribute('data-done', 'true');
@@ -142,5 +156,94 @@ test('Bruno ve los pesos en libras (criterio 5)', async ({ page }) => {
   // Sin ninguna serie hecha no se guarda: vuelve al inicio, sin resumen (D-119).
   await expect(page).toHaveURL(/\/client$/);
   // Y no se queda abierto en la nube, aunque subiera al empezar (D-151).
+  await expectNothingOpen('bruno@example.com');
+});
+
+test('Bruno apunta un unilateral por lados y el descanso arranca con el segundo (PR 3.8)', async ({
+  page,
+}) => {
+  const startedAt = new Date().toISOString();
+  await signIn(page, 'bruno@example.com');
+  await expect(page).toHaveURL(/\/client$/);
+  // El día 2 es "Brazo / Pierna 1", con "Curl banco Scott unilateral" en tercer lugar.
+  await page.goto('/client/workout?day=2');
+  await page.getByRole('button', { name: 'Start workout' }).click();
+  await page.getByRole('list', { name: 'Workout exercises' }).getByRole('link').nth(2).click();
+  await expect(page.getByRole('heading', { name: 'Curl banco Scott unilateral' })).toBeVisible();
+
+  const first = page.getByRole('listitem', { name: 'Set 1' });
+  const right = first.getByRole('group', { name: 'Right' });
+  const left = first.getByRole('group', { name: 'Left' });
+
+  // Criterio 1: derecha 9 repeticiones; la serie no está hecha hasta apuntar la izquierda.
+  await right.getByRole('textbox', { name: 'Reps' }).fill('9');
+  await right.getByRole('textbox', { name: 'Reps' }).press('Enter');
+  await expect(right).toHaveAttribute('data-done', 'true');
+  await expect(first).toHaveAttribute('data-done', 'false');
+  await expect(page.getByRole('timer')).toHaveCount(0);
+
+  // Con la izquierda queda hecha y arranca el descanso.
+  await left.getByRole('textbox', { name: 'Reps' }).fill('8');
+  await left.getByRole('textbox', { name: 'Reps' }).press('Enter');
+  await expect(first).toHaveAttribute('data-done', 'true');
+  await expect(page.getByRole('timer')).toBeVisible();
+
+  await page.getByRole('link', { name: 'Back to summary' }).click();
+  await expect(page.getByText('1/21 sets')).toBeVisible();
+  await page.getByRole('button', { name: 'Finish workout' }).click();
+  await expect(page.getByRole('heading', { name: 'Workout finished' })).toBeVisible();
+  await page.getByRole('link', { name: 'Back to home' }).click();
+  await expectNothingOpen('bruno@example.com');
+
+  // En la base de datos hay una fila por lado.
+  const session = await signInApi('bruno@example.com', SEED_PASSWORD);
+  const since = encodeURIComponent(startedAt);
+  await expect
+    .poll(async () => {
+      const rows = (await select(
+        session,
+        `workout_sets?select=side,reps&recorded_at=gte.${since}&order=side`,
+      )) as { side: string; reps: number }[];
+      return rows.map((row) => `${row.side}:${String(row.reps)}`);
+    })
+    .toEqual(['left:8', 'right:9']);
+});
+
+test('Bruno cambia un ejercicio, salta otro y lo deshace (PR 3.8)', async ({ page }) => {
+  await signIn(page, 'bruno@example.com');
+  await expect(page).toHaveURL(/\/client$/);
+  await page.goto('/client/workout?day=2');
+  await page.getByRole('button', { name: 'Start workout' }).click();
+  const exercises = page.getByRole('list', { name: 'Workout exercises' }).getByRole('link');
+
+  // Criterio 3: cambiar el primer ejercicio por otro de sus rutinas (la lista es la que
+  // permite ver el RLS al cliente: solo los ejercicios de sus rutinas).
+  await exercises.first().click();
+  await expect(page.getByRole('heading', { name: 'Skull crusher' })).toBeVisible();
+  await page.getByRole('button', { name: 'Change exercise' }).click();
+  await page
+    .getByRole('list', { name: /^Change/ })
+    .getByRole('button')
+    .filter({ hasNotText: 'Skull crusher' })
+    .first()
+    .click();
+  await expect(page.getByText('Instead of Skull crusher')).toBeVisible();
+  await page.getByRole('link', { name: 'Back to summary' }).click();
+  await expect(page.getByText(/^Replaced by /)).toBeVisible();
+
+  // Saltar y deshacer.
+  await exercises.nth(1).click();
+  await page.getByRole('button', { name: 'Skip exercise' }).click();
+  await expect(page.getByTestId('skipped-notice')).toBeVisible();
+  await page.getByRole('link', { name: 'Back to summary' }).click();
+  await expect(page.getByText('Skipped', { exact: true })).toBeVisible();
+  await exercises.nth(1).click();
+  await page.getByRole('button', { name: 'Undo' }).click();
+  await expect(page.getByTestId('skipped-notice')).toHaveCount(0);
+
+  // Sin ninguna serie hecha no se guarda: vuelve al inicio y no queda abierto.
+  await page.getByRole('link', { name: 'Back to summary' }).click();
+  await page.getByRole('button', { name: 'Finish workout' }).click();
+  await expect(page).toHaveURL(/\/client$/);
   await expectNothingOpen('bruno@example.com');
 });

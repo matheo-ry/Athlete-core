@@ -2,6 +2,8 @@ import { DEFAULT_BRAND, checkLogoFile, logoPathFor } from '@/core/branding';
 import { normalizeInviteCode, parseTenantSettings } from '@/core/tenancy';
 import type {
   CreateBusinessResult,
+  HealthConsentChange,
+  HealthConsentState,
   InvitePreview,
   JoinResult,
   MemberActionResult,
@@ -110,6 +112,13 @@ interface FakeTenancyOptions {
   fail?: boolean;
   /** Quién tiene la sesión abierta (lo da `render-app.tsx`): hace falta para unirse. */
   currentEmail?: () => string | null;
+  /**
+   * El consentimiento de salud con el que empieza cada cliente. Por defecto, dado: así las
+   * pantallas que no hablan de salud no ven la ventana del consentimiento (D-126).
+   */
+  initialHealthConsent?: HealthConsentState;
+  /** Ajustes iniciales de los negocios (D-076). */
+  initialSettings?: Record<string, Partial<TenantSettings>>;
 }
 
 export interface FakeTenancySource extends TenancySource {
@@ -117,6 +126,10 @@ export interface FakeTenancySource extends TenancySource {
   readonly failedAttempts: number;
   /** Los archivos de logos viejos que la app ha pedido borrar. */
   readonly deletedLogoFiles: readonly string[];
+  /** Cuántas veces se ha dado y retirado el consentimiento de salud. */
+  readonly healthConsentCalls: { granted: number; withdrawn: number };
+  /** Hace que el siguiente cambio del consentimiento falle con ese motivo. */
+  failNextHealthConsentChange(reason: 'offline' | 'error'): void;
 }
 
 const userIdFor = (email: string) => `user-${email}`;
@@ -126,8 +139,24 @@ export function createFakeTenancySource({
   memberships = FAKE_MEMBERSHIPS,
   fail = false,
   currentEmail = () => null,
+  initialHealthConsent = {
+    status: 'granted',
+    grantedAt: '2026-11-01T10:00:00Z',
+    textVersion: '2026-11-draft',
+  },
+  initialSettings,
 }: FakeTenancyOptions = {}): FakeTenancySource {
-  const settings = new Map<string, Partial<TenantSettings>>();
+  // Por usuario y negocio, como la tabla health_consents.
+  const consents = new Map<string, HealthConsentState>();
+  const consentCalls = { granted: 0, withdrawn: 0 };
+  let nextConsentFailure: 'offline' | 'error' | null = null;
+  const consentKey = (tenantId: string, userId: string) => `${tenantId}/${userId}`;
+  const takeConsentFailure = (): HealthConsentChange | null => {
+    const failure = nextConsentFailure;
+    nextConsentFailure = null;
+    return failure;
+  };
+  const settings = new Map<string, Partial<TenantSettings>>(Object.entries(initialSettings ?? {}));
   // Copias propias: unirse o regenerar no tocan las listas compartidas.
   const store = new Map(Object.entries(memberships).map(([email, list]) => [email, [...list]]));
   const codes = new Map<string, Tenant>([
@@ -371,7 +400,51 @@ export function createFakeTenancySource({
     },
 
     deletedLogoFiles,
+
+    getHealthConsent(tenantId, userId) {
+      if (fail) {
+        return Promise.reject(new Error('Could not load health consent: fake failure'));
+      }
+      return Promise.resolve(consents.get(consentKey(tenantId, userId)) ?? initialHealthConsent);
+    },
+
+    grantHealthConsent(tenantId) {
+      const failure = takeConsentFailure();
+      if (failure !== null) {
+        return Promise.resolve(failure);
+      }
+      consentCalls.granted += 1;
+      consents.set(consentKey(tenantId, currentUserId()), {
+        status: 'granted',
+        grantedAt: '2026-11-23T10:00:00Z',
+        textVersion: '2026-11-draft',
+      });
+      return Promise.resolve('ok');
+    },
+
+    withdrawHealthConsent(tenantId) {
+      const failure = takeConsentFailure();
+      if (failure !== null) {
+        return Promise.resolve(failure);
+      }
+      consentCalls.withdrawn += 1;
+      consents.set(consentKey(tenantId, currentUserId()), {
+        status: 'withdrawn',
+        withdrawnAt: '2026-11-23T11:00:00Z',
+      });
+      return Promise.resolve('ok');
+    },
+
+    healthConsentCalls: consentCalls,
+
+    failNextHealthConsentChange(reason) {
+      nextConsentFailure = reason;
+    },
   };
+
+  function currentUserId(): string {
+    return userIdFor(currentEmail() ?? '');
+  }
 
   function isOwnerOf(tenantId: string): boolean {
     return (store.get(currentEmail() ?? '') ?? []).some(

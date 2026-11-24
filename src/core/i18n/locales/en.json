@@ -234,7 +234,9 @@
           "rir": "RIR (reps in reserve)",
           "rpe": "RPE (effort from 1 to 10)"
         },
-        "intensityHint": "The scale you are offered when you write a program. Changing it does not convert what is already written."
+        "intensityHint": "The scale you are offered when you write a program. Changing it does not convert what is already written.",
+        "achievementsLabel": "Achievements and motivation",
+        "achievementsHint": "Weekly streaks, levels, mini-wins, and achievements for your clients. If turned off, they will not see any of this."
       }
     },
     "clientProfile": {
@@ -338,6 +340,25 @@
       "sameLabel": "What “Same” copies",
       "samePrevious": "Last time's set",
       "sameToday": "Previous set of today"
+    },
+    "healthConsent": {
+      "title": "Your health data",
+      "body": "Your weight, your measurements and the notes you write (which may include aches or injuries) are only between you and your coach, so they can improve their service and advice. ATHLETE CORE stores them on your coach's behalf and doesn't use them for anything else. You can withdraw this permission at any time in your Profile.",
+      "accept": "I agree",
+      "notNow": "Not now"
+    },
+    "healthData": {
+      "title": "Health data",
+      "description": "Your weight, your measurements and your daily notes. Only you and {{coach}} can see them.",
+      "statusGranted": "Permission given on {{date}}.",
+      "statusNone": "You haven't given permission yet. You can still train, but you can't log weight, measurements or notes.",
+      "statusWithdrawn": "Permission withdrawn on {{date}}. Your weight, measurements and notes with {{coach}} were deleted.",
+      "give": "Give permission",
+      "withdraw": "Withdraw permission",
+      "confirmTitle": "Withdraw permission?",
+      "confirmBody": "Your weight, measurements and daily notes with {{coach}} will be deleted. This can't be undone.",
+      "confirmWithdraw": "Withdraw and delete",
+      "cancel": "Cancel"
     }
   }
 }

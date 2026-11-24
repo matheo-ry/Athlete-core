@@ -286,7 +286,12 @@ export function ClientWorkoutsTab({ clientId }: ClientProfileTabProps) {
                           >
                             <div className="flex items-center gap-2 flex-wrap justify-between">
                               <div className="flex items-center gap-2 flex-wrap">
-                                <span className="font-medium text-sm">{exName}</span>
+                                {/* El título es el ejercicio de la rutina; lo que se hizo, en la etiqueta (D-122). */}
+                                <span className="font-medium text-sm">
+                                  {replacedOpt === null || replacedOpt === undefined
+                                    ? exName
+                                    : replacedOpt.name}
+                                </span>
                                 {we.is_skipped ? (
                                   <span className="rounded bg-muted/20 text-muted px-1.5 py-0.5 text-xs">
                                     {t('workouts.coachTab.skipped')}
@@ -294,7 +299,7 @@ export function ClientWorkoutsTab({ clientId }: ClientProfileTabProps) {
                                 ) : null}
                                 {replacedOpt !== null && replacedOpt !== undefined ? (
                                   <span className="rounded bg-primary/10 text-primary-readable px-1.5 py-0.5 text-xs">
-                                    {t('workouts.coachTab.replaced', { name: replacedOpt.name })}
+                                    {t('workouts.coachTab.replaced', { name: exName })}
                                   </span>
                                 ) : null}
                               </div>

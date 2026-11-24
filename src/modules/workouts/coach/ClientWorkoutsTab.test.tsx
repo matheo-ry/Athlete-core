@@ -75,6 +75,11 @@ vi.mock('@/core/tenancy', () => ({
     tenant: { id: '11111111-1111-1111-1111-111111111111' },
     role: 'owner',
   }),
+  healthDataQueryKey: (tenantId: string | null, ...rest: readonly unknown[]) => [
+    'health-data',
+    tenantId,
+    ...rest,
+  ],
 }));
 
 const mockWorkout: WorkoutRecord = {

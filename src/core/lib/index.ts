@@ -14,6 +14,7 @@ export {
   kgToLb,
   lbToKg,
   lengthUnitFor,
+  toCm,
   toKg,
 } from './units';
 export type { LengthUnit, WeightUnit } from './units';

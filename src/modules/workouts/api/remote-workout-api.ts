@@ -36,6 +36,9 @@ const exerciseSchema = z.object({
   prescribed_sets: z.array(z.json()),
   prescribed_rest_seconds: z.number().int().nullable(),
   coach_note: z.string().nullable(),
+  day_note: z.string().nullable().default(null),
+  is_skipped: z.boolean(),
+  replaces_exercise_id: z.string().nullable(),
   changed_at: z.string(),
   workout_sets: z.array(setSchema),
 });
@@ -74,24 +77,25 @@ function toRemote(row: z.infer<typeof workoutSchema>): RemoteWorkout {
       supersetGroup: exercise.superset_group,
       restSeconds: exercise.prescribed_rest_seconds,
       coachNote: exercise.coach_note,
+      dayNote: exercise.day_note,
       prescribedSets: exercise.prescribed_sets,
+      isSkipped: exercise.is_skipped,
+      replacesExerciseId: exercise.replaces_exercise_id,
       changedAt: exercise.changed_at,
-      // Por lados, desde el PR 3.8 (D-121).
-      sets: exercise.workout_sets
-        .filter((set) => set.side === 'none')
-        .map((set) => ({
-          id: set.id,
-          setNumber: set.set_number,
-          weightKg: set.weight_kg,
-          reps: set.reps,
-          durationSeconds: set.duration_seconds,
-          distanceMeters: set.distance_meters,
-          intensityType: set.intensity_type,
-          intensityValue: set.intensity_value,
-          isDone: set.is_done,
-          isExtra: set.is_extra,
-          recordedAt: set.recorded_at,
-        })),
+      sets: exercise.workout_sets.map((set) => ({
+        id: set.id,
+        setNumber: set.set_number,
+        side: set.side,
+        weightKg: set.weight_kg,
+        reps: set.reps,
+        durationSeconds: set.duration_seconds,
+        distanceMeters: set.distance_meters,
+        intensityType: set.intensity_type,
+        intensityValue: set.intensity_value,
+        isDone: set.is_done,
+        isExtra: set.is_extra,
+        recordedAt: set.recorded_at,
+      })),
     })),
   };
 }
@@ -103,7 +107,7 @@ export async function fetchOpenWorkouts(
   const { data, error } = await getSupabaseClient()
     .from('workouts')
     .select(
-      `id, tenant_id, program_id, block_id, program_day_id, day_number, started_at, last_changed_at, open_device_id, device_since, ${EXERCISES}(id, position, exercise_id, program_day_exercise_id, superset_group, prescribed_sets, prescribed_rest_seconds, coach_note, changed_at, ${SETS}(id, set_number, side, weight_kg, reps, duration_seconds, distance_meters, intensity_type, intensity_value, is_extra, is_done, recorded_at))`,
+      `id, tenant_id, program_id, block_id, program_day_id, day_number, started_at, last_changed_at, open_device_id, device_since, ${EXERCISES}(id, position, exercise_id, program_day_exercise_id, superset_group, prescribed_sets, prescribed_rest_seconds, coach_note, is_skipped, replaces_exercise_id, changed_at, ${SETS}(id, set_number, side, weight_kg, reps, duration_seconds, distance_meters, intensity_type, intensity_value, is_extra, is_done, recorded_at))`,
     )
     .eq('tenant_id', tenantId)
     // Quien es coach y cliente a la vez lee más entrenos que los suyos.

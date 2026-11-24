@@ -1,10 +1,12 @@
 import { Outlet, useLocation } from 'react-router';
 
 import { cn } from '@/core/lib';
+import { HealthConsentPromptProvider } from '@/core/tenancy';
 
 import { BottomNav } from '../BottomNav';
 import { BrandMark } from '../BrandMark';
 import { useShellNav } from '../useShellNav';
+import { HealthConsentDialog } from './HealthConsentDialog';
 
 /**
  * Carcasa del perfil CLIENTE: pensada para móvil y para usarse en mitad de un
@@ -18,25 +20,28 @@ export function ClientLayout() {
   const isTraining = pathname.startsWith('/client/workout');
 
   return (
-    <div className="flex flex-1 flex-col">
-      <header className="flex items-center gap-2 px-5 pt-4">
-        <BrandMark />
-      </header>
-      {/* Deja sitio a la barra inferior flotante y a la de gestos del móvil. */}
-      <main
-        className={cn(
-          'mx-auto w-full max-w-xl flex-1 px-5 pt-5',
-          isTraining
-            ? 'pb-[calc(2rem+var(--safe-bottom))]'
-            : 'pb-[calc(6.5rem+var(--safe-bottom))]',
-        )}
-      >
-        {/* Cada pantalla entra con un pequeño ascenso; al cambiar de ruta, de nuevo. */}
-        <div key={pathname} className="animate-rise">
-          <Outlet />
-        </div>
-      </main>
-      {isTraining ? null : <BottomNav items={items} />}
-    </div>
+    <HealthConsentPromptProvider>
+      <div className="flex flex-1 flex-col">
+        <header className="flex items-center gap-2 px-5 pt-4">
+          <BrandMark />
+        </header>
+        {/* Deja sitio a la barra inferior flotante y a la de gestos del móvil. */}
+        <main
+          className={cn(
+            'mx-auto w-full max-w-xl flex-1 px-5 pt-5',
+            isTraining
+              ? 'pb-[calc(2rem+var(--safe-bottom))]'
+              : 'pb-[calc(6.5rem+var(--safe-bottom))]',
+          )}
+        >
+          {/* Cada pantalla entra con un pequeño ascenso; al cambiar de ruta, de nuevo. */}
+          <div key={pathname} className="animate-rise">
+            <Outlet />
+          </div>
+        </main>
+        {isTraining ? null : <BottomNav items={items} />}
+        <HealthConsentDialog />
+      </div>
+    </HealthConsentPromptProvider>
   );
 }

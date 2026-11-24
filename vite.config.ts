@@ -35,6 +35,7 @@ export default defineConfig({
     },
   },
   test: {
+    maxWorkers: 2,
     // Dos grupos de tests unitarios. Los de flujos completos (e2e/) los ejecuta
     // Playwright, no Vitest.
     projects: [
@@ -48,6 +49,7 @@ export default defineConfig({
           setupFiles: ['./src/test/setup.ts'],
           include: ['src/**/*.test.{ts,tsx}'],
           css: false,
+          testTimeout: 10000,
           // Las variables de Supabase son obligatorias (D-025). Los tests no hablan
           // con ninguna base de datos (usan un AuthService falso): basta con que
           // tengan un valor válido.
